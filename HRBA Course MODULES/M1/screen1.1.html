@@ -1,0 +1,326 @@
+<section class="module-opening-screen" aria-labelledby="module-title">
+  <style>
+    :root {
+      --dec-blue: #3B99D4;
+      --dec-green: #91C852;
+      --deep-navy: #0F172A;
+      --light-bg: #F9FAFB;
+      --card-bg: #FFFFFF;
+      --text-dark: #111827;
+      --text-muted: #4B5563;
+      --border-soft: #E5E7EB;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+    }
+
+    .module-opening-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      background:
+        radial-gradient(circle at top left, rgba(59, 153, 212, 0.16), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(145, 200, 82, 0.18), transparent 30%),
+        linear-gradient(135deg, #F9FAFB 0%, #EEF7FC 100%);
+    }
+
+    .opening-slide {
+      width: min(1180px, 100%);
+      min-height: 640px;
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 42px;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opening-slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--dec-blue), var(--dec-green));
+    }
+
+    .opening-content {
+      padding-left: 18px;
+      z-index: 2;
+    }
+
+    .course-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin-bottom: 24px;
+      border-radius: 999px;
+      background: rgba(59, 153, 212, 0.10);
+      color: var(--deep-navy);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .course-label::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--dec-green);
+      box-shadow: 0 0 0 5px rgba(145, 200, 82, 0.18);
+    }
+
+    .module-number {
+      margin: 0 0 14px;
+      color: var(--dec-blue);
+      font-size: clamp(1.1rem, 1.4vw, 1.4rem);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .opening-title {
+      margin: 0;
+      color: var(--deep-navy);
+      font-size: clamp(2.4rem, 4.7vw, 4.9rem);
+      line-height: 0.96;
+      letter-spacing: -0.055em;
+      font-weight: 900;
+    }
+
+    .opening-title span {
+      display: block;
+      color: var(--dec-blue);
+    }
+
+    .opening-subtitle {
+      max-width: 560px;
+      margin: 26px 0 0;
+      color: var(--text-muted);
+      font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+      line-height: 1.65;
+      font-weight: 500;
+    }
+
+    .opening-highlight {
+      margin-top: 28px;
+      padding: 18px 20px;
+      max-width: 560px;
+      border-left: 5px solid var(--dec-green);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      background: #F7FBF0;
+      color: var(--deep-navy);
+      font-size: 1rem;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 34px;
+      padding: 16px 28px;
+      min-width: 210px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--dec-blue), #247FB8);
+      color: #FFFFFF;
+      font-size: 1rem;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 14px 28px rgba(59, 153, 212, 0.32);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .start-button::after {
+      content: "→";
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .start-button:hover,
+    .start-button:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(59, 153, 212, 0.40);
+      outline: 3px solid rgba(145, 200, 82, 0.55);
+      outline-offset: 4px;
+    }
+
+    .opening-visual {
+      position: relative;
+      z-index: 2;
+      min-height: 500px;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #EEF7FC;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+      border: 1px solid rgba(229, 231, 235, 0.95);
+    }
+
+    .opening-visual img {
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .visual-badge {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      max-width: 310px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+    }
+
+    .visual-badge strong {
+      display: block;
+      color: var(--deep-navy);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .visual-badge span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .slide-footer {
+      position: absolute;
+      left: 62px;
+      bottom: 28px;
+      color: #6B7280;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 920px) {
+      .module-opening-screen {
+        padding: 24px;
+      }
+
+      .opening-slide {
+        grid-template-columns: 1fr;
+        padding: 32px;
+        gap: 30px;
+      }
+
+      .opening-content {
+        padding-left: 10px;
+      }
+
+      .opening-visual {
+        min-height: 360px;
+      }
+
+      .opening-visual img {
+        min-height: 360px;
+      }
+
+      .slide-footer {
+        position: static;
+        margin-top: 18px;
+        padding-left: 10px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .module-opening-screen {
+        padding: 14px;
+      }
+
+      .opening-slide {
+        padding: 26px 20px;
+        border-radius: 22px;
+      }
+
+      .opening-title {
+        font-size: 2.35rem;
+      }
+
+      .opening-subtitle {
+        font-size: 1rem;
+      }
+
+      .start-button {
+        width: 100%;
+      }
+
+      .visual-badge {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        max-width: none;
+      }
+    }
+  </style>
+
+  <div class="opening-slide">
+    <div class="opening-content">
+      <div class="course-label">CSO Learning Hub</div>
+
+      <p class="module-number">Module 1</p>
+
+      <h1 class="opening-title" id="module-title">
+        Applying Human Rights-Based Approaches
+        <span>in CSO Practice</span>
+      </h1>
+
+      <p class="opening-subtitle">
+        Introduction to HRBA for local CSOs
+      </p>
+
+      <div class="opening-highlight">
+        Start your learning journey by exploring how CSO work can move from service delivery toward dignity, inclusion, participation, and accountability.
+      </div>
+
+      <a class="start-button" href="#module-1-screen-2" aria-label="Start Module 1">
+        Start Module 1
+      </a>
+    </div>
+
+    <div class="opening-visual" aria-label="CSO staff discussing human rights-based approaches in a participatory learning session">
+      <img src="Image_1.1.png" alt="CSO staff in a participatory workshop discussion" />
+
+      <div class="visual-badge">
+        <strong>Introduction to HRBA</strong>
+        <span>Seeing everyday CSO work through a rights, inclusion, and accountability lens.</span>
+      </div>
+    </div>
+
+    <div class="slide-footer">Module 1 | 1</div>
+  </div>
+</section>

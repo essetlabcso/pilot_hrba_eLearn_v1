@@ -1,0 +1,304 @@
+{
+  "url": "http://127.0.0.1:5173/",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "routeChecks": {
+    "courseCtaToCover": true,
+    "coverHasNoPlayerShell": true,
+    "startModuleToS02": true
+  },
+  "screens": [
+    {
+      "label": "M1-S04 base",
+      "heading": "Your Learning Journey",
+      "progress": "Screen 4 of 19",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "pageScrollHeight": 720,
+      "pageClientHeight": 720,
+      "sectionScrollHeight": 618,
+      "sectionClientHeight": 618,
+      "slideScrollHeight": 618,
+      "slideClientHeight": 618,
+      "noVerticalScroll": true,
+      "brokenImages": [],
+      "modalOpen": false,
+      "enabledContinue": false
+    },
+    {
+      "label": "M1-S06 base",
+      "heading": "Investigate the HRBA Lens",
+      "progress": "Screen 6 of 19",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "pageScrollHeight": 720,
+      "pageClientHeight": 720,
+      "sectionScrollHeight": 618,
+      "sectionClientHeight": 618,
+      "slideScrollHeight": 618,
+      "slideClientHeight": 618,
+      "noVerticalScroll": true,
+      "brokenImages": [],
+      "modalOpen": false,
+      "enabledContinue": false
+    },
+    {
+      "label": "M1-S07 base",
+      "heading": "So, What Is HRBA?",
+      "progress": "Screen 7 of 19",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "pageScrollHeight": 720,
+      "pageClientHeight": 720,
+      "sectionScrollHeight": 618,
+      "sectionClientHeight": 618,
+      "slideScrollHeight": 618,
+      "slideClientHeight": 618,
+      "noVerticalScroll": true,
+      "brokenImages": [],
+      "modalOpen": false,
+      "enabledContinue": false
+    },
+    {
+      "label": "M1-S08 base",
+      "heading": "Everyday CSO work already touches rights",
+      "progress": "Screen 8 of 19",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "pageScrollHeight": 720,
+      "pageClientHeight": 720,
+      "sectionScrollHeight": 620,
+      "sectionClientHeight": 620,
+      "slideScrollHeight": 618,
+      "slideClientHeight": 618,
+      "noVerticalScroll": true,
+      "brokenImages": [],
+      "modalOpen": false,
+      "enabledContinue": false
+    },
+    {
+      "label": "M1-S09 base",
+      "heading": "Who might be invisible?",
+      "progress": "Screen 9 of 19",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "pageScrollHeight": 720,
+      "pageClientHeight": 720,
+      "sectionScrollHeight": 620,
+      "sectionClientHeight": 620,
+      "slideScrollHeight": 620,
+      "slideClientHeight": 620,
+      "noVerticalScroll": true,
+      "brokenImages": [],
+      "modalOpen": false,
+      "enabledContinue": false
+    },
+    {
+      "label": "M1-S10 base",
+      "heading": "Rights are connected",
+      "progress": "Screen 10 of 19",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "pageScrollHeight": 720,
+      "pageClientHeight": 720,
+      "sectionScrollHeight": 620,
+      "sectionClientHeight": 620,
+      "slideScrollHeight": 620,
+      "slideClientHeight": 620,
+      "noVerticalScroll": true,
+      "brokenImages": [],
+      "modalOpen": false,
+      "enabledContinue": false
+    }
+  ],
+  "interactions": [
+    {
+      "screen": "M1-S04",
+      "modalOpened": true
+    },
+    {
+      "screen": "M1-S04",
+      "unlockAfterAllSix": true
+    },
+    {
+      "screen": "M1-S06",
+      "modalOpened": true
+    },
+    {
+      "screen": "M1-S06",
+      "unlockAfterAllFour": true
+    },
+    {
+      "screen": "M1-S07",
+      "modalOpened": true,
+      "correctFeedbackModal": true
+    },
+    {
+      "screen": "M1-S07",
+      "unlockAfterCorrectFeedback": true
+    },
+    {
+      "screen": "M1-S08",
+      "modalOpened": true
+    },
+    {
+      "screen": "M1-S08",
+      "unlockAfterAllSix": true
+    },
+    {
+      "screen": "M1-S09",
+      "modalOpened": true
+    },
+    {
+      "screen": "M1-S09",
+      "unlockAfterAllSix": true
+    },
+    {
+      "screen": "M1-S10",
+      "modalOpened": true
+    },
+    {
+      "screen": "M1-S10",
+      "unlockAfterAllSix": true
+    }
+  ],
+  "consoleEntries": [
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "level": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "level": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+    }
+  ],
+  "brokenImages": [],
+  "menuOrderVisible": true,
+  "consoleSummary": []
+}

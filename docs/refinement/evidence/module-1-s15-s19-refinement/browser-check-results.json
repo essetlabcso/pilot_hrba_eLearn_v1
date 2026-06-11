@@ -1,0 +1,156 @@
+{
+  "generatedAt": "2026-06-09T16:02:37.788Z",
+  "viewport": [
+    1280,
+    720
+  ],
+  "screens": {
+    "s15Intro": {
+      "file": "s15-knowledge-check-intro.png",
+      "title": "Module 1 Knowledge Check",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        600,
+        600
+      ],
+      "continueDisabled": false,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s15Answered": {
+      "file": "s15-knowledge-check-question-feedback.png",
+      "title": "Module 1 Knowledge Check",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": true,
+      "slideSize": [
+        600,
+        762
+      ],
+      "continueDisabled": false,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s15Results": {
+      "file": "s15-knowledge-check-results.png",
+      "title": "Module 1 Knowledge Check",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        600,
+        600
+      ],
+      "continueDisabled": false,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s16Summary": {
+      "file": "s16-self-assessment-summary.png",
+      "title": "Self-Assessment",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        600,
+        600
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "s17Commitment": {
+      "file": "s17-priority-action-commitment.png",
+      "title": "Choose your HRBA priority",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": true,
+      "slideSize": [
+        600,
+        693
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "s18Takeaways": {
+      "file": "s18-key-takeaways-learning-record.png",
+      "title": "Key takeaways and Module 1 completion",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": true,
+      "slideSize": [
+        600,
+        822
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "s19Completion": {
+      "file": "s19-module-completion.png",
+      "title": "Module 1 completed",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        600,
+        600
+      ],
+      "continueDisabled": false,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "menu": {
+      "file": "module-1-menu-19-screens.png",
+      "title": "Module 1 Knowledge Check",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        652,
+        652
+      ],
+      "continueDisabled": false,
+      "nextDisabled": true,
+      "brokenImages": []
+    }
+  },
+  "console": {
+    "errors": []
+  }
+}

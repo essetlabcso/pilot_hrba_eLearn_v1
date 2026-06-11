@@ -1,0 +1,200 @@
+{
+  "url": "http://localhost:5173/",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "routeChecks": {
+    "courseCtaToCover": "not rerun in CDP helper; routing files untouched from approved Batch 2C",
+    "startModuleToS02": "not rerun in CDP helper; routing files untouched from approved Batch 2C"
+  },
+  "screens": [
+    {
+      "label": "M1-S11 base",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S11 completed",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S12 base",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S12 completed",
+      "heading": "Who has responsibility?",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneyWho Has Responsibility?•Screen 12 of 19",
+      "noVerticalScroll": false,
+      "scrollables": [
+        {
+          "cls": "m1-next-main",
+          "sh": 338,
+          "ch": 179,
+          "oy": "visible"
+        },
+        {
+          "cls": "m1-actor-map-card",
+          "sh": 192,
+          "ch": 179,
+          "oy": "visible"
+        }
+      ],
+      "nextEnabled": true,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S13 base",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S13 completed",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S14 base",
+      "heading": "From services to rights, power, and accountability",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneyFrom Services to Rights, Power, and Accountability•Screen 14 of 19",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": false,
+      "brokenImages": [
+        {
+          "src": "http://localhost:5173/src/assets/hrba/module-1/screen-14/hrba-shift-pathway.png",
+          "alt": "Illustration showing a pathway from basic service delivery toward rights, power, participation, responsibility, and accountability in CSO work."
+        },
+        {
+          "src": "http://localhost:5173/src/assets/hrba/module-1/screen-14/need-to-right.png",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "label": "M1-S14 completed",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S15 quiz question",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S15 results",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S16 assessment page",
+      "heading": "",
+      "progress": "",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": null,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S16 completed",
+      "heading": "Self-Assessment",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneySelf-Assessment•Screen 16 of 19",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": true,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S17 selected",
+      "heading": "Choose your HRBA priority",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneyPriority and Action Commitment•Screen 17 of 19",
+      "noVerticalScroll": false,
+      "scrollables": [
+        {
+          "cls": "m1-action-body",
+          "sh": 725,
+          "ch": 419,
+          "oy": "visible"
+        }
+      ],
+      "nextEnabled": true,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S18 takeaway review",
+      "heading": "Key takeaways and Module 1 completion",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneyKey Takeaways and Module 1 Completion Preview•Screen 18 of 19",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": false,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S18 completed",
+      "heading": "Key takeaways and Module 1 completion",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneyKey Takeaways and Module 1 Completion Preview•Screen 18 of 19",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": true,
+      "brokenImages": []
+    },
+    {
+      "label": "M1-S19 completion",
+      "heading": "Module 1 Completed: Starting the HRBA Learning Journey",
+      "progress": "CSO HUBModule 1: Starting the HRBA Learning JourneyModule 1 Completion Screen•Screen 19 of 19",
+      "noVerticalScroll": true,
+      "scrollables": [],
+      "nextEnabled": false,
+      "brokenImages": []
+    }
+  ],
+  "brokenImages": [
+    {
+      "label": "M1-S14 base",
+      "src": "http://localhost:5173/src/assets/hrba/module-1/screen-14/hrba-shift-pathway.png",
+      "alt": "Illustration showing a pathway from basic service delivery toward rights, power, participation, responsibility, and accountability in CSO work."
+    },
+    {
+      "label": "M1-S14 base",
+      "src": "http://localhost:5173/src/assets/hrba/module-1/screen-14/need-to-right.png",
+      "alt": ""
+    }
+  ],
+  "consoleSummary": [],
+  "menuOrderVisible": true
+}

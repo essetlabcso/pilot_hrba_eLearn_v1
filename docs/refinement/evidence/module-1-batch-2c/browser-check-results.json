@@ -1,0 +1,1115 @@
+{
+  "results": [
+    {
+      "label": "course page launch point",
+      "internalId": null,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "currentTitle": "CSO Learning Hub",
+      "currentHeaderText": "",
+      "hasExternalCover": false,
+      "hasPlayerHeader": false,
+      "hasPlayerSidebar": false,
+      "hasLearningTools": false,
+      "mainClientHeight": null,
+      "mainScrollHeight": null,
+      "slideClientHeight": null,
+      "slideScrollHeight": null,
+      "documentClientHeight": 720,
+      "documentScrollHeight": 1829,
+      "frameTop": null,
+      "frameBottom": null,
+      "ctaVisible": false,
+      "verticalScroll": true,
+      "buttons": [
+        {
+          "text": "Start Module 1",
+          "disabled": false,
+          "top": 988.03125,
+          "bottom": 1038.25,
+          "left": 67.09375,
+          "right": 405.90625
+        },
+        {
+          "text": "Complete Module 1 to unlock.",
+          "disabled": true,
+          "top": 988.03125,
+          "bottom": 1038.25,
+          "left": 463.09375,
+          "right": 801.90625
+        },
+        {
+          "text": "Complete Module 2 to unlock.",
+          "disabled": true,
+          "top": 988.03125,
+          "bottom": 1038.25,
+          "left": 859.09375,
+          "right": 1197.90625
+        },
+        {
+          "text": "Complete Module 3 to unlock.",
+          "disabled": true,
+          "top": 1597.609375,
+          "bottom": 1647.828125,
+          "left": 67.09375,
+          "right": 405.90625
+        },
+        {
+          "text": "Complete Module 4 to unlock.",
+          "disabled": true,
+          "top": 1597.609375,
+          "bottom": 1647.828125,
+          "left": 463.09375,
+          "right": 801.90625
+        },
+        {
+          "text": "Complete Module 5 to unlock.",
+          "disabled": true,
+          "top": 1597.609375,
+          "bottom": 1647.828125,
+          "left": 859.09375,
+          "right": 1197.90625
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/hrba/modules/module-1.png",
+          "alt": "Cover image for Module 1 - Starting the HRBA Learning Journey.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 374,
+          "height": 210,
+          "objectFit": "cover"
+        },
+        {
+          "src": "/assets/hrba/modules/module-2.png",
+          "alt": "Cover image for Module 2 - Foundations of HRBA: Rights, Actors, Principles, and Power.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 374,
+          "height": 210,
+          "objectFit": "cover"
+        },
+        {
+          "src": "/assets/hrba/modules/module-3.png",
+          "alt": "Cover image for Module 3 - Applying HRBA in Project Design.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 374,
+          "height": 210,
+          "objectFit": "cover"
+        },
+        {
+          "src": "/assets/hrba/modules/module-4.png",
+          "alt": "Cover image for Module 4 - Applying HRBA During Implementation.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 374,
+          "height": 210,
+          "objectFit": "cover"
+        },
+        {
+          "src": "/assets/hrba/modules/module-5.png",
+          "alt": "Cover image for Module 5 - HRBA in Monitoring, Evaluation, Accountability, and Learning.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 374,
+          "height": 210,
+          "objectFit": "cover"
+        },
+        {
+          "src": "/assets/hrba/modules/final-assessment.png",
+          "alt": "Cover image for the HRBA Final Assessment.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 374,
+          "height": 210,
+          "objectFit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "module 1 external cover after course CTA",
+      "launched": true,
+      "internalId": "M1-PLAYER-00",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "currentTitle": "Starting the HRBA Learning Journey",
+      "currentHeaderText": "",
+      "hasExternalCover": true,
+      "hasPlayerHeader": false,
+      "hasPlayerSidebar": false,
+      "hasLearningTools": false,
+      "mainClientHeight": null,
+      "mainScrollHeight": null,
+      "slideClientHeight": null,
+      "slideScrollHeight": null,
+      "documentClientHeight": 720,
+      "documentScrollHeight": 720,
+      "frameTop": 0,
+      "frameBottom": 720,
+      "ctaVisible": true,
+      "verticalScroll": false,
+      "buttons": [
+        {
+          "text": "<Back to course",
+          "disabled": false,
+          "top": 21,
+          "bottom": 62.8125,
+          "left": 22.59375,
+          "right": 193.671875
+        },
+        {
+          "text": "Start Module 1",
+          "disabled": false,
+          "top": 528.09375,
+          "bottom": 586.09375,
+          "left": 54.59375,
+          "right": 464.59375
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/hrba/modules/module-1.png",
+          "alt": "Cover image for Module 1 - Starting the HRBA Learning Journey.",
+          "complete": true,
+          "naturalWidth": 1672,
+          "naturalHeight": 941,
+          "width": 744,
+          "height": 718,
+          "objectFit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "player shell after start",
+      "startClicked": true,
+      "internalId": "M1-S1-02",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "currentTitle": "What You Will Be Able to Do",
+      "currentHeaderText": "CSO HUBModule 1: Starting the HRBA Learning JourneyWhat You Will Be Able to Do•Screen 2 of 19PrevNextExit",
+      "hasExternalCover": false,
+      "hasPlayerHeader": true,
+      "hasPlayerSidebar": false,
+      "hasLearningTools": false,
+      "mainClientHeight": 652,
+      "mainScrollHeight": 652,
+      "slideClientHeight": 618,
+      "slideScrollHeight": 618,
+      "documentClientHeight": 720,
+      "documentScrollHeight": 720,
+      "frameTop": 84,
+      "frameBottom": 704,
+      "ctaVisible": true,
+      "verticalScroll": false,
+      "buttons": [
+        {
+          "text": "Prev",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1041.40625,
+          "right": 1096.96875
+        },
+        {
+          "text": "Next",
+          "disabled": false,
+          "top": 21.609375,
+          "bottom": 49.390625,
+          "left": 1108.96875,
+          "right": 1170.453125
+        },
+        {
+          "text": "Exit",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1203.453125,
+          "right": 1256
+        },
+        {
+          "text": "📋 Menu",
+          "disabled": false,
+          "top": 113.203125,
+          "bottom": 152.390625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📖 Glossary",
+          "disabled": false,
+          "top": 161.984375,
+          "bottom": 201.171875,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📥 Resources",
+          "disabled": false,
+          "top": 210.765625,
+          "bottom": 249.953125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "💡 Help Guide",
+          "disabled": false,
+          "top": 259.546875,
+          "bottom": 298.734375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "♿ Accessibility",
+          "disabled": false,
+          "top": 308.328125,
+          "bottom": 347.515625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📝 Captions: OFF",
+          "disabled": false,
+          "top": 466.84375,
+          "bottom": 501.84375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "⏸️ Playing",
+          "disabled": false,
+          "top": 511.4375,
+          "bottom": 546.4375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔊 Audio: ON",
+          "disabled": false,
+          "top": 556.03125,
+          "bottom": 591.03125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔄 Reload State",
+          "disabled": false,
+          "top": 600.625,
+          "bottom": 635.625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Return to LMS",
+          "disabled": false,
+          "top": 663.8125,
+          "bottom": 700,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Continue",
+          "disabled": false,
+          "top": 623.625,
+          "bottom": 669.21875,
+          "left": 1071.953125,
+          "right": 1223.953125
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_explain_hrba_v1.png",
+          "alt": "Icon representing explaining HRBA in simple words.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_rights_holder_v1.png",
+          "alt": "Icon representing people as rights-holders, not only beneficiaries.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_notice_exclusion_v1.png",
+          "alt": "Icon representing noticing who may be invisible or left at the edge.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_ask_questions_v1.png",
+          "alt": "Icon representing asking better rights-based questions before acting.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_safe_reflection_v1.png",
+          "alt": "Icon representing safe reflection without exposing real people or cases.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_action_commitment_v1.png",
+          "alt": "Icon representing choosing an action commitment to carry forward.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "M1-S02",
+      "internalId": "M1-S1-02",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "currentTitle": "What You Will Be Able to Do",
+      "currentHeaderText": "CSO HUBModule 1: Starting the HRBA Learning JourneyWhat You Will Be Able to Do•Screen 2 of 19PrevNextExit",
+      "hasExternalCover": false,
+      "hasPlayerHeader": true,
+      "hasPlayerSidebar": false,
+      "hasLearningTools": false,
+      "mainClientHeight": 652,
+      "mainScrollHeight": 652,
+      "slideClientHeight": 618,
+      "slideScrollHeight": 618,
+      "documentClientHeight": 720,
+      "documentScrollHeight": 720,
+      "frameTop": 84,
+      "frameBottom": 704,
+      "ctaVisible": true,
+      "verticalScroll": false,
+      "buttons": [
+        {
+          "text": "Prev",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1041.40625,
+          "right": 1096.96875
+        },
+        {
+          "text": "Next",
+          "disabled": false,
+          "top": 21.609375,
+          "bottom": 49.390625,
+          "left": 1108.96875,
+          "right": 1170.453125
+        },
+        {
+          "text": "Exit",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1203.453125,
+          "right": 1256
+        },
+        {
+          "text": "📋 Menu",
+          "disabled": false,
+          "top": 113.203125,
+          "bottom": 152.390625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📖 Glossary",
+          "disabled": false,
+          "top": 161.984375,
+          "bottom": 201.171875,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📥 Resources",
+          "disabled": false,
+          "top": 210.765625,
+          "bottom": 249.953125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "💡 Help Guide",
+          "disabled": false,
+          "top": 259.546875,
+          "bottom": 298.734375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "♿ Accessibility",
+          "disabled": false,
+          "top": 308.328125,
+          "bottom": 347.515625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📝 Captions: OFF",
+          "disabled": false,
+          "top": 466.84375,
+          "bottom": 501.84375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "⏸️ Playing",
+          "disabled": false,
+          "top": 511.4375,
+          "bottom": 546.4375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔊 Audio: ON",
+          "disabled": false,
+          "top": 556.03125,
+          "bottom": 591.03125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔄 Reload State",
+          "disabled": false,
+          "top": 600.625,
+          "bottom": 635.625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Return to LMS",
+          "disabled": false,
+          "top": 663.8125,
+          "bottom": 700,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Continue",
+          "disabled": false,
+          "top": 623.625,
+          "bottom": 669.21875,
+          "left": 1071.953125,
+          "right": 1223.953125
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_explain_hrba_v1.png",
+          "alt": "Icon representing explaining HRBA in simple words.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_rights_holder_v1.png",
+          "alt": "Icon representing people as rights-holders, not only beneficiaries.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_notice_exclusion_v1.png",
+          "alt": "Icon representing noticing who may be invisible or left at the edge.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_ask_questions_v1.png",
+          "alt": "Icon representing asking better rights-based questions before acting.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_safe_reflection_v1.png",
+          "alt": "Icon representing safe reflection without exposing real people or cases.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s02_icon_action_commitment_v1.png",
+          "alt": "Icon representing choosing an action commitment to carry forward.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "M1-S03",
+      "internalId": "M1-S1-01",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "currentTitle": "Why This Module Matters",
+      "currentHeaderText": "CSO HUBModule 1: Starting the HRBA Learning JourneyWhy This Module Matters•Screen 3 of 19PrevNextExit",
+      "hasExternalCover": false,
+      "hasPlayerHeader": true,
+      "hasPlayerSidebar": false,
+      "hasLearningTools": false,
+      "mainClientHeight": 652,
+      "mainScrollHeight": 652,
+      "slideClientHeight": 618,
+      "slideScrollHeight": 618,
+      "documentClientHeight": 720,
+      "documentScrollHeight": 720,
+      "frameTop": 84,
+      "frameBottom": 704,
+      "ctaVisible": true,
+      "verticalScroll": false,
+      "buttons": [
+        {
+          "text": "Prev",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1041.40625,
+          "right": 1096.96875
+        },
+        {
+          "text": "Next",
+          "disabled": false,
+          "top": 21.609375,
+          "bottom": 49.390625,
+          "left": 1108.96875,
+          "right": 1170.453125
+        },
+        {
+          "text": "Exit",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1203.453125,
+          "right": 1256
+        },
+        {
+          "text": "📋 Menu",
+          "disabled": false,
+          "top": 113.203125,
+          "bottom": 152.390625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📖 Glossary",
+          "disabled": false,
+          "top": 161.984375,
+          "bottom": 201.171875,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📥 Resources",
+          "disabled": false,
+          "top": 210.765625,
+          "bottom": 249.953125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "💡 Help Guide",
+          "disabled": false,
+          "top": 259.546875,
+          "bottom": 298.734375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "♿ Accessibility",
+          "disabled": false,
+          "top": 308.328125,
+          "bottom": 347.515625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📝 Captions: OFF",
+          "disabled": false,
+          "top": 466.84375,
+          "bottom": 501.84375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "⏸️ Playing",
+          "disabled": false,
+          "top": 511.4375,
+          "bottom": 546.4375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔊 Audio: ON",
+          "disabled": false,
+          "top": 556.03125,
+          "bottom": 591.03125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔄 Reload State",
+          "disabled": false,
+          "top": 600.625,
+          "bottom": 635.625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Return to LMS",
+          "disabled": false,
+          "top": 663.8125,
+          "bottom": 700,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Continue",
+          "disabled": false,
+          "top": 623.625,
+          "bottom": 669.21875,
+          "left": 1071.953125,
+          "right": 1223.953125
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s03_icon_exclusion_v1.png",
+          "alt": "Icon representing exclusion hidden inside project success.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s03_icon_responsibility_v1.png",
+          "alt": "Icon representing responsibility and duty in HRBA practice.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s03_icon_participation_v1.png",
+          "alt": "Icon representing meaningful participation.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        },
+        {
+          "src": "/assets/hrba/module-1/icons/png/m1_s03_icon_feedback_action_v1.png",
+          "alt": "Icon representing feedback leading to action.",
+          "complete": true,
+          "naturalWidth": 1254,
+          "naturalHeight": 1254,
+          "width": 38,
+          "height": 38,
+          "objectFit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "M1-S04",
+      "internalId": "M1-S1-03",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "currentTitle": "Your Learning Journey",
+      "currentHeaderText": "CSO HUBModule 1: Starting the HRBA Learning JourneyYour Learning Journey•Screen 4 of 19PrevNextExit",
+      "hasExternalCover": false,
+      "hasPlayerHeader": true,
+      "hasPlayerSidebar": false,
+      "hasLearningTools": false,
+      "mainClientHeight": 652,
+      "mainScrollHeight": 652,
+      "slideClientHeight": 618,
+      "slideScrollHeight": 618,
+      "documentClientHeight": 720,
+      "documentScrollHeight": 720,
+      "frameTop": 84,
+      "frameBottom": 704,
+      "ctaVisible": true,
+      "verticalScroll": false,
+      "buttons": [
+        {
+          "text": "Prev",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1041.40625,
+          "right": 1096.96875
+        },
+        {
+          "text": "Next",
+          "disabled": false,
+          "top": 21.609375,
+          "bottom": 49.390625,
+          "left": 1108.96875,
+          "right": 1170.453125
+        },
+        {
+          "text": "Exit",
+          "disabled": false,
+          "top": 20.609375,
+          "bottom": 50.390625,
+          "left": 1203.453125,
+          "right": 1256
+        },
+        {
+          "text": "📋 Menu",
+          "disabled": false,
+          "top": 113.203125,
+          "bottom": 152.390625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📖 Glossary",
+          "disabled": false,
+          "top": 161.984375,
+          "bottom": 201.171875,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📥 Resources",
+          "disabled": false,
+          "top": 210.765625,
+          "bottom": 249.953125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "💡 Help Guide",
+          "disabled": false,
+          "top": 259.546875,
+          "bottom": 298.734375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "♿ Accessibility",
+          "disabled": false,
+          "top": 308.328125,
+          "bottom": 347.515625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "📝 Captions: OFF",
+          "disabled": false,
+          "top": 466.84375,
+          "bottom": 501.84375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "⏸️ Playing",
+          "disabled": false,
+          "top": 511.4375,
+          "bottom": 546.4375,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔊 Audio: ON",
+          "disabled": false,
+          "top": 556.03125,
+          "bottom": 591.03125,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "🔄 Reload State",
+          "disabled": false,
+          "top": 600.625,
+          "bottom": 635.625,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "Return to LMS",
+          "disabled": false,
+          "top": 663.8125,
+          "bottom": 700,
+          "left": 12,
+          "right": 167
+        },
+        {
+          "text": "✓Start with everyday CSO work.",
+          "disabled": false,
+          "top": 242.453125,
+          "bottom": 310.453125,
+          "left": 219.390625,
+          "right": 507.765625
+        },
+        {
+          "text": "✓Learn the foundation.",
+          "disabled": false,
+          "top": 242.453125,
+          "bottom": 310.453125,
+          "left": 515.4375,
+          "right": 803.8125
+        },
+        {
+          "text": "✓Apply HRBA in project design.",
+          "disabled": false,
+          "top": 318.125,
+          "bottom": 386.125,
+          "left": 219.390625,
+          "right": 507.765625
+        },
+        {
+          "text": "✓Apply HRBA during implementation.",
+          "disabled": false,
+          "top": 318.125,
+          "bottom": 386.125,
+          "left": 515.4375,
+          "right": 803.8125
+        },
+        {
+          "text": "✓Use HRBA in MEAL.",
+          "disabled": false,
+          "top": 393.796875,
+          "bottom": 461.796875,
+          "left": 219.390625,
+          "right": 507.765625
+        },
+        {
+          "text": "✓Bring it together.",
+          "disabled": false,
+          "top": 393.796875,
+          "bottom": 461.796875,
+          "left": 515.4375,
+          "right": 803.8125
+        },
+        {
+          "text": "Continue",
+          "disabled": false,
+          "top": 628.421875,
+          "bottom": 674.015625,
+          "left": 1075.140625,
+          "right": 1227.140625
+        }
+      ],
+      "images": [
+        {
+          "src": "/assets/hrba/module-1/journey/step_6.png",
+          "alt": "Community dialogue with rights and accountability icons.",
+          "complete": true,
+          "naturalWidth": 767,
+          "naturalHeight": 643,
+          "width": 421,
+          "height": 403,
+          "objectFit": "cover"
+        }
+      ]
+    }
+  ],
+  "menu": {
+    "open": true,
+    "titles": [
+      "1. Introduction to HRBA for Local CSOs",
+      "2. What You Will Be Able to Do",
+      "3. Why This Module Matters",
+      "4. Your Learning Journey",
+      "5. Water Project Story",
+      "6. Investigate the HRBA Lens",
+      "7. So, What Is HRBA?",
+      "8. Everyday CSO Work",
+      "9. Who Might Be Invisible?",
+      "10. Rights Are Connected",
+      "11. From Beneficiaries to Rights-Holders",
+      "12. Who Has Responsibility?",
+      "13. Participation Is More Than Attendance",
+      "14. From Services to Rights, Power, and Accountability",
+      "15. Module 1 Knowledge Check",
+      "16. Self-Assessment",
+      "17. Priority and Action Commitment",
+      "18. Key Takeaways and Module 1 Completion Preview",
+      "19. Module 1 Completion Screen"
+    ],
+    "firstFour": [
+      "1. Introduction to HRBA for Local CSOs",
+      "2. What You Will Be Able to Do",
+      "3. Why This Module Matters",
+      "4. Your Learning Journey"
+    ]
+  },
+  "pngIcons": [
+    {
+      "name": "m1_s02_icon_action_commitment_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_ask_questions_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_explain_hrba_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_notice_exclusion_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_rights_holder_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_safe_reflection_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_exclusion_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_feedback_action_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_participation_v1.png",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_responsibility_v1.png",
+      "exists": true
+    }
+  ],
+  "svgFallbacks": [
+    {
+      "name": "m1_s02_icon_action_commitment_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_ask_questions_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_explain_hrba_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_notice_exclusion_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_rights_holder_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s02_icon_safe_reflection_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_exclusion_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_feedback_action_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_participation_v1.svg",
+      "exists": true
+    },
+    {
+      "name": "m1_s03_icon_responsibility_v1.svg",
+      "exists": true
+    }
+  ],
+  "stepImages": [
+    {
+      "name": "step_1.png",
+      "exists": true
+    },
+    {
+      "name": "step_2.png",
+      "exists": true
+    },
+    {
+      "name": "step_3.png",
+      "exists": true
+    },
+    {
+      "name": "step_4.png",
+      "exists": true
+    },
+    {
+      "name": "step_5.png",
+      "exists": true
+    },
+    {
+      "name": "step_6.png",
+      "exists": true
+    }
+  ],
+  "consoleIssues": []
+}

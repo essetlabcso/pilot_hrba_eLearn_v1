@@ -1,0 +1,356 @@
+<section class="module-screen why-module-matters" aria-labelledby="screen-title">
+  <style>
+    :root {
+      --dec-blue: #3B99D4;
+      --dec-green: #91C852;
+      --deep-navy: #0F172A;
+      --light-bg: #F9FAFB;
+      --card-bg: #FFFFFF;
+      --text-dark: #111827;
+      --text-muted: #4B5563;
+      --border-soft: #E5E7EB;
+      --soft-blue: #EEF7FC;
+      --soft-green: #F4FAEA;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+    }
+
+    .module-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      background:
+        radial-gradient(circle at top left, rgba(59, 153, 212, 0.16), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(145, 200, 82, 0.18), transparent 30%),
+        linear-gradient(135deg, #F9FAFB 0%, #EEF7FC 100%);
+    }
+
+    .screen-slide {
+      width: min(1180px, 100%);
+      min-height: 640px;
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 42px;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen-slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--dec-blue), var(--dec-green));
+    }
+
+    .screen-content {
+      padding-left: 18px;
+      z-index: 2;
+    }
+
+    .screen-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      margin-bottom: 22px;
+      border-radius: 999px;
+      background: rgba(59, 153, 212, 0.10);
+      color: var(--deep-navy);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .screen-kicker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--dec-green);
+      box-shadow: 0 0 0 5px rgba(145, 200, 82, 0.18);
+    }
+
+    .screen-title {
+      margin: 0;
+      color: var(--deep-navy);
+      font-size: clamp(2.5rem, 4.5vw, 4.6rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 900;
+    }
+
+    .screen-title span {
+      display: block;
+      color: var(--dec-blue);
+    }
+
+    .screen-subtitle {
+      margin: 22px 0 0;
+      color: var(--text-muted);
+      font-size: clamp(1.05rem, 1.45vw, 1.28rem);
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .main-message-card {
+      margin-top: 30px;
+      padding: 26px;
+      max-width: 560px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(238, 247, 252, 0.96));
+      border: 1px solid rgba(59, 153, 212, 0.24);
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      position: relative;
+    }
+
+    .main-message-card::before {
+      content: "“";
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      color: rgba(59, 153, 212, 0.28);
+      font-size: 5.2rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .main-message-card p {
+      position: relative;
+      margin: 0;
+      color: var(--deep-navy);
+      font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+      line-height: 1.72;
+      font-weight: 650;
+      z-index: 2;
+    }
+
+    .lens-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+      max-width: 560px;
+    }
+
+    .lens-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-soft);
+      color: var(--deep-navy);
+      font-size: 0.95rem;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .lens-pill::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--dec-blue), var(--dec-green));
+    }
+
+    .screen-visual {
+      position: relative;
+      z-index: 2;
+      min-height: 500px;
+      border-radius: 26px;
+      overflow: hidden;
+      background: var(--soft-blue);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
+      border: 1px solid rgba(229, 231, 235, 0.95);
+    }
+
+    .screen-visual img {
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .visual-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(15, 23, 42, 0.20), transparent 38%),
+        linear-gradient(0deg, rgba(15, 23, 42, 0.22), transparent 46%);
+      pointer-events: none;
+    }
+
+    .visual-badge {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      max-width: 340px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+    }
+
+    .visual-badge strong {
+      display: block;
+      color: var(--deep-navy);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .visual-badge span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .slide-footer {
+      position: absolute;
+      left: 62px;
+      bottom: 28px;
+      color: #6B7280;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 920px) {
+      .module-screen {
+        padding: 24px;
+      }
+
+      .screen-slide {
+        grid-template-columns: 1fr;
+        padding: 32px;
+        gap: 30px;
+      }
+
+      .screen-content {
+        padding-left: 10px;
+      }
+
+      .screen-visual {
+        min-height: 360px;
+      }
+
+      .screen-visual img {
+        min-height: 360px;
+      }
+
+      .slide-footer {
+        position: static;
+        margin-top: 18px;
+        padding-left: 10px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .module-screen {
+        padding: 14px;
+      }
+
+      .screen-slide {
+        padding: 26px 20px;
+        border-radius: 22px;
+      }
+
+      .screen-title {
+        font-size: 2.4rem;
+      }
+
+      .screen-subtitle {
+        font-size: 1rem;
+      }
+
+      .main-message-card {
+        padding: 22px;
+      }
+
+      .lens-row {
+        grid-template-columns: 1fr;
+      }
+
+      .visual-badge {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        max-width: none;
+      }
+    }
+  </style>
+
+  <div class="screen-slide">
+    <div class="screen-content">
+      <div class="screen-kicker">Module 1 | Opening Frame</div>
+
+      <h1 class="screen-title" id="screen-title">
+        Why this module
+        <span>matters</span>
+      </h1>
+
+      <p class="screen-subtitle">
+        A short opening to frame the learning experience
+      </p>
+
+      <div class="main-message-card">
+        <p>
+          Good CSO work does not only ask what people need. It asks what rights are not being fulfilled, who is excluded, and who must act.
+        </p>
+      </div>
+
+      <div class="lens-row" aria-label="Key HRBA learning lens">
+        <div class="lens-pill">Dignity</div>
+        <div class="lens-pill">Inclusion</div>
+        <div class="lens-pill">Participation</div>
+        <div class="lens-pill">Accountability</div>
+      </div>
+
+      <p class="screen-subtitle">
+        Module 1 gives learners the first practical lens for moving from service delivery to dignity, inclusion, participation, and accountability.
+      </p>
+    </div>
+
+    <div class="screen-visual" aria-label="Visual showing a shift from basic service delivery toward a rights-based, inclusive CSO practice">
+      <img src="Image_1.2.png" alt="A visual transition from service delivery to rights-based CSO practice with community participation and accountability symbols" />
+      <div class="visual-overlay"></div>
+
+      <div class="visual-badge">
+        <strong>From needs to rights</strong>
+        <span>HRBA helps CSOs see exclusion, responsibility, voice, and accountability behind every project result.</span>
+      </div>
+    </div>
+
+    <div class="slide-footer">Module 1 | 2</div>
+  </div>
+</section>

@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-06-09T12:40:32.582Z",
+  "viewport": [
+    1280,
+    720
+  ],
+  "screens": {
+    "s11Base": {
+      "file": "s11-base-state.png",
+      "screenTitle": "From beneficiaries to rights-holders",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nFrom Beneficiaries to Rights-Holders\n•\nScreen 11 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": true,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s11Completed": {
+      "file": "s11-completed-state.png",
+      "screenTitle": "From beneficiaries to rights-holders",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nFrom Beneficiaries to Rights-Holders\n•\nScreen 11 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "s12Category": {
+      "file": "s12-base-category-state.png",
+      "screenTitle": "Who has responsibility?",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nWho Has Responsibility?\n•\nScreen 12 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": true,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s12Matching": {
+      "file": "s12-matching-page-state.png",
+      "screenTitle": "Who has responsibility?",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nWho Has Responsibility?\n•\nScreen 12 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": true,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s12Completed": {
+      "file": "s12-completed-state.png",
+      "screenTitle": "Who has responsibility?",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nWho Has Responsibility?\n•\nScreen 12 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "s13Base": {
+      "file": "s13-base-state.png",
+      "screenTitle": "Participation is more than attendance",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nParticipation Is More Than Attendance\n•\nScreen 13 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": true,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s13Completed": {
+      "file": "s13-completed-state.png",
+      "screenTitle": "Participation is more than attendance",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nParticipation Is More Than Attendance\n•\nScreen 13 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "s14Base": {
+      "file": "s14-base-state-visible-shift-pathway.png",
+      "screenTitle": "From services to rights, power, and accountability",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nFrom Services to Rights, Power, and Accountability\n•\nScreen 14 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": true,
+      "nextDisabled": true,
+      "brokenImages": []
+    },
+    "s14Completed": {
+      "file": "s14-completed-transformation-state.png",
+      "screenTitle": "From services to rights, power, and accountability",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nFrom Services to Rights, Power, and Accountability\n•\nScreen 14 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        598,
+        598
+      ],
+      "continueDisabled": false,
+      "nextDisabled": false,
+      "brokenImages": []
+    },
+    "menu": {
+      "file": "module-1-menu-s11-s14-19-screen-order.png",
+      "screenTitle": "From beneficiaries to rights-holders",
+      "screenLabel": "CSO HUB\nModule 1: Starting the HRBA Learning Journey\nFrom Beneficiaries to Rights-Holders\n•\nScreen 11 of 19\nPrev\nNext\nExit",
+      "viewport": [
+        1280,
+        720
+      ],
+      "bodyScroll": false,
+      "mainScroll": false,
+      "slideScroll": false,
+      "slideSize": [
+        652,
+        652
+      ],
+      "continueDisabled": true,
+      "nextDisabled": true,
+      "brokenImages": []
+    }
+  },
+  "interactionSmoke": {
+    "s11": {
+      "lenses": "Both lenses compared",
+      "feedback": "Correct. This answer shows people as rights-holders, not only recipients. It includes participation, exclusion, barriers, and influence.",
+      "continueEnabled": true,
+      "nextEnabled": true
+    },
+    "s12": {
+      "progress": "3 of 3 actor categories explored",
+      "summary": "✓Actor roles are clear.Good. HRBA becomes practical when roles are clear. A project is stronger when rights-holders can participate, duty-bearers know what they must do, and supporting actors strengthen accountability.",
+      "continueEnabled": true,
+      "nextEnabled": true,
+      "matchingItemsVisible": 0
+    },
+    "s13": {
+      "progress": "5 of 5 participation levels explored",
+      "feedback": "Correct. Strong participation means people are not only informed. They help shape decisions, identify barriers, raise concerns safely, and influence what changes next.",
+      "continueEnabled": true,
+      "nextEnabled": true
+    },
+    "s14": {
+      "progress": "5 of 5 shifts explored",
+      "summary": "✓We improved water access by asking who may be excluded, supporting meaningful participation, clarifying responsibilities, and creating a safe way for people to raise concerns.Correct. This version keeps the service result, but also adds rights, participation, exclusion, responsibility, and feedback — the practical HRBA shift.",
+      "continueEnabled": true,
+      "nextEnabled": true,
+      "pathNodes": 5
+    }
+  },
+  "console": {
+    "errors": []
+  },
+  "notes": []
+}
