@@ -3,8 +3,6 @@ import { useState } from 'react';
 import type { LearningState } from '../../state/learningState';
 import { module2ContentRegistry } from '../../data/module2/module2Content';
 import Module2LearningObjectives from './Module2LearningObjectives';
-import Module2OpeningScenarioRightsIssue from './Module2OpeningScenarioRightsIssue';
-import Module2ActivityReportMissed from './Module2ActivityReportMissed';
 import Module2EverydayClaimsResponsibilities from './Module2EverydayClaimsResponsibilities';
 import Module2RightsDimensionsHotspot from './Module2RightsDimensionsHotspot';
 import Module2FourCharacteristicsPractice from './Module2FourCharacteristicsPractice';
@@ -14,7 +12,6 @@ import Module2RightsHoldersMap from './Module2RightsHoldersMap';
 import Module2IntersectionalityCase from './Module2IntersectionalityCase';
 import Module2ActorEcosystemRoles from './Module2ActorEcosystemRoles';
 import Module2CSORoleEcosystem from './Module2CSORoleEcosystem';
-import Module2RightsResponsibilitiesMap from './Module2RightsResponsibilitiesMap';
 import Module2SafeStandardsUse from './Module2SafeStandardsUse';
 import Module2SdgLnobHrba from './Module2SdgLnobHrba';
 import Module2ParticipationAttendance from './Module2ParticipationAttendance';
@@ -23,7 +20,6 @@ import {
   Module2AccountabilityLoop,
   Module2FeedbackLoopRepair,
   Module2PowerExclusion,
-  Module2ProjectManagerInbox,
   Module2EverydayRightsLensSynthesis,
   Module2IntroVideoScreen,
   Module2PortfolioCheckpointLens,

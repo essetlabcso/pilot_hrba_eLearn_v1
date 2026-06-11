@@ -113,7 +113,7 @@ const situations: Situation[] = [
 ];
 
 const validSituationIds = new Set(situations.map((situation) => situation.id));
-const validCharacteristicIds = new Set(characteristicOptions.map((option) => option.id));
+const validCharacteristicIds = new Set<string>(characteristicOptions.map((option) => option.id));
 
 function getStoredState(state: LearningState) {
   const stored = state.practiceCheckState?.module2_screen25_characteristics_match;

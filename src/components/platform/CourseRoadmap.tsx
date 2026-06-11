@@ -37,7 +37,7 @@ export default function CourseRoadmap({
       </div>
 
       <div className="course-roadmap__pathway">
-        {HRBA_COURSE_MODULES.map((module, index) => {
+        {HRBA_COURSE_MODULES.map((module) => {
           const status = statusByModuleId.get(module.moduleId) || 'locked';
           const lockedMessage = status === 'locked' ? 'Complete to unlock' : undefined;
 

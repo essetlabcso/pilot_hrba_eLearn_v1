@@ -14,31 +14,6 @@ type Choice = {
   status: string;
 };
 
-type SortItem = {
-  id: string;
-  text: string;
-  correct: string;
-  feedback: string;
-};
-
-type RevealCard = {
-  id: string;
-  title: string;
-  text: string;
-  detail?: string;
-  tag?: string;
-};
-
-type JourneyStage = {
-  id: string;
-  label: string;
-  scenario: string;
-  correctClassification: string;
-  feedback: string;
-  correctAdjustment: string;
-  adjustments: string[];
-};
-
 const MODULE_ID = 'module_02_everyday_cso_work';
 
 function addUnique(values: string[], value: string) {
@@ -129,109 +104,6 @@ function SectionHead({ kicker, title, text, progress }: { kicker: string; title:
   );
 }
 
-function RevealGrid({
-  kicker,
-  title,
-  text,
-  cards,
-  openedIds,
-  onOpen,
-  progressLabel = 'opened',
-  className = 'm2-s32-airlock',
-}: {
-  kicker: string;
-  title: string;
-  text?: string;
-  cards: RevealCard[];
-  openedIds: string[];
-  onOpen: (id: string) => void;
-  progressLabel?: string;
-  className?: string;
-}) {
-  return (
-    <section className={className}>
-      <SectionHead kicker={kicker} title={title} text={text} progress={`${openedIds.length} of ${cards.length} ${progressLabel}`} />
-      <div className="m2-s32-airlock-grid">
-        {cards.map((card, index) => {
-          const opened = openedIds.includes(card.id);
-          return (
-            <button
-              key={card.id}
-              type="button"
-              className={`m2-s32-gate ${opened ? 'is-opened' : ''}`}
-              onClick={() => onOpen(card.id)}
-              aria-expanded={opened}
-            >
-              <span>{opened ? '✓' : index + 1}</span>
-              <strong>{card.title}</strong>
-              {opened ? (
-                <>
-                  <em>{card.text}</em>
-                  {card.detail && <small>{card.detail}</small>}
-                  {card.tag && <small>{card.tag}</small>}
-                </>
-              ) : (
-                <em>Open this point.</em>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function MatchingActivity({
-  title,
-  instruction,
-  items,
-  categories,
-  selections,
-  onSelect,
-  feedback,
-}: {
-  title: string;
-  instruction: string;
-  items: SortItem[];
-  categories: string[];
-  selections: Record<string, string>;
-  onSelect: (id: string, category: string) => void;
-  feedback: string;
-}) {
-  const complete = items.every((item) => selections[item.id]);
-  return (
-    <section className="m2-s34-activity">
-      <SectionHead kicker="Practice activity" title={title} text={instruction} progress={`${Object.keys(selections).length} of ${items.length} matched`} />
-      <div className="m2-s34-classify-grid">
-        {items.map((item) => {
-          const selected = selections[item.id];
-          return (
-            <article key={item.id} className={`m2-s34-classify-card ${selected ? 'is-completed' : ''}`}>
-              <p>{item.text}</p>
-              <div>
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    disabled={Boolean(selected)}
-                    onClick={() => onSelect(item.id, category)}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-              {selected && <span>{selected}</span>}
-            </article>
-          );
-        })}
-      </div>
-      <div className="m2-s34-feedback" aria-live="polite">
-        {complete ? feedback : 'Match each item to the strongest category. Incorrect choices are corrected with feedback for learning.'}
-      </div>
-    </section>
-  );
-}
-
 function ReflectionPrompt({
   title,
   text,
@@ -262,68 +134,6 @@ function ReflectionPrompt({
       {selected && (
         <div className="m2-s35-feedback" aria-live="polite">
           Any of these can be part of the issue. The important habit is to use the choice as a practical review prompt.
-        </div>
-      )}
-    </section>
-  );
-}
-
-function DecisionScenario({
-  title,
-  prompt,
-  choices,
-  correctId,
-  selectedId,
-  attempts,
-  completed,
-  name,
-  onSelect,
-  onRetry,
-}: {
-  title: string;
-  prompt: string;
-  choices: Choice[];
-  correctId: string;
-  selectedId: string;
-  attempts: number;
-  completed: boolean;
-  name: string;
-  onSelect: (id: string) => void;
-  onRetry: () => void;
-}) {
-  const selected = choices.find((choice) => choice.id === selectedId);
-  return (
-    <section className="m2-s32-decision">
-      <p className="m2-s32-kicker">Mini decision</p>
-      <h2>{title}</h2>
-      <p>{prompt}</p>
-      <fieldset className="m2-s32-choice-grid">
-        <legend className="sr-only">{title}</legend>
-        {choices.map((choice) => {
-          const isSelected = selectedId === choice.id;
-          const locked = completed || Boolean(selectedId);
-          return (
-            <label key={choice.id} className={`m2-s32-choice-card ${isSelected ? 'is-selected' : ''}`}>
-              <input
-                type="radio"
-                name={name}
-                checked={isSelected}
-                disabled={locked}
-                onChange={() => onSelect(choice.id)}
-              />
-              <span>Choice {choice.id}</span>
-              <strong>{choice.text}</strong>
-            </label>
-          );
-        })}
-      </fieldset>
-      {selected && (
-        <div className="m2-s32-feedback" aria-live="polite">
-          <p className="m2-s32-kicker">{selected.status}</p>
-          <p>{selected.feedback}</p>
-          {selected.id !== correctId && attempts < 2 && (
-            <button type="button" onClick={onRetry}>Try one more answer</button>
-          )}
         </div>
       )}
     </section>
@@ -363,177 +173,6 @@ function ContinueFooter({
     </footer>
   );
 }
-
-const loopStages: RevealCard[] = [
-  {
-    id: 'inform',
-    title: 'Inform',
-    text: 'People need clear, understandable information about what can be raised, how to raise it, who will see it, confidentiality, realistic response, and timing.',
-    detail: 'Weak point if missing: people may stay silent because they do not know the process or do not trust it.',
-  },
-  {
-    id: 'listen',
-    title: 'Listen',
-    text: 'The process must create real ways for people to raise concerns, questions, or disagreements in ways different people can actually use.',
-    detail: 'Weak point if missing: only confident or well-positioned people may feel able to use the channel.',
-  },
-  {
-    id: 'analyze',
-    title: 'Analyze',
-    text: 'Feedback should be reviewed for patterns and understood as immediate issues, structural issues, or issues needing referral.',
-    detail: 'Weak point if missing: the organization may collect feedback but fail to understand what it means.',
-  },
-  {
-    id: 'respond',
-    title: 'Respond',
-    text: 'People need a respectful, clear, and proportionate response, even when the answer is not immediate or not what they hoped for.',
-    detail: 'Weak point if missing: when people speak but hear nothing back, trust drops quickly.',
-  },
-  {
-    id: 'follow-up',
-    title: 'Follow up',
-    text: 'Accountability includes checking whether the response helped, whether the issue remains, and whether people feel safer and clearer afterward.',
-    detail: 'Weak point if missing: the issue may be marked resolved on paper while remaining unresolved in practice.',
-  },
-  {
-    id: 'learn-adapt',
-    title: 'Learn and adapt',
-    text: 'Repeated concerns should change practice through clearer facilitation, better information, safer meetings, fairer roles, or better referral systems.',
-    detail: 'Weak point if missing: the same issue repeats because nothing changes.',
-  },
-];
-
-const loopDiagnosisItems: SortItem[] = [
-  {
-    id: 'valid-concerns',
-    text: 'Members are not sure whether concerns about role allocation are valid enough to raise.',
-    correct: 'Inform',
-    feedback: 'People need clear information about what kinds of concerns can be raised and how.',
-  },
-  {
-    id: 'fear-difficult',
-    text: 'Quieter members fear that raising concerns will make them look difficult.',
-    correct: 'Listen',
-    feedback: 'A listening channel exists only if people can actually use it safely.',
-  },
-  {
-    id: 'no-pattern-review',
-    text: 'Several small concerns have been mentioned over time, but no one has reviewed whether they show a pattern.',
-    correct: 'Analyze',
-    feedback: 'Accountability weakens when repeated concerns are not examined as a pattern.',
-  },
-  {
-    id: 'no-response',
-    text: 'A member raised a concern privately, but never heard anything back.',
-    correct: 'Respond',
-    feedback: 'Without response, people lose trust in the process.',
-  },
-  {
-    id: 'no-check',
-    text: 'The facilitator gave an answer once, but never checked whether the issue improved afterward.',
-    correct: 'Follow up',
-    feedback: 'Accountability includes checking whether the response actually helped.',
-  },
-  {
-    id: 'repeating-format',
-    text: 'The same concern keeps appearing in different meetings, but the meeting format has not changed.',
-    correct: 'Learn and adapt',
-    feedback: 'Repeated concerns should lead to changes in process or practice.',
-  },
-];
-
-const accountabilityHotspots: RevealCard[] = [
-  {
-    id: 'agenda-board',
-    title: 'Agenda board',
-    text: 'The agenda now includes a short section called “Questions, concerns, and decisions needing follow-up.”',
-    detail: 'This strengthens visibility and makes accountability more normal and legitimate.',
-  },
-  {
-    id: 'explanation-card',
-    title: 'Explanation card',
-    text: 'A simple note explains what kinds of concerns can be raised and who will respond.',
-    detail: 'This strengthens the Inform stage.',
-  },
-  {
-    id: 'small-groups',
-    title: 'Small-group seating',
-    text: 'The facilitator begins with small-group discussion before plenary sharing.',
-    detail: 'This may strengthen Listen by making it easier for less confident members to speak.',
-  },
-  {
-    id: 'response-board',
-    title: 'Response board',
-    text: 'The facilitator shares three issues raised previously, what was done, what could not yet be changed, and why.',
-    detail: 'This strengthens Respond and Follow up.',
-  },
-  {
-    id: 'role-rotation',
-    title: 'Role rotation note',
-    text: 'The cooperative agrees to test a transparent rotation system for representation and meeting roles.',
-    detail: 'This shows Learn and adapt.',
-  },
-];
-
-const accountabilityChecklist: RevealCard[] = [
-  {
-    id: 'know-what',
-    title: 'Do people know what can be raised?',
-    text: 'If people do not understand what the channel is for, accountability remains unclear and underused.',
-  },
-  {
-    id: 'safe-use',
-    title: 'Can different people use the process safely?',
-    text: 'A process is weaker if only confident, powerful, or well-connected people can use it without fear.',
-  },
-  {
-    id: 'pathway',
-    title: 'Is there a clear response pathway?',
-    text: 'People should know who receives, reviews, and answers concerns.',
-  },
-  {
-    id: 'dignity',
-    title: 'Does the process protect dignity and confidentiality?',
-    text: 'Sensitive concerns should not be exposed casually. Safety matters as much as access.',
-  },
-  {
-    id: 'hear-next',
-    title: 'Do people hear what happened next?',
-    text: 'Visible response builds trust. Silence weakens it.',
-  },
-  {
-    id: 'adapt',
-    title: 'Do repeated concerns lead to adaptation?',
-    text: 'If the same issue keeps appearing and the process never changes, accountability is weak.',
-  },
-];
-
-const accountabilityDecisionChoices: Choice[] = [
-  {
-    id: 'A',
-    text: 'Place a complaint box in the meeting room and consider the accountability problem solved.',
-    feedback: 'This is too narrow. A channel may help, but accountability requires explanation, trust, response, follow-up, and learning.',
-    status: 'Weak',
-  },
-  {
-    id: 'B',
-    text: 'Tell members they can always approach the facilitator informally if they have concerns.',
-    feedback: 'This may help some members, but it is still too informal and unclear to be enough for everyone.',
-    status: 'Partial but not strongest',
-  },
-  {
-    id: 'C',
-    text: 'Explain what concerns can be raised, create safer ways to raise them, clarify who will respond, and report back on what was done.',
-    feedback: 'Yes. This is the strongest first step because it activates several parts of the accountability loop, not only the entry point.',
-    status: 'Strongest',
-  },
-  {
-    id: 'D',
-    text: 'Wait to see whether more complaints come in before changing anything.',
-    feedback: 'This assumes silence means things are fine. It may actually signal low trust or low accessibility.',
-    status: 'Weak',
-  },
-];
 
 export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
   const stages = [
@@ -774,40 +413,6 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
   );
 }
 
-const repairActions = [
-  ['A', 'Explain clearly what kinds of concerns can be raised and what response people should expect.'],
-  ['B', 'Review repeated concerns to see whether they show a pattern about role allocation and transparency.'],
-  ['C', 'Tell members that the facilitator is always available if they want to talk informally.'],
-  ['D', 'Share back what concern was raised in general terms, what was discussed, and what will happen next.'],
-  ['E', 'Wait for more people to raise the same concern before taking it seriously.'],
-  ['F', 'Change the meeting process or role selection approach if the same concern keeps appearing.'],
-  ['G', 'Add a locked complaint box in the room and consider the problem solved.'],
-  ['H', 'Ask cooperative leaders privately if they think members are overreacting.'],
-] as const;
-
-const repairMatchingItems: SortItem[] = [
-  { id: 'heard-not-reviewed', text: 'Concerns are heard but not reviewed as a pattern.', correct: 'Review repeated concerns together and identify patterns.', feedback: 'Review repairs the analysis break.' },
-  { id: 'hear-nothing', text: 'People hear nothing after raising an issue.', correct: 'Share back what was raised, what was decided, and what will happen next.', feedback: 'Share-back repairs the response break.' },
-  { id: 'repeats', text: 'The same issue repeats without process change.', correct: 'Adapt the meeting or role-allocation process.', feedback: 'Adaptation repairs the learning break.' },
-  { id: 'unclear', text: 'Members are unclear about what concerns can be raised.', correct: 'Clarify what the channel is for and what response to expect.', feedback: 'Clarity repairs the inform break.' },
-];
-
-const improvementCards: SortItem[] = [
-  { id: 'box', text: 'Add a suggestion box.', correct: 'Small surface fix', feedback: 'A box may help, but by itself it does not guarantee explanation, trust, response, or adaptation.' },
-  { id: 'explain', text: 'Explain what concerns can be raised, how confidentiality works, and who will respond.', correct: 'Deeper accountability fix', feedback: 'This strengthens the process before feedback is even raised.' },
-  { id: 'notebook', text: 'Keep concerns in the facilitator’s notebook.', correct: 'Small surface fix', feedback: 'Recording matters, but it is not enough if the issue is never analyzed or answered.' },
-  { id: 'standing-section', text: 'Include a standing feedback-and-response section in meetings and report back on previous issues.', correct: 'Deeper accountability fix', feedback: 'This strengthens visibility, response, and trust.' },
-  { id: 'silence', text: 'Treat silence as proof that no concerns exist.', correct: 'Small surface fix', feedback: 'Silence may reflect fear, confusion, or low trust.' },
-  { id: 'change-role', text: 'Change the role allocation process if repeated concerns show exclusion or confusion.', correct: 'Deeper accountability fix', feedback: 'Accountability becomes stronger when repeated concerns actually change practice.' },
-];
-
-const repairDecisionChoices: Choice[] = [
-  { id: 'A', text: 'Create another channel for feedback and wait to see what comes in.', feedback: 'This adds another entry point, but it may not fix trust, response, or follow-through.', status: 'Weak' },
-  { id: 'B', text: 'Clarify what concerns can be raised, who will review them, and how members will hear back.', feedback: 'Yes. This is the strongest first step because it strengthens expectations, trust, and response pathway clarity at the same time.', status: 'Strongest' },
-  { id: 'C', text: 'Tell members that not every concern can be addressed and leave the process informal.', feedback: 'Managing expectations matters, but this is too weak and may normalize low accountability.', status: 'Weak' },
-  { id: 'D', text: 'Let cooperative leaders decide which concerns are worth answering.', feedback: 'This risks bias and weakens trust, especially if the concern involves leadership decisions.', status: 'Weak' },
-];
-
 export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
   const repairCases = [
     {
@@ -867,14 +472,12 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
       breakSelections: stored?.breakSelections || {},
       fixSelections: stored?.fixSelections || {},
       feedback: stored?.feedback || 'Start with the first case: diagnose the break, then choose the repair that best closes the loop.',
-      screenComplete: (state.screenProgress[MODULE_ID] || []).includes('M2-S17'),
     };
   });
   const [activeCaseId, setActiveCaseId] = useState<string>(initial.activeCaseId);
   const [breakSelections, setBreakSelections] = useState<Record<string, string>>(initial.breakSelections);
   const [fixSelections, setFixSelections] = useState<Record<string, string>>(initial.fixSelections);
   const [feedback, setFeedback] = useState(initial.feedback);
-  const [screenComplete, setScreenComplete] = useState(initial.screenComplete);
   const activeCase = repairCases.find((item) => item.id === activeCaseId) || repairCases[0];
   const repairedCount = repairCases.filter((item) => breakSelections[item.id] === item.breakId && fixSelections[item.id] === item.fixId).length;
   const completionReady = repairedCount === repairCases.length;
@@ -936,7 +539,6 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
   };
   const completeAndContinue = () => {
     if (!completionReady) return;
-    setScreenComplete(true);
     markCompleteAndNavigate('module2_screen217_feedback_loop_repair', 'M2-S17', 'M2-S18', '/module-2/screen-2-18', onChangeState, {
       activeCaseId,
       breakSelections,
@@ -1083,50 +685,6 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
   );
 }
 
-const pathwayStages: RevealCard[] = [
-  { id: 'information', title: 'Information', text: 'Some people hear first through stronger networks, direct contact, or insider relationships. Others hear later, less clearly, or indirectly.', detail: 'Who receives useful information early enough to prepare?', tag: 'Information and access' },
-  { id: 'entry', title: 'Entry', text: 'Some people enter the meeting or decision space more easily because of timing, confidence, childcare support, mobility, social status, or belonging.', detail: 'Who can enter the process without paying a higher social or practical cost?', tag: 'Belonging and access' },
-  { id: 'understanding', title: 'Understanding', text: 'Financial terms, organizational language, and fast decision-making can favor those already familiar with the system.', detail: 'Who understands the issue well enough to influence it?', tag: 'Knowledge and confidence' },
-  { id: 'voice', title: 'Voice', text: 'A person may have something important to say but still hesitate because of age, status, gender expectations, fear of conflict, language, or past dismissal.', detail: 'Who feels safe to speak, disagree, or ask for clarification?', tag: 'Safety and participation' },
-  { id: 'credibility', title: 'Credibility', text: 'Power affects who is believed quickly, who is interrupted less, and whose ideas sound serious to the group.', detail: 'Whose voice is treated as credible before the discussion even begins?', tag: 'Status and recognition' },
-  { id: 'influence', title: 'Influence', text: 'Some people shape the decision because they propose options, summarize discussion, know decision-makers, or are assumed to represent the group.', detail: 'Who can actually move the decision?', tag: 'Decision power' },
-  { id: 'after-decision', title: 'After the decision', text: 'Power also shapes who hears the explanation, understands the reason, can challenge the result, and lives with the consequences.', detail: 'Who can still question, appeal, or influence what happens after the decision?', tag: 'Response and accountability' },
-];
-
-const powerHotspots: RevealCard[] = [
-  { id: 'opens', title: 'Who opens the meeting', text: 'The person who opens the meeting may shape the tone, priorities, pace, and what counts as relevant input.', detail: 'Control over process is one form of power.' },
-  { id: 'speaks-first', title: 'Who speaks first', text: 'Early speakers often shape what later contributions must react to. If only confident or higher-status members speak first, the discussion may narrow quickly.', detail: 'Sequence influences influence.' },
-  { id: 'terms', title: 'Who explains key terms', text: 'If only a few people understand the language of finance, governance, or markets, others may remain present but less able to influence.', detail: 'Understanding is part of power.' },
-  { id: 'interrupted-less', title: 'Who gets interrupted less', text: 'Some members can speak in longer, more complete ways because they are interrupted less or treated as more legitimate.', detail: 'Credibility is unevenly distributed.' },
-  { id: 'summarizes', title: 'Who summarizes the decision', text: 'The person who summarizes often decides which contributions mattered and which became invisible.', detail: 'Narrating the decision is itself a power role.' },
-  { id: 'quiet', title: 'Who stays quiet', text: 'Silence may reflect confusion, pressure, low trust, fatigue, fear of disrespect, or past experience of being ignored.', detail: 'Silence is not neutral data.' },
-  { id: 'represents', title: 'Who is assumed to represent others', text: 'Some members are treated as natural spokespersons even when they do not share everyone’s experience.', detail: 'Representation can reproduce exclusion if it is not questioned.' },
-];
-
-const powerSortItems: SortItem[] = [
-  { id: 'early-info', text: 'A member receives meeting information early through strong local networks.', correct: 'Closer to influence', feedback: 'Early information increases preparation and confidence.' },
-  { id: 'fast-discussion', text: 'A quieter member needs more time to understand the issue but the discussion moves quickly.', correct: 'Farther from influence', feedback: 'Pace can quietly exclude people.' },
-  { id: 'small-groups', text: 'The facilitator invites small-group discussion before plenary speaking.', correct: 'Can go either way — depends on facilitation', feedback: 'Small groups can widen participation if used well, but can also reproduce power.' },
-  { id: 'known-buyers', text: 'One member is already known by buyers and local officials.', correct: 'Closer to influence', feedback: 'External relationships often strengthen internal influence.' },
-  { id: 'social-risk', text: 'A member is present but unsure whether disagreement is socially acceptable.', correct: 'Farther from influence', feedback: 'Fear of social risk reduces real participation.' },
-  { id: 'chair-process', text: 'The chair explains how the final decision will be made before discussion begins.', correct: 'Can go either way — depends on facilitation', feedback: 'Clear process can reduce exclusion if the process itself is fair and open.' },
-];
-
-const powerLensCards: RevealCard[] = [
-  { id: 'heard-first', title: 'Who heard first?', text: 'Look at information timing, channels, and preparation. Influence often begins before the meeting starts.' },
-  { id: 'belonged', title: 'Who belonged already?', text: 'Look at who felt the space was meant for them, who knew the process, and who entered with less uncertainty.' },
-  { id: 'risk-speaking', title: 'Who could risk speaking?', text: 'Look at who could disagree, ask questions, or challenge a direction without fear of shame, conflict, or dismissal.' },
-  { id: 'believed', title: 'Who was believed quickly?', text: 'Look at status, confidence, fluency, networks, and whose voice sounded authoritative before evidence was discussed.' },
-  { id: 'shaped-next', title: 'Who shaped what happened next?', text: 'Look beyond the meeting itself. Who influenced the final decision, follow-up, and interpretation of the outcome?' },
-];
-
-const powerDecisionChoices: Choice[] = [
-  { id: 'A', text: 'Keep the meeting structure the same but ask quieter members at the very end whether they agree.', feedback: 'This is too weak. It does not change the timing, safety, pace, or influence dynamics.', status: 'Weak' },
-  { id: 'B', text: 'Share the issue and options in advance, explain key terms clearly, vary who speaks first, use smaller discussion groups carefully, and show how different views shaped the final decision.', feedback: 'Yes. This is the strongest option because it addresses power across information, understanding, voice, and visible influence.', status: 'Strongest' },
-  { id: 'C', text: 'Let only the most experienced members speak because they understand the issues better.', feedback: 'This increases efficiency for a few people but deepens exclusion for others.', status: 'Weak' },
-  { id: 'D', text: 'Rotate who chairs the meeting and assume the power problem is solved.', feedback: 'Role rotation can help, but on its own it does not address information, confidence, credibility, or influence pathways.', status: 'Partial but not strongest' },
-];
-
 const module2PowerHotspotImage = '/assets/hrba/module-2/images/m2_s18_hotspot_image.png';
 
 export function Module2PowerExclusion({ state, onChangeState }: Props) {
@@ -1187,13 +745,11 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
       openedHotspots: Array.isArray(stored?.openedHotspots) ? stored.openedHotspots : [],
       activeHotspotId: stored?.activeHotspotId || hotspots[0].id,
       feedback: stored?.feedback || 'Open each hotspot to notice where power can shape participation before influence is visible.',
-      screenComplete: (state.screenProgress[MODULE_ID] || []).includes('M2-S18'),
     };
   });
   const [openedHotspots, setOpenedHotspots] = useState<string[]>(initial.openedHotspots);
   const [activeHotspotId, setActiveHotspotId] = useState<string>(initial.activeHotspotId);
   const [feedback, setFeedback] = useState(initial.feedback);
-  const [screenComplete, setScreenComplete] = useState(initial.screenComplete);
   const activeHotspot = hotspots.find((item) => item.id === activeHotspotId) || hotspots[0];
   const completionReady = openedHotspots.length === hotspots.length;
   const persistState = (next: Record<string, unknown> = {}) => {
@@ -1228,7 +784,6 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
   };
   const completeAndContinue = () => {
     if (!completionReady) return;
-    setScreenComplete(true);
     markCompleteAndNavigate('module2_screen218_power_exclusion', 'M2-S18', 'M2-S19', '/module-2/screen-2-19', onChangeState, {
       openedHotspots,
       activeHotspotId,
@@ -1336,31 +891,6 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
   );
 }
 
-const journeyStages: JourneyStage[] = [
-  { id: 'information', label: 'Information', scenario: 'Alemitu heard about the cooperative later than some other women because she was newer to the area and less connected to the strongest informal networks.', correctClassification: 'Partly blocked', feedback: 'Alemitu received the information, but later and through a weaker channel. This meant less time to prepare, ask questions, and enter confidently.', correctAdjustment: 'Use multiple information channels, not only existing strong networks.', adjustments: ['Use multiple information channels, not only existing strong networks.', 'Assume people will hear eventually if the opportunity is good enough.', 'Share information only through community leaders to keep things simple.'] },
-  { id: 'entry', label: 'Entry', scenario: 'Alemitu did join the cooperative, but as a newer member she was still unsure whether she fully belonged in the group’s more visible or higher-trust spaces.', correctClassification: 'Partly blocked', feedback: 'Alemitu entered the process, but not with the same confidence, belonging, or legitimacy as more established members.', correctAdjustment: 'Make expectations and selection criteria for roles more transparent from the beginning.', adjustments: ['Make expectations and selection criteria for roles more transparent from the beginning.', 'Wait until newer members prove themselves before explaining how roles are assigned.', 'Assume that once someone joins, belonging is no longer an issue.'] },
-  { id: 'understanding', label: 'Understanding', scenario: 'Alemitu understands production quality well, but she is less comfortable with the language used in finance and buyer discussions.', correctClassification: 'Partly blocked', feedback: 'Alemitu is knowledgeable, but not equally positioned across all domains of the cooperative’s work.', correctAdjustment: 'Explain key terms in simple language and build shared understanding before decisions.', adjustments: ['Explain key terms in simple language and build shared understanding before decisions.', 'Leave financial language to the most experienced members.', 'Ask members to speak only when they fully understand everything.'] },
-  { id: 'voice', label: 'Voice', scenario: 'Alemitu has ideas and observations, but she is less likely to enter the discussion quickly when older or more confident members speak first.', correctClassification: 'Strongly blocked', feedback: 'Her voice is not fully absent, but the conditions make it hard for her to use it.', correctAdjustment: 'Use facilitation methods that widen voice before the plenary discussion narrows the options.', adjustments: ['Use facilitation methods that widen voice before the plenary discussion narrows the options.', 'Ask quieter members at the end whether they agree.', 'Let the strongest speakers guide the conversation because they are more efficient.'] },
-  { id: 'credibility', label: 'Credibility', scenario: 'Older and better-connected members are seen as more natural representatives when buyers or finance actors are involved.', correctClassification: 'Strongly blocked', feedback: 'This is a strong power barrier. Alemitu may know the product well, but credibility is being assigned socially.', correctAdjustment: 'Create transparent opportunities for different members to build public-facing experience.', adjustments: ['Create transparent opportunities for different members to build public-facing experience.', 'Continue using the same representatives because outsiders trust them already.', 'Assume credibility cannot be changed.'] },
-  { id: 'influence', label: 'Influence', scenario: 'When decisions are made about who represents the cooperative, Alemitu’s role in shaping the outcome is limited.', correctClassification: 'Strongly blocked', feedback: 'Influence is where earlier barriers become visible. If information, voice, and credibility are uneven, influence is likely uneven too.', correctAdjustment: 'Clarify how decisions are made and create fairer role-selection processes.', adjustments: ['Clarify how decisions are made and create fairer role-selection processes.', 'Leave representation decisions informal because the group already knows who is strongest.', 'Treat previous representation patterns as neutral tradition.'] },
-  { id: 'after-decision', label: 'After the decision', scenario: 'After the role decision is made, members are not always told clearly why some people were selected and others were not.', correctClassification: 'Partly blocked', feedback: 'There is some visibility because the decision is known, but accountability is weaker if the criteria and reasoning are not explained.', correctAdjustment: 'Explain the basis of the decision and invite questions afterward.', adjustments: ['Explain the basis of the decision and invite questions afterward.', 'Avoid explanation so there is less disagreement.', 'Assume members will understand the decision if they do not object.'] },
-];
-
-const journeyMatchingItems: SortItem[] = [
-  { id: 'information', text: 'Information', correct: 'Use multiple information channels.', feedback: 'This opens the pathway before the meeting.' },
-  { id: 'voice', text: 'Voice', correct: 'Use facilitation methods that widen voice early.', feedback: 'This helps before plenary discussion narrows options.' },
-  { id: 'credibility', text: 'Credibility', correct: 'Create transparent opportunities for different members to build public-facing experience.', feedback: 'This helps credibility become less fixed by existing status.' },
-  { id: 'influence', text: 'Influence', correct: 'Clarify decision criteria and role-selection process.', feedback: 'This makes influence less dependent on informal power.' },
-  { id: 'after-decision', text: 'After the decision', correct: 'Explain the reasoning behind decisions and invite questions.', feedback: 'This strengthens accountability after the decision.' },
-];
-
-const journeyDecisionChoices: Choice[] = [
-  { id: 'A', text: 'Choose Alemitu as the next representative without changing anything else.', feedback: 'This may help once, but it does not address the wider pathway that kept her at the edge.', status: 'Partial but weak' },
-  { id: 'B', text: 'Map where the pathway becomes harder, then improve information, facilitation, and role-selection criteria in the next cycle.', feedback: 'Yes. This is the strongest answer because it treats exclusion as a process and begins repairing the stages that shape influence.', status: 'Strongest' },
-  { id: 'C', text: 'Tell members to speak up more if they want greater influence.', feedback: 'This places too much responsibility on those already farther from influence.', status: 'Weak' },
-  { id: 'D', text: 'Keep the same decision process but explain afterward that fairness matters.', feedback: 'Explanation helps, but without changing earlier pathway stages, exclusion may continue.', status: 'Weak' },
-];
-
 export function Module2TraceExclusionPathway({ state, onChangeState }: Props) {
   const pathway = [
     {
@@ -1406,13 +936,11 @@ export function Module2TraceExclusionPathway({ state, onChangeState }: Props) {
       activeStageId: stored?.activeStageId || pathway[0].id,
       selectedAdjustments: stored?.selectedAdjustments || {},
       feedback: stored?.feedback || 'Start at the first narrowed point. Choose the adjustment that would open the pathway most directly.',
-      screenComplete: (state.screenProgress[MODULE_ID] || []).includes('M2-S19'),
     };
   });
   const [activeStageId, setActiveStageId] = useState<string>(initial.activeStageId);
   const [selectedAdjustments, setSelectedAdjustments] = useState<Record<string, string>>(initial.selectedAdjustments);
   const [feedback, setFeedback] = useState(initial.feedback);
-  const [screenComplete, setScreenComplete] = useState(initial.screenComplete);
   const activeStage = pathway.find((stage) => stage.id === activeStageId) || pathway[0];
   const activeStageIndex = pathway.findIndex((stage) => stage.id === activeStage.id);
   const weakerAdjustments = ['Ask affected members to speak up more next time.', 'Keep the process informal because the group already knows each other.'];
@@ -1462,7 +990,6 @@ export function Module2TraceExclusionPathway({ state, onChangeState }: Props) {
   };
   const completeAndContinue = () => {
     if (!completionReady) return;
-    setScreenComplete(true);
     markCompleteAndNavigate('module2_screen219_trace_exclusion_pathway', 'M2-S19', 'M2-S20', '/module-2/screen-2-20', onChangeState, {
       activeStageId,
       selectedAdjustments,
@@ -1856,32 +1383,6 @@ export function Module2ProjectManagerInbox({ state, onChangeState }: Props) {
   );
 }
 
-const lensQuestions: RevealCard[] = [
-  { id: 'affected', title: 'Who is affected?', text: 'Start by identifying the rights-holders. Do not stop at broad phrases such as “the community,” “beneficiaries,” or “women.”', detail: 'Example: Aster and Alemitu are both members, but they do not experience the opportunity in the same way.', tag: 'Watch out: broad labels hide differences that matter.' },
-  { id: 'missed', title: 'Who is being missed?', text: 'Look for who is absent, quieter, less visible, informed later, less trusted, or benefiting less.', detail: 'Example: some women heard later through weaker networks and some members stayed outside public-facing roles.', tag: 'Watch out: being present is not proof of full inclusion.' },
-  { id: 'barrier', title: 'What barrier is shaping this?', text: 'Trace the actual barrier: late information, unclear terms, weak facilitation, care burden, role allocation, low trust, unsafe feedback, market bias, or institutional rules.', detail: 'Example: Alemitu’s challenge involved weaker networks, lower assumed credibility, and fewer visible-role opportunities.', tag: 'Watch out: if the barrier is vague, the response will also be vague.' },
-  { id: 'power', title: 'Who has power or responsibility?', text: 'Separate rights-holders, public actors with responsibility, actors with strong influence, supporting actors, and the CSO’s own role.', detail: 'Example: cooperative voice may involve leaders, buyers, public offices, support actors, and the CSO in different ways.', tag: 'Watch out: do not turn every barrier into a CSO-only task.' },
-  { id: 'participation', title: 'Is participation meaningful?', text: 'Ask whether people had clear information, could speak safely, were taken seriously, influenced the outcome, and understood what happened next.', detail: 'Example: a full meeting room is not meaningful if only a few understood, spoke, and influenced the decision.', tag: 'Watch out: attendance is not influence.' },
-  { id: 'accountability', title: 'Is accountability real?', text: 'Look beyond whether a channel exists. Ask whether people know how to raise concerns, can use the process safely, receive a response, and see repeated issues lead to change.', detail: 'Example: listening privately is not enough if members never hear what happened afterward.', tag: 'Watch out: a complaint box is not accountability.' },
-  { id: 'role', title: 'What is the right CSO role?', text: 'Choose the role that fits: facilitator, capacity-strengthener, connector, evidence holder, safe advocate, accountability supporter, or adaptive learner.', detail: 'Example: the CSO may improve facilitation, connect members to actors, or document a repeated exclusion pattern.', tag: 'Watch out: do not overpromise, speak over rights-holders, or replace other actors.' },
-];
-
-const snapbackItems: RevealCard[] = [
-  { id: 'affected', title: 'Who is affected?', text: 'Which members were affected by the decision?' },
-  { id: 'missed', title: 'Who is being missed?', text: 'Who was present but less visible, less informed, or less influential?' },
-  { id: 'barrier', title: 'What barrier is shaping this?', text: 'Was the main issue information, pace, confidence, credibility, role allocation, or weak follow-up?' },
-  { id: 'power', title: 'Who has power or responsibility?', text: 'Which actors shaped the decision, and who should respond?' },
-  { id: 'participation', title: 'Is participation meaningful?', text: 'Did members understand, speak, and influence the result?' },
-  { id: 'accountability', title: 'Is accountability real?', text: 'If someone disagreed, did they know how to raise it and hear back?' },
-  { id: 'role', title: 'What is the right CSO role?', text: 'What should the CSO improve, support, connect, or raise?' },
-];
-
-const quickPractice = [
-  { id: 'attendance', statement: '“Attendance was very high.”', options: ['Was the room large enough?', 'Who attended, and who may still have been left at the edge?', 'Did the event finish on time?'], correct: 'Who attended, and who may still have been left at the edge?', feedback: 'High attendance is not enough without asking who was missed or less able to participate meaningfully.' },
-  { id: 'silence', statement: '“No one raised concerns.”', options: ['Good, then the process worked.', 'Were there enough chairs?', 'Did people understand the process, trust it, and feel safe using it?'], correct: 'Did people understand the process, trust it, and feel safe using it?', feedback: 'Silence can mean trust, but it can also mean confusion, low confidence, or fear.' },
-  { id: 'representative', statement: '“The same representative will attend again.”', options: ['Is that the fastest option?', 'Who gets visible opportunities, and how are those choices made?', 'Did the representative agree?'], correct: 'Who gets visible opportunities, and how are those choices made?', feedback: 'This opens questions about influence, role allocation, and fair opportunity.' },
-];
-
 export function Module2EverydayRightsLensSynthesis({ state, onChangeState }: Props) {
   const synthesisLens = [
     { id: 'affected', title: 'Who is affected?', cue: 'Start with people, not only activities.', text: 'Look at who experiences the decision, service, meeting, or opportunity.' },
@@ -1898,12 +1399,10 @@ export function Module2EverydayRightsLensSynthesis({ state, onChangeState }: Pro
     return {
       openedLensQuestions: Array.isArray(stored?.openedLensQuestions) ? stored.openedLensQuestions : [],
       activeQuestionId: stored?.activeQuestionId || synthesisLens[0].id,
-      screenComplete: (state.screenProgress[MODULE_ID] || []).includes('M2-S20'),
     };
   });
   const [openedLensQuestions, setOpenedLensQuestions] = useState<string[]>(initial.openedLensQuestions);
   const [activeQuestionId, setActiveQuestionId] = useState<string>(initial.activeQuestionId);
-  const [screenComplete, setScreenComplete] = useState(initial.screenComplete);
   const activeQuestion = synthesisLens.find((item) => item.id === activeQuestionId) || synthesisLens[0];
   const completionReady = openedLensQuestions.length === synthesisLens.length;
   const persistState = (next: Record<string, unknown> = {}) => {
@@ -1919,7 +1418,6 @@ export function Module2EverydayRightsLensSynthesis({ state, onChangeState }: Pro
   };
   const completeAndContinue = () => {
     if (!completionReady) return;
-    setScreenComplete(true);
     markCompleteAndNavigate('module2_screen221_everyday_rights_lens', 'M2-S20', 'M2-S21', '/module-2/screen-2-21', onChangeState, { openedLensQuestions, activeQuestionId });
   };
   return (
@@ -1989,16 +1487,6 @@ export function Module2EverydayRightsLensSynthesis({ state, onChangeState }: Pro
     </main>
   );
 }
-
-const checkpointSteps = [
-  { id: 'affected', prompt: 'Who is most clearly affected in this scenario?', correct: 'The whole group is affected, but some members are affected differently, especially newer or less influential members.', options: ['Only the chair is affected because they are leading the meeting.', 'The whole group is affected, but some members are affected differently, especially newer or less influential members.', 'Only the facilitator is affected because they heard the follow-up comment.'], feedback: 'A rights-based reading starts broad enough to see the whole group, but specific enough to notice unequal experience inside it.' },
-  { id: 'missed', prompt: 'Who may be getting less from this process?', correct: 'Members who are newer, quieter, less confident with the topic, or less used to speaking early.', options: ['Members who are newer, quieter, less confident with the topic, or less used to speaking early.', 'No one, because most people attended.', 'Only people who were absent.'], feedback: 'Being missed is not only about absence. It can also mean being present but less informed, less heard, or less influential.' },
-  { id: 'barrier', prompt: 'What is the strongest barrier in this scenario?', correct: 'A few early speakers and weak explanation of options narrowed meaningful participation.', options: ['The meeting was too short.', 'A few early speakers and weak explanation of options narrowed meaningful participation.', 'There was no community mobilization campaign.'], feedback: 'The main issue is how pace, explanation, and early voice shaped who could influence the process.' },
-  { id: 'power', prompt: 'Who most clearly holds power or responsibility in this situation?', correct: 'The chair, the meeting process, and the CSO facilitator all matter, but in different ways.', options: ['Only the donor.', 'The chair, the meeting process, and the CSO facilitator all matter, but in different ways.', 'Only the members who stayed silent.'], feedback: 'A rights lens separates roles instead of blaming one actor too quickly.' },
-  { id: 'participation', prompt: 'How would you judge participation here?', correct: 'Weak to partial, because attendance was stronger than understanding, voice, and influence.', options: ['Meaningful, because most members attended.', 'Weak to partial, because attendance was stronger than understanding, voice, and influence.', 'Fully meaningful, because a decision was made.'], feedback: 'Participation was visible, but not clearly meaningful for all members.' },
-  { id: 'accountability', prompt: 'What does the follow-up comment suggest about accountability?', correct: 'Accountability may be weak, because a member was present but still unsure whether her voice counted.', options: ['Accountability may be weak, because a member was present but still unsure whether her voice counted.', 'Accountability is strong because a meeting was held.', 'Accountability is not relevant here.'], feedback: 'Accountability includes whether people understand how their input mattered and whether they can raise concerns safely.' },
-  { id: 'role', prompt: 'What is the strongest CSO role in the immediate next step?', correct: 'Facilitate a better process: clarify options, widen voice, and make the decision link more visible.', options: ['Take over all future group decisions directly.', 'Facilitate a better process: clarify options, widen voice, and make the decision link more visible.', 'Step back completely because the group already met.'], feedback: 'This fits the CSO’s role without overreaching.' },
-];
 
 export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) {
   const portfolioFields = [

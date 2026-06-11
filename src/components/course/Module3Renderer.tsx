@@ -3047,7 +3047,7 @@ function diagnosisFeedback(kind: string) {
   };
 }
 
-function Module3Screen32({ state, onChangeState }: Module3RendererProps) {
+export function Module3Screen32({ state, onChangeState }: Module3RendererProps) {
   const stored = state.practiceCheckState.module3_screen32 || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M3-S1-02');
   const [selected, setSelected] = useState<string[]>(stored.selected || []);
@@ -3341,7 +3341,7 @@ const lensSummaryRows = [
   ['What evidence is needed?', 'Indicators, feedback tools, safe learning'],
 ];
 
-function Module3Screen33({ state, onChangeState }: Module3RendererProps) {
+export function Module3Screen33({ state, onChangeState }: Module3RendererProps) {
   const stored = state.practiceCheckState.module3_screen33 || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M3-S1-03');
   const [lensOpen, setLensOpen] = useState(Boolean(stored.lensOpen || completed));
