@@ -17,6 +17,7 @@ import accountabilityActorMap from '../../assets/hrba/module-1/visuals/m1-s2-01-
 import servicesToRightsPathway from '../../assets/hrba/module-1/visuals/m1-s2-03-services-to-rights-pathway.svg';
 import { module1RefinementAssets } from '../../data/module1/module_1_refinement_assets';
 import '../../styles/module1-visual-supports.css';
+import '../../styles/module1-ux-polish.css';
 
 type JourneyProgressStyle = CSSProperties & { '--journey-progress': string };
 type HRBAProgressStyle = CSSProperties & { '--m1-progress': string };
@@ -3050,7 +3051,7 @@ function Module1SelfAssessmentScreen({
         </div>
 
         <div className="m1-next-footer m1-assessment-footer">
-          <p aria-live="polite">
+          <p id="m1-assessment-continue-helper" aria-live="polite">
             {isComplete
               ? 'Continue to choose your priority area and action commitment.'
               : 'Complete all self-assessment statements to continue.'}
@@ -3061,6 +3062,7 @@ function Module1SelfAssessmentScreen({
             onClick={handleContinue}
             disabled={!isComplete}
             aria-label={isComplete ? 'Continue' : 'Continue disabled. Complete the self-assessment first.'}
+            aria-describedby="m1-assessment-continue-helper"
           >
             Continue
           </button>
@@ -3341,7 +3343,7 @@ function Module1ActionCommitmentScreen({
         </div>
 
         <div className="m1-next-footer m1-action-footer">
-          <p aria-live="polite">
+          <p id="m1-action-continue-helper" aria-live="polite">
             {isComplete
               ? 'Continue to your Module 1 takeaways.'
               : selectedPriorityAreas.length > 0
@@ -3353,6 +3355,7 @@ function Module1ActionCommitmentScreen({
             className="m1-next-continue"
             onClick={handleContinue}
             disabled={!isComplete}
+            aria-describedby="m1-action-continue-helper"
           >
             Continue
           </button>
@@ -3585,14 +3588,20 @@ function Module1CompletionScreen({
             </p>
           </div>
           <div className="m1-next-module-actions">
-            <button type="button" onClick={continueToFinalClosing} disabled={!isComplete}>
+            <button
+              type="button"
+              className="m1-next-module-primary"
+              onClick={continueToFinalClosing}
+              disabled={!isComplete}
+              aria-describedby="m1-completion-helper"
+            >
               Continue
             </button>
           </div>
         </section>
 
         <footer className="m1-completion-footer">
-          <p aria-live="polite">
+          <p id="m1-completion-helper" aria-live="polite">
             {isComplete
               ? 'Continue to the final Module 1 closing screen.'
               : recordComplete
@@ -3654,6 +3663,18 @@ function Module1FinishedScreen({
     }));
   };
 
+  const reviewModule = () => {
+    onChangeState((prev) => ({
+      ...prev,
+      currentLayer: 'player',
+      currentCourseId: 'hrba_course',
+      currentModuleId: 'module_01_hrba_foundations',
+      currentScreenId: 'M1-S3-02',
+      currentSubState: null,
+      activeModal: null
+    }));
+  };
+
   return (
     <section className="m1-finished-screen" aria-labelledby="m1-finished-title">
       <div className="m1-finished-slide">
@@ -3669,10 +3690,13 @@ function Module1FinishedScreen({
           <span>Starting the HRBA Learning Journey</span>
         </div>
         <div className="m1-finished-actions">
-          <button type="button" onClick={returnToCourseMenu}>
+          <button type="button" className="m1-finished-secondary" onClick={returnToCourseMenu}>
             Return to Course Page
           </button>
-          <button type="button" onClick={continueToModule2}>
+          <button type="button" className="m1-finished-review" onClick={reviewModule}>
+            Review Module 1
+          </button>
+          <button type="button" className="m1-finished-primary" onClick={continueToModule2}>
             Continue to Module 2
           </button>
         </div>
@@ -4528,12 +4552,18 @@ function renderBlockContent(
     }
 
     case 'M1-S6-09': { // Save Portfolio Summary
+      const saved = state.surveyCompleted;
+
       const handleSave = () => {
+        if (saved) {
+          onNext();
+          return;
+        }
+
         onChangeState((prev) => ({
           ...prev,
           surveyCompleted: true
         }));
-        onNext();
       };
 
       return (
@@ -4569,8 +4599,16 @@ function renderBlockContent(
             🔒 Keep notes general. Do not input real staff names, specific communities, complaints, or case details.
           </div>
 
+          {saved && (
+            <div className="m1-portfolio-save-confirmation" aria-live="polite">
+              <strong>✓ Saved to portfolio</strong>
+              <span>Your private HRBA starting point is saved in this browser.</span>
+            </div>
+          )}
+
           <button 
             onClick={handleSave}
+            aria-describedby="m1-s6-save-helper"
             style={{ 
               alignSelf: 'flex-end', 
               backgroundColor: 'var(--color-primary)', 
@@ -4582,8 +4620,11 @@ function renderBlockContent(
               fontWeight: 600 
             }}
           >
-            Save to Portfolio
+            {saved ? 'Continue' : 'Save to Portfolio'}
           </button>
+          <p id="m1-s6-save-helper" className="m1-inline-helper" aria-live="polite">
+            {saved ? 'Saved. Continue when ready.' : 'Save your portfolio summary to continue.'}
+          </p>
         </div>
       );
     }
@@ -4638,10 +4679,22 @@ function renderBlockContent(
       };
 
       const handleSave = () => {
-        onNext();
+        if (state.practiceCheckState?.m1PortfolioCheckpointSaved) {
+          onNext();
+          return;
+        }
+
+        onChangeState((prev) => ({
+          ...prev,
+          practiceCheckState: {
+            ...prev.practiceCheckState,
+            m1PortfolioCheckpointSaved: true
+          }
+        }));
       };
 
       const ready = state.portfolioShiftSelected && state.portfolioShiftAreas.length > 0;
+      const saved = Boolean(state.practiceCheckState?.m1PortfolioCheckpointSaved);
 
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxHeight: '70vh', overflowY: 'auto', paddingRight: '0.5rem' }}>
@@ -4688,12 +4741,20 @@ function renderBlockContent(
             style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', backgroundColor: '#0f172a', border: '1px solid var(--color-border-dark)', color: '#fff', outline: 'none', resize: 'vertical' }}
           />
 
+          {saved && (
+            <div className="m1-portfolio-save-confirmation" aria-live="polite">
+              <strong>✓ Saved to portfolio</strong>
+              <span>Your selected shift and work areas are saved in this browser.</span>
+            </div>
+          )}
+
           <button 
             onClick={handleSave}
             disabled={!ready}
+            aria-describedby="m1-s7-save-helper"
             style={{ 
               alignSelf: 'flex-end', 
-              backgroundColor: ready ? 'var(--color-primary)' : '#cbd5e1', 
+              backgroundColor: ready ? 'var(--color-primary)' : '#cbd5e1',
               color: '#fff', 
               border: 'none', 
               padding: '0.6rem 1.5rem', 
@@ -4703,8 +4764,11 @@ function renderBlockContent(
               marginTop: '1rem'
             }}
           >
-            Continue to Module 1 quiz
+            {saved ? 'Continue to Module 1 quiz' : 'Save to portfolio'}
           </button>
+          <p id="m1-s7-save-helper" className="m1-inline-helper" aria-live="polite">
+            {ready ? saved ? 'Saved. Continue when ready.' : 'Save your portfolio checkpoint to continue.' : 'Select a shift and at least one work area to continue.'}
+          </p>
         </div>
       );
     }
