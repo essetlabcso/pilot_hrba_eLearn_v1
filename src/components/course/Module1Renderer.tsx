@@ -53,12 +53,13 @@ function useWaterPointFallback(event: SyntheticEvent<HTMLImageElement>) {
 
 interface FocusModalProps {
   titleId: string;
+  descriptionId?: string;
   className?: string;
   onClose: () => void;
   children: ReactNode;
 }
 
-function FocusModal({ titleId, className = '', onClose, children }: FocusModalProps) {
+function FocusModal({ titleId, descriptionId, className = '', onClose, children }: FocusModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -68,12 +69,13 @@ function FocusModal({ titleId, className = '', onClose, children }: FocusModalPr
     }
 
     const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-    const focusable = Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector))
+    const getFocusable = () => Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector))
       .filter((element) => !element.hasAttribute('disabled'));
+    const focusable = getFocusable();
     const firstFocusable = focusable[0];
     const previousActiveElement = document.activeElement as HTMLElement | null;
 
-    firstFocusable?.focus();
+    (firstFocusable || modal).focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -82,12 +84,13 @@ function FocusModal({ titleId, className = '', onClose, children }: FocusModalPr
         return;
       }
 
-      if (event.key !== 'Tab' || focusable.length === 0) {
+      const currentFocusable = getFocusable();
+      if (event.key !== 'Tab' || currentFocusable.length === 0) {
         return;
       }
 
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
+      const first = currentFocusable[0];
+      const last = currentFocusable[currentFocusable.length - 1];
 
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
@@ -114,6 +117,8 @@ function FocusModal({ titleId, className = '', onClose, children }: FocusModalPr
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+        tabIndex={-1}
       >
         {children}
       </div>
@@ -158,9 +163,12 @@ function Module1InteractionModal({
   secondaryAction,
   tone = 'default'
 }: Module1InteractionModalProps) {
+  const descriptionId = `${titleId}-description`;
+
   return (
     <FocusModal
       titleId={titleId}
+      descriptionId={descriptionId}
       className={`m1-interaction-modal m1-interaction-modal--${tone}`}
       onClose={onClose}
     >
@@ -200,7 +208,7 @@ function Module1InteractionModal({
         <div className="m1-interaction-modal__copy">
           {eyebrow && <span>{eyebrow}</span>}
           <h2 id={titleId}>{title}</h2>
-          <div className="m1-interaction-modal__text">{body}</div>
+          <div id={descriptionId} className="m1-interaction-modal__text">{body}</div>
           {question && (
             <div className="m1-next-question">
               <strong>HRBA question:</strong>
@@ -539,6 +547,7 @@ function Module1JourneyScreen({
                   >
                     <span aria-hidden="true">{isVisited ? '✓' : stepNumber}</span>
                     <strong>{step.title}</strong>
+                    <em className="m1-state-label">{activeStep === stepNumber ? 'Current' : isVisited ? 'Explored' : 'Not explored'}</em>
                   </button>
                 </li>
               );
@@ -774,6 +783,7 @@ function Module1WaterPointInvestigationScreen({
                 >
                   <span aria-hidden="true">{isVisited ? '✓' : index + 1}</span>
                   <strong>{clue.title}</strong>
+                  <em className="m1-state-label">{isActive ? 'Open' : isVisited ? 'Explored' : 'Not explored'}</em>
                 </button>
               );
             })}
@@ -1116,6 +1126,7 @@ function Module1EverydayWorkScreen({
                     <strong>{area.title}</strong>
                     <small>{area.subtitle}</small>
                   </span>
+                  <em className="m1-state-label">{isVisited ? 'Explored' : 'Not explored'}</em>
                 </button>
               );
             })}
@@ -1300,6 +1311,7 @@ function Module1InclusionLensScreen({
                     )}
                   </span>
                   <strong>{perspective.title}</strong>
+                  <em className="m1-state-label">{isVisited ? 'Explored' : 'Not explored'}</em>
                 </button>
               );
             })}
@@ -1480,6 +1492,7 @@ function Module1ConnectedRightsScreen({
                 >
                   <span aria-hidden="true">{isVisited ? '✓' : ''}</span>
                   {connection.title}
+                  <em className="m1-state-label">{isActive ? 'Open' : isVisited ? 'Explored' : 'Not explored'}</em>
                 </button>
               );
             })}
@@ -2029,7 +2042,7 @@ function Module1ParticipationProcessScreen({
                     </span>
                     <div className="m1-s13-step-label">
                       <strong>{level.title}</strong>
-                      <small>{level.signal}</small>
+                      <small>{level.signal}{isActive ? ' · Current' : isViewed ? ' · Explored' : ''}</small>
                     </div>
                   </button>
                 );
@@ -2544,8 +2557,8 @@ function Module1KnowledgeCheckScreen({
                     >
                       <span aria-hidden="true">{option.id}</span>
                       <span>{option.text}</span>
-                      {isChecked && isSelected && (
-                        <strong>{isCorrectOption ? 'Correct' : 'Review this'}</strong>
+                      {isSelected && (
+                        <strong>{isChecked ? isCorrectOption ? 'Correct' : 'Review this' : 'Selected'}</strong>
                       )}
                     </button>
                   );

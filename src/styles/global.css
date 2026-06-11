@@ -33275,3 +33275,328 @@ body:has(.course-shell) {
     width: auto;
   }
 }
+
+/* Module 1 Phase 1 cascade finalizers */
+.m1-b2-screen,
+.m1-b3-screen,
+.m1-b4-screen,
+.m1-next-screen,
+.m1-s13-screen,
+.m1-assessment-screen,
+.m1-action-screen,
+.m1-completion-screen {
+  --m1-a11y-ring: #f59e0b;
+  --m1-a11y-ring-shadow: rgba(245, 158, 11, 0.32);
+  --m1-a11y-text: #111827;
+  --m1-a11y-muted: #334155;
+  --m1-a11y-navy: #071b31;
+  --m1-a11y-selected-bg: #e0f2fe;
+  --m1-a11y-complete-bg: #d9f99d;
+  --m1-a11y-disabled-bg: #e2e8f0;
+  --m1-a11y-disabled-text: #334155;
+}
+
+.m1-state-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 1.45rem;
+  padding: 0.16rem 0.42rem;
+  border: 1px solid rgba(15, 95, 140, 0.28);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f5f8c;
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.m1-b2-step-button .m1-state-label,
+.m1-b3-clue-card .m1-state-label,
+.m1-sector-card .m1-state-label,
+.m1-perspective-card .m1-state-label {
+  grid-column: 2;
+}
+
+.m1-ripple-node .m1-state-label {
+  min-height: 1.25rem;
+  padding-inline: 0.34rem;
+  font-size: 0.58rem;
+}
+
+.m1-b2-step-button.is-active,
+.m1-b3-clue-card.is-active,
+.m1-b3-choice.is-selected,
+.m1-sector-card.is-visited,
+.m1-perspective-card.is-visited,
+.m1-ripple-node.is-active,
+.m1-s13-ladder-step.is-active,
+.m1-knowledge-option.is-selected,
+.m1-assessment-focus-card.is-selected,
+.m1-assessment-rating-buttons button.is-selected,
+.m1-action-priority-card.is-selected,
+.m1-action-chip-grid button.is-selected,
+.m1-takeaway-tile.is-active {
+  border-color: #0f5f8c;
+  box-shadow: 0 0 0 3px rgba(15, 95, 140, 0.22), 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.m1-b2-step-button.is-active,
+.m1-b3-clue-card.is-active,
+.m1-b3-choice.is-selected,
+.m1-ripple-node.is-active,
+.m1-s13-ladder-step.is-active,
+.m1-knowledge-option.is-selected,
+.m1-assessment-focus-card.is-selected {
+  background: var(--m1-a11y-selected-bg);
+  color: var(--m1-a11y-text);
+}
+
+.m1-b2-step-button.is-visited span,
+.m1-b3-clue-card.is-visited span,
+.is-visited .m1-sector-icon,
+.m1-sector-icon.is-complete,
+.m1-ripple-node.is-visited span,
+.m1-s13-ladder-step.is-viewed .m1-s13-step-number,
+.m1-assessment-focus-card.is-selected > span,
+.m1-assessment-statement.is-rated legend span,
+.m1-action-priority-card.is-selected > span,
+.m1-takeaway-tile.is-reviewed .m1-takeaway-number {
+  background: var(--m1-a11y-complete-bg);
+  color: var(--m1-a11y-navy);
+  border-color: #4d7c0f;
+}
+
+.m1-b2-step-button strong,
+.m1-b3-clue-card strong,
+.m1-b3-choice strong,
+.m1-sector-card strong,
+.m1-perspective-card strong,
+.m1-ripple-node,
+.m1-s13-step-label strong,
+.m1-knowledge-option,
+.m1-assessment-focus-card,
+.m1-assessment-rating-buttons button,
+.m1-action-priority-card,
+.m1-action-chip-grid button {
+  color: var(--m1-a11y-text);
+}
+
+.m1-b2-compact-header p,
+.m1-b2-journey-helper p,
+.m1-b2-footer p,
+.m1-b2-footer small,
+.m1-b3-story__content p,
+.m1-b3-header p,
+.m1-b3-bottom-strip p,
+.m1-b4-screen .m1-next-intro,
+.m1-b4-screen .m1-next-instruction p,
+.m1-b4-screen .m1-next-footer p,
+.m1-s13-intro,
+.m1-s13-synthesis div p {
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.m1-b2-value-card p,
+.m1-b2-journey-panel p,
+.m1-b3-reveal-panel p,
+.m1-b3-definition-card p,
+.m1-b3-feedback p,
+.m1-interaction-modal__text p,
+.m1-next-modal-copy p,
+.m1-ripple-panel p,
+.m1-next-instruction p,
+.m1-next-footer p,
+.m1-sector-card small,
+.m1-s13-detail-def,
+.m1-s13-card p,
+.m1-knowledge-intro-copy p,
+.m1-knowledge-visual small,
+.m1-knowledge-feedback p,
+.m1-assessment-section-head p,
+.m1-assessment-scale dd,
+.m1-assessment-focus-card small,
+.m1-action-section-head p,
+.m1-action-priority-card small,
+.m1-action-confirmation p,
+.m1-completion-section-head p,
+.m1-takeaway-tile small {
+  color: var(--m1-a11y-muted);
+  font-weight: 700;
+}
+
+.m1-b3-feedback.is-visible.is-correct,
+.m1-b3-feedback.is-visible.is-support,
+.m1-knowledge-feedback.is-correct,
+.m1-knowledge-feedback.is-partial,
+.m1-assessment-feedback,
+.m1-action-confirmation {
+  color: var(--m1-a11y-text);
+}
+
+.m1-b3-feedback strong,
+.m1-knowledge-feedback strong,
+.m1-assessment-feedback h2,
+.m1-assessment-feedback h3,
+.m1-action-confirmation h2 {
+  color: var(--m1-a11y-navy);
+}
+
+.m1-b2-journey-helper span,
+.m1-b3-progress,
+.m1-next-instruction strong,
+.m1-s13-progress-badge,
+.m1-knowledge-progress-row span,
+.m1-completion-section-head > strong {
+  border: 1px solid rgba(15, 95, 140, 0.26);
+  background: #ffffff;
+  color: #0f5f8c;
+  font-weight: 950;
+}
+
+.m1-next-progress {
+  height: 0.6rem;
+  border: 1px solid rgba(15, 95, 140, 0.22);
+  background: #dbe5ee;
+}
+
+.m1-next-progress span {
+  background: linear-gradient(90deg, #0f5f8c, #4d7c0f);
+}
+
+.m1-b2-primary,
+.m1-b3-primary,
+.m1-water-summary-cta button,
+.m1-water-modal-primary,
+.m1-water-modal-secondary,
+.m1-next-continue,
+.m1-knowledge-secondary,
+.m1-assessment-page-controls button,
+.m1-assessment-wizard-actions button,
+.m1-action-chip-grid button,
+.m1-next-module-actions button,
+.m1-b2-step-button,
+.m1-b3-clue-card,
+.m1-b3-choice,
+.m1-sector-card,
+.m1-perspective-card,
+.m1-ripple-node,
+.m1-s13-ladder-step,
+.m1-knowledge-option,
+.m1-assessment-focus-card,
+.m1-assessment-rating-buttons button,
+.m1-action-priority-card,
+.m1-takeaway-tile {
+  min-height: 44px;
+}
+
+.m1-ripple-node {
+  min-width: 44px;
+}
+
+.m1-b2-primary:disabled,
+.m1-b3-primary:disabled,
+.m1-next-continue:disabled,
+.m1-water-continue:disabled,
+.m1-water-summary-inline:disabled,
+.m1-assessment-page-controls button:disabled,
+.m1-assessment-wizard-actions button:disabled,
+.m1-action-priority-card:disabled,
+.m1-next-module-actions button:disabled {
+  border: 1px solid #94a3b8;
+  background: var(--m1-a11y-disabled-bg);
+  color: var(--m1-a11y-disabled-text);
+  opacity: 1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.m1-b2-primary:focus-visible,
+.m1-b2-step-button:focus-visible,
+.m1-b3-primary:focus-visible,
+.m1-b3-clue-card:focus-visible,
+.m1-b3-choice:focus-visible,
+.m1-water-modal-close:focus-visible,
+.m1-water-summary-cta button:focus-visible,
+.m1-water-modal-primary:focus-visible,
+.m1-water-modal-secondary:focus-visible,
+.m1-sector-card:focus-visible,
+.m1-perspective-card:focus-visible,
+.m1-ripple-node:focus-visible,
+.m1-next-continue:focus-visible,
+.m1-s13-ladder-step:focus-visible,
+.m1-knowledge-option:focus-visible,
+.m1-knowledge-secondary:focus-visible,
+.m1-assessment-focus-card:focus-visible,
+.m1-assessment-rating-buttons button:focus-visible,
+.m1-assessment-page-controls button:focus-visible,
+.m1-assessment-wizard-actions button:focus-visible,
+.m1-action-priority-card:focus-visible,
+.m1-action-chip-grid button:focus-visible,
+.m1-action-commitment-card textarea:focus-visible,
+.m1-takeaway-tile:focus-visible,
+.m1-next-module-actions button:focus-visible {
+  outline: 3px solid var(--m1-a11y-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--m1-a11y-ring-shadow), 0 10px 22px rgba(15, 23, 42, 0.10);
+}
+
+.m1-water-modal {
+  color: var(--m1-a11y-text);
+}
+
+.m1-water-modal-close {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--m1-a11y-navy);
+}
+
+.m1-water-modal-primary {
+  background: #0f5f8c;
+  color: #ffffff;
+}
+
+.m1-water-modal-secondary {
+  border-color: #0f5f8c;
+  background: #ffffff;
+  color: #0f5f8c;
+}
+
+.m1-b3-choice.is-selected::after {
+  color: #0f5f8c;
+}
+
+.m1-s13-ladder-step.is-active .m1-s13-step-number {
+  background: #0f5f8c;
+  color: #ffffff;
+}
+
+.m1-s13-ladder-step.is-viewed.is-active .m1-s13-step-number {
+  background: var(--m1-a11y-complete-bg);
+  color: var(--m1-a11y-navy);
+}
+
+.m1-knowledge-option.is-selected > strong,
+.m1-knowledge-option.is-correct > strong,
+.m1-knowledge-option.is-partial > strong {
+  color: var(--m1-a11y-navy);
+}
+
+.m1-knowledge-option.is-selected > span:first-child,
+.m1-assessment-rating-buttons button.is-selected span,
+.m1-action-chip-grid button.is-selected span {
+  background: #ffffff;
+  color: #0f5f8c;
+}
+
+@media (max-width: 640px) {
+  .m1-state-label {
+    font-size: 0.64rem;
+  }
+
+  .m1-ripple-node .m1-state-label {
+    font-size: 0.62rem;
+  }
+}
