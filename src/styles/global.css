@@ -748,6 +748,371 @@
   animation: m5LensFadeUp 0.28s ease both;
 }
 
+.m5-screen--polished-lab {
+  --m5-lab-primary: #0e6f9f;
+  --m5-lab-secondary: #91c852;
+  --m5-lab-warm: #f97316;
+  --m5-lab-soft: #eef7fc;
+  width: min(100%, 1180px);
+  padding-bottom: 1rem;
+}
+
+.player-container:has(.m5-screen--polished-lab) .player-main-content {
+  justify-content: flex-start;
+  padding: 1.15rem 1.25rem;
+  overflow-y: auto;
+}
+
+.m5-screen--evidence-shift {
+  --m5-lab-primary: #0e6f9f;
+  --m5-lab-secondary: #91c852;
+  --m5-lab-warm: #d89a2b;
+  --m5-lab-soft: #eef7fc;
+}
+
+.m5-screen--evidence-classify {
+  --m5-lab-primary: #2563eb;
+  --m5-lab-secondary: #16a34a;
+  --m5-lab-warm: #f97316;
+  --m5-lab-soft: #eff6ff;
+}
+
+.m5-screen--indicator-repair {
+  --m5-lab-primary: #7c3aed;
+  --m5-lab-secondary: #0e9f6e;
+  --m5-lab-warm: #d97706;
+  --m5-lab-soft: #f5f3ff;
+}
+
+.m5-screen--indicator-set {
+  --m5-lab-primary: #0f766e;
+  --m5-lab-secondary: #84cc16;
+  --m5-lab-warm: #f59e0b;
+  --m5-lab-soft: #ecfdf5;
+}
+
+.m5-screen--gender-evidence {
+  --m5-lab-primary: #be185d;
+  --m5-lab-secondary: #22c55e;
+  --m5-lab-warm: #f97316;
+  --m5-lab-soft: #fdf2f8;
+}
+
+.m5-screen--gender-marker {
+  --m5-lab-primary: #9333ea;
+  --m5-lab-secondary: #14b8a6;
+  --m5-lab-warm: #eab308;
+  --m5-lab-soft: #faf5ff;
+}
+
+.m5-screen--gender-repair {
+  --m5-lab-primary: #db2777;
+  --m5-lab-secondary: #65a30d;
+  --m5-lab-warm: #ea580c;
+  --m5-lab-soft: #fff1f2;
+}
+
+.m5-screen--data-safety {
+  --m5-lab-primary: #475569;
+  --m5-lab-secondary: #0e9f6e;
+  --m5-lab-warm: #d97706;
+  --m5-lab-soft: #f8fafc;
+}
+
+.m5-screen--safe-disaggregation {
+  --m5-lab-primary: #0369a1;
+  --m5-lab-secondary: #4d7c0f;
+  --m5-lab-warm: #c2410c;
+  --m5-lab-soft: #f0f9ff;
+}
+
+.m5-screen--disability-evidence {
+  --m5-lab-primary: #0f766e;
+  --m5-lab-secondary: #3b82f6;
+  --m5-lab-warm: #d97706;
+  --m5-lab-soft: #ecfeff;
+}
+
+.m5-screen--disability-marker {
+  --m5-lab-primary: #4338ca;
+  --m5-lab-secondary: #10b981;
+  --m5-lab-warm: #ca8a04;
+  --m5-lab-soft: #eef2ff;
+}
+
+.m5-screen--disability-data {
+  --m5-lab-primary: #334155;
+  --m5-lab-secondary: #0ea5e9;
+  --m5-lab-warm: #f97316;
+  --m5-lab-soft: #f8fafc;
+}
+
+.m5-screen--disability-practice {
+  --m5-lab-primary: #0e7490;
+  --m5-lab-secondary: #84cc16;
+  --m5-lab-warm: #ea580c;
+  --m5-lab-soft: #ecfeff;
+}
+
+.m5-screen--feedback-evidence {
+  --m5-lab-primary: #0e6f9f;
+  --m5-lab-secondary: #22c55e;
+  --m5-lab-warm: #f59e0b;
+  --m5-lab-soft: #eff6ff;
+}
+
+.m5-screen--feedback-action {
+  --m5-lab-primary: #2563eb;
+  --m5-lab-secondary: #16a34a;
+  --m5-lab-warm: #ea580c;
+  --m5-lab-soft: #f0fdf4;
+}
+
+.m5-screen--polished-lab .m5-hero-panel {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--m5-lab-primary) 28%, white);
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--m5-lab-primary) 18%, transparent), transparent 28%),
+    radial-gradient(circle at 74% 10%, color-mix(in srgb, var(--m5-lab-secondary) 18%, transparent), transparent 25%),
+    linear-gradient(135deg, #ffffff 0%, var(--m5-lab-soft) 58%, #f4faed 100%);
+  box-shadow: 0 24px 60px rgba(7, 28, 51, 0.13);
+}
+
+.m5-screen--polished-lab .m5-hero-panel::before,
+.m5-screen--polished-lab .m5-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--m5-lab-primary) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--m5-lab-secondary) 8%, transparent) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.32), transparent 78%);
+  pointer-events: none;
+}
+
+.m5-screen--polished-lab .m5-hero-panel__copy,
+.m5-screen--polished-lab .m5-visual-card,
+.m5-screen--polished-lab .m5-canvas > * {
+  position: relative;
+  z-index: 1;
+}
+
+.m5-screen--polished-lab .m5-story-card {
+  border-color: color-mix(in srgb, var(--m5-lab-primary) 26%, white);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 252, 255, 0.96));
+  box-shadow: 0 16px 36px rgba(7, 28, 51, 0.1);
+}
+
+.m5-screen--polished-lab .m5-story-card .m5-primary-button {
+  justify-self: start;
+  background: linear-gradient(135deg, var(--m5-lab-primary), #3b99d4);
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--m5-lab-primary) 26%, transparent);
+}
+
+.m5-screen--polished-lab .m5-visual-card {
+  border-color: color-mix(in srgb, var(--m5-lab-secondary) 34%, white);
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.76), color-mix(in srgb, var(--m5-lab-primary) 58%, rgba(15, 23, 42, 0.62))),
+    url('/assets/hrba/modules/module-5-hrba-meal.png') center / cover,
+    url('/assets/hrba/modules/module-5.png') center / cover;
+}
+
+.m5-screen--polished-lab .m5-visual-card span {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.m5-screen--polished-lab .m5-canvas {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--m5-lab-primary) 28%, white);
+  background:
+    radial-gradient(circle at 94% 8%, color-mix(in srgb, var(--m5-lab-warm) 14%, transparent), transparent 24%),
+    radial-gradient(circle at 8% 18%, color-mix(in srgb, var(--m5-lab-primary) 14%, transparent), transparent 28%),
+    linear-gradient(135deg, #f9fafb 0%, var(--m5-lab-soft) 54%, #f4faed 100%);
+  box-shadow: 0 20px 50px rgba(7, 28, 51, 0.12);
+}
+
+.m5-screen--polished-lab .m5-progress-chip {
+  border: 1px solid color-mix(in srgb, var(--m5-lab-primary) 22%, white);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--m5-lab-secondary) 24%, white), color-mix(in srgb, var(--m5-lab-primary) 13%, white));
+  box-shadow: 0 10px 22px rgba(7, 28, 51, 0.08);
+}
+
+.m5-screen--polished-lab .m5-tabs {
+  gap: 0.62rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.m5-screen--polished-lab .m5-tabs button {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.44rem;
+  align-items: center;
+  min-height: 54px;
+  border: 1px solid color-mix(in srgb, var(--m5-lab-primary) 20%, white);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  color: #344256;
+  box-shadow: 0 12px 24px rgba(7, 28, 51, 0.07);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.m5-screen--polished-lab .m5-tabs button span {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--m5-lab-primary) 14%, white);
+  color: var(--m5-lab-primary);
+  font-size: 0.92rem;
+}
+
+.m5-screen--polished-lab .m5-tabs button:hover,
+.m5-screen--polished-lab .m5-reveal-card:hover,
+.m5-screen--polished-lab .m5-choice-card:hover,
+.m5-screen--polished-lab .m5-primary-button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.m5-screen--polished-lab .m5-tabs button:hover {
+  box-shadow: 0 16px 30px rgba(7, 28, 51, 0.11);
+}
+
+.m5-screen--polished-lab .m5-tabs button:nth-child(1).is-active {
+  background: linear-gradient(135deg, var(--m5-lab-primary), #3b99d4);
+}
+
+.m5-screen--polished-lab .m5-tabs button:nth-child(2).is-active {
+  background: linear-gradient(135deg, var(--m5-lab-secondary), #91c852);
+  color: #071c33;
+}
+
+.m5-screen--polished-lab .m5-tabs button:nth-child(3).is-active {
+  background: linear-gradient(135deg, #8a3b00, var(--m5-lab-warm));
+}
+
+.m5-screen--polished-lab .m5-tabs button.is-active {
+  color: #ffffff;
+  box-shadow: 0 18px 36px rgba(7, 28, 51, 0.16);
+}
+
+.m5-screen--polished-lab .m5-tabs button.is-active span {
+  background: rgba(255, 255, 255, 0.24);
+  color: currentColor;
+}
+
+.m5-screen--polished-lab .m5-tabs button.is-complete::after {
+  content: "✓";
+  position: absolute;
+  top: -0.42rem;
+  right: -0.28rem;
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: var(--m5-lab-secondary);
+  color: #071c33;
+  font-size: 0.72rem;
+  font-weight: 950;
+  box-shadow: 0 8px 18px rgba(7, 28, 51, 0.16);
+}
+
+.m5-screen--polished-lab .m5-reveal-card,
+.m5-screen--polished-lab .m5-choice-card,
+.m5-screen--polished-lab .m5-detail-card,
+.m5-screen--polished-lab .m5-feedback-card,
+.m5-screen--polished-lab .m5-insight-card,
+.m5-screen--polished-lab .m5-cta-panel {
+  border-color: color-mix(in srgb, var(--m5-lab-primary) 18%, white);
+  box-shadow: 0 14px 28px rgba(7, 28, 51, 0.09);
+}
+
+.m5-screen--polished-lab .m5-reveal-card {
+  border-left: 5px solid color-mix(in srgb, var(--m5-lab-primary) 70%, white);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), color-mix(in srgb, var(--m5-lab-soft) 70%, white));
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.m5-screen--polished-lab .m5-reveal-card:nth-child(2n) {
+  border-left-color: var(--m5-lab-secondary);
+}
+
+.m5-screen--polished-lab .m5-reveal-card:nth-child(3n) {
+  border-left-color: var(--m5-lab-warm);
+}
+
+.m5-screen--polished-lab .m5-reveal-card:hover,
+.m5-screen--polished-lab .m5-choice-card:hover {
+  border-color: color-mix(in srgb, var(--m5-lab-primary) 52%, white);
+  box-shadow: 0 18px 34px rgba(7, 28, 51, 0.13);
+}
+
+.m5-screen--polished-lab .m5-reveal-card.is-opened {
+  border-color: color-mix(in srgb, var(--m5-lab-secondary) 68%, white);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--m5-lab-secondary) 14%, white), rgba(255, 255, 255, 0.98));
+}
+
+.m5-screen--polished-lab .m5-reveal-card.is-opened .m5-reveal-card__mark,
+.m5-screen--polished-lab .m5-choice-card.is-selected .m5-choice-card__mark {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--m5-lab-secondary) 18%, transparent);
+}
+
+.m5-screen--polished-lab .m5-detail-card {
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--m5-lab-primary) 18%, transparent), transparent 34%),
+    linear-gradient(135deg, #ffffff, var(--m5-lab-soft));
+}
+
+.m5-screen--polished-lab .m5-choice-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.m5-screen--polished-lab .m5-choice-card.is-selected {
+  border-color: color-mix(in srgb, var(--m5-lab-primary) 78%, white);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--m5-lab-primary) 10%, white), rgba(255, 255, 255, 0.98));
+  box-shadow: 0 18px 36px color-mix(in srgb, var(--m5-lab-primary) 18%, transparent);
+}
+
+.m5-screen--polished-lab .m5-feedback-card.is-strong {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--m5-lab-secondary) 15%, white), rgba(255, 255, 255, 0.98));
+}
+
+.m5-screen--polished-lab .m5-feedback-card.is-support {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--m5-lab-warm) 13%, white), rgba(255, 255, 255, 0.98));
+}
+
+.m5-screen--polished-lab .m5-insight-card {
+  background:
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--m5-lab-secondary) 18%, transparent), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), color-mix(in srgb, var(--m5-lab-soft) 82%, white));
+}
+
+.m5-screen--polished-lab .m5-cta-panel {
+  border-color: color-mix(in srgb, var(--m5-lab-warm) 26%, white);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--m5-lab-warm) 10%, white), rgba(255, 255, 255, 0.98));
+}
+
+.m5-screen--polished-lab .m5-workspace,
+.m5-screen--polished-lab .m5-practice-panel,
+.m5-screen--polished-lab .m5-insight-panel {
+  animation: m5LensFadeUp 0.28s ease both;
+}
+
 @keyframes m5LensFadeUp {
   from {
     opacity: 0;
@@ -1201,7 +1566,10 @@
 
   .m5-screen--meal-lens .m5-workspace,
   .m5-screen--meal-lens .m5-practice-panel,
-  .m5-screen--meal-lens .m5-insight-panel {
+  .m5-screen--meal-lens .m5-insight-panel,
+  .m5-screen--polished-lab .m5-workspace,
+  .m5-screen--polished-lab .m5-practice-panel,
+  .m5-screen--polished-lab .m5-insight-panel {
     animation: none;
   }
 
@@ -1209,7 +1577,11 @@
   .m5-screen--meal-lens .m5-primary-button:not(:disabled):hover,
   .m5-screen--meal-lens .m5-tabs button:hover,
   .m5-screen--meal-lens .m5-reveal-card:hover,
-  .m5-screen--meal-lens .m5-choice-card:hover {
+  .m5-screen--meal-lens .m5-choice-card:hover,
+  .m5-screen--polished-lab .m5-tabs button:hover,
+  .m5-screen--polished-lab .m5-reveal-card:hover,
+  .m5-screen--polished-lab .m5-choice-card:hover,
+  .m5-screen--polished-lab .m5-primary-button:not(:disabled):hover {
     transform: none;
   }
 }
@@ -33273,6 +33645,30 @@ body:has(.course-shell) {
 
   .m4-warning-signal strong {
     width: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .player-container:has(.m5-screen--polished-lab) .player-split-canvas {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    overflow: hidden !important;
+  }
+
+  .player-container:has(.m5-screen--polished-lab) .player-main-content {
+    order: 1 !important;
+    width: 100% !important;
+    padding: 0.75rem !important;
+    overflow-y: auto !important;
+  }
+
+  .player-container:has(.m5-screen--polished-lab) .player-sidebar-aside {
+    order: 2 !important;
+    width: 100% !important;
+    max-height: 124px !important;
+    border-top: 1px solid rgba(183, 221, 238, 0.22) !important;
+    border-right: 0 !important;
+    overflow-y: auto !important;
   }
 }
 

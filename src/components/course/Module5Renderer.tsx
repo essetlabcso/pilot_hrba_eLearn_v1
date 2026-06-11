@@ -89,6 +89,24 @@ const module5Routes: Record<string, string> = {
   'M5-PLAYER-COMPLETE': '/module-5/complete',
 };
 
+const polishedLabScreenThemes: Record<string, string> = {
+  'M5-S1-04': 'm5-screen--evidence-shift',
+  'M5-S1-05': 'm5-screen--evidence-classify',
+  'M5-S1-06': 'm5-screen--indicator-repair',
+  'M5-S1-07': 'm5-screen--indicator-set',
+  'M5-S1-07A': 'm5-screen--gender-evidence',
+  'M5-S1-07B': 'm5-screen--gender-marker',
+  'M5-S1-07C': 'm5-screen--gender-repair',
+  'M5-S1-08': 'm5-screen--data-safety',
+  'M5-S1-09': 'm5-screen--safe-disaggregation',
+  'M5-S1-09A': 'm5-screen--disability-evidence',
+  'M5-S1-09B': 'm5-screen--disability-marker',
+  'M5-S1-09C': 'm5-screen--disability-data',
+  'M5-S1-09D': 'm5-screen--disability-practice',
+  'M5-S1-10': 'm5-screen--feedback-evidence',
+  'M5-S1-11': 'm5-screen--feedback-action',
+};
+
 function setRoute(path: string) {
   if (typeof window !== 'undefined') window.history.pushState(null, '', path);
 }
@@ -1287,6 +1305,8 @@ function Module5CanvasScreen({
   const [selectedIds, setSelectedIds] = useState<string[]>(stored.selectedIds || []);
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
   const isLensScreen = config.screenId === 'M5-S1-03';
+  const screenThemeClass = polishedLabScreenThemes[config.screenId] || '';
+  const isPolishedLabScreen = Boolean(screenThemeClass);
 
   const activeReveal = config.revealItems.find((item) => item.id === activeRevealId) || config.revealItems[0];
   const openedCount = openedIds.length;
@@ -1298,6 +1318,11 @@ function Module5CanvasScreen({
     : Boolean(config.options.find((option) => option.id === selectedIds[0])?.correct);
   const canSubmit = openedCount === allRevealIds.length && selectedIds.length > 0;
   const canContinue = completed || (openedCount === allRevealIds.length && submitted);
+  const submitButtonLabel = openedCount < allRevealIds.length
+    ? 'Open all evidence cards first'
+    : selectedIds.length === 0
+      ? 'Choose a response first'
+      : 'Check my judgment';
 
   const persist = (value: Record<string, unknown>) => {
     onChangeState((prev) => ({
@@ -1326,13 +1351,50 @@ function Module5CanvasScreen({
       : [id];
     setSelectedIds(next);
     setSubmitted(false);
-    persist({ selectedIds: next, submitted: false, activePanel: 'practice' });
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.delete(config.screenId);
+
+      return {
+        ...prev,
+        screenProgress: {
+          ...prev.screenProgress,
+          [MODULE_ID]: Array.from(progress),
+        },
+        practiceCheckState: updatePracticeState(prev, key, {
+          selectedIds: next,
+          submitted: false,
+          activePanel: 'practice',
+          status: 'in_progress',
+        }),
+      };
+    });
   };
 
   const submit = () => {
     setSubmitted(true);
     setActivePanel('insight');
-    persist({ selectedIds, submitted: true, activePanel: 'insight' });
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.add(config.screenId);
+
+      return {
+        ...prev,
+        screenProgress: {
+          ...prev.screenProgress,
+          [MODULE_ID]: Array.from(progress),
+        },
+        practiceCheckState: updatePracticeState(prev, key, {
+          started: true,
+          openedIds,
+          activeRevealId,
+          selectedIds,
+          submitted: true,
+          activePanel: 'insight',
+          status: 'completed',
+        }),
+      };
+    });
   };
 
   const finish = () => {
@@ -1370,7 +1432,7 @@ function Module5CanvasScreen({
   };
 
   return (
-    <main className={`m5-screen ${isLensScreen ? 'm5-screen--meal-lens' : ''}`} aria-labelledby={`${config.screenId}-title`}>
+    <main className={['m5-screen', isLensScreen ? 'm5-screen--meal-lens' : '', isPolishedLabScreen ? 'm5-screen--polished-lab' : '', screenThemeClass].filter(Boolean).join(' ')} aria-labelledby={`${config.screenId}-title`}>
       <section className="m5-hero-panel">
         <div className="m5-hero-panel__copy">
           <ModuleContextLabel>{config.context}</ModuleContextLabel>
@@ -1408,7 +1470,7 @@ function Module5CanvasScreen({
             {[
               ['reveal', 'Explore evidence'],
               ['practice', 'Make judgment'],
-              ['insight', 'Insight and continue'],
+              ['insight', 'Insight'],
             ].map(([id, label]) => (
               <button
                 key={id}
@@ -1426,7 +1488,7 @@ function Module5CanvasScreen({
                   persist({ activePanel: id });
                 }}
               >
-                {isLensScreen && (
+                {(isLensScreen || isPolishedLabScreen) && (
                   <span aria-hidden="true">
                     {id === 'reveal' ? '◈' : id === 'practice' ? '✓' : '→'}
                   </span>
@@ -1492,7 +1554,7 @@ function Module5CanvasScreen({
               </div>
               <div className="m5-practice-actions">
                 <PrimaryButton onClick={submit} disabled={!canSubmit}>
-                  {canSubmit ? 'Check my judgment' : 'Open all evidence cards first'}
+                  {submitButtonLabel}
                 </PrimaryButton>
               </div>
             </div>
