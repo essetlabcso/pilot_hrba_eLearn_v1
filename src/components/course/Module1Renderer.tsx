@@ -12,7 +12,11 @@ import beneficiaryToRightsholderIcon from '../../assets/hrba/module-1/screen-14/
 import providerToResponsibilityIcon from '../../assets/hrba/module-1/screen-14/provider-to-responsibility.png';
 import consultationToParticipationIcon from '../../assets/hrba/module-1/screen-14/consultation-to-participation.png';
 import reportingToAccountabilityIcon from '../../assets/hrba/module-1/screen-14/reporting-to-accountability.png';
+import waterStoryVisual from '../../assets/hrba/module-1/visuals/m1-s1-04-water-story-placeholder.png';
+import accountabilityActorMap from '../../assets/hrba/module-1/visuals/m1-s2-01-accountability-actor-map.svg';
+import servicesToRightsPathway from '../../assets/hrba/module-1/visuals/m1-s2-03-services-to-rights-pathway.svg';
 import { module1RefinementAssets } from '../../data/module1/module_1_refinement_assets';
+import '../../styles/module1-visual-supports.css';
 
 type JourneyProgressStyle = CSSProperties & { '--journey-progress': string };
 type HRBAProgressStyle = CSSProperties & { '--m1-progress': string };
@@ -622,7 +626,7 @@ function Module1JourneyScreen({
   );
 }
 
-const waterScenarioImageAlt = 'Community members and CSO practitioners near a rural water point used as a fictional HRBA learning scenario.';
+const waterScenarioImageAlt = 'Community water point where people experience access differently, showing that a project can exist while fair access still needs attention.';
 
 function Module1WaterProjectStoryScreen({ onNext }: { onNext: () => void }) {
   return (
@@ -644,7 +648,7 @@ function Module1WaterProjectStoryScreen({ onNext }: { onNext: () => void }) {
 
       <figure className="m1-b3-story__visual">
         <img
-          src={module1RefinementAssets.m1S05.waterPointScenario}
+          src={waterStoryVisual}
           alt={waterScenarioImageAlt}
           loading="eager"
           onError={useWaterPointFallback}
@@ -1800,6 +1804,19 @@ function Module1ResponsibilityMapScreen({
             </p>
           </header>
 
+          <figure className="m1-visual-support m1-visual-support--actor-map">
+            <img
+              src={accountabilityActorMap}
+              alt="Diagram showing rights-holders, duty-bearers, and a local CSO connected by voice, feedback, responsibility, and response."
+              aria-describedby="m1-s12-actor-map-desc"
+              loading="lazy"
+              onError={hideBrokenImage}
+            />
+            <figcaption id="m1-s12-actor-map-desc" className="sr-only">
+              Rights-holders can raise voice and feedback; duty-bearers have responsibility to respond; local CSOs can support participation, communication, and accountability without replacing duty-bearers.
+            </figcaption>
+          </figure>
+
           {allCorrect && (
             <div className="m1-s12-synthesis" aria-live="polite">
               <strong>✓ Actor roles are clear</strong>
@@ -2173,6 +2190,19 @@ function Module1HrbaShiftScreen({
               HRBA does not ask CSOs to stop delivering services. It asks CSOs to look deeper: who has rights, who has power, who participates, who is responsible, and how accountability works.
             </p>
           </header>
+
+          <figure className="m1-visual-support m1-visual-support--services-pathway">
+            <img
+              src={servicesToRightsPathway}
+              alt="Pathway diagram showing HRBA moving from service delivery toward access, inclusion, participation, responsibility, accountability, dignity, and rights."
+              aria-describedby="m1-s14-services-pathway-desc"
+              loading="lazy"
+              onError={hideBrokenImage}
+            />
+            <figcaption id="m1-s14-services-pathway-desc" className="sr-only">
+              The pathway shows that HRBA moves from simply delivering a service toward improving access, inclusion, participation, responsibility, accountability, dignity, and rights outcomes.
+            </figcaption>
+          </figure>
 
           {isComplete && (
             <div className="m1-s14-synthesis" aria-live="polite">
