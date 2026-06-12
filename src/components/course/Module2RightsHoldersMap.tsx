@@ -1,4 +1,5 @@
 import type { LearningState } from '../../state/learningState';
+import actorMapImage from '../../assets/hrba/module-2/visuals/m2-s08-rights-holders-actor-map.png';
 
 type Module2RightsHoldersMapProps = {
   state: LearningState;
@@ -212,6 +213,16 @@ export default function Module2RightsHoldersMap({
         </header>
 
         <section className="m2-s08-map" aria-labelledby="m2-s08-map-title">
+          <figure className="m2-s08-asset-figure">
+            <img
+              src={actorMapImage}
+              alt="Actor ecosystem map showing rights-holders, CSOs and facilitators, duty-bearers, community structures, informal leaders, and private actors connected through responsibility, accountability, influence, participation, transparency, and feedback."
+            />
+            <figcaption>
+              CSOs support participation, feedback, and connection, while duty-bearers retain responsibility to respect, protect, fulfil, and account.
+            </figcaption>
+          </figure>
+
           <div className="m2-s08-segment-list" role="tablist" aria-label="Rights-holder groups inside the community">
             {segments.map((segment) => {
               const active = segment.id === activeId;

@@ -3,6 +3,7 @@ import Module2CompactRevealScreen, {
   type CompactChoice,
   type CompactRevealItem,
 } from './Module2CompactRevealScreen';
+import sdgLnobInfographic from '../../assets/hrba/module-2/visuals/m2-s13-sdg-lnob-linkage-infographic.png';
 
 type Props = {
   state: LearningState;
@@ -105,6 +106,11 @@ export default function Module2SdgLnobHrba({ state, onChangeState }: Props) {
       choiceTitle="Linkage check"
       choiceInstruction="Which statement uses SDGs, LNOB, and HRBA most practically?"
       choices={choices}
+      visualAsset={{
+        src: sdgLnobInfographic,
+        alt: 'Infographic linking SDGs, Leave No One Behind, and HRBA principles. It shows development goals and outcomes connected to people facing barriers, and HRBA principles such as participation, accountability, non-discrimination, transparency, and empowerment.',
+        caption: 'Use SDGs to name the development change, LNOB to identify who is still at the edge, and HRBA to ask why exclusion happens and who should respond.',
+      }}
     />
   );
 }

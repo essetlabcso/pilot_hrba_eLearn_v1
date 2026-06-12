@@ -40,6 +40,11 @@ type Module2CompactRevealScreenProps = {
   choiceTitle?: string;
   choiceInstruction?: string;
   choices?: CompactChoice[];
+  visualAsset?: {
+    src: string;
+    alt: string;
+    caption: string;
+  };
 };
 
 const accentOrder = ['blue', 'green', 'gold', 'terra', 'navy'] as const;
@@ -85,6 +90,7 @@ export default function Module2CompactRevealScreen({
   choiceTitle,
   choiceInstruction,
   choices = [],
+  visualAsset,
 }: Module2CompactRevealScreenProps) {
   const stored = getStored(state, stateKey, items, choices);
   const activeItem = items.find((item) => item.id === stored.activeItemId) || items[0];
@@ -215,6 +221,13 @@ export default function Module2CompactRevealScreen({
         </header>
 
         <section className="m2-compact-board" aria-labelledby={`${screenId}-panel-title`}>
+          {visualAsset && (
+            <figure className="m2-compact-asset-figure">
+              <img src={visualAsset.src} alt={visualAsset.alt} />
+              <figcaption>{visualAsset.caption}</figcaption>
+            </figure>
+          )}
+
           <div className="m2-compact-list" role="tablist" aria-label={title}>
             {items.map((item, index) => {
               const active = activeItem.id === item.id;

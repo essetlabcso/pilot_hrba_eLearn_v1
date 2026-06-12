@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { LearningState } from '../../state/learningState';
+import rightsDimensionsHotspotImage from '../../assets/hrba/module-2/visuals/m2-s04-rights-dimensions-hotspot.png';
 
 type Props = {
   state: LearningState;
@@ -306,6 +307,7 @@ export default function Module2RightsDimensionsHotspot({
 
             <button
               type="button"
+              className="m2-s04-cta"
               disabled={!allExplored}
               onClick={continueToNextScreen}
               style={{
@@ -351,57 +353,14 @@ export default function Module2RightsDimensionsHotspot({
               boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.5)'
             }}
           >
-            {/* Schematic SVG Vector Room drawing */}
-            <svg 
-              viewBox="0 0 400 300"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none'
-              }}
-            >
-              {/* Grid Background */}
-              <defs>
-                <pattern id="room-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="1"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#room-grid)" />
-
-              {/* Main Room Border */}
-              <rect x="20" y="20" width="360" height="260" rx="12" fill="none" stroke="rgba(148, 163, 184, 0.15)" strokeWidth="2" strokeDasharray="4 4" />
-
-              {/* Plenary Discussion Circle (Center) */}
-              <ellipse cx="200" cy="160" rx="75" ry="45" fill="rgba(59, 153, 212, 0.04)" stroke="rgba(59, 153, 212, 0.2)" strokeWidth="2" strokeDasharray="3 3" />
-              <text x="200" y="164" fill="rgba(255, 255, 255, 0.15)" fontSize="9" fontWeight="700" textAnchor="middle" letterSpacing="0.1em">PLENARY TABLE</text>
-
-              {/* Facilitator Stage (Top Center) */}
-              <rect x="150" y="30" width="100" height="25" rx="4" fill="rgba(71, 85, 105, 0.2)" stroke="rgba(148, 163, 184, 0.2)" strokeWidth="1" />
-              <text x="200" y="46" fill="rgba(255, 255, 255, 0.25)" fontSize="8" fontWeight="600" textAnchor="middle">PROJECTOR & SCREEN</text>
-
-              {/* Entrance Door & Notice Board Area (Top Left) */}
-              <path d="M 20 50 L 20 80" stroke="#EF4444" strokeWidth="3" opacity="0.4" />
-              <text x="32" y="70" fill="rgba(255, 255, 255, 0.25)" fontSize="7" fontWeight="600" transform="rotate(-90 32 70)" textAnchor="middle">ENTRANCE DOOR</text>
-              <rect x="25" y="90" width="22" height="30" fill="rgba(249, 115, 22, 0.1)" stroke="rgba(249, 115, 22, 0.2)" strokeWidth="1" />
-              <text x="36" y="108" fill="rgba(255, 255, 255, 0.2)" fontSize="7" textAnchor="middle">NOTICE</text>
-
-              {/* Access Ramp Area (Bottom Left) */}
-              <path d="M 20 200 L 20 240" stroke="#10B981" strokeWidth="3" opacity="0.4" />
-              <line x1="20" y1="220" x2="40" y2="220" stroke="rgba(16, 185, 129, 0.3)" strokeWidth="1" strokeDasharray="2 2" />
-              <text x="45" y="223" fill="rgba(255, 255, 255, 0.2)" fontSize="7" fontWeight="600">ACCESS RAMP</text>
-
-              {/* Back Row Chairs (Bottom Right) */}
-              <circle cx="310" cy="220" r="8" fill="rgba(71, 85, 105, 0.2)" stroke="rgba(148, 163, 184, 0.1)" />
-              <circle cx="335" cy="220" r="8" fill="rgba(71, 85, 105, 0.2)" stroke="rgba(148, 163, 184, 0.1)" />
-              <circle cx="360" cy="220" r="8" fill="rgba(71, 85, 105, 0.2)" stroke="rgba(148, 163, 184, 0.1)" />
-              <text x="335" y="240" fill="rgba(255, 255, 255, 0.2)" fontSize="8" textAnchor="middle">BACK ROW SEATING</text>
-
-              {/* Feedback Desk Area (Top Right) */}
-              <rect x="320" y="35" width="40" height="20" rx="3" fill="rgba(71, 85, 105, 0.2)" stroke="rgba(148, 163, 184, 0.2)" strokeWidth="1" />
-              <text x="340" y="47" fill="rgba(255, 255, 255, 0.2)" fontSize="7" textAnchor="middle">FEEDBACK TABLE</text>
-            </svg>
+            <img
+              className="m2-s04-hotspot-image"
+              src={rightsDimensionsHotspotImage}
+              alt="Illustrated community meeting scene showing information, access, voice, inclusion, responsibility, and accountability points to inspect."
+            />
+            <p className="sr-only">
+              The scene shows a community meeting with visible access routes, an information board, facilitation space, participants with different opportunities to speak, and feedback points. Use the six hotspots to inspect rights dimensions in the scene.
+            </p>
 
             {/* Hotspots Overlay Buttons */}
             {hotspotItems.map((item) => {

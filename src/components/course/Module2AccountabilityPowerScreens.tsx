@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
+import introVideoPoster from '../../assets/hrba/module-2/visuals/m2-s01a-intro-video-poster.png';
+import powerExclusionHotspotImage from '../../assets/hrba/module-2/visuals/m2-s18-power-exclusion-hotspot-bg.png';
 
 type Props = {
   state: LearningState;
@@ -685,7 +687,7 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
   );
 }
 
-const module2PowerHotspotImage = '/assets/hrba/module-2/images/m2_s18_hotspot_image.png';
+const module2PowerHotspotImage = powerExclusionHotspotImage;
 
 export function Module2PowerExclusion({ state, onChangeState }: Props) {
   const hotspots = [
@@ -2035,6 +2037,10 @@ export function Module2IntroVideoScreen({ state, onChangeState }: Props) {
               />
             ) : (
               <div className="m2-s01a-video-placeholder" role="img" aria-label="Video placeholder waiting for a configured URL">
+                <img
+                  src={introVideoPoster}
+                  alt="Module 2 video poster for Rights, Actors, Principles, and Power showing a play button and people connected to HRBA icons."
+                />
                 <span aria-hidden="true">▶</span>
                 <strong>Video will appear here when a URL is added.</strong>
               </div>

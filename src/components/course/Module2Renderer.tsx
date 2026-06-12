@@ -37,6 +37,7 @@ import {
 } from '../../data/module2/module_2_interaction_registry';
 import { assetRegistry } from '../../data/module2/module_2_asset_registry';
 import { portfolioFields, safetyHelperText } from '../../data/module2/module_2_portfolio_registry';
+import '../../styles/module2-qa-upgrades.css';
 
 interface Module2RendererProps {
   screenId: string;
