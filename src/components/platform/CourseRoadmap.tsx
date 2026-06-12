@@ -10,15 +10,24 @@ interface CourseRoadmapProps {
 }
 
 export default function CourseRoadmap({
+  completedModules,
+  screenProgress,
+  currentModuleId,
   onLaunchModule,
 }: CourseRoadmapProps) {
   const statusByModuleId = new Map<string, ModuleLaunchStatus>();
 
   HRBA_COURSE_MODULES.forEach((module) => {
-    if (module.moduleSeq <= 4) {
+    const isCompleted = completedModules.includes(module.moduleId);
+    const hasProgress = (screenProgress[module.moduleId] || []).length > 0 || currentModuleId === module.moduleId;
+    const previousModules = HRBA_COURSE_MODULES.filter((candidate) => candidate.moduleSeq < module.moduleSeq);
+    const previousModule = previousModules.at(-1);
+    const previousCompleted = !previousModule || completedModules.includes(previousModule.moduleId);
+
+    if (isCompleted) {
       statusByModuleId.set(module.moduleId, 'completed');
-    } else if (module.moduleSeq === 5) {
-      statusByModuleId.set(module.moduleId, 'in-progress');
+    } else if (previousCompleted) {
+      statusByModuleId.set(module.moduleId, hasProgress ? 'in-progress' : 'not-started');
     } else {
       statusByModuleId.set(module.moduleId, 'locked');
     }
@@ -39,7 +48,11 @@ export default function CourseRoadmap({
       <div className="course-roadmap__pathway">
         {HRBA_COURSE_MODULES.map((module) => {
           const status = statusByModuleId.get(module.moduleId) || 'locked';
-          const lockedMessage = status === 'locked' ? 'Complete to unlock' : undefined;
+          const lockedMessage = status === 'locked'
+            ? module.moduleId === 'final_assessment'
+              ? 'Complete Module 5 to unlock'
+              : 'Complete to unlock'
+            : undefined;
 
           return (
             <ModuleLaunchCard

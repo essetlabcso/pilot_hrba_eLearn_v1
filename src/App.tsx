@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadLearningState, saveLearningState } from './state/learningState';
+import { loadLearningState, resetLearningState, saveLearningState } from './state/learningState';
 import type { LearningState } from './state/learningState';
 import PlatformShell from './components/platform/PlatformShell';
 import CoursePlayerShell from './components/player/CoursePlayerShell';
@@ -15,7 +15,12 @@ export default function App() {
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const screenIdParam = params.get('screenId');
     const moduleIdParam = params.get('moduleId');
-    const completedParam = params.get('completed');
+    const allowQaProgressOverride = typeof window !== 'undefined' && (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === ''
+    );
+    const completedParam = allowQaProgressOverride ? params.get('completed') : null;
     const module2RouteTargets: Record<string, { moduleId: string; screenId: string }> = {
       '/module-1': { moduleId: 'module_01_hrba_foundations', screenId: 'M1-PLAYER-00' },
       '/module-1/cover': { moduleId: 'module_01_hrba_foundations', screenId: 'M1-PLAYER-00' },
@@ -141,6 +146,14 @@ export default function App() {
       '/final-assessment/cover': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
     };
     const routeTarget = module2RouteTargets[pathname] || null;
+
+    const canOpenModule = (moduleId: string, completedModules: string[]) => {
+      const moduleDefinition = getHRBAModuleById(moduleId);
+      if (!moduleDefinition) return false;
+      if (moduleDefinition.moduleSeq === 1) return true;
+      const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
+      return previousModules.every((module) => completedModules.includes(module.moduleId));
+    };
     
     if (routeTarget || screenIdParam || completedParam) {
       const nextState = { ...defaultState };
@@ -160,9 +173,19 @@ export default function App() {
       }
       
       if (routeTarget || screenIdParam) {
-        nextState.currentLayer = 'player';
-        nextState.currentModuleId = routeTarget?.moduleId || moduleIdParam || 'module_02_everyday_cso_work';
-        nextState.currentScreenId = routeTarget?.screenId || screenIdParam;
+        const targetModuleId = routeTarget?.moduleId || moduleIdParam || 'module_02_everyday_cso_work';
+        if (canOpenModule(targetModuleId, nextState.completedModules)) {
+          nextState.currentLayer = 'player';
+          nextState.currentModuleId = targetModuleId;
+          nextState.currentScreenId = routeTarget?.screenId || screenIdParam;
+        } else {
+          nextState.currentLayer = 'platform';
+          nextState.currentModuleId = null;
+          nextState.currentScreenId = null;
+          nextState.currentSubState = null;
+          nextState.activeModal = null;
+          return nextState;
+        }
       }
 
       if (screenIdParam) {
@@ -234,6 +257,13 @@ export default function App() {
   const launchModule = (moduleId: string, reviewMode: boolean) => {
     setState((prev) => {
       const moduleDefinition = getHRBAModuleById(moduleId) || HRBA_COURSE_MODULES[0];
+      const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
+      const isUnlocked = previousModules.every((module) => prev.completedModules.includes(module.moduleId));
+
+      if (!isUnlocked) {
+        return prev;
+      }
+
       const targetScreenId = moduleDefinition.startScreenId;
       
       const updatedState = {
@@ -356,6 +386,11 @@ export default function App() {
       
       return updatedState;
     });
+  };
+
+  const resetCourseProgress = () => {
+    setState(resetLearningState());
+    if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
   };
 
   const exitPlayer = () => {
@@ -596,6 +631,7 @@ export default function App() {
         currentModuleId={state.currentModuleId}
         currentScreenId={state.currentScreenId}
         onLaunchModule={launchModule}
+        onResetProgress={resetCourseProgress}
       />
     );
   }

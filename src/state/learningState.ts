@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface LearningState {
+  storageVersion: 'hrba-course-progress-v1';
   currentLayer: 'platform' | 'player';
   currentCourseId: string | null;
   currentModuleId: string | null;
@@ -113,6 +114,7 @@ export interface LearningState {
 }
 
 export const initialLearningState: LearningState = {
+  storageVersion: 'hrba-course-progress-v1',
   currentLayer: 'platform',
   currentCourseId: 'hrba_course',
   currentModuleId: null,
@@ -223,26 +225,108 @@ export const initialLearningState: LearningState = {
   m2TimelineViewed: [],
 };
 
-const STORAGE_KEY = 'hrba_course_learning_state';
+const STORAGE_KEY = 'hrba-course-progress-v1';
+const LEGACY_STORAGE_KEYS = ['hrba_course_learning_state'];
+const VALID_MODULE_IDS = new Set([
+  'module_01_hrba_foundations',
+  'module_02_everyday_cso_work',
+  'module_03_project_design',
+  'module_04_implementation',
+  'module_05_hrba_meal',
+  'final_assessment',
+]);
+
+function cloneInitialLearningState(): LearningState {
+  return structuredClone(initialLearningState);
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isValidModuleList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((moduleId) => typeof moduleId === 'string' && VALID_MODULE_IDS.has(moduleId));
+}
+
+function isValidProgressMap(value: unknown): value is Record<string, string[]> {
+  if (!isObject(value)) return false;
+
+  return Object.entries(value).every(([moduleId, screenIds]) =>
+    VALID_MODULE_IDS.has(moduleId) &&
+    Array.isArray(screenIds) &&
+    screenIds.every((screenId) => typeof screenId === 'string'),
+  );
+}
+
+function hasCompletionDependencyIssue(completedModules: string[]) {
+  const requiredOrder = [
+    'module_01_hrba_foundations',
+    'module_02_everyday_cso_work',
+    'module_03_project_design',
+    'module_04_implementation',
+    'module_05_hrba_meal',
+  ];
+
+  return requiredOrder.some((moduleId, index) => {
+    if (!completedModules.includes(moduleId)) return false;
+    const requiredPrevious = requiredOrder.slice(0, index);
+    return requiredPrevious.some((previousModuleId) => !completedModules.includes(previousModuleId));
+  });
+}
+
+function validateLearningState(candidate: unknown): LearningState | null {
+  if (!isObject(candidate)) return null;
+  if (candidate.storageVersion !== STORAGE_KEY) return null;
+  if (!isValidModuleList(candidate.completedModules)) return null;
+  if (!isValidProgressMap(candidate.screenProgress)) return null;
+  if (hasCompletionDependencyIssue(candidate.completedModules)) return null;
+
+  if (
+    candidate.completedModules.includes('final_assessment') &&
+    !candidate.completedModules.includes('module_05_hrba_meal')
+  ) {
+    return null;
+  }
+
+  return {
+    ...cloneInitialLearningState(),
+    ...candidate,
+    storageVersion: STORAGE_KEY,
+  };
+}
 
 export function loadLearningState(): LearningState {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Merge with initial state in case properties were added
-      return { ...initialLearningState, ...parsed };
+      const validated = validateLearningState(parsed);
+      if (validated) return validated;
+      localStorage.removeItem(STORAGE_KEY);
     }
+    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
   } catch (e) {
     console.error('Failed to load learning state from localStorage:', e);
   }
-  return initialLearningState;
+  return cloneInitialLearningState();
 }
 
 export function saveLearningState(state: LearningState): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const validated = validateLearningState({ ...state, storageVersion: STORAGE_KEY });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(validated || cloneInitialLearningState()));
+    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
   } catch (e) {
     console.error('Failed to save learning state to localStorage:', e);
   }
+}
+
+export function resetLearningState(): LearningState {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+  } catch (e) {
+    console.error('Failed to reset learning state in localStorage:', e);
+  }
+  return cloneInitialLearningState();
 }

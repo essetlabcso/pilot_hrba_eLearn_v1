@@ -7,6 +7,7 @@ interface PlatformShellProps {
   currentModuleId: string | null;
   currentScreenId: string | null;
   onLaunchModule: (moduleId: string, reviewMode: boolean) => void;
+  onResetProgress: () => void;
 }
 
 export default function PlatformShell({
@@ -15,8 +16,29 @@ export default function PlatformShell({
   currentModuleId,
   currentScreenId,
   onLaunchModule,
+  onResetProgress,
 }: PlatformShellProps) {
-  const module5 = HRBA_COURSE_MODULES[4];
+  const nextModule =
+    HRBA_COURSE_MODULES.find((module) => !completedModules.includes(module.moduleId)) ||
+    HRBA_COURSE_MODULES[0];
+  const nextModuleProgress = (screenProgress[nextModule.moduleId] || []).length;
+  const progressTitle = completedModules.length === 0 && nextModuleProgress === 0
+    ? 'Start your HRBA learning pathway.'
+    : nextModule.moduleId === 'final_assessment'
+      ? 'Module 5 is complete. Final Assessment is ready.'
+      : `Continue with ${nextModule.itemLabel}.`;
+  const progressDescription = completedModules.length === 0 && nextModuleProgress === 0
+    ? 'Begin with Module 1. Your progress will be saved only in this browser as you move through the course.'
+    : nextModule.moduleId === 'final_assessment'
+      ? 'You can now open the final course assessment. Certificate access depends only on the final assessment result.'
+      : `Your browser progress is saved locally. Continue ${nextModule.title} when you are ready.`;
+  const progressCta = completedModules.length === 0 && nextModuleProgress === 0
+    ? 'Start Module 1'
+    : nextModule.moduleId === 'final_assessment'
+      ? 'Start Final Assessment'
+      : nextModuleProgress > 0
+        ? `Resume ${nextModule.itemLabel}`
+        : `Start ${nextModule.itemLabel}`;
 
   return (
     <div className="platform-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -109,20 +131,17 @@ export default function PlatformShell({
         </div>
 
         <section className="course-progress-panel" aria-label="Course progress update">
-          <div className="course-progress-panel__icon" aria-hidden="true">✓</div>
+          <div className="course-progress-panel__icon" aria-hidden="true">↗</div>
           <div className="course-progress-panel__copy">
-            <h3>Great progress! You’ve completed Module 4.</h3>
-            <p>
-              You have successfully completed “Applying HRBA During Implementation”.
-              You’re now continuing with Module 5: HRBA in Monitoring, Evaluation, Accountability, and Learning.
-            </p>
+            <h3>{progressTitle}</h3>
+            <p>{progressDescription}</p>
           </div>
           <button
             type="button"
             className="course-progress-panel__cta"
-            onClick={() => onLaunchModule(module5.moduleId, false)}
+            onClick={() => onLaunchModule(nextModule.moduleId, false)}
           >
-            Continue to Module 5
+            {progressCta}
             <span aria-hidden="true">›</span>
           </button>
         </section>
@@ -150,6 +169,22 @@ export default function PlatformShell({
       >
         <p>&copy; {new Date().getFullYear()} CSO Learning Hub. Developed in strict compliance with DEC HRBA specifications.</p>
         <p style={{ marginTop: '0.25rem', color: '#9ca3af', fontSize: '0.75rem' }}>Private local-only storage active. No external databases queried.</p>
+        <button
+          type="button"
+          onClick={onResetProgress}
+          style={{
+            marginTop: '0.85rem',
+            border: '1px solid var(--color-border)',
+            borderRadius: '999px',
+            padding: '0.55rem 0.85rem',
+            background: '#ffffff',
+            color: 'var(--color-deep-navy)',
+            fontWeight: 800,
+            cursor: 'pointer',
+          }}
+        >
+          Reset Course Progress
+        </button>
       </footer>
     </div>
   );
