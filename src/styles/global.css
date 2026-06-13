@@ -17,19 +17,19 @@
   --color-danger: #EF4444;
 
   /* Player shell */
-  --player-shell-bg: #0F172A;
-  --player-header-bg: #0F172A;
-  --player-sidebar-bg: #1E293B;
-  --player-sidebar-border: #334155;
+  --player-shell-bg: var(--cso-color-surface-inverse);
+  --player-header-bg: var(--cso-color-surface-inverse);
+  --player-sidebar-bg: var(--cso-color-surface-inverse-raised);
+  --player-sidebar-border: var(--cso-color-surface-inverse-border);
 
   /* Player learning stage */
-  --player-stage-bg: #F9FAFB;
+  --player-stage-bg: var(--cso-color-background-stage);
   --player-stage-soft: #EEF7FC;
   --player-stage-soft-green: #F4FAEC;
   --player-stage-soft-warm: #FFF4E8;
 
   /* Cards and panels */
-  --player-card-bg: #FFFFFF;
+  --player-card-bg: var(--cso-color-surface-primary);
   --player-card-border: #E5E7EB;
   --player-card-shadow: 0 14px 35px rgba(15, 23, 42, 0.10);
 
