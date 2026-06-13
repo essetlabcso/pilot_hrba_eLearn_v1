@@ -1,0 +1,122 @@
+:root {
+  /* CSO Learning Hub foundation tokens: source-of-truth CSS variables for later implementation. */
+  --cso-color-background-page: #F9FAFB;
+  --cso-color-background-stage: #F9FAFB;
+
+  --cso-color-surface-primary: #FFFFFF;
+  --cso-color-surface-soft-info: #EEF7FC;
+  --cso-color-surface-soft-success: #F4FAEC;
+  --cso-color-surface-soft-warning: #FFF4E8;
+  --cso-color-surface-soft-danger: #FEF2F2;
+  --cso-color-surface-inverse: #0F172A;
+  --cso-color-surface-inverse-raised: #1E293B;
+  --cso-color-surface-inverse-border: #334155;
+
+  --cso-color-text-primary: #111827;
+  --cso-color-text-strong: #0F172A;
+  --cso-color-text-secondary: #4B5563;
+  --cso-color-text-muted: #6B7280;
+  --cso-color-text-inverse: #F9FAFB;
+  --cso-color-text-inverse-muted: #CBD5E1;
+  --cso-color-text-danger: #7F1D1D;
+
+  --cso-color-action-primary: #0E6F9F;
+  --cso-color-action-primary-text: #FFFFFF;
+  --cso-color-action-primary-hover: #075985;
+  --cso-color-action-secondary-text: #0E6F9F;
+
+  --cso-color-accent-success: #91C852;
+  --cso-color-accent-warning: #F97316;
+  --cso-color-accent-danger: #B91C1C;
+  --cso-color-accent-info: #0E6F9F;
+  --cso-color-accent-warm: #F59E0B;
+
+  --cso-color-focus-light-surface: #2563EB;
+  --cso-color-focus-dark-surface: #FBBF24;
+  --cso-color-focus-image-surface: #FBBF24;
+  --cso-color-focus-halo: #0F172A;
+
+  --cso-color-overlay-scrim-dark: rgba(15, 23, 42, 0.72);
+  --cso-color-overlay-scrim-soft: rgba(15, 23, 42, 0.48);
+  --cso-color-overlay-modal: rgba(15, 23, 42, 0.72);
+
+  --cso-color-high-contrast-background: #000000;
+  --cso-color-high-contrast-surface: #111111;
+  --cso-color-high-contrast-text: #FFFFFF;
+  --cso-color-high-contrast-focus: #FFD60A;
+  --cso-color-high-contrast-link: #7DD3FC;
+
+  --cso-font-family-ui: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --cso-font-family-display: Outfit, Inter, system-ui, sans-serif;
+  --cso-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --cso-font-size-xs: 0.75rem;
+  --cso-font-size-sm: 0.875rem;
+  --cso-font-size-base: 1rem;
+  --cso-font-size-lg: 1.125rem;
+  --cso-font-size-xl: 1.25rem;
+  --cso-font-size-2xl: 1.5rem;
+  --cso-font-size-3xl: 1.875rem;
+  --cso-font-size-4xl: 2.25rem;
+  --cso-font-size-5xl: 3rem;
+
+  --cso-line-height-tight: 1.15;
+  --cso-line-height-heading: 1.2;
+  --cso-line-height-body: 1.6;
+  --cso-line-height-relaxed: 1.75;
+
+  --cso-font-weight-regular: 400;
+  --cso-font-weight-medium: 500;
+  --cso-font-weight-semibold: 600;
+  --cso-font-weight-bold: 700;
+  --cso-font-weight-black: 800;
+
+  --cso-space-0: 0;
+  --cso-space-1: 0.25rem;
+  --cso-space-2: 0.5rem;
+  --cso-space-3: 0.75rem;
+  --cso-space-4: 1rem;
+  --cso-space-5: 1.25rem;
+  --cso-space-6: 1.5rem;
+  --cso-space-8: 2rem;
+  --cso-space-10: 2.5rem;
+  --cso-space-12: 3rem;
+  --cso-space-16: 4rem;
+  --cso-space-20: 5rem;
+
+  --cso-radius-sm: 0.375rem;
+  --cso-radius-md: 0.5rem;
+  --cso-radius-lg: 0.75rem;
+  --cso-radius-xl: 1rem;
+  --cso-radius-2xl: 1.5rem;
+  --cso-radius-full: 9999px;
+
+  --cso-border-width-hairline: 1px;
+  --cso-border-width-strong: 2px;
+  --cso-border-color-default: #E5E7EB;
+  --cso-border-color-soft: #DDE2E9;
+  --cso-border-color-inverse: #334155;
+
+  --cso-shadow-card: 0 10px 24px rgba(15, 23, 42, 0.08);
+  --cso-shadow-panel: 0 16px 40px rgba(15, 23, 42, 0.12);
+  --cso-shadow-modal: 0 24px 70px rgba(15, 23, 42, 0.22);
+  --cso-shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.22);
+
+  --cso-motion-duration-fast: 120ms;
+  --cso-motion-duration-normal: 180ms;
+  --cso-motion-duration-slow: 240ms;
+  --cso-motion-easing-standard: ease-out;
+  --cso-motion-reduce: prefers-reduced-motion;
+
+  --cso-breakpoint-sm: 640px;
+  --cso-breakpoint-md: 768px;
+  --cso-breakpoint-lg: 1024px;
+  --cso-breakpoint-xl: 1280px;
+  --cso-breakpoint-2xl: 1536px;
+
+  --cso-layout-content-max-width: 72rem;
+  --cso-layout-reading-max-width: 46rem;
+  --cso-layout-hero-max-width: 80rem;
+  --cso-layout-sidebar-width: 18rem;
+  --cso-layout-mobile-safe-padding: 1rem;
+}
