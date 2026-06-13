@@ -26469,12 +26469,13 @@ h1, h2, h3, h4, h5, h6 {
 /* HRBA reusable course shell template */
 :root {
   --color-deep-navy: #071C33;
-  --player-shell-bg: #06182C;
-  --player-header-bg: #071C33;
-  --player-sidebar-bg: #071C33;
+  --player-shell-bg: var(--cso-color-surface-inverse);
+  --player-header-bg: var(--cso-color-surface-inverse);
+  --player-sidebar-bg: var(--cso-color-surface-inverse-raised);
   --player-sidebar-panel: #102B45;
-  --player-sidebar-border: rgba(183, 221, 238, 0.24);
-  --player-stage-bg: #F3F8EF;
+  --player-sidebar-border: var(--cso-color-surface-inverse-border);
+  --player-stage-bg: var(--cso-color-background-stage);
+  --player-card-bg: var(--cso-color-surface-primary);
   --player-stage-soft-green: #F6FAF2;
   --player-canvas-radius: 24px;
 }
