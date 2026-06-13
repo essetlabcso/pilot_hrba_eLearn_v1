@@ -324,7 +324,7 @@ Rules:
 | `layout.content.maxWidth` | `72rem` |
 | `layout.reading.maxWidth` | `46rem` |
 | `layout.hero.maxWidth` | `80rem` |
-| `layout.sidebar.width` | implementation-reviewed value |
+| `layout.sidebar.width` | `18rem` |
 | `layout.mobile.safePadding` | `1rem` |
 
 Rules:
@@ -404,6 +404,115 @@ Rules:
 - confirm high contrast token behavior in components;
 - confirm final overlay opacity through vertical slice testing;
 - confirm whether Tailwind config, CSS variables, TypeScript tokens, or a combination will be used.
+
+## Implementation Readiness Closure
+
+This section closes the main implementation-readiness questions for first review. These decisions are documentation-only and must still be accepted before token files, theme files, CSS, components, or screens are created.
+
+### Recommended Implementation Format
+
+Use CSS variables plus a TypeScript token object as the first implementation format.
+
+- CSS variables should be the runtime source for visual styling and high contrast overrides.
+- A TypeScript token object should mirror the token names for typed references, documentation checks, and future tooling.
+- Tailwind mapping should be added only if the project adopts Tailwind for implementation or if mapping tokens into utility classes prevents local CSS drift.
+- Component code must consume named tokens, not raw hex, rgba, spacing, radius, or shadow values.
+
+### Sidebar Width Token
+
+Use `layout.sidebar.width: 18rem` as the first proposed desktop sidebar width.
+
+Acceptance criteria:
+
+- the sidebar must leave enough horizontal space for the learning stage at `breakpoint.lg` and above;
+- navigation labels must not wrap awkwardly at common desktop widths;
+- the sidebar must collapse, overlay, or stack on smaller viewports rather than force horizontal scrolling;
+- text enlargement must not hide required navigation or progress controls;
+- the value must be re-tested in the first vertical slice before scaling.
+
+### Shadow Token Candidates
+
+Use these shadow candidates for first implementation review:
+
+| Token name | Candidate value | Use rule |
+| --- | --- | --- |
+| `shadow.card` | `0 10px 24px rgba(15, 23, 42, 0.08)` | Subtle card depth for ordinary learning blocks. |
+| `shadow.panel` | `0 16px 40px rgba(15, 23, 42, 0.12)` | Stronger depth for prominent panels, story surfaces, and premium screen regions. |
+| `shadow.modal` | `0 24px 70px rgba(15, 23, 42, 0.22)` | Modal and overlay depth only. |
+| `shadow.focus` | `0 0 0 4px rgba(37, 99, 235, 0.22)` | Support halo for focus on light surfaces; dark/image surfaces may need amber halo variant. |
+
+Rules:
+
+- shadows must be tokenized and must not be added locally;
+- shadows must support hierarchy, not decoration;
+- high contrast mode may reduce or remove shadow reliance and replace depth with borders/surface contrast;
+- shadow values must be checked on low-quality displays and mobile viewports.
+
+### High Contrast Token Mapping
+
+High contrast tokens should map to component states, not only page background and text.
+
+Required state mapping:
+
+- default surfaces use `color.highContrast.background` and `color.highContrast.surface`;
+- primary text, secondary text, labels, and metadata use `color.highContrast.text` unless a tested high contrast secondary token is added later;
+- links and text actions use `color.highContrast.link` plus underline or another non-color cue;
+- focus states use `color.highContrast.focus`;
+- selected/current states use visible border, label, or icon treatment in addition to color;
+- completed states use text label plus icon or shape cue;
+- locked/disabled states use clear text labels and sufficient contrast, not opacity alone;
+- error, warning, success, and info states use text labels and icon/shape support, not color alone.
+
+### Image Overlay Validation
+
+Overlay opacity must be validated during the first vertical slice against the actual story images used.
+
+Validation requirements:
+
+- test `color.overlay.scrimDark` and `color.overlay.scrimSoft` against desktop, tablet, and mobile crops;
+- confirm white/inverse text remains readable over the darkest and lightest relevant image regions;
+- prefer UI-rendered dark panels beside images when overlay readability is uncertain;
+- provide a high contrast fallback that removes image-backed text or places text on a solid surface;
+- document any image that cannot safely support overlay text and assign it to a non-overlay template slot.
+
+### Hard-Coded Color and Local CSS Drift Prevention
+
+Token usage must prevent old HRBA hard-coded color drift from re-entering the clean system.
+
+Rules:
+
+- no random hex values in components;
+- no local rgba shadow, overlay, or border values in components;
+- no local CSS patch files for visual fixes;
+- no old HRBA CSS values copied without mapping to approved tokens;
+- any new value required during implementation must stop work and be added to the token specification or a reviewed follow-up document first;
+- implementation review should search for hard-coded visual values before commit.
+
+## First Implementation Acceptance Criteria
+
+- [ ] All token values are centralized in the approved implementation format.
+- [ ] No random hex values appear in components.
+- [ ] No local CSS visual patches are introduced.
+- [ ] CTA states are tested for default, hover, active, focus, disabled, and loading behavior.
+- [ ] Muted text usage is tested and does not carry essential instructions.
+- [ ] Danger/error states use approved dark danger text or approved danger background pairings.
+- [ ] Focus states are visible on light, dark, image-backed, and high contrast surfaces.
+- [ ] Locked, completed, selected/current, and disabled states have non-color cues.
+- [ ] High contrast mode has equivalent states for every component state used in the vertical slice.
+- [ ] Image-backed text uses approved overlay, approved structural surface, or an alternative non-image treatment.
+- [ ] Mobile layout preserves CTA visibility and avoids horizontal scrolling.
+- [ ] Token usage is verified before commit with a hard-coded visual value search.
+
+## Do Not Implement Yet Unless
+
+- [ ] This document has been reviewed and accepted as the first implementation source of truth.
+- [ ] The CSS variables plus TypeScript token object format has been accepted.
+- [ ] The `layout.sidebar.width: 18rem` proposal has been accepted or revised.
+- [ ] The shadow token candidates have been accepted or revised.
+- [ ] High contrast state mapping has been accepted for the first vertical slice.
+- [ ] Overlay validation requirements have been accepted for story-image screens.
+- [ ] The implementation team agrees to stop when a missing token or untested state appears.
+- [ ] The first implementation task explicitly limits files and confirms no old HRBA CSS is copied.
 
 ## Stop Conditions
 
