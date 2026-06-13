@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 
@@ -1113,6 +1113,8 @@ function Module3DesignSnapshotScreen({ state, onChangeState }: Module3RendererPr
     (stored.activePartId as string) || snapshotParts[0].id,
   );
   const [microAnswer, setMicroAnswer] = useState<string>((stored.microAnswer as string) || '');
+  const panelHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const hasMountedPartRef = useRef(false);
 
   const completedCount = snapshotParts.filter((part) => selectedByPart[part.id]).length;
   const allPartsComplete = completedCount === snapshotParts.length;
@@ -1121,6 +1123,14 @@ function Module3DesignSnapshotScreen({ state, onChangeState }: Module3RendererPr
   const activeFeedback = activePart.options.find((option) => option.id === selectedOptionId);
   const selectedMicro = snapshotMicroOptions.find((option) => option.id === microAnswer);
   const canContinue = allPartsComplete && Boolean(microAnswer);
+
+  useEffect(() => {
+    if (!hasMountedPartRef.current) {
+      hasMountedPartRef.current = true;
+      return;
+    }
+    panelHeadingRef.current?.focus({ preventScroll: false });
+  }, [activePartId]);
 
   const persist = (patch: Record<string, unknown>) => {
     onChangeState((prev) => ({
@@ -1209,6 +1219,8 @@ function Module3DesignSnapshotScreen({ state, onChangeState }: Module3RendererPr
                     }}
                     role="tab"
                     aria-selected={isActive}
+                    aria-controls={`m3-snapshot-panel-${part.id}`}
+                    id={`m3-snapshot-tab-${part.id}`}
                   >
                     <span>{index + 1}</span>
                     <strong>{part.title}</strong>
@@ -1217,9 +1229,14 @@ function Module3DesignSnapshotScreen({ state, onChangeState }: Module3RendererPr
               })}
             </div>
 
-            <article className="m3-snapshot-question-card" role="tabpanel">
+            <article
+              className="m3-snapshot-question-card"
+              role="tabpanel"
+              id={`m3-snapshot-panel-${activePart.id}`}
+              aria-labelledby={`m3-snapshot-tab-${activePart.id}`}
+            >
               <p className="m3-card-kicker">{activePart.title}</p>
-              <h3>{activePart.prompt}</h3>
+              <h3 ref={panelHeadingRef} tabIndex={-1}>{activePart.prompt}</h3>
               <div className="m3-snapshot-option-list" aria-label={`${activePart.title} options`}>
                 {activePart.options.map((option) => {
                   const isSelected = selectedOptionId === option.id;
@@ -1359,6 +1376,8 @@ function Module3RightsActorsScreen({ state, onChangeState }: Module3RendererProp
     (stored.activePartId as string) || actorMapParts[0].id,
   );
   const [microAnswer, setMicroAnswer] = useState<string>((stored.microAnswer as string) || '');
+  const panelHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const hasMountedPartRef = useRef(false);
 
   const completedCount = actorMapParts.filter((part) => selectedByPart[part.id]).length;
   const allPartsComplete = completedCount === actorMapParts.length;
@@ -1367,6 +1386,14 @@ function Module3RightsActorsScreen({ state, onChangeState }: Module3RendererProp
   const activeFeedback = activePart.options.find((option) => option.id === selectedOptionId);
   const selectedMicro = actorMapMicroOptions.find((option) => option.id === microAnswer);
   const canContinue = allPartsComplete && Boolean(microAnswer);
+
+  useEffect(() => {
+    if (!hasMountedPartRef.current) {
+      hasMountedPartRef.current = true;
+      return;
+    }
+    panelHeadingRef.current?.focus({ preventScroll: false });
+  }, [activePartId]);
 
   const persist = (patch: Record<string, unknown>) => {
     onChangeState((prev) => ({
@@ -1460,6 +1487,8 @@ function Module3RightsActorsScreen({ state, onChangeState }: Module3RendererProp
                     type="button"
                     role="tab"
                     aria-selected={isActive}
+                    aria-controls={`m3-actor-panel-${part.id}`}
+                    id={`m3-actor-tab-${part.id}`}
                     className={`m3-actor-step-tab ${isActive ? 'is-active' : ''} ${isComplete ? 'is-complete' : ''}`}
                     onClick={() => {
                       setActivePartId(part.id);
@@ -1473,9 +1502,14 @@ function Module3RightsActorsScreen({ state, onChangeState }: Module3RendererProp
               })}
             </div>
 
-            <article className="m3-actor-question-card" role="tabpanel">
+            <article
+              className="m3-actor-question-card"
+              role="tabpanel"
+              id={`m3-actor-panel-${activePart.id}`}
+              aria-labelledby={`m3-actor-tab-${activePart.id}`}
+            >
               <p className="m3-card-kicker">{activePart.title}</p>
-              <h3>{activePart.prompt}</h3>
+              <h3 ref={panelHeadingRef} tabIndex={-1}>{activePart.prompt}</h3>
               <div className="m3-actor-option-list" aria-label={`${activePart.title} options`}>
                 {activePart.options.map((option) => {
                   const isSelected = selectedOptionId === option.id;
@@ -1617,6 +1651,8 @@ function Module3DiagnosisLabScreen({ state, onChangeState }: Module3RendererProp
     m3_s07_participationRiskChoice: (stored.m3_s07_participationRiskChoice as string) || '',
     m3_s07_microCheckChoice: (stored.m3_s07_microCheckChoice as string) || '',
   });
+  const panelHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const hasMountedPartRef = useRef(false);
 
   const completedCount = diagnosisLabParts.filter((part) => choices[part.stateKey]).length;
   const allPartsComplete = completedCount === diagnosisLabParts.length;
@@ -1625,6 +1661,14 @@ function Module3DiagnosisLabScreen({ state, onChangeState }: Module3RendererProp
   const activeFeedback = activePart.options.find((option) => option.id === selectedOptionId);
   const selectedMicro = diagnosisMicroOptions.find((option) => option.id === choices.m3_s07_microCheckChoice);
   const canContinue = allPartsComplete && Boolean(choices.m3_s07_microCheckChoice);
+
+  useEffect(() => {
+    if (!hasMountedPartRef.current) {
+      hasMountedPartRef.current = true;
+      return;
+    }
+    panelHeadingRef.current?.focus({ preventScroll: false });
+  }, [activePartId]);
 
   const persist = (patch: Record<string, unknown>) => {
     onChangeState((prev) => ({
@@ -1716,6 +1760,8 @@ function Module3DiagnosisLabScreen({ state, onChangeState }: Module3RendererProp
                     type="button"
                     role="tab"
                     aria-selected={isActive}
+                    aria-controls={`m3-diagnosis-panel-${part.id}`}
+                    id={`m3-diagnosis-tab-${part.id}`}
                     className={`m3-diagnosis-step-tab ${isActive ? 'is-active' : ''} ${isComplete ? 'is-complete' : ''}`}
                     onClick={() => {
                       setActivePartId(part.id);
@@ -1729,9 +1775,14 @@ function Module3DiagnosisLabScreen({ state, onChangeState }: Module3RendererProp
               })}
             </div>
 
-            <article className="m3-diagnosis-question-card" role="tabpanel">
+            <article
+              className="m3-diagnosis-question-card"
+              role="tabpanel"
+              id={`m3-diagnosis-panel-${activePart.id}`}
+              aria-labelledby={`m3-diagnosis-tab-${activePart.id}`}
+            >
               <p className="m3-card-kicker">{activePart.title}</p>
-              <h3>{activePart.prompt}</h3>
+              <h3 ref={panelHeadingRef} tabIndex={-1}>{activePart.prompt}</h3>
               <div className="m3-diagnosis-option-list" aria-label={`${activePart.title} options`}>
                 {activePart.options.map((option) => {
                   const isSelected = selectedOptionId === option.id;
@@ -1870,6 +1921,8 @@ function Module3ObjectiveRepairScreen({ state, onChangeState }: Module3RendererP
     (stored.selectedByStep as Record<string, string>) || {},
   );
   const [microAnswer, setMicroAnswer] = useState<string>((stored.microAnswer as string) || '');
+  const panelHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const hasMountedStepRef = useRef(false);
 
   const completedCount = objectiveRepairSteps.filter((step) => selectedByStep[step.id]).length;
   const allStepsComplete = completedCount === objectiveRepairSteps.length;
@@ -1878,6 +1931,14 @@ function Module3ObjectiveRepairScreen({ state, onChangeState }: Module3RendererP
   const activeFeedback = activeStep.options.find((option) => option.id === selectedOptionId);
   const selectedMicro = objectiveRepairMicroOptions.find((option) => option.id === microAnswer);
   const canContinue = allStepsComplete && Boolean(microAnswer);
+
+  useEffect(() => {
+    if (!hasMountedStepRef.current) {
+      hasMountedStepRef.current = true;
+      return;
+    }
+    panelHeadingRef.current?.focus({ preventScroll: false });
+  }, [activeStepId]);
 
   const persist = (patch: Record<string, unknown>) => {
     onChangeState((prev) => ({
@@ -1961,6 +2022,8 @@ function Module3ObjectiveRepairScreen({ state, onChangeState }: Module3RendererP
                     type="button"
                     role="tab"
                     aria-selected={isActive}
+                    aria-controls={`m3-objective-panel-${step.id}`}
+                    id={`m3-objective-tab-${step.id}`}
                     className={`m3-objective-step-tab ${isActive ? 'is-active' : ''} ${isComplete ? 'is-complete' : ''}`}
                     onClick={() => {
                       setActiveStepId(step.id);
@@ -1974,9 +2037,14 @@ function Module3ObjectiveRepairScreen({ state, onChangeState }: Module3RendererP
               })}
             </div>
 
-            <article className="m3-objective-question-card" role="tabpanel">
+            <article
+              className="m3-objective-question-card"
+              role="tabpanel"
+              id={`m3-objective-panel-${activeStep.id}`}
+              aria-labelledby={`m3-objective-tab-${activeStep.id}`}
+            >
               <p className="m3-card-kicker">{activeStep.title}</p>
-              <h3>{activeStep.prompt}</h3>
+              <h3 ref={panelHeadingRef} tabIndex={-1}>{activeStep.prompt}</h3>
               <div className="m3-objective-option-list" aria-label={`${activeStep.title} options`}>
                 {activeStep.options.map((option) => {
                   const isSelected = selectedOptionId === option.id;
@@ -2526,7 +2594,7 @@ function QuickCheck({
         ))}
       </div>
       {hasSelection && (
-        <div className={`m3-feedback-panel ${correct ? 'is-strong' : 'is-support'}`} aria-live="polite">
+        <div className={`m3-feedback-panel ${correct ? 'is-strong' : 'is-support'}`} role="status" aria-live="polite">
           <strong>{correct ? 'Good choice.' : 'Not quite.'}</strong>
           <p>{correct ? correctFeedback : incorrectFeedback}</p>
         </div>
@@ -5942,13 +6010,44 @@ function Module3StudioScreen({
     stored.activityAnswers || {},
   );
   const [quickCheck, setQuickCheck] = useState<string>(stored.quickCheck || '');
+  const panelHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const hasMountedPanelRef = useRef(false);
 
   const openedCount = openedRevealIds.length;
   const allNotesOpened = openedCount === config.revealItems.length;
   const allActivityAnswered = config.activityItems.every((item) => Boolean(activityAnswers[item.id]));
   const canContinue = started && allNotesOpened && allActivityAnswered && Boolean(quickCheck);
+  const unopenedNotesCount = Math.max(config.revealItems.length - openedCount, 0);
+  const unansweredActivityCount = config.activityItems.filter((item) => !activityAnswers[item.id]).length;
+  const remainingRequirements = [
+    unopenedNotesCount > 0
+      ? `open ${unopenedNotesCount} more design note${unopenedNotesCount === 1 ? '' : 's'}`
+      : '',
+    unansweredActivityCount > 0
+      ? `answer ${unansweredActivityCount} practice prompt${unansweredActivityCount === 1 ? '' : 's'}`
+      : '',
+    !quickCheck ? 'complete the quick check' : '',
+  ].filter(Boolean);
+  const continueHelper = canContinue
+    ? 'Ready to continue.'
+    : `To continue, ${remainingRequirements.join(', ')}.`;
   const activeReveal =
     config.revealItems.find((item) => item.id === activeRevealId) || config.revealItems[0];
+  const panelLabels: Record<'reveal' | 'activity' | 'output' | 'quick', string> = {
+    reveal: 'Design notes',
+    activity: 'Practice',
+    output: 'Model output',
+    quick: 'Quick check',
+  };
+
+  useEffect(() => {
+    if (!started) return;
+    if (!hasMountedPanelRef.current) {
+      hasMountedPanelRef.current = true;
+      return;
+    }
+    panelHeadingRef.current?.focus({ preventScroll: false });
+  }, [activePanel, started]);
 
   const persist = (payload: Record<string, unknown>) => {
     onChangeState((prev) => ({
@@ -6076,16 +6175,27 @@ function Module3StudioScreen({
                 type="button"
                 role="tab"
                 aria-selected={activePanel === id}
+                aria-controls={`${config.screenId}-${id}-panel`}
+                id={`${config.screenId}-${id}-tab`}
                 className={activePanel === id ? 'is-active' : ''}
                 onClick={() => changePanel(id as 'reveal' | 'activity' | 'output' | 'quick')}
               >
+                <span aria-hidden="true">{activePanel === id ? '✓' : ''}</span>
                 {label}
               </button>
             ))}
           </div>
 
           {activePanel === 'reveal' && activeReveal && (
-            <div className="m3-studio-panel">
+            <div
+              className="m3-studio-panel"
+              role="tabpanel"
+              id={`${config.screenId}-reveal-panel`}
+              aria-labelledby={`${config.screenId}-reveal-tab`}
+            >
+              <h3 className="m3-studio-panel-heading" ref={panelHeadingRef} tabIndex={-1}>
+                {panelLabels.reveal}
+              </h3>
               <div className="m3-reveal-button-grid">
                 {config.revealItems.map((item, index) => {
                   const opened = openedRevealIds.includes(item.id);
@@ -6112,10 +6222,15 @@ function Module3StudioScreen({
           )}
 
           {activePanel === 'activity' && (
-            <div className="m3-studio-panel">
+            <div
+              className="m3-studio-panel"
+              role="tabpanel"
+              id={`${config.screenId}-activity-panel`}
+              aria-labelledby={`${config.screenId}-activity-tab`}
+            >
               <div className="m3-output-card">
                 <p className="m3-card-kicker">Practice activity</p>
-                <h2>{config.activityTitle}</h2>
+                <h2 ref={panelHeadingRef} tabIndex={-1}>{config.activityTitle}</h2>
                 <p>{config.activityPrompt}</p>
               </div>
               {config.activityItems.map((item) => {
@@ -6145,7 +6260,7 @@ function Module3StudioScreen({
                       ))}
                     </div>
                     {selected && (
-                      <div className={`m3-feedback-panel ${correct ? 'is-strong' : 'is-support'}`} aria-live="polite">
+                      <div className={`m3-feedback-panel ${correct ? 'is-strong' : 'is-support'}`} role="status" aria-live="polite">
                         <strong>{correct ? 'Good choice.' : 'Try that judgment again.'}</strong>
                         <p>{correct ? item.feedback : commonIncorrectFeedback}</p>
                       </div>
@@ -6157,10 +6272,15 @@ function Module3StudioScreen({
           )}
 
           {activePanel === 'output' && (
-            <div className="m3-studio-panel">
+            <div
+              className="m3-studio-panel"
+              role="tabpanel"
+              id={`${config.screenId}-output-panel`}
+              aria-labelledby={`${config.screenId}-output-tab`}
+            >
               <div className="m3-output-card">
                 <p className="m3-card-kicker">Model output</p>
-                <h2>{config.outputTitle}</h2>
+                <h2 ref={panelHeadingRef} tabIndex={-1}>{config.outputTitle}</h2>
                 {config.outputBody.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
@@ -6182,7 +6302,15 @@ function Module3StudioScreen({
           )}
 
           {activePanel === 'quick' && (
-            <div className="m3-studio-panel">
+            <div
+              className="m3-studio-panel"
+              role="tabpanel"
+              id={`${config.screenId}-quick-panel`}
+              aria-labelledby={`${config.screenId}-quick-tab`}
+            >
+              <h3 className="m3-studio-panel-heading" ref={panelHeadingRef} tabIndex={-1}>
+                {panelLabels.quick}
+              </h3>
               <QuickCheck
                 question={config.quickQuestion}
                 selected={quickCheck}
@@ -6199,6 +6327,9 @@ function Module3StudioScreen({
                 <div>
                   <h2>{config.ctaHeading}</h2>
                   <p>{config.ctaText}</p>
+                  <p className="m3-studio-continue-helper" role="status" aria-live="polite">
+                    {continueHelper}
+                  </p>
                 </div>
                 <PrimaryButton disabled={!canContinue} onClick={finishScreen}>
                   {canContinue ? config.ctaButton : 'Complete this canvas to continue'}

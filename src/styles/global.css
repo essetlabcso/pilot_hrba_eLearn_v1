@@ -263,6 +263,12 @@
   line-height: 1.55;
 }
 
+.m5-canvas__header .m5-step-helper {
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .m5-progress-chip {
   flex: none;
   border-radius: 999px;
@@ -21925,14 +21931,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .m1-action-chip-grid button.is-selected {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
+  border-color: #102033;
+  background: #102033;
   color: #ffffff;
 }
 
 .m1-action-chip-grid button.is-selected span {
-  background: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
+  background: #ffffff;
+  color: #102033;
 }
 
 .m1-action-commitment-card {
@@ -23111,6 +23117,18 @@ h1, h2, h3, h4, h5, h6 {
   .m1-action-footer {
     margin-left: 0;
     padding-left: 0.45rem;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .m1-knowledge-results > *,
+  .m1-knowledge-actions,
+  .m1-knowledge-actions .m1-next-continue,
+  .m1-knowledge-secondary {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .m1-knowledge-time {

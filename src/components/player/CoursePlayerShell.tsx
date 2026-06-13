@@ -48,7 +48,6 @@ export default function CoursePlayerShell({
     'M1-S2-04',
     'M1-S2-05',
     'M1-S3-01',
-    'M1-S3-02',
     'M1-PLAYER-COMPLETE'
   ];
   const module1ScreenById = new Map(
@@ -75,7 +74,8 @@ export default function CoursePlayerShell({
   const currentScreen = playerScreens[playerIndex];
   const screenTitle = currentScreen ? currentScreen['Screen/State Title'] : '';
   const screenId = currentScreen ? currentScreen['Screen/State ID'] : '';
-  const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-S1-07' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03' || screenId === 'M1-S2-04' || screenId === 'M1-S2-05' || screenId === 'M1-S3-01' || screenId === 'M1-S3-02' || screenId === 'M1-PLAYER-COMPLETE';
+  const isFinalAssessment = state.currentModuleId === 'final_assessment';
+  const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-S1-07' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03' || screenId === 'M1-S2-04' || screenId === 'M1-S2-05' || screenId === 'M1-S3-01' || screenId === 'M1-PLAYER-COMPLETE';
 
   // Handle Navigation — operates entirely on playerScreens array bounds
   const handlePrev = () => {
@@ -193,6 +193,8 @@ export default function CoursePlayerShell({
           m2TimelineViewed: screenId === 'M2-S13' ? [] : prev.m2TimelineViewed,
         };
       });
+    } else if (state.currentModuleId === 'final_assessment') {
+      return true;
     } else {
       if (screenId === 'M1-S1-06A') {
         onChangeState((prev) => ({ ...prev, m1EverydayWorkExplored: [] }));
@@ -243,27 +245,6 @@ export default function CoursePlayerShell({
             completed: false
           }
         }));
-      } else if (screenId === 'M1-S3-02') {
-        onChangeState((prev) => {
-          const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
-          const moduleProgress = prev.screenProgress[moduleId] || [];
-          return {
-            ...prev,
-            screen18Completion: {
-              reviewedTakeaways: [],
-              completed: false
-            },
-            module1Completion: {
-              completed: false,
-              completedAt: ''
-            },
-            completedModules: prev.completedModules.filter((id) => id !== 'module_01_hrba_foundations'),
-            screenProgress: {
-              ...prev.screenProgress,
-              [moduleId]: moduleProgress.filter((id) => id !== 'M1-S3-02' && id !== 'M1-PLAYER-COMPLETE')
-            }
-          };
-        });
       } else if (screenId === 'M1-S1-03') {
         onChangeState((prev) => ({ ...prev, m1JourneyActiveStep: 1, m1JourneyVisitedSteps: [] }));
       } else if (screenId === 'M1-S1-05') {
@@ -406,9 +387,6 @@ export default function CoursePlayerShell({
       if (screenId === 'M1-S3-01' && !state.screen17ActionCommitment.completed) {
         return true; // choose a priority and action commitment before advancing
       }
-      if (screenId === 'M1-S3-02' && !state.screen18Completion.completed) {
-        return true; // review all five takeaways before moving to the final closing screen
-      }
       if (screenId === 'M1-S6-05' && !state.surveyCompleted) {
         // Allow moving on only if survey completed/submitted
         return Object.keys(state.surveyAnswers).length < 16;
@@ -441,8 +419,8 @@ export default function CoursePlayerShell({
         onPrev={handlePrev}
         onNext={handleNext}
         onExit={onExit}
-        prevDisabled={playerIndex === 0}
-        nextDisabled={playerIndex >= totalScreens - 1 || isNextDisabled()}
+        prevDisabled={isFinalAssessment || playerIndex === 0}
+        nextDisabled={isFinalAssessment || playerIndex >= totalScreens - 1 || isNextDisabled()}
       />
 
       <div className="player-split-canvas">
@@ -515,9 +493,12 @@ export default function CoursePlayerShell({
                   <button
                     key={screen['Screen/State ID']}
                     onClick={() => {
+                      if (isFinalAssessment) return;
                       onChangeState(prev => ({ ...prev, currentScreenId: screen['Screen/State ID'] }));
                       handleToggleModal(null);
                     }}
+                    disabled={isFinalAssessment}
+                    aria-disabled={isFinalAssessment}
                     style={{
                       padding: '0.5rem',
                       borderRadius: '4px',
@@ -526,7 +507,8 @@ export default function CoursePlayerShell({
                       color: active ? '#fff' : '#cbd5e1',
                       textAlign: 'left',
                       fontSize: '0.8rem',
-                      cursor: 'pointer',
+                      cursor: isFinalAssessment ? 'not-allowed' : 'pointer',
+                      opacity: isFinalAssessment && !active ? 0.55 : 1,
                       textOverflow: 'ellipsis',
                       overflow: 'hidden',
                       whiteSpace: 'nowrap'

@@ -97,8 +97,8 @@ export const HRBA_COURSE_MODULES: HRBAModuleDefinition[] = [
     thumbnailSrc: '/assets/hrba/modules/final-assessment.png',
     thumbnailAlt: 'Cover image for the HRBA Final Assessment.',
     startScreenId: 'FINAL-ASSESSMENT-PLAYER-00',
-    completionScreenId: 'FINAL-ASSESSMENT-COMPLETE',
-    contentAvailable: false,
+    completionScreenId: 'FINAL-ASSESSMENT-RESULT',
+    contentAvailable: true,
   },
 ];
 

@@ -44,7 +44,13 @@ export default function ModuleLaunchCard({
   const descriptionId = `module-${module.moduleSeq}-description`;
   const lockMessageId = `module-${module.moduleSeq}-lock-message`;
   const ctaDescription = isLocked ? lockMessageId : descriptionId;
-  const statusIcon = status === 'completed' ? '✓' : status === 'in-progress' ? '◌' : '🔒';
+  const statusIcon = status === 'completed'
+    ? '✓'
+    : status === 'in-progress'
+      ? '◌'
+      : status === 'locked'
+        ? '🔒'
+        : '○';
 
   return (
     <article className={`module-launch-card module-launch-card--${status}`} aria-labelledby={`module-${module.moduleSeq}-title`}>

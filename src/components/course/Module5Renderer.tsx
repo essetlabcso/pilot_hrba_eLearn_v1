@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 
@@ -1308,6 +1308,19 @@ function Module5CanvasScreen({
   const screenThemeClass = polishedLabScreenThemes[config.screenId] || '';
   const isPolishedLabScreen = Boolean(screenThemeClass);
 
+  useEffect(() => {
+    const nextStored = state.practiceCheckState[key] || {};
+    const nextCompleted = (state.screenProgress[MODULE_ID] || []).includes(config.screenId);
+    const nextRevealIds = config.revealItems.map((item) => item.id);
+
+    setStarted(Boolean(nextStored.started || nextCompleted));
+    setActivePanel(nextStored.activePanel || 'reveal');
+    setOpenedIds(nextCompleted ? nextRevealIds : nextStored.openedIds || []);
+    setActiveRevealId(nextStored.activeRevealId || config.revealItems[0]?.id || '');
+    setSelectedIds(nextStored.selectedIds || []);
+    setSubmitted(Boolean(nextStored.submitted || nextCompleted));
+  }, [config.screenId, key, state.practiceCheckState, state.screenProgress, config.revealItems]);
+
   const activeReveal = config.revealItems.find((item) => item.id === activeRevealId) || config.revealItems[0];
   const openedCount = openedIds.length;
   const selectedCorrect = selectedIds.filter((id) => config.options.find((option) => option.id === id)?.correct).length;
@@ -1462,6 +1475,9 @@ function Module5CanvasScreen({
               <p className="m5-card-kicker">{isLensScreen ? 'HRBA MEAL lens practice' : 'Practice canvas'}</p>
               <h2 id={`${config.screenId}-canvas`}>{activePanel === 'practice' ? config.activityTitle : activePanel === 'insight' ? config.insightTitle : config.revealTitle}</h2>
               <p>{activePanel === 'practice' ? config.activityPrompt : activePanel === 'insight' ? 'Review the insight, then continue when ready.' : config.revealIntro}</p>
+              <p className="m5-step-helper">
+                Step 1: open each evidence card. Step 2: make a judgment. Step 3: review the insight and continue.
+              </p>
             </div>
             <ProgressChip>{openedCount} of {allRevealIds.length} evidence cards opened</ProgressChip>
           </div>
@@ -1619,14 +1635,18 @@ function Module5CompleteScreen({ onChangeState }: { onChangeState: Module5Render
             </p>
           </article>
           <PrimaryButton
-            onClick={() =>
+            onClick={() => {
               onChangeState((prev) => ({
                 ...prev,
                 currentLayer: 'platform',
+                completedModules: prev.completedModules.includes(MODULE_ID)
+                  ? prev.completedModules
+                  : [...prev.completedModules, MODULE_ID],
                 currentSubState: null,
                 activeModal: null,
-              }))
-            }
+              }));
+              setRoute('/');
+            }}
           >
             Return to course page
           </PrimaryButton>

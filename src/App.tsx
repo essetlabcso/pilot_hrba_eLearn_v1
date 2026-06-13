@@ -4,6 +4,7 @@ import type { LearningState } from './state/learningState';
 import PlatformShell from './components/platform/PlatformShell';
 import CoursePlayerShell from './components/player/CoursePlayerShell';
 import { HRBA_COURSE_MODULES, getHRBAModuleById } from './data/hrbaCourseModules';
+import { finalAssessmentQuestions } from './data/finalAssessment';
 
 import m1Sequence from './data/module1/module_1_screen_sequence.json';
 import m2Sequence from './data/module2/module_2_screen_sequence.json';
@@ -144,9 +145,17 @@ export default function App() {
       '/module-5/complete': { moduleId: 'module_05_hrba_meal', screenId: 'M5-PLAYER-COMPLETE' },
       '/final-assessment': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
       '/final-assessment/cover': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
+      '/final-assessment/submit': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-SUBMIT' },
+      '/final-assessment/result': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-RESULT' },
     };
+    finalAssessmentQuestions.forEach((_, index) => {
+      module2RouteTargets[`/final-assessment/question-${index + 1}`] = {
+        moduleId: 'final_assessment',
+        screenId: `FINAL-ASSESSMENT-Q${String(index + 1).padStart(2, '0')}`,
+      };
+    });
     const routeTarget = module2RouteTargets[pathname] || null;
-
+    
     const canOpenModule = (moduleId: string, completedModules: string[]) => {
       const moduleDefinition = getHRBAModuleById(moduleId);
       if (!moduleDefinition) return false;
@@ -154,7 +163,7 @@ export default function App() {
       const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
       return previousModules.every((module) => completedModules.includes(module.moduleId));
     };
-    
+
     if (routeTarget || screenIdParam || completedParam) {
       const nextState = { ...defaultState };
       
@@ -163,6 +172,11 @@ export default function App() {
         nextState.screenProgress = {};
         nextState.practiceCheckState = {};
         nextState.m2ObjectiveCardsViewed = [];
+        nextState.finalAssessmentStarted = false;
+        nextState.finalAssessmentAnswers = {};
+        nextState.finalAssessmentSubmitted = false;
+        nextState.finalAssessmentScore = 0;
+        nextState.finalAssessmentSubmittedAt = '';
         if (!routeTarget && !screenIdParam) {
           nextState.currentLayer = 'platform';
           nextState.currentModuleId = null;
@@ -264,7 +278,9 @@ export default function App() {
         return prev;
       }
 
-      const targetScreenId = moduleDefinition.startScreenId;
+      const targetScreenId = moduleId === 'final_assessment' && prev.finalAssessmentSubmitted
+        ? 'FINAL-ASSESSMENT-RESULT'
+        : moduleDefinition.startScreenId;
       
       const updatedState = {
         ...prev,
@@ -274,6 +290,10 @@ export default function App() {
       };
 
       if (reviewMode) {
+        if (moduleId === 'final_assessment') {
+          return updatedState;
+        }
+
         if (moduleId === 'module_02_everyday_cso_work') {
           updatedState.m2PlainLanguageRightsExplanation = '';
           updatedState.m2EverydayRightsIssue = '';
@@ -377,6 +397,14 @@ export default function App() {
             'module_01_hrba_foundations': []
           };
         } else {
+          if (moduleId === 'final_assessment') {
+            updatedState.finalAssessmentStarted = false;
+            updatedState.finalAssessmentAnswers = {};
+            updatedState.finalAssessmentSubmitted = false;
+            updatedState.finalAssessmentScore = 0;
+            updatedState.finalAssessmentSubmittedAt = '';
+          }
+
           updatedState.screenProgress = {
             ...prev.screenProgress,
             [moduleId]: []
@@ -513,6 +541,32 @@ export default function App() {
       'Learning/Purpose': purpose,
     })),
   ];
+  const finalAssessmentSequence = [
+    {
+      Layer: 'Layer 2 Player',
+      'Screen/State ID': 'FINAL-ASSESSMENT-PLAYER-00',
+      'Screen/State Title': 'Final Assessment',
+      'Learning/Purpose': 'Review final assessment rules and begin the 20-question scored assessment.',
+    },
+    ...finalAssessmentQuestions.map((question, index) => ({
+      Layer: 'Layer 2 Player',
+      'Screen/State ID': `FINAL-ASSESSMENT-Q${String(index + 1).padStart(2, '0')}`,
+      'Screen/State Title': `Question ${index + 1} of ${finalAssessmentQuestions.length}`,
+      'Learning/Purpose': question.question,
+    })),
+    {
+      Layer: 'Layer 2 Player',
+      'Screen/State ID': 'FINAL-ASSESSMENT-SUBMIT',
+      'Screen/State Title': 'Submit Final Assessment',
+      'Learning/Purpose': 'Submit the completed final assessment and calculate the final score.',
+    },
+    {
+      Layer: 'Layer 2 Player',
+      'Screen/State ID': 'FINAL-ASSESSMENT-RESULT',
+      'Screen/State Title': 'Final Assessment Result',
+      'Learning/Purpose': 'Show the final score, pass status, and course completion next step.',
+    },
+  ];
   const currentSequence = state.currentModuleId === 'module_02_everyday_cso_work'
     ? m2Sequence
     : state.currentModuleId === 'module_01_hrba_foundations'
@@ -608,6 +662,8 @@ export default function App() {
           ]
     : state.currentModuleId === 'module_05_hrba_meal'
         ? module5Sequence
+    : state.currentModuleId === 'final_assessment'
+        ? finalAssessmentSequence
       : [
           {
             Layer: 'Layer 2 Player',

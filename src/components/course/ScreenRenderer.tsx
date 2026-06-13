@@ -5,6 +5,7 @@ import Module2Renderer from './Module2Renderer';
 import Module3Renderer from './Module3Renderer';
 import Module4Renderer from './Module4Renderer';
 import Module5Renderer from './Module5Renderer';
+import FinalAssessmentRenderer from './FinalAssessmentRenderer';
 import CourseItemCoverScreen from './CourseItemCoverScreen';
 
 interface ScreenRendererProps {
@@ -19,9 +20,8 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
   const isModule3CoverScreen = screenId === 'M3-PLAYER-00';
   const isModule4CoverScreen = screenId === 'M4-PLAYER-00';
   const isModule5CoverScreen = screenId === 'M5-PLAYER-00';
-  const isFinalAssessmentCoverScreen = screenId === 'FINAL-ASSESSMENT-PLAYER-00';
   const isModule1CoverScreen = screenId === 'M1-PLAYER-00';
-  const isCourseItemCoverScreen = isModule1CoverScreen || isModule2CoverScreen || isModule3CoverScreen || isModule4CoverScreen || isModule5CoverScreen || isFinalAssessmentCoverScreen;
+  const isCourseItemCoverScreen = isModule1CoverScreen || isModule2CoverScreen || isModule3CoverScreen || isModule4CoverScreen || isModule5CoverScreen;
   const isModule3BuiltScreen = screenId.startsWith('M3-S1-') || screenId === 'M3-PLAYER-COMPLETE';
   const isModule4BuiltScreen = screenId.startsWith('M4-S1-');
   const isModule5BuiltScreen = screenId.startsWith('M5-S1-') || screenId === 'M5-PLAYER-COMPLETE';
@@ -69,7 +69,17 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
     );
   }
 
-  if (screenId.startsWith('M3-') || screenId.startsWith('M4-') || screenId.startsWith('M5-') || screenId.startsWith('FINAL-ASSESSMENT-')) {
+  if (screenId.startsWith('FINAL-ASSESSMENT-')) {
+    return (
+      <FinalAssessmentRenderer
+        screenId={screenId}
+        state={state}
+        onChangeState={onChangeState}
+      />
+    );
+  }
+
+  if (screenId.startsWith('M3-') || screenId.startsWith('M4-') || screenId.startsWith('M5-')) {
     return (
       <div className="future-module-screen" aria-labelledby="future-module-title">
         {moduleDefinition && (

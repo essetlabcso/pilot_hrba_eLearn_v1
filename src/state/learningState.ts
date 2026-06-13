@@ -111,6 +111,13 @@ export interface LearningState {
   m2TabsViewed: string[];
   m2ProcessViewed: string[];
   m2TimelineViewed: string[];
+
+  // Final Assessment State
+  finalAssessmentStarted: boolean;
+  finalAssessmentAnswers: Record<string, string>;
+  finalAssessmentSubmitted: boolean;
+  finalAssessmentScore: number;
+  finalAssessmentSubmittedAt: string;
 }
 
 export const initialLearningState: LearningState = {
@@ -223,6 +230,12 @@ export const initialLearningState: LearningState = {
   m2TabsViewed: [],
   m2ProcessViewed: [],
   m2TimelineViewed: [],
+
+  finalAssessmentStarted: false,
+  finalAssessmentAnswers: {},
+  finalAssessmentSubmitted: false,
+  finalAssessmentScore: 0,
+  finalAssessmentSubmittedAt: '',
 };
 
 const STORAGE_KEY = 'hrba-course-progress-v1';
@@ -284,6 +297,20 @@ function validateLearningState(candidate: unknown): LearningState | null {
   if (
     candidate.completedModules.includes('final_assessment') &&
     !candidate.completedModules.includes('module_05_hrba_meal')
+  ) {
+    return null;
+  }
+
+  if (
+    candidate.finalAssessmentSubmitted === true &&
+    !candidate.completedModules.includes('module_05_hrba_meal')
+  ) {
+    return null;
+  }
+
+  if (
+    candidate.finalAssessmentScore !== undefined &&
+    (typeof candidate.finalAssessmentScore !== 'number' || candidate.finalAssessmentScore < 0 || candidate.finalAssessmentScore > 20)
   ) {
     return null;
   }

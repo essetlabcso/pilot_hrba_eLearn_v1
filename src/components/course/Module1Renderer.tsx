@@ -244,7 +244,7 @@ interface Module1RendererProps {
 }
 
 export default function Module1Renderer({ screenId, state, onChangeState, onNext }: Module1RendererProps) {
-  const isWideOpeningScreen = screenId === 'M1-PLAYER-00' || screenId === 'M1-S1-01' || screenId === 'M1-S1-02' || screenId === 'M1-S1-03' || screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-S1-07' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03' || screenId === 'M1-S2-04' || screenId === 'M1-S2-05' || screenId === 'M1-S3-01' || screenId === 'M1-S3-02';
+  const isWideOpeningScreen = screenId === 'M1-PLAYER-00' || screenId === 'M1-S1-01' || screenId === 'M1-S1-02' || screenId === 'M1-S1-03' || screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-S1-07' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03' || screenId === 'M1-S2-04' || screenId === 'M1-S2-05' || screenId === 'M1-S3-01';
 
   return (
     <div
@@ -1634,29 +1634,37 @@ function Module1RightsHolderShiftScreen({
                   aria-expanded={isRevealed}
                   aria-label={`${col.title}. ${isRevealed ? 'Explored' : 'Tap to explore'}`}
                 >
-                  <div className="m1-s11-column__header">
-                    <span className="m1-s11-column__badge">{isRevealed ? '✓' : col.icon}</span>
-                    <small>{col.eyebrow}</small>
-                    <strong>{col.title}</strong>
-                  </div>
-                  {!isRevealed && (
-                    <div className="m1-s11-column__prompt">
-                      <em>Explore this lens</em>
-                    </div>
-                  )}
-                  {isRevealed && (
-                    <div className="m1-s11-column__body">
-                      <p className="m1-s11-column__summary">{col.summary}</p>
-                      <div className="m1-s11-column__questions">
-                        <span>This lens asks:</span>
-                        <ul>
-                          {col.questions.map((q) => (
-                            <li key={q}>{q}</li>
-                          ))}
-                        </ul>
+                  <div className="m1-s11-column__inner">
+                    <div className="m1-s11-column__face m1-s11-column__front" aria-hidden={isRevealed}>
+                      <div className="m1-s11-column__header">
+                        <span className="m1-s11-column__badge">{col.icon}</span>
+                        <small>{col.eyebrow}</small>
+                        <strong>{col.title}</strong>
+                      </div>
+                      <div className="m1-s11-column__prompt">
+                        <em>{isRevealed ? 'Review this lens' : 'Explore this lens'}</em>
                       </div>
                     </div>
-                  )}
+
+                    <div className="m1-s11-column__face m1-s11-column__back" aria-hidden={!isRevealed}>
+                      <div className="m1-s11-column__header">
+                        <span className="m1-s11-column__badge">✓</span>
+                        <small>{col.eyebrow}</small>
+                        <strong>{col.title}</strong>
+                      </div>
+                      <div className="m1-s11-column__body">
+                        <p className="m1-s11-column__summary">{col.summary}</p>
+                        <div className="m1-s11-column__questions">
+                          <span>This lens asks:</span>
+                          <ul>
+                            {col.questions.map((q) => (
+                              <li key={q}>{q}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </button>
               );
             })}
@@ -2801,10 +2809,10 @@ function Module1SelfAssessmentScreen({
 
   const scores = state.selfAssessmentScores || {};
   const answeredCount = statements.filter((statement) => scores[statement.id]).length;
-  const pageCount = 3;
-  const currentPage = Math.min(Math.max(state.m1SelfAssessmentPage || 0, 0), pageCount - 1);
-  const pageStatements = statements.slice(currentPage * 2, currentPage * 2 + 2);
-  const pageAnswered = pageStatements.every((statement) => Boolean(scores[statement.id]));
+  const currentQuestionIndex = Math.min(Math.max(state.m1SelfAssessmentPage || 0, 0), statements.length - 1);
+  const currentStatement = statements[currentQuestionIndex];
+  const currentStatementAnswered = Boolean(scores[currentStatement.id]);
+  const isLastQuestion = currentQuestionIndex === statements.length - 1;
   const isComplete = state.screen16Completed;
   const feedback = state.selfAssessmentCategory ? feedbackByCategory[state.selfAssessmentCategory] : null;
 
@@ -2854,7 +2862,15 @@ function Module1SelfAssessmentScreen({
             [scoreUpdate.id]: scoreUpdate.value
           }
         : prev.selfAssessmentScores;
-      const calculated = calculateAssessment(nextFocus, nextScores);
+      const calculated = prev.screen16Completed
+        ? calculateAssessment(nextFocus, nextScores)
+        : {
+            selfAssessmentTotal: 0,
+            selfAssessmentCategory: '' as LearningState['selfAssessmentCategory'],
+            suggestedPriorityOne: '',
+            suggestedPriorityTwo: '',
+            screen16Completed: false
+          };
 
       return {
         ...prev,
@@ -2868,8 +2884,28 @@ function Module1SelfAssessmentScreen({
   const goToAssessmentPage = (page: number) => {
     onChangeState((prev) => ({
       ...prev,
-      m1SelfAssessmentPage: Math.min(Math.max(page, 0), pageCount - 1)
+      m1SelfAssessmentPage: Math.min(Math.max(page, 0), statements.length - 1)
     }));
+  };
+
+  const chooseRating = (statementId: string, value: 1 | 2 | 3 | 4) => {
+    onChangeState((prev) => {
+      const nextScores = {
+        ...prev.selfAssessmentScores,
+        [statementId]: value
+      };
+
+      return {
+        ...prev,
+        selfAssessmentScores: nextScores,
+        m1SelfAssessmentPage: Math.min((prev.m1SelfAssessmentPage || 0) + 1, statements.length - 1),
+        selfAssessmentTotal: 0,
+        selfAssessmentCategory: '' as LearningState['selfAssessmentCategory'],
+        suggestedPriorityOne: '',
+        suggestedPriorityTwo: '',
+        screen16Completed: false
+      };
+    });
   };
 
   const completeAssessment = () => {
@@ -2877,7 +2913,7 @@ function Module1SelfAssessmentScreen({
       const calculated = calculateAssessment(prev.assessmentFocus, prev.selfAssessmentScores);
       return {
         ...prev,
-        m1SelfAssessmentPage: pageCount - 1,
+        m1SelfAssessmentPage: statements.length - 1,
         ...calculated
       };
     });
@@ -2947,37 +2983,16 @@ function Module1SelfAssessmentScreen({
           <section className="m1-assessment-ratings" aria-labelledby="m1-assessment-ratings-title">
             <div className="m1-assessment-section-head m1-assessment-ratings-head">
               <div>
-                <h2 id="m1-assessment-ratings-title">Rate two statements at a time.</h2>
-                <p aria-live="polite">Page {currentPage + 1} of {pageCount} · {answeredCount} of 6 statements answered</p>
+                <h2 id="m1-assessment-ratings-title">Rate one statement at a time.</h2>
+                <p aria-live="polite">Question {currentQuestionIndex + 1} of {statements.length} · {answeredCount} of 6 statements answered</p>
               </div>
-              <dl className="m1-assessment-scale" aria-label="Scale meaning">
-                <div><dt>Not yet</dt><dd>Not part of practice yet.</dd></div>
-                <div><dt>Starting</dt><dd>Started, but not consistent.</dd></div>
-                <div><dt>Developing</dt><dd>Used in some areas.</dd></div>
-                <div><dt>Strong</dt><dd>Part of regular practice.</dd></div>
-              </dl>
-            </div>
-
-            <div className="m1-assessment-page-controls" aria-label="Assessment pages">
-              {Array.from({ length: pageCount }, (_, index) => {
-                const pageDone = statements.slice(index * 2, index * 2 + 2).every((statement) => Boolean(scores[statement.id]));
-                return (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`${currentPage === index ? 'is-active' : ''} ${pageDone ? 'is-complete' : ''}`}
-                    onClick={() => goToAssessmentPage(index)}
-                    aria-current={currentPage === index ? 'step' : undefined}
-                  >
-                    <span aria-hidden="true">{pageDone ? '✓' : index + 1}</span>
-                    Page {index + 1}
-                  </button>
-                );
-              })}
+              <p className="m1-assessment-scale m1-assessment-scale--plain" aria-label="Scale meaning">
+                Rating guide: Not yet means not part of practice yet; Starting means started but not consistent; Developing means used in some areas; Strong means part of regular practice.
+              </p>
             </div>
 
             <div className="m1-assessment-statement-grid m1-assessment-statement-grid--paged">
-              {pageStatements.map((statement) => {
+              {[currentStatement].map((statement) => {
                 const selectedScore = scores[statement.id];
                 return (
                   <fieldset key={statement.id} className={`m1-assessment-statement ${selectedScore ? 'is-rated' : ''}`}>
@@ -2993,7 +3008,7 @@ function Module1SelfAssessmentScreen({
                             key={rating.value}
                             type="button"
                             className={selected ? 'is-selected' : ''}
-                            onClick={() => updateAssessment(null, { id: statement.id, value: rating.value })}
+                            onClick={() => chooseRating(statement.id, rating.value)}
                             role="radio"
                             aria-checked={selected}
                           >
@@ -3009,16 +3024,16 @@ function Module1SelfAssessmentScreen({
             </div>
 
             <div className="m1-assessment-wizard-actions">
-              <button type="button" onClick={() => goToAssessmentPage(currentPage - 1)} disabled={currentPage === 0}>
+              <button type="button" onClick={() => goToAssessmentPage(currentQuestionIndex - 1)} disabled={currentQuestionIndex === 0}>
                 Previous
               </button>
-              {currentPage < pageCount - 1 ? (
-                <button type="button" onClick={() => goToAssessmentPage(currentPage + 1)} disabled={!pageAnswered}>
+              {!isLastQuestion ? (
+                <button type="button" onClick={() => goToAssessmentPage(currentQuestionIndex + 1)} disabled={!currentStatementAnswered}>
                   Next
                 </button>
               ) : (
                 <button type="button" onClick={completeAssessment} disabled={!state.assessmentFocus || answeredCount < 6}>
-                  Complete assessment
+                  Finish assessment
                 </button>
               )}
             </div>
@@ -3623,7 +3638,7 @@ function Module1FinishedScreen({
     onChangeState((prev) => {
       const moduleId = 'module_01_hrba_foundations';
       const moduleProgress = prev.screenProgress[moduleId] || [];
-      const nextProgress = Array.from(new Set([...moduleProgress, 'M1-S3-02', 'M1-PLAYER-COMPLETE']));
+      const nextProgress = Array.from(new Set([...moduleProgress, 'M1-PLAYER-COMPLETE']));
       return {
         ...prev,
         module1Completion: {
@@ -3669,7 +3684,7 @@ function Module1FinishedScreen({
       currentLayer: 'player',
       currentCourseId: 'hrba_course',
       currentModuleId: 'module_01_hrba_foundations',
-      currentScreenId: 'M1-S3-02',
+      currentScreenId: 'M1-S3-01',
       currentSubState: null,
       activeModal: null
     }));
