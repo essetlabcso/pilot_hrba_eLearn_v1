@@ -26617,7 +26617,7 @@ body:has(.course-shell) {
   min-height: 44px;
   border-radius: 9px;
   padding: 0.58rem 0.95rem;
-  color: #ffffff;
+  color: var(--cso-color-text-inverse);
   font: inherit;
   font-size: 0.94rem;
   font-weight: 850;
@@ -26626,13 +26626,13 @@ body:has(.course-shell) {
 }
 
 .player-header-button--secondary {
-  border: 1px solid rgba(183, 221, 238, 0.34);
+  border: 1px solid var(--cso-color-surface-inverse-border);
   background: rgba(255, 255, 255, 0.04);
 }
 
 .player-header-button--primary {
-  border: 1px solid rgba(59, 153, 212, 0.48);
-  background: #0E6F9F;
+  border: 1px solid var(--cso-color-action-primary);
+  background: var(--cso-color-action-primary);
   box-shadow: 0 10px 22px rgba(14, 111, 159, 0.28);
 }
 
@@ -26719,13 +26719,13 @@ body:has(.course-shell) {
 }
 
 .player-sidebar-button {
-  border: 1px solid rgba(183, 221, 238, 0.2);
+  border: 1px solid var(--cso-color-surface-inverse-border);
   background: rgba(16, 43, 69, 0.68);
-  color: #f8fbff;
+  color: var(--cso-color-text-inverse);
 }
 
 .player-sidebar-button--media {
-  color: #d9e4ef;
+  color: var(--cso-color-text-inverse-muted);
 }
 
 .player-sidebar-button.is-active,
@@ -26754,7 +26754,7 @@ body:has(.course-shell) {
 .player-sidebar-return {
   display: block;
   width: 100%;
-  border: 1px solid var(--color-danger);
+  border: 1px solid var(--cso-color-accent-danger);
   background: rgba(239, 68, 68, 0.08);
   color: #ff6b6b;
   font-weight: 850;
