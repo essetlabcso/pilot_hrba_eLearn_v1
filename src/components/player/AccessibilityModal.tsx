@@ -1,28 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useModalFocusContainment } from './useModalFocusContainment';
 
 interface AccessibilityModalProps {
   onClose: () => void;
 }
 
 export default function AccessibilityModal({ onClose }: AccessibilityModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    // Escape key closes modal
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    
-    // Focus traps to close button for accessibility
-    closeButtonRef.current?.focus();
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [onClose]);
+  useModalFocusContainment(modalRef, closeButtonRef, onClose);
 
   return (
     <div 
@@ -45,6 +32,7 @@ export default function AccessibilityModal({ onClose }: AccessibilityModalProps)
     >
       <div 
         className="modal-content"
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

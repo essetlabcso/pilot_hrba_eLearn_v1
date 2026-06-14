@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useModalFocusContainment } from './useModalFocusContainment';
 
 interface ResourcesModalProps {
   onClose: () => void;
@@ -39,16 +40,10 @@ const resourcesData: ResourceItem[] = [
 ];
 
 export default function ResourcesModal({ onClose }: ResourcesModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    closeButtonRef.current?.focus();
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  useModalFocusContainment(modalRef, closeButtonRef, onClose);
 
   const simulateDownload = (title: string) => {
     alert(`Simulating download of resource:\n"${title}"\n\nFor the prototype, this acts as a placeholder download trigger.`);
@@ -75,6 +70,7 @@ export default function ResourcesModal({ onClose }: ResourcesModalProps) {
     >
       <div 
         className="modal-content"
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

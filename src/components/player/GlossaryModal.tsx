@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { useModalFocusContainment } from './useModalFocusContainment';
 
 interface GlossaryModalProps {
   onClose: () => void;
@@ -55,16 +56,10 @@ const glossaryData: GlossaryItem[] = [
 
 export default function GlossaryModal({ onClose }: GlossaryModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    closeButtonRef.current?.focus();
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  useModalFocusContainment(modalRef, closeButtonRef, onClose);
 
   const filteredData = glossaryData.filter(
     (item) =>
@@ -93,6 +88,7 @@ export default function GlossaryModal({ onClose }: GlossaryModalProps) {
     >
       <div 
         className="modal-content"
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
