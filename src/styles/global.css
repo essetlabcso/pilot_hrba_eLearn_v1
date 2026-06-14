@@ -26766,6 +26766,12 @@ body:has(.course-shell) {
   background: rgba(239, 68, 68, 0.16);
 }
 
+.player-header-button:focus-visible,
+.player-sidebar-button:focus-visible,
+.player-sidebar-return:focus-visible {
+  outline-color: var(--cso-color-focus-dark-surface);
+}
+
 .player-main-content {
   display: flex;
   align-items: stretch;
