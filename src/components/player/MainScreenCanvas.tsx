@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import type { ReactNode } from 'react';
 
 type MainScreenCanvasProps = {
@@ -5,12 +6,17 @@ type MainScreenCanvasProps = {
   className?: string;
 };
 
-export default function MainScreenCanvas({
+const MainScreenCanvas = forwardRef<HTMLElement, MainScreenCanvasProps>(function MainScreenCanvas({
   children,
   className = '',
-}: MainScreenCanvasProps) {
+}, ref) {
   return (
-    <main className={`player-main-content ${className}`.trim()} aria-label="Course screen content">
+    <main
+      ref={ref}
+      className={`player-main-content ${className}`.trim()}
+      aria-label="Course screen content"
+      tabIndex={-1}
+    >
       <div className="main-screen-canvas">
         <div className="main-screen-canvas__content">
           {children}
@@ -18,4 +24,6 @@ export default function MainScreenCanvas({
       </div>
     </main>
   );
-}
+});
+
+export default MainScreenCanvas;

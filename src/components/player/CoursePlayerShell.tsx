@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from 'react';
 import type { LearningState } from '../../state/learningState';
 import { getHRBAModuleById } from '../../data/hrbaCourseModules';
 
@@ -20,12 +21,36 @@ interface CoursePlayerShellProps {
   sequenceData: any[];
 }
 
+const menuDrawerFocusableSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'textarea:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
+function focusHTMLElement(element: Element | null | undefined) {
+  if (!(element instanceof HTMLElement)) {
+    return false;
+  }
+
+  element.focus();
+  return document.activeElement === element;
+}
+
 export default function CoursePlayerShell({
   state,
   onChangeState,
   onExit,
   sequenceData
 }: CoursePlayerShellProps) {
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuDrawerRef = useRef<HTMLDivElement>(null);
+  const menuDrawerTitleRef = useRef<HTMLHeadingElement>(null);
+  const mainContentRef = useRef<HTMLElement>(null);
+  const focusMainContentAfterMenuSelectionRef = useRef(false);
+
   // Filter player-specific screens from the sequence data
   const allPlayerScreens = sequenceData.filter(
     (item) => item.Layer === 'Layer 2 Player'
@@ -112,12 +137,109 @@ export default function CoursePlayerShell({
     }
   };
 
-  const handleToggleModal = (modal: LearningState['activeModal']) => {
+  const handleToggleModal = useCallback((modal: LearningState['activeModal']) => {
     onChangeState((prev) => ({
       ...prev,
       activeModal: modal
     }));
-  };
+  }, [onChangeState]);
+
+  useEffect(() => {
+    if (state.activeModal !== 'menu') {
+      return;
+    }
+
+    const drawerElement = menuDrawerRef.current;
+
+    window.setTimeout(() => {
+      if (focusHTMLElement(menuDrawerTitleRef.current)) {
+        return;
+      }
+
+      focusHTMLElement(drawerElement?.querySelector(menuDrawerFocusableSelector));
+    }, 0);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        focusMainContentAfterMenuSelectionRef.current = false;
+        handleToggleModal(null);
+        return;
+      }
+
+      if (event.key !== 'Tab' || !drawerElement) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        drawerElement.querySelectorAll<HTMLElement>(menuDrawerFocusableSelector)
+      ).filter((element) => !element.hasAttribute('disabled'));
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        focusHTMLElement(menuDrawerTitleRef.current);
+        return;
+      }
+
+      const firstFocusableElement = focusableElements[0];
+      const lastFocusableElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (!drawerElement.contains(activeElement)) {
+        event.preventDefault();
+        firstFocusableElement.focus();
+        return;
+      }
+
+      if (
+        !(activeElement instanceof HTMLElement) ||
+        !focusableElements.includes(activeElement)
+      ) {
+        event.preventDefault();
+
+        if (event.shiftKey) {
+          lastFocusableElement.focus();
+          return;
+        }
+
+        firstFocusableElement.focus();
+        return;
+      }
+
+      if (event.shiftKey && activeElement === firstFocusableElement) {
+        event.preventDefault();
+        lastFocusableElement.focus();
+        return;
+      }
+
+      if (!event.shiftKey && activeElement === lastFocusableElement) {
+        event.preventDefault();
+        firstFocusableElement.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+
+      window.setTimeout(() => {
+        if (focusMainContentAfterMenuSelectionRef.current) {
+          focusMainContentAfterMenuSelectionRef.current = false;
+
+          if (focusHTMLElement(mainContentRef.current)) {
+            return;
+          }
+        }
+
+        if (focusHTMLElement(menuButtonRef.current)) {
+          return;
+        }
+
+        focusHTMLElement(document.querySelector('.player-sidebar-button'));
+      }, 0);
+    };
+  }, [handleToggleModal, state.activeModal]);
 
   const handleReplay = () => {
     // Reload state: toggle and reset state variables to clear local interactive inputs
@@ -449,6 +571,7 @@ export default function CoursePlayerShell({
         <PlayerSidebar
           onToggleModal={handleToggleModal}
           activeModal={state.activeModal}
+          menuButtonRef={menuButtonRef}
           transcriptVisible={state.transcriptVisible}
           onToggleTranscript={() => onChangeState(p => ({ ...p, transcriptVisible: !p.transcriptVisible }))}
           soundEnabled={state.soundState}
@@ -460,6 +583,7 @@ export default function CoursePlayerShell({
         />
 
         <MainScreenCanvas
+          ref={mainContentRef}
           className={isWaterPointSequenceScreen ? 'player-main-content--water-sequence' : ''}
         >
           <ScreenRenderer
@@ -492,6 +616,7 @@ export default function CoursePlayerShell({
           style={{ position: 'fixed', top: '68px', left: '180px', right: 0, bottom: 0, backgroundColor: 'rgba(15,23,42,0.6)', zIndex: 100 }}
         >
           <div
+            ref={menuDrawerRef}
             onClick={(e) => e.stopPropagation()}
             style={{
               width: '320px',
@@ -505,7 +630,11 @@ export default function CoursePlayerShell({
               gap: '0.75rem'
             }}
           >
-            <h3 style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '0.5rem', fontFamily: 'var(--font-family-headings)' }}>
+            <h3
+              ref={menuDrawerTitleRef}
+              tabIndex={-1}
+              style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '0.5rem', fontFamily: 'var(--font-family-headings)' }}
+            >
               Jump to Screen
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -516,6 +645,7 @@ export default function CoursePlayerShell({
                   <button
                     key={screen['Screen/State ID']}
                     onClick={() => {
+                      focusMainContentAfterMenuSelectionRef.current = true;
                       onChangeState(prev => ({ ...prev, currentScreenId: screen['Screen/State ID'] }));
                       handleToggleModal(null);
                     }}

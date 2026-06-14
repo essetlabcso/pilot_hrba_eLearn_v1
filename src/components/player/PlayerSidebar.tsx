@@ -1,3 +1,5 @@
+import type { RefObject } from 'react';
+
 interface PlayerSidebarProps {
   onToggleModal: (modal: 'help' | 'accessibility' | 'glossary' | 'resources' | 'menu' | null) => void;
   activeModal: string | null;
@@ -9,6 +11,7 @@ interface PlayerSidebarProps {
   onTogglePlay: () => void;
   onReplay: () => void;
   onExit: () => void;
+  menuButtonRef?: RefObject<HTMLButtonElement | null>;
 }
 
 type ToolModal = 'menu' | 'glossary' | 'resources' | 'help' | 'accessibility';
@@ -61,7 +64,8 @@ export default function PlayerSidebar({
   playEnabled,
   onTogglePlay,
   onReplay,
-  onExit
+  onExit,
+  menuButtonRef
 }: PlayerSidebarProps) {
   return (
     <aside className="player-sidebar-aside" aria-label="Course tools and media controls">
@@ -85,6 +89,7 @@ export default function PlayerSidebar({
               onClick={() => onToggleModal(isActive ? null : tool.modal)}
               aria-label={isActive && tool.closeAriaLabel ? tool.closeAriaLabel : tool.ariaLabel}
               className={`player-sidebar-button ${isActive ? 'is-active' : ''}`}
+              ref={tool.modal === 'menu' ? menuButtonRef : undefined}
               {...modalLauncherAttributes}
             >
               <span className="player-sidebar-icon" aria-hidden="true">{tool.icon}</span>
