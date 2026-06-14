@@ -26507,7 +26507,7 @@ body:has(.course-shell) {
   min-height: 0;
   margin: 0 auto;
   overflow: hidden;
-  border: 1px solid rgba(215, 227, 238, 0.28);
+  border: 1px solid var(--player-sidebar-border);
   background: var(--player-shell-bg);
   box-shadow: 0 26px 80px rgba(0, 0, 0, 0.36);
   color: var(--text-on-dark);
@@ -26531,9 +26531,8 @@ body:has(.course-shell) {
   min-width: 0;
   min-height: 0;
   padding: 0.68rem 1.55rem;
-  border-bottom: 1px solid rgba(183, 221, 238, 0.18);
-  background:
-    linear-gradient(90deg, #06182c 0%, #071c33 58%, #0b2743 100%);
+  border-bottom: 1px solid var(--player-sidebar-border);
+  background: var(--player-header-bg);
   color: #ffffff;
 }
 
@@ -26559,7 +26558,7 @@ body:has(.course-shell) {
   width: 1px;
   height: 34px;
   flex: 0 0 auto;
-  background: rgba(183, 221, 238, 0.28);
+  background: var(--player-sidebar-border);
 }
 
 .player-header-copy {
@@ -26667,7 +26666,7 @@ body:has(.course-shell) {
   min-height: 0;
   height: auto;
   overflow: hidden;
-  background: #eef3f7;
+  background: var(--player-stage-bg);
 }
 
 .player-sidebar-aside {
@@ -26680,9 +26679,8 @@ body:has(.course-shell) {
   min-height: 0;
   padding: 1.1rem 0.95rem;
   overflow: hidden;
-  border-right: 1px solid rgba(183, 221, 238, 0.22);
-  background:
-    linear-gradient(180deg, #071c33 0%, #0b2138 100%);
+  border-right: 1px solid var(--player-sidebar-border);
+  background: var(--player-sidebar-bg);
 }
 
 .player-sidebar-section,
@@ -26777,8 +26775,7 @@ body:has(.course-shell) {
   min-height: 0;
   padding: 1.05rem 1.12rem;
   overflow: hidden;
-  background:
-    linear-gradient(135deg, #edf4f7 0%, #f8fbf2 100%);
+  background: var(--player-stage-bg);
 }
 
 .player-main-content--water-sequence {
@@ -26793,9 +26790,9 @@ body:has(.course-shell) {
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid rgba(183, 221, 238, 0.5);
+  border: 1px solid var(--cso-border-color-soft);
   border-radius: var(--player-canvas-radius);
-  background: var(--player-stage-soft-green);
+  background: var(--player-card-bg);
   box-shadow: 0 20px 50px rgba(7, 28, 51, 0.14);
 }
 
