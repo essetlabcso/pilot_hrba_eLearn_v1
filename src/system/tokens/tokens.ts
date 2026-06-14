@@ -43,6 +43,12 @@ export const csoLearningHubTokens = {
       imageSurface: "#FBBF24",
       halo: "#0F172A",
     },
+    state: {
+      hoverOnInverse: {
+        surface: "#253449",
+        border: "#64748B",
+      },
+    },
     overlay: {
       scrimDark: "rgba(15, 23, 42, 0.72)",
       scrimSoft: "rgba(15, 23, 42, 0.48)",
@@ -54,6 +60,10 @@ export const csoLearningHubTokens = {
       text: "#FFFFFF",
       focus: "#FFD60A",
       link: "#7DD3FC",
+      hover: {
+        surface: "#1A1A1A",
+        border: "#7DD3FC",
+      },
     },
   },
   typography: {

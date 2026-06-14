@@ -36,6 +36,9 @@
   --cso-color-focus-image-surface: #FBBF24;
   --cso-color-focus-halo: #0F172A;
 
+  --cso-color-state-hover-on-inverse-surface: #253449;
+  --cso-color-state-hover-on-inverse-border: #64748B;
+
   --cso-color-overlay-scrim-dark: rgba(15, 23, 42, 0.72);
   --cso-color-overlay-scrim-soft: rgba(15, 23, 42, 0.48);
   --cso-color-overlay-modal: rgba(15, 23, 42, 0.72);
@@ -45,6 +48,8 @@
   --cso-color-high-contrast-text: #FFFFFF;
   --cso-color-high-contrast-focus: #FFD60A;
   --cso-color-high-contrast-link: #7DD3FC;
+  --cso-color-high-contrast-hover-surface: #1A1A1A;
+  --cso-color-high-contrast-hover-border: #7DD3FC;
 
   --cso-font-family-ui: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --cso-font-family-display: Outfit, Inter, system-ui, sans-serif;
