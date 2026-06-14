@@ -26533,7 +26533,7 @@ body:has(.course-shell) {
   padding: 0.68rem 1.55rem;
   border-bottom: 1px solid var(--player-sidebar-border);
   background: var(--player-header-bg);
-  color: #ffffff;
+  color: var(--cso-color-text-inverse);
 }
 
 .player-header-info {
@@ -26570,7 +26570,7 @@ body:has(.course-shell) {
 .player-header-title {
   margin: 0;
   overflow: hidden;
-  color: #ffffff;
+  color: var(--cso-color-text-inverse);
   font-size: clamp(0.9rem, 1.45vw, 1.14rem);
   font-weight: 800;
   line-height: 1.12;
@@ -26584,7 +26584,7 @@ body:has(.course-shell) {
   align-items: center;
   gap: 0.48rem;
   min-width: 0;
-  color: #9fb3c7;
+  color: var(--cso-color-text-inverse-muted);
   font-size: clamp(0.72rem, 1.05vw, 0.88rem);
   line-height: 1.2;
 }
@@ -26600,7 +26600,7 @@ body:has(.course-shell) {
 
 .player-header-screen-count {
   flex: 0 0 auto;
-  color: #b7c7d8;
+  color: var(--cso-color-text-inverse-muted);
   font-weight: 650;
   white-space: nowrap;
 }
@@ -26692,7 +26692,7 @@ body:has(.course-shell) {
 
 .player-sidebar-section-label {
   padding-left: 0.22rem;
-  color: #90a4ba;
+  color: var(--cso-color-text-inverse-muted);
   font-size: 0.72rem;
   font-weight: 850;
   letter-spacing: 0;
@@ -26742,7 +26742,7 @@ body:has(.course-shell) {
   height: 28px;
   border-radius: 7px;
   background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  color: var(--cso-color-text-inverse);
   font-size: 0.68rem;
   font-weight: 900;
 }
