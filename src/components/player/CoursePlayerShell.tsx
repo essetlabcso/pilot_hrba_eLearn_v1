@@ -471,6 +471,7 @@ export default function CoursePlayerShell({
 
           {state.transcriptVisible && currentScreen && (
             <div
+              id="player-transcript-panel"
               className="player-transcript-panel"
             >
               <h4>Closed Captions / Screen Text Transcript</h4>

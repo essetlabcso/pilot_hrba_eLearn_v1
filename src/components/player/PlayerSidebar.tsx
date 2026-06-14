@@ -67,6 +67,8 @@ export default function PlayerSidebar({
             type="button"
             onClick={onToggleTranscript}
             aria-label={transcriptVisible ? 'Hide transcript panel' : 'Show transcript panel'}
+            aria-expanded={transcriptVisible}
+            aria-controls={transcriptVisible ? 'player-transcript-panel' : undefined}
             className={`player-sidebar-button player-sidebar-button--media ${transcriptVisible ? 'is-active' : ''}`}
           >
             <span className="player-sidebar-icon" aria-hidden="true">CC</span>
