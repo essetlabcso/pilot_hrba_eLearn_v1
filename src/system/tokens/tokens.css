@@ -38,6 +38,10 @@
 
   --cso-color-state-hover-on-inverse-surface: #253449;
   --cso-color-state-hover-on-inverse-border: #64748B;
+  --cso-color-state-current-on-inverse-surface: #064E5F;
+  --cso-color-state-current-on-inverse-border: #38BDF8;
+  --cso-color-state-current-icon-on-inverse-surface: #38BDF8;
+  --cso-color-state-current-icon-on-inverse-foreground: #0F172A;
 
   --cso-color-overlay-scrim-dark: rgba(15, 23, 42, 0.72);
   --cso-color-overlay-scrim-soft: rgba(15, 23, 42, 0.48);
@@ -50,6 +54,10 @@
   --cso-color-high-contrast-link: #7DD3FC;
   --cso-color-high-contrast-hover-surface: #1A1A1A;
   --cso-color-high-contrast-hover-border: #7DD3FC;
+  --cso-color-high-contrast-current-on-inverse-surface: #002B36;
+  --cso-color-high-contrast-current-on-inverse-border: #A7F3D0;
+  --cso-color-high-contrast-current-icon-on-inverse-surface: #A7F3D0;
+  --cso-color-high-contrast-current-icon-on-inverse-foreground: #000000;
 
   --cso-font-family-ui: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --cso-font-family-display: Outfit, Inter, system-ui, sans-serif;

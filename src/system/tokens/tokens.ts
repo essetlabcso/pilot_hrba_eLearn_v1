@@ -48,6 +48,14 @@ export const csoLearningHubTokens = {
         surface: "#253449",
         border: "#64748B",
       },
+      currentOnInverse: {
+        surface: "#064E5F",
+        border: "#38BDF8",
+        icon: {
+          surface: "#38BDF8",
+          foreground: "#0F172A",
+        },
+      },
     },
     overlay: {
       scrimDark: "rgba(15, 23, 42, 0.72)",
@@ -63,6 +71,14 @@ export const csoLearningHubTokens = {
       hover: {
         surface: "#1A1A1A",
         border: "#7DD3FC",
+      },
+      currentOnInverse: {
+        surface: "#002B36",
+        border: "#A7F3D0",
+        icon: {
+          surface: "#A7F3D0",
+          foreground: "#000000",
+        },
       },
     },
   },
