@@ -25928,6 +25928,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 980px) {
+  .main-screen-canvas__content:has(.m2-s02-screen) {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   .m2-s02-canvas {
     min-height: auto;
   }
@@ -25944,8 +25950,8 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 640px) {
   .m2-s02-screen {
-    max-height: calc(100vh - 82px);
-    overflow-y: auto;
+    max-height: none;
+    overflow: visible;
     overscroll-behavior: contain;
     padding-bottom: 0.75rem;
   }
