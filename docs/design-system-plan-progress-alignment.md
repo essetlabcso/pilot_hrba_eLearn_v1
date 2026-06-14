@@ -58,13 +58,13 @@ The current implementation work has made the player shell more token-driven, but
 | Master plan area | Intended purpose | Current evidence | Current status | Gap | Risk level | Validated next action |
 | --- | --- | --- | --- | --- | --- | --- |
 | System Charter | Define system-first governance and boundaries. | `docs/system-charter.md` exists and was verified. | Complete | Must remain active in future prompts. | Low | Reference in all future implementation prompts. |
-| Full platform/course audit | Identify infrastructure, legacy code, candidate migration areas, and design debt. | `docs/token-adoption-audit.md` and earlier repo audit work identify style entry points and risks. | Partial | Audit is visual/token focused; broader component/state inventory remains. | Medium | Run state/modal inventory before more UI migration. |
+| Full platform/course audit | Identify infrastructure, legacy code, candidate migration areas, and design debt. | `docs/token-adoption-audit.md`, `docs/player-shell-state-modal-token-inventory.md`, and earlier repo audit work identify style entry points and risks. | Partial | Audit is still visual/token focused; broader component inventory remains. | Medium | Use the state/modal inventory to bound the next focus-only slice. |
 | Design foundations | Establish visual, premium, accessibility, story visual, and asset rules. | Visual foundations, premium visual standard, story visual standard, and asset register exist. | Partial | Rules exist, but implementation and evidence are incomplete. | Medium | Use these documents to review any future token, asset, or screen work. |
-| Token foundation | Create approved token values and implementation-ready spec. | `docs/implementation-ready-token-specification.md`, `src/system/tokens/tokens.ts`, `src/system/tokens/tokens.css`. | Partial | Tokens exist, but not fully adopted and not backed by automated prevention. | Medium | Continue bounded adoption only after state/modal inventory. |
-| Player shell token adoption | Bring player shell surfaces, text, icons, and base buttons under token control. | Token aliasing, cascade fix, surface/border adoption, text/icon adoption, button base adoption, and QA notes. | In progress | Focus, state, modal, hover, active, disabled, selected, completed, locked remain legacy. | Medium | Pause broad migration; inventory state and modal selectors next. |
-| Interaction state recipes | Define and apply state rules for hover, active, selected, completed, locked, disabled, error, success, loading. | Component state requirements exist in token specification; legacy selectors remain. | Not started | No implementation-ready state inventory or recipe mapping yet. | High | Create documentation-only state/modal inventory. |
-| Focus/accessibility states | Ensure visible, tokenized focus and keyboard affordances. | Focus tokens exist in token files and spec. | Partial | Focus styles are not yet adopted in player shell and state selectors. | High | After inventory, implement focus state token adoption as a bounded slice. |
-| Modal/accessibility UI | Tokenize and QA modals and accessibility UI without breaking behavior. | `token-adoption-audit.md` identifies modal/accessibility UI as key area. | Not started | Selectors, states, and behavioral risks not inventoried. | High | Inventory modal/accessibility UI before implementation. |
+| Token foundation | Create approved token values and implementation-ready spec. | `docs/implementation-ready-token-specification.md`, `src/system/tokens/tokens.ts`, `src/system/tokens/tokens.css`. | Partial | Tokens exist, but not fully adopted and not backed by automated prevention. | Medium | Continue bounded adoption only through the Phase C focus-visible slice after review. |
+| Player shell token adoption | Bring player shell surfaces, text, icons, and base buttons under token control. | Token aliasing, cascade fix, surface/border adoption, text/icon adoption, button base adoption, state/modal inventory, and QA notes. | In progress | Focus, hover, active, disabled, selected, completed, locked, modal, accessibility UI, danger-on-dark, progress strip, and shell shadows remain legacy or undecided. | Medium | Proceed only to bounded player shell focus-visible token adoption after inventory review. |
+| Interaction state recipes | Define and apply state rules for hover, active, selected, completed, locked, disabled, error, success, loading. | Component state requirements exist in token specification; `docs/player-shell-state-modal-token-inventory.md` identifies state groups and missing recipes. | Not started | Recipes are not yet defined; inventory exists but does not approve migration. | High | Keep recipes blocked; do not migrate hover, active, selected, completed, locked, disabled, or danger states yet. |
+| Focus/accessibility states | Ensure visible, tokenized focus and keyboard affordances. | Focus tokens exist in token files and spec; inventory recommends focus as the next bounded implementation slice. | Partial | Focus styles are not yet adopted in player shell and state selectors. | High | Implement bounded player shell focus-visible token adoption only after this alignment update is accepted. |
+| Modal/accessibility UI | Tokenize and QA modals and accessibility UI without breaking behavior. | `token-adoption-audit.md` and `docs/player-shell-state-modal-token-inventory.md` identify modal/accessibility UI and inline style clusters. | Not started | Modal/accessibility UI requires behavior review before migration; inline styles and focus behavior remain. | High | Defer modal/accessibility UI migration until behavior review and a separate approved slice. |
 | Accessible component library | Build reusable components from tokens, states, accessibility rules, and templates. | Component/state model docs and design-system docs exist. | Not started | No clean component implementation or adoption plan yet. | High | Create component inventory and component plan after state/modal work. |
 | Theme packs | Provide controlled visual variation without drift. | Theme pack boundaries in token spec and visual docs. | Partial | No theme implementation or QA evidence yet. | Medium | Defer until state and base shell behavior are stable. |
 | Learning Block Register | Define reusable learning block taxonomy. | `docs/learning-block-register.md` exists. | Complete as governance / not implemented | Blocks are not implemented as reusable components. | Medium | Use as input to component and vertical-slice planning. |
@@ -89,6 +89,7 @@ The current implementation work has made the player shell more token-driven, but
 | Player shell surface/border adoption and QA | Adopted tokens for shell surfaces and borders; created `docs/player-shell-surface-border-token-adoption-qa.md`. | Stabilizes shell/header/sidebar/stage/card visual surfaces with tokens. | Does not migrate text, buttons, states, focus, modals, or screens. | Visual-token stream |
 | Header/sidebar text/icon adoption and QA | Adopted inverse text tokens for shell text/icons; created QA note. | Improves readable token use on dark shell surfaces. | Does not migrate buttons or state styling. | Visual-token stream |
 | Header/sidebar button base adoption and QA | Adopted token values for base shell button text, borders, primary background, and danger border; created QA note. | Moves base shell button colors toward token governance. | Does not migrate hover, focus, active, selected, completed, locked, disabled, modal, or full danger recipes. | Visual-token stream |
+| Player shell state/modal inventory | Created `docs/player-shell-state-modal-token-inventory.md`. | Completes Phase B by identifying player shell focus, hover, active, disabled, modal/accessibility UI, and hard-coded state risks before migration. | Does not implement focus adoption, state recipes, modal migration, behavior changes, or code fixes. | Master plan and visual-token stream |
 
 ## 5. Current Progress Estimate
 
@@ -96,7 +97,7 @@ These estimates are planning controls, not completion claims.
 
 | Scope | Estimated progress | Explanation |
 | --- | --- | --- |
-| Visual token/player-shell adoption stream | About 45 percent | Token files, CSS wiring, shell aliases, surfaces, text/icons, base buttons, and route QA are done. Focus, interaction states, modals, prevention gates, and broader shell QA remain. |
+| Visual token/player-shell adoption stream | About 47 percent | Token files, CSS wiring, shell aliases, surfaces, text/icons, base buttons, route QA, and Phase B state/modal inventory are done. Focus, interaction state recipes, modals, prevention gates, and broader shell QA remain. |
 | Full protected premium visual design system | About 25 percent | Governance, visual foundations, token spec, and partial shell adoption exist. Theme packs, reusable components, state recipes, asset implementation, screen recipes, and automated prevention are not complete. |
 | Full AI-assisted CSO Learning Hub product system | About 15 percent | Core governance docs exist, but components, blocks, templates, AI production enforcement, course content migration, vertical slice, accessibility behavior, and scale-up gates are not complete. |
 
@@ -107,8 +108,9 @@ The whole-system percentage is lower because documents and token adoption are on
 | Risk | Description | Severity | Current control | Next control action |
 | --- | --- | --- | --- | --- |
 | False sense of progress | Narrow token/player-shell progress may be mistaken for whole-system completion. | High | This alignment document separates master plan from stream progress. | Require this file in future prompts and update it after each phase. |
-| Token tunnel vision | Work may continue replacing colors while ignoring components, states, templates, and learning design. | High | Token adoption audit recommends bounded migration order. | Run state/modal inventory before another implementation slice. |
-| Accessibility states still legacy | Focus, disabled, selected, locked, completed, error, and active states still include legacy styling. | High | Token spec defines state requirements. | Create state inventory, then adopt focus states first. |
+| Token tunnel vision | Work may continue replacing colors while ignoring components, states, templates, and learning design. | High | Token adoption audit and Phase B inventory recommend bounded migration order. | Proceed only to the focus-visible slice; keep broader state/modal migration blocked. |
+| Accessibility states still legacy | Focus, disabled, selected, locked, completed, error, and active states still include legacy styling. | High | Token spec defines state requirements; Phase B inventory identifies player shell focus as the next bounded slice. | Adopt player shell focus-visible tokens first, then QA before lowering risk. |
+| Modal/accessibility UI inline style clusters | Player modal/accessibility UI includes inline style clusters and behavior-sensitive dialog/focus patterns. | High | Phase B inventory documents the affected modal/accessibility files and values. | Do not treat modal/accessibility UI as CSS-only migration; require behavior review before any implementation. |
 | Course-screen governance still weak | Old course screens and screen-level CSS can continue to drive visual decisions. | High | Learning Block and Screen Template Registers exist. | Classify course-screen styles before screen migration. |
 | Responsive issues may be systemic | Module 2 S02 CTA issue may be one example of broader container/overflow risk. | Medium | Route-specific triage/fix/QA completed. | Include responsive QA and stop conditions in every slice. |
 | Cascade and legacy CSS risk | Large `global.css` and later duplicate definitions can override intended tokens. | High | Cascade fix and QA documented. | Search for duplicate overrides during each scoped migration. |
@@ -128,7 +130,7 @@ The whole-system percentage is lower because documents and token adoption are on
 | Acceptance criteria | This document exists, maps master plan to actual progress, names risks, and defines next phases. |
 | Stop conditions | Stop if the task requires implementation or changes outside this file. |
 
-### Phase B: State and Modal Inventory
+### Phase B: State and Modal Inventory - Complete
 
 | Field | Detail |
 | --- | --- |
@@ -136,8 +138,8 @@ The whole-system percentage is lower because documents and token adoption are on
 | Why it comes next | State and modal styling is the next highest-risk legacy area after base shell colors. |
 | Files likely involved | New documentation file in `docs/`; read-only inspection of `src/styles/global.css`, player shell components, accessibility UI, modal-related files. |
 | Files that must not be touched | CSS, React, token files, routing, progress, assessment, assets, old course files. |
-| Acceptance criteria | Inventory lists selectors, current values, risk, token mapping readiness, missing token/state decisions, and recommended order. |
-| Stop conditions | Stop if inventory requires edits, missing tokens, or uncertain behavior. |
+| Acceptance criteria | Complete: `docs/player-shell-state-modal-token-inventory.md` lists selectors, current values, risk, token mapping readiness, missing token/state decisions, and recommended order. |
+| Stop conditions | Satisfied: no CSS, React, token, routing, progress, assessment, accessibility toolbar, asset, or old course file changes were made. |
 
 ### Phase C: Focus State Token Adoption
 
@@ -264,20 +266,17 @@ The whole-system percentage is lower because documents and token adoption are on
 
 Recommended next Codex step after this document is reviewed and accepted:
 
-Create a documentation-only state/modal inventory.
+Implement Phase C: bounded player shell focus-visible token adoption only.
 
-That inventory should inspect, without editing:
+The next implementation slice should be limited to player shell focus-visible selectors identified in `docs/player-shell-state-modal-token-inventory.md`, likely:
 
-- player header button states;
-- sidebar button states;
-- active/current/selected states;
-- completed and locked states;
-- disabled states;
-- focus states;
-- modal and accessibility UI selectors;
-- any legacy danger/success/warning state recipes.
+- `.player-header-button:focus-visible`;
+- `.player-sidebar-button:focus-visible`;
+- `.player-sidebar-return:focus-visible`.
 
-The inventory should recommend the next bounded implementation slice. No CSS, React, token, routing, progress, assessment, accessibility toolbar, asset, or old course file should be changed during that inventory.
+Explicitly exclude hover, active, selected, completed, locked, disabled, danger-on-dark, modal, accessibility UI, progress strip, shell shadows, course screens, and module-specific styles.
+
+No React, token, routing, progress, assessment, accessibility toolbar, asset, or old course file should be changed during that focus slice.
 
 ## 9. Operating Rule for Future Codex Prompts
 
@@ -308,4 +307,3 @@ This file must be updated whenever:
 - a master plan area moves from not started to partial, in progress, or complete.
 
 Updates should remain documentation-only unless a separate implementation task explicitly authorizes code changes.
-
