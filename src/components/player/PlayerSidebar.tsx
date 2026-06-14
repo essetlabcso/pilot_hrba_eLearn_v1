@@ -18,14 +18,37 @@ type SidebarTool = {
   icon: string;
   modal: ToolModal;
   ariaLabel: string;
+  closeAriaLabel?: string;
+  modalRootId?: string;
 };
 
 const learningTools: SidebarTool[] = [
   { label: 'Menu', icon: 'M', modal: 'menu', ariaLabel: 'Toggle module menu' },
-  { label: 'Glossary', icon: 'G', modal: 'glossary', ariaLabel: 'Open course glossary' },
-  { label: 'Resources', icon: 'R', modal: 'resources', ariaLabel: 'Open resources list' },
+  {
+    label: 'Glossary',
+    icon: 'G',
+    modal: 'glossary',
+    ariaLabel: 'Open course glossary',
+    closeAriaLabel: 'Close course glossary',
+    modalRootId: 'player-glossary-modal'
+  },
+  {
+    label: 'Resources',
+    icon: 'R',
+    modal: 'resources',
+    ariaLabel: 'Open resources list',
+    closeAriaLabel: 'Close resources list',
+    modalRootId: 'player-resources-modal'
+  },
   { label: 'Help Guide', icon: '?', modal: 'help', ariaLabel: 'Open player help guide' },
-  { label: 'Accessibility', icon: 'A', modal: 'accessibility', ariaLabel: 'Open accessibility options' },
+  {
+    label: 'Accessibility',
+    icon: 'A',
+    modal: 'accessibility',
+    ariaLabel: 'Open accessibility options',
+    closeAriaLabel: 'Close accessibility options',
+    modalRootId: 'player-accessibility-modal'
+  },
 ];
 
 export default function PlayerSidebar({
@@ -45,18 +68,30 @@ export default function PlayerSidebar({
       <div className="player-sidebar-section">
         <span className="player-sidebar-section-label">Learning Tools</span>
 
-        {learningTools.map((tool) => (
-          <button
-            key={tool.modal}
-            type="button"
-            onClick={() => onToggleModal(activeModal === tool.modal ? null : tool.modal)}
-            aria-label={tool.ariaLabel}
-            className={`player-sidebar-button ${activeModal === tool.modal ? 'is-active' : ''}`}
-          >
-            <span className="player-sidebar-icon" aria-hidden="true">{tool.icon}</span>
-            <span>{tool.label}</span>
-          </button>
-        ))}
+        {learningTools.map((tool) => {
+          const isActive = activeModal === tool.modal;
+          const modalLauncherAttributes = tool.modalRootId
+            ? {
+                'aria-expanded': isActive,
+                'aria-controls': isActive ? tool.modalRootId : undefined,
+                'aria-haspopup': 'dialog' as const
+              }
+            : {};
+
+          return (
+            <button
+              key={tool.modal}
+              type="button"
+              onClick={() => onToggleModal(isActive ? null : tool.modal)}
+              aria-label={isActive && tool.closeAriaLabel ? tool.closeAriaLabel : tool.ariaLabel}
+              className={`player-sidebar-button ${isActive ? 'is-active' : ''}`}
+              {...modalLauncherAttributes}
+            >
+              <span className="player-sidebar-icon" aria-hidden="true">{tool.icon}</span>
+              <span>{tool.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="player-sidebar-bottom">

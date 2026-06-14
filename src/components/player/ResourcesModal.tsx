@@ -70,6 +70,7 @@ export default function ResourcesModal({ onClose }: ResourcesModalProps) {
     >
       <div 
         className="modal-content"
+        id="player-resources-modal"
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"

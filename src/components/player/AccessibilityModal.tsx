@@ -32,6 +32,7 @@ export default function AccessibilityModal({ onClose }: AccessibilityModalProps)
     >
       <div 
         className="modal-content"
+        id="player-accessibility-modal"
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"

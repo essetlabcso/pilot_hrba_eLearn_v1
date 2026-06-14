@@ -88,6 +88,7 @@ export default function GlossaryModal({ onClose }: GlossaryModalProps) {
     >
       <div 
         className="modal-content"
+        id="player-glossary-modal"
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
