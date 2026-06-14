@@ -616,6 +616,7 @@ export default function CoursePlayerShell({
           style={{ position: 'fixed', top: '68px', left: '180px', right: 0, bottom: 0, backgroundColor: 'rgba(15,23,42,0.6)', zIndex: 100 }}
         >
           <div
+            id="player-menu-drawer"
             ref={menuDrawerRef}
             onClick={(e) => e.stopPropagation()}
             style={{

@@ -74,6 +74,7 @@ export default function PlayerSidebar({
 
         {learningTools.map((tool) => {
           const isActive = activeModal === tool.modal;
+          const isMenuLauncher = tool.modal === 'menu';
           const modalLauncherAttributes = tool.modalRootId
             ? {
                 'aria-expanded': isActive,
@@ -81,16 +82,26 @@ export default function PlayerSidebar({
                 'aria-haspopup': 'dialog' as const
               }
             : {};
+          const menuLauncherAttributes = isMenuLauncher
+            ? {
+                'aria-expanded': isActive,
+                'aria-controls': isActive ? 'player-menu-drawer' : undefined
+              }
+            : {};
+          const ariaLabel = isMenuLauncher
+            ? isActive ? 'Close module menu' : 'Open module menu'
+            : isActive && tool.closeAriaLabel ? tool.closeAriaLabel : tool.ariaLabel;
 
           return (
             <button
               key={tool.modal}
               type="button"
               onClick={() => onToggleModal(isActive ? null : tool.modal)}
-              aria-label={isActive && tool.closeAriaLabel ? tool.closeAriaLabel : tool.ariaLabel}
+              aria-label={ariaLabel}
               className={`player-sidebar-button ${isActive ? 'is-active' : ''}`}
-              ref={tool.modal === 'menu' ? menuButtonRef : undefined}
+              ref={isMenuLauncher ? menuButtonRef : undefined}
               {...modalLauncherAttributes}
+              {...menuLauncherAttributes}
             >
               <span className="player-sidebar-icon" aria-hidden="true">{tool.icon}</span>
               <span>{tool.label}</span>
