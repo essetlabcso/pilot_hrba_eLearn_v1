@@ -26649,6 +26649,11 @@ body:has(.course-shell) {
   background: rgba(239, 68, 68, 0.18);
 }
 
+.player-header-button:hover:not(:disabled):not(.player-header-button--exit) {
+  border-color: var(--cso-color-state-hover-on-inverse-border);
+  background: var(--cso-color-state-hover-on-inverse-surface);
+}
+
 .player-header-button:hover:not(:disabled),
 .player-header-button:focus-visible:not(:disabled) {
   transform: translateY(-1px);
@@ -26728,8 +26733,12 @@ body:has(.course-shell) {
   color: var(--cso-color-text-inverse-muted);
 }
 
+.player-sidebar-button:hover:not(.is-active) {
+  border-color: var(--cso-color-state-hover-on-inverse-border);
+  background: var(--cso-color-state-hover-on-inverse-surface);
+}
+
 .player-sidebar-button.is-active,
-.player-sidebar-button:hover,
 .player-sidebar-button:focus-visible {
   border-color: rgba(59, 153, 212, 0.66);
   background: rgba(59, 153, 212, 0.18);
