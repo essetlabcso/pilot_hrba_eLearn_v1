@@ -58,11 +58,11 @@ The current implementation work has made the player shell more token-driven, but
 | Master plan area | Intended purpose | Current evidence | Current status | Gap | Risk level | Validated next action |
 | --- | --- | --- | --- | --- | --- | --- |
 | System Charter | Define system-first governance and boundaries. | `docs/system-charter.md` exists and was verified. | Complete | Must remain active in future prompts. | Low | Reference in all future implementation prompts. |
-| Full platform/course audit | Identify infrastructure, legacy code, candidate migration areas, and design debt. | `docs/token-adoption-audit.md`, `docs/player-shell-state-modal-token-inventory.md`, and earlier repo audit work identify style entry points and risks. | Partial | Audit is still visual/token focused; broader component inventory remains. | Medium | Use the state/modal inventory to support the next state recipe decision. |
+| Full platform/course audit | Identify infrastructure, legacy code, candidate migration areas, and design debt. | `docs/token-adoption-audit.md`, `docs/player-shell-state-modal-token-inventory.md`, `docs/player-shell-state-recipe-decision.md`, and earlier repo audit work identify style entry points and risks. | Partial | Audit is still visual/token focused; broader component inventory remains. | Medium | Use the state recipe decision to create the interaction-state recipe specification. |
 | Design foundations | Establish visual, premium, accessibility, story visual, and asset rules. | Visual foundations, premium visual standard, story visual standard, and asset register exist. | Partial | Rules exist, but implementation and evidence are incomplete. | Medium | Use these documents to review any future token, asset, or screen work. |
-| Token foundation | Create approved token values and implementation-ready spec. | `docs/implementation-ready-token-specification.md`, `src/system/tokens/tokens.ts`, `src/system/tokens/tokens.css`. | Partial | Tokens exist, but not fully adopted and not backed by automated prevention. | Medium | Pause implementation until the next state recipe decision is reviewed. |
-| Player shell token adoption | Bring player shell surfaces, text, icons, base buttons, and bounded focus into token control. | Token aliasing, cascade fix, surface/border adoption, text/icon adoption, button base adoption, state/modal inventory, focus-visible adoption, and QA notes. | In progress | Hover, active, disabled, selected, completed, locked, modal, accessibility UI, danger-on-dark, progress strip, and shell shadows remain legacy or undecided. | Medium | Decide next state recipe before any further implementation. |
-| Interaction state recipes | Define and apply state rules for hover, active, selected, completed, locked, disabled, error, success, loading. | Component state requirements exist in token specification; `docs/player-shell-state-modal-token-inventory.md` identifies state groups and missing recipes. | Not started | Recipes are not yet defined; inventory exists but does not approve migration. | High | Keep recipes blocked; do not migrate hover, active, selected, completed, locked, disabled, or danger states yet. |
+| Token foundation | Create approved token values and implementation-ready spec. | `docs/implementation-ready-token-specification.md`, `src/system/tokens/tokens.ts`, `src/system/tokens/tokens.css`. | Partial | Tokens exist, but not fully adopted and not backed by automated prevention. | Medium | Pause implementation until the player shell interaction-state recipe specification is created and reviewed. |
+| Player shell token adoption | Bring player shell surfaces, text, icons, base buttons, and bounded focus into token control. | Token aliasing, cascade fix, surface/border adoption, text/icon adoption, button base adoption, state/modal inventory, focus-visible adoption, state recipe decision, and QA notes. | In progress | Hover, active, disabled, selected, completed, locked, modal, accessibility UI, danger-on-dark, progress strip, and shell shadows remain legacy or undecided. | Medium | Keep implementation paused until `docs/player-shell-interaction-state-recipe-specification.md` is created and reviewed. |
+| Interaction state recipes | Define and apply state rules for hover, active, selected, completed, locked, disabled, error, success, loading. | Component state requirements exist in token specification; `docs/player-shell-state-modal-token-inventory.md` identifies state groups and `docs/player-shell-state-recipe-decision.md` confirms recipes are not yet approved. | Not started | Recipe decision exists, but approved recipes do not. | High | Create documentation-only `docs/player-shell-interaction-state-recipe-specification.md`; do not implement state CSS yet. |
 | Focus/accessibility states | Ensure visible, tokenized focus and keyboard affordances. | Focus tokens exist in token files and spec; bounded player shell focus-visible adoption and QA are complete in `docs/player-shell-focus-visible-token-adoption-qa.md`. | Partial with player shell focus slice complete | Global focus, course-screen focus, modal focus, and other interaction states remain legacy or undecided. | Medium-high | Do not broaden focus migration without a separate recipe and QA scope. |
 | Modal/accessibility UI | Tokenize and QA modals and accessibility UI without breaking behavior. | `token-adoption-audit.md` and `docs/player-shell-state-modal-token-inventory.md` identify modal/accessibility UI and inline style clusters. | Not started | Modal/accessibility UI requires behavior review before migration; inline styles and focus behavior remain. | High | Defer modal/accessibility UI migration until behavior review and a separate approved slice. |
 | Accessible component library | Build reusable components from tokens, states, accessibility rules, and templates. | Component/state model docs and design-system docs exist. | Not started | No clean component implementation or adoption plan yet. | High | Create component inventory and component plan after state/modal work. |
@@ -91,6 +91,7 @@ The current implementation work has made the player shell more token-driven, but
 | Header/sidebar button base adoption and QA | Adopted token values for base shell button text, borders, primary background, and danger border; created QA note. | Moves base shell button colors toward token governance. | Does not migrate hover, focus, active, selected, completed, locked, disabled, modal, or full danger recipes. | Visual-token stream |
 | Player shell state/modal inventory | Created `docs/player-shell-state-modal-token-inventory.md`. | Completes Phase B by identifying player shell focus, hover, active, disabled, modal/accessibility UI, and hard-coded state risks before migration. | Does not implement focus adoption, state recipes, modal migration, behavior changes, or code fixes. | Master plan and visual-token stream |
 | Player shell focus-visible adoption and QA | Adopted `--cso-color-focus-dark-surface` for bounded player shell focus-visible selectors and documented QA in `docs/player-shell-focus-visible-token-adoption-qa.md`. | Completes the Phase C bounded player shell focus slice and confirms keyboard focus visibility on desktop, tablet, and mobile for the checked route. | Does not migrate global/course focus, hover, active, selected/current, completed, locked, disabled, danger-on-dark, modal/accessibility UI, progress strip, shell shadow, or module-specific styles. | Focus/accessibility states and visual-token stream |
+| Player shell state recipe decision | Created `docs/player-shell-state-recipe-decision.md`. | Records the decision to pause implementation because no remaining interaction-state area is ready for safe CSS migration without an approved recipe/specification. | Does not approve or implement hover, active/current, selected/current icon, disabled-on-dark, danger-on-dark, modal/accessibility UI, progress strip, shell shadow, global focus, or course-screen states. | Interaction state recipes and visual-token stream |
 
 ## 5. Current Progress Estimate
 
@@ -109,7 +110,7 @@ The whole-system percentage is lower because documents and token adoption are on
 | Risk | Description | Severity | Current control | Next control action |
 | --- | --- | --- | --- | --- |
 | False sense of progress | Narrow token/player-shell progress may be mistaken for whole-system completion. | High | This alignment document separates master plan from stream progress. | Require this file in future prompts and update it after each phase. |
-| Token tunnel vision | Work may continue replacing colors while ignoring components, states, templates, and learning design. | High | Token adoption audit and Phase B/Phase C evidence recommend bounded migration order. | Pause implementation and define the next state recipe decision before any new CSS slice. |
+| Token tunnel vision | Work may continue replacing colors while ignoring components, states, templates, and learning design. | High | Token adoption audit, Phase B/Phase C evidence, and state recipe decision recommend bounded migration order. | Keep implementation paused until the interaction-state recipe specification is created and reviewed. |
 | Accessibility states still legacy | Player shell focus-visible passed QA, but global focus, course-screen focus, disabled, selected, locked, completed, error, active, and modal focus states still include legacy styling. | Medium-high | Token spec defines state requirements; Phase C QA confirms the bounded player shell focus slice. | Keep broader accessibility state risk open until a documented recipe and QA pass for the next state area. |
 | Modal/accessibility UI inline style clusters | Player modal/accessibility UI includes inline style clusters and behavior-sensitive dialog/focus patterns. | High | Phase B inventory documents the affected modal/accessibility files and values. | Do not treat modal/accessibility UI as CSS-only migration; require behavior review before any implementation. |
 | Course-screen governance still weak | Old course screens and screen-level CSS can continue to drive visual decisions. | High | Learning Block and Screen Template Registers exist. | Classify course-screen styles before screen migration. |
@@ -267,18 +268,36 @@ The whole-system percentage is lower because documents and token adoption are on
 
 Recommended next Codex step after this document is reviewed and accepted:
 
-Create a documentation-only state recipe decision for the next interaction-state area, or pause for human review before selecting another bounded implementation slice.
+Create `docs/player-shell-interaction-state-recipe-specification.md`.
 
-Likely planning options:
+This must be documentation-only.
 
-- define hover/active/selected/current/disabled/danger-on-dark recipes for player shell controls before implementation;
-- or approve a very small next implementation slice only if it is directly supported by `docs/player-shell-state-modal-token-inventory.md` and the recipe decision is already clear.
+The specification should define player shell recipes for:
 
-Do not automatically proceed into broad state migration.
+- hover-on-dark;
+- active/current sidebar tool state;
+- selected/current sidebar icon state;
+- disabled-on-dark;
+- danger-on-dark;
+- the relationship between hover, focus-visible, active/current, disabled, and danger states.
 
-Explicitly exclude hover, active, selected, completed, locked, disabled, danger-on-dark, modal, accessibility UI, progress strip, shell shadows, course screens, and module-specific styles unless a separate approved prompt defines the exact bounded scope.
+Do not implement CSS or code in that step.
 
-No CSS, React, token, routing, progress, assessment, accessibility toolbar, asset, or old course file should be changed during a documentation-only recipe decision.
+Explicitly keep these out of scope for the next step:
+
+- hover implementation;
+- active/current implementation;
+- selected/current icon implementation;
+- disabled-on-dark implementation;
+- danger-on-dark implementation;
+- modal/accessibility UI migration;
+- progress strip migration;
+- shell shadow/depth migration;
+- global focus states;
+- course-screen states;
+- module-specific states.
+
+No CSS, React, token, routing, progress, assessment, accessibility toolbar, modal behavior, asset, or old course file should be changed during the interaction-state recipe specification.
 
 ## 9. Operating Rule for Future Codex Prompts
 
