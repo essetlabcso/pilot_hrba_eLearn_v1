@@ -12,6 +12,7 @@ interface PlayerSidebarProps {
   onReplay: () => void;
   onExit: () => void;
   menuButtonRef?: RefObject<HTMLButtonElement | null>;
+  helpButtonRef?: RefObject<HTMLButtonElement | null>;
 }
 
 type ToolModal = 'menu' | 'glossary' | 'resources' | 'help' | 'accessibility';
@@ -65,7 +66,8 @@ export default function PlayerSidebar({
   onTogglePlay,
   onReplay,
   onExit,
-  menuButtonRef
+  menuButtonRef,
+  helpButtonRef
 }: PlayerSidebarProps) {
   return (
     <aside className="player-sidebar-aside" aria-label="Course tools and media controls">
@@ -75,6 +77,7 @@ export default function PlayerSidebar({
         {learningTools.map((tool) => {
           const isActive = activeModal === tool.modal;
           const isMenuLauncher = tool.modal === 'menu';
+          const isHelpLauncher = tool.modal === 'help';
           const modalLauncherAttributes = tool.modalRootId
             ? {
                 'aria-expanded': isActive,
@@ -99,7 +102,7 @@ export default function PlayerSidebar({
               onClick={() => onToggleModal(isActive ? null : tool.modal)}
               aria-label={ariaLabel}
               className={`player-sidebar-button ${isActive ? 'is-active' : ''}`}
-              ref={isMenuLauncher ? menuButtonRef : undefined}
+              ref={isMenuLauncher ? menuButtonRef : isHelpLauncher ? helpButtonRef : undefined}
               {...modalLauncherAttributes}
               {...menuLauncherAttributes}
             >

@@ -1,22 +1,90 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface HelpOverlayProps {
   onClose: () => void;
 }
 
 export default function HelpOverlay({ onClose }: HelpOverlayProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const promptRef = useRef<HTMLDivElement>(null);
+  const dismissButtonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
+    window.setTimeout(() => {
+      dismissButtonRef.current?.focus();
+    }, 0);
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' || e.key === 'Enter') {
+      if (e.key === 'Escape') {
+        e.preventDefault();
         onClose();
+        return;
+      }
+
+      if (e.key !== 'Tab') {
+        return;
+      }
+
+      const overlayElement = overlayRef.current;
+      const promptElement = promptRef.current;
+
+      if (!overlayElement || !promptElement) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        overlayElement.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => !element.hasAttribute('disabled'));
+
+      if (focusableElements.length === 0) {
+        e.preventDefault();
+        promptElement.focus();
+        return;
+      }
+
+      const firstFocusableElement = focusableElements[0];
+      const lastFocusableElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (!overlayElement.contains(activeElement)) {
+        e.preventDefault();
+        firstFocusableElement.focus();
+        return;
+      }
+
+      if (!(activeElement instanceof HTMLElement) || !focusableElements.includes(activeElement)) {
+        e.preventDefault();
+
+        if (e.shiftKey) {
+          lastFocusableElement.focus();
+          return;
+        }
+
+        firstFocusableElement.focus();
+        return;
+      }
+
+      if (e.shiftKey && activeElement === firstFocusableElement) {
+        e.preventDefault();
+        lastFocusableElement.focus();
+        return;
+      }
+
+      if (!e.shiftKey && activeElement === lastFocusableElement) {
+        e.preventDefault();
+        firstFocusableElement.focus();
       }
     };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
   return (
     <div 
+      ref={overlayRef}
       className="help-overlay"
       onClick={onClose}
       style={{
@@ -78,6 +146,8 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
 
       {/* Main prompt box */}
       <div 
+        ref={promptRef}
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
         style={{
           backgroundColor: '#1e293b',
@@ -96,9 +166,10 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
           Focused Course Player Guide
         </h3>
         <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '2rem', lineHeight: '1.5' }}>
-          This overlay highlights the controls of the HRBA course player shell. Click anywhere or press <kbd style={{ background: '#334155', padding: '0.15rem 0.35rem', borderRadius: '4px', fontSize: '0.8rem' }}>Enter</kbd> to dismiss this guide.
+          This overlay highlights the controls of the HRBA course player shell. Click anywhere or use the button below to dismiss this guide.
         </p>
         <button 
+          ref={dismissButtonRef}
           onClick={onClose}
           style={{
             backgroundColor: 'var(--color-primary)',

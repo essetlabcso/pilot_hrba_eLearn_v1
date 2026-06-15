@@ -46,6 +46,7 @@ export default function CoursePlayerShell({
   sequenceData
 }: CoursePlayerShellProps) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const helpButtonRef = useRef<HTMLButtonElement>(null);
   const menuDrawerRef = useRef<HTMLDivElement>(null);
   const menuDrawerTitleRef = useRef<HTMLHeadingElement>(null);
   const mainContentRef = useRef<HTMLElement>(null);
@@ -240,6 +241,26 @@ export default function CoursePlayerShell({
       }, 0);
     };
   }, [handleToggleModal, state.activeModal]);
+
+  useEffect(() => {
+    if (state.activeModal !== 'help') {
+      return;
+    }
+
+    return () => {
+      window.setTimeout(() => {
+        if (focusHTMLElement(helpButtonRef.current)) {
+          return;
+        }
+
+        if (focusHTMLElement(document.querySelector('.player-sidebar-button'))) {
+          return;
+        }
+
+        focusHTMLElement(mainContentRef.current);
+      }, 0);
+    };
+  }, [state.activeModal]);
 
   const handleReplay = () => {
     // Reload state: toggle and reset state variables to clear local interactive inputs
@@ -572,6 +593,7 @@ export default function CoursePlayerShell({
           onToggleModal={handleToggleModal}
           activeModal={state.activeModal}
           menuButtonRef={menuButtonRef}
+          helpButtonRef={helpButtonRef}
           transcriptVisible={state.transcriptVisible}
           onToggleTranscript={() => onChangeState(p => ({ ...p, transcriptVisible: !p.transcriptVisible }))}
           soundEnabled={state.soundState}
