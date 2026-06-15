@@ -44,7 +44,14 @@ const learningTools: SidebarTool[] = [
     closeAriaLabel: 'Close resources list',
     modalRootId: 'player-resources-modal'
   },
-  { label: 'Help Guide', icon: '?', modal: 'help', ariaLabel: 'Open player help guide' },
+  {
+    label: 'Help Guide',
+    icon: '?',
+    modal: 'help',
+    ariaLabel: 'Open player help guide',
+    closeAriaLabel: 'Close player help guide',
+    modalRootId: 'player-help-overlay'
+  },
   {
     label: 'Accessibility',
     icon: 'A',

@@ -84,7 +84,11 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
 
   return (
     <div 
+      id="player-help-overlay"
       ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="player-help-overlay-title"
       className="help-overlay"
       onClick={onClose}
       style={{
@@ -162,7 +166,7 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
         }}
       >
         <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '1rem' }}>💡</span>
-        <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-family-headings)', marginBottom: '0.75rem' }}>
+        <h3 id="player-help-overlay-title" style={{ fontSize: '1.5rem', fontFamily: 'var(--font-family-headings)', marginBottom: '0.75rem' }}>
           Focused Course Player Guide
         </h3>
         <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '2rem', lineHeight: '1.5' }}>
