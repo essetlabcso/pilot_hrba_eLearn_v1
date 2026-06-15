@@ -105,3 +105,57 @@
   padding-block-start: var(--cso-space-4);
   border-block-start: var(--cso-border-width-hairline) solid var(--cso-border-color-soft);
 }
+
+.cso-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cso-space-2);
+  color: var(--button-color);
+  font-family: var(--cso-font-family-ui);
+  font-weight: var(--cso-font-weight-semibold);
+  line-height: var(--cso-line-height-heading);
+  text-align: center;
+  background: var(--button-background);
+  border: var(--cso-border-width-hairline) solid var(--button-border);
+  border-radius: var(--cso-radius-md);
+  cursor: pointer;
+}
+
+.cso-button--primary {
+  --button-background: var(--cso-color-action-primary);
+  --button-border: var(--cso-color-action-primary);
+  --button-color: var(--cso-color-action-primary-text);
+}
+
+.cso-button--secondary {
+  --button-background: var(--cso-color-surface-primary);
+  --button-border: var(--cso-color-action-primary);
+  --button-color: var(--cso-color-action-secondary-text);
+}
+
+.cso-button--ghost {
+  --button-background: var(--cso-color-surface-primary);
+  --button-border: var(--cso-border-color-soft);
+  --button-color: var(--cso-color-action-secondary-text);
+}
+
+.cso-button--sm {
+  padding: var(--cso-space-2) var(--cso-space-3);
+  font-size: var(--cso-font-size-sm);
+}
+
+.cso-button--md {
+  padding: var(--cso-space-3) var(--cso-space-4);
+  font-size: var(--cso-font-size-base);
+}
+
+.cso-button:focus-visible {
+  outline: var(--cso-border-width-strong) solid var(--cso-color-focus-light-surface);
+  outline-offset: var(--cso-space-1);
+}
+
+.cso-button:disabled {
+  cursor: not-allowed;
+}
