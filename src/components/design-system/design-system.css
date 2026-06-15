@@ -159,3 +159,75 @@
 .cso-button:disabled {
   cursor: not-allowed;
 }
+
+.cso-learning-block-frame {
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--cso-space-3);
+  width: 100%;
+  padding: var(--cso-space-5);
+  color: var(--cso-color-text-primary);
+  background: var(--cso-color-surface-primary);
+  border: var(--cso-border-width-hairline) solid var(--cso-border-color-default);
+  border-radius: var(--cso-radius-md);
+}
+
+.cso-learning-block-frame--soft {
+  background: var(--cso-color-background-stage);
+  border-color: var(--cso-border-color-soft);
+}
+
+.cso-learning-block-frame__eyebrow {
+  color: var(--cso-color-text-muted);
+  font-size: var(--cso-font-size-sm);
+  font-weight: var(--cso-font-weight-semibold);
+  line-height: var(--cso-line-height-heading);
+}
+
+.cso-learning-block-frame__title {
+  color: var(--cso-color-text-strong);
+  font-size: var(--cso-font-size-lg);
+  font-weight: var(--cso-font-weight-bold);
+  line-height: var(--cso-line-height-heading);
+}
+
+.cso-learning-block-frame__description,
+.cso-learning-block-frame__body,
+.cso-learning-block-frame__support,
+.cso-learning-block-frame__footer {
+  color: var(--cso-color-text-primary);
+  line-height: var(--cso-line-height-body);
+}
+
+.cso-learning-block-frame__support {
+  padding-block-start: var(--cso-space-3);
+  border-block-start: var(--cso-border-width-hairline) solid var(--cso-border-color-soft);
+}
+
+.cso-learning-block-frame__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cso-space-3);
+  padding-block-start: var(--cso-space-2);
+}
+
+.cso-learning-block-frame__footer {
+  padding-block-start: var(--cso-space-3);
+  border-block-start: var(--cso-border-width-hairline) solid var(--cso-border-color-soft);
+}
+
+.cso-learning-block-frame__description > :first-child,
+.cso-learning-block-frame__body > :first-child,
+.cso-learning-block-frame__support > :first-child,
+.cso-learning-block-frame__actions > :first-child,
+.cso-learning-block-frame__footer > :first-child {
+  margin-block-start: var(--cso-space-0);
+}
+
+.cso-learning-block-frame__description > :last-child,
+.cso-learning-block-frame__body > :last-child,
+.cso-learning-block-frame__support > :last-child,
+.cso-learning-block-frame__actions > :last-child,
+.cso-learning-block-frame__footer > :last-child {
+  margin-block-end: var(--cso-space-0);
+}
