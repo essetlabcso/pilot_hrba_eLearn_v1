@@ -11,3 +11,4 @@ export type {
   LearningBlockFrameVariant,
 } from './LearningBlockFrame';
 export * from './blocks';
+export * from './templates';

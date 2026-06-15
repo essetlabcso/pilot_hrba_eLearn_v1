@@ -278,3 +278,50 @@
 .cso-key-message-block__explanation > :last-child {
   margin-block-end: var(--cso-space-0);
 }
+
+.cso-screen-template {
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--cso-space-5);
+  width: 100%;
+  color: var(--cso-color-text-primary);
+}
+
+.cso-screen-template__header,
+.cso-screen-template__body,
+.cso-screen-template__blocks {
+  display: grid;
+  gap: var(--cso-space-3);
+}
+
+.cso-screen-template__eyebrow {
+  color: var(--cso-color-text-muted);
+  font-size: var(--cso-font-size-sm);
+  font-weight: var(--cso-font-weight-semibold);
+  line-height: var(--cso-line-height-heading);
+}
+
+.cso-screen-template__title {
+  margin: var(--cso-space-0);
+  color: var(--cso-color-text-strong);
+  font-size: var(--cso-font-size-2xl);
+  font-weight: var(--cso-font-weight-bold);
+  line-height: var(--cso-line-height-heading);
+}
+
+.cso-screen-template__summary {
+  color: var(--cso-color-text-primary);
+  line-height: var(--cso-line-height-body);
+}
+
+.cso-key-message-summary-template .cso-screen-template__body {
+  gap: var(--cso-space-4);
+}
+
+.cso-screen-template__summary > :first-child {
+  margin-block-start: var(--cso-space-0);
+}
+
+.cso-screen-template__summary > :last-child {
+  margin-block-end: var(--cso-space-0);
+}
