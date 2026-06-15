@@ -10,3 +10,4 @@ export type {
   LearningBlockFrameProps,
   LearningBlockFrameVariant,
 } from './LearningBlockFrame';
+export * from './blocks';

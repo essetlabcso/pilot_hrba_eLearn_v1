@@ -231,3 +231,50 @@
 .cso-learning-block-frame__footer > :last-child {
   margin-block-end: var(--cso-space-0);
 }
+
+.cso-concept-explanation-block__summary,
+.cso-concept-explanation-block__body,
+.cso-concept-explanation-block__support,
+.cso-concept-explanation-block__support-note,
+.cso-key-message-block__message,
+.cso-key-message-block__explanation {
+  color: var(--cso-color-text-primary);
+  line-height: var(--cso-line-height-body);
+}
+
+.cso-concept-explanation-block__body,
+.cso-concept-explanation-block__support {
+  display: grid;
+  gap: var(--cso-space-3);
+}
+
+.cso-concept-explanation-block__key-point {
+  margin-block-start: var(--cso-space-0);
+}
+
+.cso-key-message-block__message {
+  color: var(--cso-color-text-strong);
+  font-weight: var(--cso-font-weight-semibold);
+}
+
+.cso-key-message-block__explanation {
+  margin-block-start: var(--cso-space-2);
+}
+
+.cso-concept-explanation-block__summary > :first-child,
+.cso-concept-explanation-block__body > :first-child,
+.cso-concept-explanation-block__support > :first-child,
+.cso-concept-explanation-block__support-note > :first-child,
+.cso-key-message-block__message > :first-child,
+.cso-key-message-block__explanation > :first-child {
+  margin-block-start: var(--cso-space-0);
+}
+
+.cso-concept-explanation-block__summary > :last-child,
+.cso-concept-explanation-block__body > :last-child,
+.cso-concept-explanation-block__support > :last-child,
+.cso-concept-explanation-block__support-note > :last-child,
+.cso-key-message-block__message > :last-child,
+.cso-key-message-block__explanation > :last-child {
+  margin-block-end: var(--cso-space-0);
+}
