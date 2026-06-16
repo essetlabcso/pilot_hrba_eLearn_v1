@@ -833,7 +833,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     <main className="m2-s18-screen" aria-labelledby="m2-s218-title">
       <section className="m2-s18-shell">
         <header className="m2-s18-header">
-          <div className="m2-s18-title-card">
+          <div className="m2-s18-title-card cso-content-safe-header">
             <p className="m2-s18-kicker">Module 2 · Power and exclusion</p>
             <h1 id="m2-s218-title">Power and Exclusion: Who Can Participate, Speak, and Influence?</h1>
             <p>
@@ -861,7 +861,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
           className="m2-s18-board"
           style={{ gridTemplateColumns: 'minmax(210px, 0.32fr) minmax(0, 0.68fr)', gridTemplateRows: 'auto auto' }}
         >
-          <article className="m2-s18-story">
+          <article className="m2-s18-story cso-content-safe-surface">
             <p className="m2-s18-kicker">Meeting snapshot</p>
             <h2>The same room, different power</h2>
             <p>
@@ -902,7 +902,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
                 <button
                   key={hotspot.id}
                   type="button"
-                  className={`m2-s18-hotspot ${hotspot.position} ${opened ? 'is-opened' : ''} ${active ? 'is-active' : ''}`}
+                  className={`m2-s18-hotspot cso-readable-label-chip ${hotspot.position} ${opened ? 'is-opened' : ''} ${active ? 'is-active' : ''}`}
                   aria-pressed={active}
                   aria-label={`Open hotspot ${index + 1}: ${hotspot.label}. ${hotspot.short}`}
                   style={{
@@ -932,7 +932,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
             })}
           </div>
 
-          <article className="m2-s18-insight" style={{ gridColumn: '1', gridRow: '2' }}>
+          <article className="m2-s18-insight cso-content-safe-surface" style={{ gridColumn: '1', gridRow: '2' }}>
             <p className="m2-s18-kicker">Selected hotspot</p>
             <h2>{activeHotspot.label}</h2>
             <p>{activeHotspot.text}</p>

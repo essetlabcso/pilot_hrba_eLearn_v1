@@ -33,7 +33,7 @@ export default function CourseItemCoverScreen({
         <span aria-hidden="true">&lt;</span>
         Back to course
       </button>
-      <div className="m2-cover-screen__panel">
+      <div className="m2-cover-screen__panel cso-content-safe-header cso-content-safe-surface--inverse">
         <div className="m2-cover-screen__accent" aria-hidden="true"></div>
         <p className="m2-cover-screen__course">
           Applying the Human Rights-Based Approach in CSO Practice

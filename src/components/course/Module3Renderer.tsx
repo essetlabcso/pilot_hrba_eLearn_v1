@@ -6025,7 +6025,7 @@ function Module3StudioScreen({
   return (
     <main className="m3-screen m3-studio-screen" aria-labelledby={`${config.screenId}-title`}>
       <section className="m3-hero-panel m3-studio-hero">
-        <div>
+        <div className="cso-content-safe-header">
           <ModuleContextLabel>{config.context}</ModuleContextLabel>
           <ScreenTitle id={`${config.screenId}-title`} lead="Use the staged design canvas. Open the notes, make the design judgment, review the model output, and complete the quick check.">
             {config.title}
@@ -6050,12 +6050,12 @@ function Module3StudioScreen({
           role="img"
           aria-label="Design studio board showing project analysis cards moving into practical project design decisions."
         >
-          <span>Context</span>
-          <span>People</span>
-          <span>Barriers</span>
-          <span>Actors</span>
-          <span>Risks</span>
-          <span>Evidence</span>
+          <span className="cso-readable-label-chip">Context</span>
+          <span className="cso-readable-label-chip">People</span>
+          <span className="cso-readable-label-chip">Barriers</span>
+          <span className="cso-readable-label-chip">Actors</span>
+          <span className="cso-readable-label-chip">Risks</span>
+          <span className="cso-readable-label-chip">Evidence</span>
         </div>
       </section>
 

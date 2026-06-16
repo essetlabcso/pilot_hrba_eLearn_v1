@@ -1115,15 +1115,15 @@ function EvidenceVisual({ config }: { config: Module5ScreenConfig }) {
       aria-label="Illustrated MEAL workspace with report cards, evidence signals, feedback notes, and adaptation decisions."
     >
       <div className="m5-visual-card__screen">
-        <span>Report</span>
-        <span>Feedback</span>
-        <span>Evidence</span>
+        <span className="cso-readable-label-chip">Report</span>
+        <span className="cso-readable-label-chip">Feedback</span>
+        <span className="cso-readable-label-chip">Evidence</span>
       </div>
       <div className="m5-visual-card__signals">
-        <span>{config.blockType}</span>
-        <span>Inclusion</span>
-        <span>Safety</span>
-        <span>Adaptation</span>
+        <span className="cso-readable-label-chip">{config.blockType}</span>
+        <span className="cso-readable-label-chip">Inclusion</span>
+        <span className="cso-readable-label-chip">Safety</span>
+        <span className="cso-readable-label-chip">Adaptation</span>
       </div>
     </div>
   );
@@ -1434,7 +1434,7 @@ function Module5CanvasScreen({
   return (
     <main className={['m5-screen', isLensScreen ? 'm5-screen--meal-lens' : '', isPolishedLabScreen ? 'm5-screen--polished-lab' : '', screenThemeClass].filter(Boolean).join(' ')} aria-labelledby={`${config.screenId}-title`}>
       <section className="m5-hero-panel">
-        <div className="m5-hero-panel__copy">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
           <ModuleContextLabel>{config.context}</ModuleContextLabel>
           <ScreenTitle id={`${config.screenId}-title`} lead={config.lead}>
             {config.title}

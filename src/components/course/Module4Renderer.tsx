@@ -993,7 +993,7 @@ function Module4LearningObjectivesScreen({ onChangeState }: Module4RendererProps
   return (
     <main className="m4-screen m4-objectives-screen" aria-labelledby="m4-objectives-title">
       <section className="m4-objectives-shell">
-        <aside className="m4-objectives-copy">
+        <aside className="m4-objectives-copy cso-content-safe-header">
           <div>
             <ModuleContextLabel>MODULE 4 · APPLYING HRBA DURING IMPLEMENTATION</ModuleContextLabel>
             <h1 id="m4-objectives-title">Learning Objectives</h1>
@@ -3263,7 +3263,7 @@ function Module4SummaryScreen({ onChangeState }: Module4RendererProps) {
   return (
     <main className="m4-screen m4-summary-screen" aria-labelledby="m4-summary-title">
       <section className="m4-summary-shell">
-        <aside className="m4-summary-copy">
+        <aside className="m4-summary-copy cso-content-safe-header">
           <div>
             <ModuleContextLabel>MODULE 4 · SUMMARY</ModuleContextLabel>
             <h1 id="m4-summary-title">What you practiced in Module 4</h1>

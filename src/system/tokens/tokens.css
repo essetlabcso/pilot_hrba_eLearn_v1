@@ -11,6 +11,9 @@
   --cso-color-surface-inverse: #0F172A;
   --cso-color-surface-inverse-raised: #1E293B;
   --cso-color-surface-inverse-border: #334155;
+  --cso-color-surface-content-safe: rgba(255, 255, 255, 0.96);
+  --cso-color-surface-content-safe-inverse: rgba(15, 23, 42, 0.92);
+  --cso-color-surface-readable-label: rgba(255, 255, 255, 0.94);
 
   --cso-color-text-primary: #111827;
   --cso-color-text-strong: #0F172A;
@@ -109,11 +112,13 @@
   --cso-border-color-default: #E5E7EB;
   --cso-border-color-soft: #DDE2E9;
   --cso-border-color-inverse: #334155;
+  --cso-border-color-content-safe: rgba(148, 163, 184, 0.36);
 
   --cso-shadow-card: 0 10px 24px rgba(15, 23, 42, 0.08);
   --cso-shadow-panel: 0 16px 40px rgba(15, 23, 42, 0.12);
   --cso-shadow-modal: 0 24px 70px rgba(15, 23, 42, 0.22);
   --cso-shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.22);
+  --cso-shadow-content-safe: 0 14px 32px rgba(15, 23, 42, 0.12);
 
   --cso-motion-duration-fast: 120ms;
   --cso-motion-duration-normal: 180ms;

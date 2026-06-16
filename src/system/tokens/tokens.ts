@@ -14,6 +14,9 @@ export const csoLearningHubTokens = {
       inverse: "#0F172A",
       inverseRaised: "#1E293B",
       inverseBorder: "#334155",
+      contentSafe: "rgba(255, 255, 255, 0.96)",
+      contentSafeInverse: "rgba(15, 23, 42, 0.92)",
+      readableLabel: "rgba(255, 255, 255, 0.94)",
     },
     text: {
       primary: "#111827",
@@ -144,6 +147,7 @@ export const csoLearningHubTokens = {
       default: "#E5E7EB",
       soft: "#DDE2E9",
       inverse: "#334155",
+      contentSafe: "rgba(148, 163, 184, 0.36)",
     },
   },
   shadow: {
@@ -151,6 +155,7 @@ export const csoLearningHubTokens = {
     panel: "0 16px 40px rgba(15, 23, 42, 0.12)",
     modal: "0 24px 70px rgba(15, 23, 42, 0.22)",
     focus: "0 0 0 4px rgba(37, 99, 235, 0.22)",
+    contentSafe: "0 14px 32px rgba(15, 23, 42, 0.12)",
   },
   motion: {
     duration: {
