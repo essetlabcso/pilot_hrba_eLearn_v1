@@ -221,6 +221,20 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
               practical: did people only show up, speak, receive a response, or influence
               a decision?
             </p>
+            <div className="m2-s15-rule">
+              <strong>Before you try</strong>
+              <p>
+                Weak participation: people attend after the agenda is already fixed and
+                questions come only at the end. Rate that as presence, not meaningful
+                influence. A stronger rating needs information early, access barriers
+                removed, safe voice, input that can influence the decision, and feedback
+                on what changed.
+              </p>
+              <p>
+                Workflow: read the model, rate each example, compare the feedback, then
+                continue when all four are rated.
+              </p>
+            </div>
           </div>
           <aside className="m2-s15-progress-card" aria-label="Participation rating progress">
             <p className="m2-s15-progress-count" aria-live="polite">
@@ -242,7 +256,11 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
           ))}
         </section>
 
-        <section className="m2-s15-board" aria-labelledby="m2-s15-example-title">
+        <section
+          className="m2-s15-board"
+          aria-labelledby="m2-s15-example-title"
+          style={{ gridTemplateColumns: 'minmax(170px, 0.3fr) minmax(0, 0.7fr)', gridTemplateRows: 'auto auto' }}
+        >
           <div className="m2-s15-example-list" role="tablist" aria-label="Participation examples">
             {examples.map((example) => {
               const active = example.id === activeExample.id;
@@ -283,7 +301,12 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
             <p className="m2-s15-kicker">Rate this example</p>
             <h2 id="m2-s15-example-title">{activeExample.title}</h2>
             <p>{activeExample.scenario}</p>
-            <div className="m2-s15-rating-scale" role="radiogroup" aria-label={`Rate ${activeExample.title}`}>
+            <div
+              className="m2-s15-rating-scale"
+              role="radiogroup"
+              aria-label={`Rate ${activeExample.title}`}
+              style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
+            >
               {activeLevelOrder.map((levelId, index) => {
                 const level = levels.find((entry) => entry.id === levelId) || levels[0];
                 const selected = activeRating === level.id;
@@ -294,6 +317,7 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
                     role="radio"
                     aria-checked={selected}
                     className={`m2-s15-rating-button ${selected ? 'is-selected' : ''}`}
+                    style={{ minHeight: '74px', minWidth: 0, overflowWrap: 'anywhere' }}
                     onClick={() => rateExample(activeExample.id, level.id)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
@@ -311,7 +335,11 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
             </div>
           </article>
 
-          <aside className="m2-s15-feedback-card" aria-live="polite">
+          <aside
+            className="m2-s15-feedback-card"
+            aria-live="polite"
+            style={{ gridColumn: '1 / -1', overflow: 'visible' }}
+          >
             <p className="m2-s15-kicker">Feedback</p>
             {activeRating ? (
               <>

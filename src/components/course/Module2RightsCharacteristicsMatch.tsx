@@ -340,7 +340,27 @@ export default function Module2RightsCharacteristicsMatch({
           </aside>
         </header>
 
-        <section className="m2-s06-board" aria-labelledby="m2-s06-board-title">
+        <section
+          className="m2-s06-active-situation"
+          aria-label="Worked example and matching workflow"
+          style={{ gap: '0.35rem', marginBottom: '0.65rem', padding: '0.72rem 0.88rem' }}
+        >
+          <p className="m2-s06-kicker">Worked example</p>
+          <p>
+            If meeting information is shared too late for some members to prepare, the
+            strongest lens is <strong>universal</strong>: everyone should have a fair chance
+            to know about the decision and participate.
+          </p>
+          <div className="m2-s06-attempt-note" style={{ width: 'auto', borderRadius: '14px', marginTop: 0 }}>
+            Workflow: read the example, choose the best match for each situation, use the feedback, then continue after all six are matched.
+          </div>
+        </section>
+
+        <section
+          className="m2-s06-board"
+          aria-labelledby="m2-s06-board-title"
+          style={{ gridTemplateColumns: 'minmax(170px, 0.3fr) minmax(0, 0.7fr)', gridTemplateRows: 'auto auto auto' }}
+        >
           <div className="m2-s06-situation-rail" aria-label="Situation list">
             {situations.map((situation, index) => {
               const active = stored.activeSituationId === situation.id;
@@ -363,16 +383,20 @@ export default function Module2RightsCharacteristicsMatch({
             })}
           </div>
 
-          <article className="m2-s06-active-situation">
+          <article className="m2-s06-active-situation" style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
             <p className="m2-s06-kicker">Active situation</p>
             <h2 id="m2-s06-board-title">{activeSituation.title}</h2>
-            <p>{activeSituation.text}</p>
+            <p style={{ maxWidth: '54ch', overflowWrap: 'anywhere' }}>{activeSituation.text}</p>
             <div className="m2-s06-attempt-note">
               Attempt {Math.min((stored.attemptCounts[activeSituation.id] || 0) + 1, 2)} of 2
             </div>
           </article>
 
-          <div className="m2-s06-choice-panel" aria-label="Characteristic choices">
+          <div
+            className="m2-s06-choice-panel"
+            aria-label="Characteristic choices"
+            style={{ gridColumn: '1 / -1', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}
+          >
             {characteristicOptions.map((option) => (
               <button
                 key={option.id}
@@ -380,6 +404,7 @@ export default function Module2RightsCharacteristicsMatch({
                 className="m2-s06-choice"
                 disabled={activeCompleted}
                 aria-label={`${option.id}. ${option.reminder}`}
+                style={{ minWidth: 0, minHeight: '46px', padding: '0.38rem 0.46rem', overflowWrap: 'anywhere' }}
                 onClick={() => selectCharacteristic(option.id)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
@@ -395,7 +420,11 @@ export default function Module2RightsCharacteristicsMatch({
             ))}
           </div>
 
-          <aside className={`m2-s06-feedback ${stored.feedback ? 'is-visible' : ''}`} aria-live="polite">
+          <aside
+            className={`m2-s06-feedback ${stored.feedback ? 'is-visible' : ''}`}
+            aria-live="polite"
+            style={{ gridColumn: '1 / -1', minHeight: '54px', padding: '0.46rem 0.65rem' }}
+          >
             {stored.feedback ? (
               <>
                 <p className="m2-s06-kicker">

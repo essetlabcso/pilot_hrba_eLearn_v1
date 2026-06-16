@@ -287,8 +287,17 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
               repeated concerns lead to change.
             </p>
             <p>
-              Verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.
+              Your task: open each broken stage, choose the response that closes that
+              part of the loop, read the feedback, then continue when all four stages are repaired.
             </p>
+            <div className="m2-s16-feedback-card">
+              <p className="m2-s16-kicker">Worked example loop</p>
+              <p>
+                A safe feedback process should receive a concern, review the pattern,
+                respond in general terms, adapt the process if needed, and document
+                follow-up without exposing who raised the issue.
+              </p>
+            </div>
           </div>
           <aside className="m2-s16-progress-card" aria-label="Accountability repair progress">
             <p className="m2-s16-progress-count" aria-live="polite">
@@ -326,7 +335,11 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
           })}
         </section>
 
-        <section className="m2-s16-board" aria-labelledby="m2-s16-stage-title">
+        <section
+          className="m2-s16-board"
+          aria-labelledby="m2-s16-stage-title"
+          style={{ gridTemplateColumns: 'minmax(0, 1fr)', gridTemplateRows: 'auto auto auto' }}
+        >
           <article className="m2-s16-break-card">
             <p className="m2-s16-kicker">Broken stage</p>
             <h2 id="m2-s16-stage-title">{activeStage.title}</h2>
@@ -354,6 +367,7 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
                     role="radio"
                     aria-checked={selected}
                     className={`m2-s16-repair-option ${selected ? 'is-selected' : ''}`}
+                    style={{ minWidth: 0, overflowWrap: 'anywhere' }}
                     onClick={() => chooseRepair(activeStage.id, option)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
@@ -363,14 +377,14 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
                     }}
                   >
                     <span aria-hidden="true">{String.fromCharCode(65 + index)}</span>
-                    <strong>{option}</strong>
+                    <strong style={{ minWidth: 0, overflowWrap: 'anywhere', whiteSpace: 'normal' }}>{option}</strong>
                   </button>
                 );
               })}
             </div>
           </article>
 
-          <aside className="m2-s16-feedback-card" aria-live="polite">
+          <aside className="m2-s16-feedback-card" aria-live="polite" style={{ gridColumn: '1 / -1' }}>
             <p className="m2-s16-kicker">Loop feedback</p>
             {selectedRepairs[activeStage.id] ? (
               <>
@@ -563,8 +577,14 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
               Diagnose where a feedback loop breaks, then choose the repair that gives people a clearer, safer, more visible response.
             </p>
             <p>
-              Verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.
+              Task sequence: diagnose the break, choose the safest repair, review the
+              feedback, then move to the next case.
             </p>
+            <div className="m2-s17-feedback">
+              Before you try: a suggestion box is weak if people do not know who reads it
+              or whether comments stay private. A safer repair explains the channel,
+              protects privacy, shares a general response, and adapts if issues repeat.
+            </div>
           </div>
           <aside className="m2-s17-progress" aria-live="polite">
             <span>{repairedCount} of {repairCases.length} repaired</span>
@@ -700,6 +720,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     {
       id: 'information',
       label: 'Information',
+      displayLabel: 'Info',
       short: 'Who heard early?',
       position: 'm2-s18-hotspot--information',
       text: 'Some members hear early through stronger networks. Others hear later, indirectly, or without enough time to prepare.',
@@ -708,6 +729,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     {
       id: 'entry',
       label: 'Entry',
+      displayLabel: 'Entry',
       short: 'Who can enter easily?',
       position: 'm2-s18-hotspot--entry',
       text: 'Timing, childcare, mobility, confidence, language, and belonging can decide who enters the space with less cost.',
@@ -716,6 +738,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     {
       id: 'understanding',
       label: 'Understanding',
+      displayLabel: 'Terms',
       short: 'Who follows the terms?',
       position: 'm2-s18-hotspot--understanding',
       text: 'Financial, project, or governance language can make some people present but less able to shape the discussion.',
@@ -724,6 +747,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     {
       id: 'voice',
       label: 'Voice',
+      displayLabel: 'Voice',
       short: 'Who can speak safely?',
       position: 'm2-s18-hotspot--voice',
       text: 'People may have ideas but hesitate because of status, age, gender expectations, fear of conflict, or past dismissal.',
@@ -732,6 +756,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     {
       id: 'credibility',
       label: 'Credibility',
+      displayLabel: 'Trust',
       short: 'Who is believed?',
       position: 'm2-s18-hotspot--credibility',
       text: 'Power affects whose ideas sound serious, whose knowledge is trusted, and whose contribution is interrupted less.',
@@ -740,6 +765,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
     {
       id: 'influence',
       label: 'Influence',
+      displayLabel: 'Result',
       short: 'Who shapes the result?',
       position: 'm2-s18-hotspot--influence',
       text: 'Some people influence the final choice because they summarize, propose options, know decision-makers, or represent the group publicly.',
@@ -806,8 +832,19 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
             <p className="m2-s18-kicker">Module 2 · Power and exclusion</p>
             <h1 id="m2-s218-title">Power and Exclusion: Who Can Participate, Speak, and Influence?</h1>
             <p>
-              Follow one decision meeting and open each hotspot to see how power can shape participation before the final choice appears.
+              First read the example lens, then open the numbered points on the image.
+              Each point explains one way power shapes participation before a final choice appears.
             </p>
+            <div className="m2-s18-member-grid" style={{ marginTop: '0.45rem' }}>
+              <div>
+                <strong>Example lens</strong>
+                <span>
+                  Barrier: late information. Participation effect: some people cannot prepare.
+                  Decision effect: early listeners shape the choice. Safe action: share through
+                  more than one channel and check who may still be missed.
+                </span>
+              </div>
+            </div>
           </div>
           <aside className="m2-s18-progress" aria-live="polite">
             <span>{openedHotspots.length} of {hotspots.length} hotspots opened</span>
@@ -815,7 +852,10 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
           </aside>
         </header>
 
-        <section className="m2-s18-board">
+        <section
+          className="m2-s18-board"
+          style={{ gridTemplateColumns: 'minmax(210px, 0.32fr) minmax(0, 0.68fr)', gridTemplateRows: 'auto auto' }}
+        >
           <article className="m2-s18-story">
             <p className="m2-s18-kicker">Meeting snapshot</p>
             <h2>The same room, different power</h2>
@@ -837,7 +877,14 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
           <div
             className="m2-s18-map"
             aria-label="Power and exclusion meeting scene hotspot map. Open the six labels to explore information, entry, understanding, voice, credibility, and influence."
-            style={{ '--m2-s18-hotspot-image': `url(${module2PowerHotspotImage})` } as CSSProperties}
+            style={{
+              '--m2-s18-hotspot-image': `url(${module2PowerHotspotImage})`,
+              gridColumn: '2',
+              gridRow: '1 / span 2',
+              alignSelf: 'start',
+              height: '315px',
+              minHeight: 0,
+            } as CSSProperties}
           >
             <span className="sr-only">
               The image shows a community meeting around a table. Some people sit near the decision discussion, others stand near the doorway or sit at the edge, showing how access, voice, credibility, and influence can differ in the same room.
@@ -853,6 +900,17 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
                   className={`m2-s18-hotspot ${hotspot.position} ${opened ? 'is-opened' : ''} ${active ? 'is-active' : ''}`}
                   aria-pressed={active}
                   aria-label={`Open hotspot ${index + 1}: ${hotspot.label}. ${hotspot.short}`}
+                  style={{
+                    width: '58px',
+                    minHeight: '42px',
+                    gridTemplateColumns: '1fr',
+                    justifyItems: 'center',
+                    textAlign: 'center',
+                    padding: '0.3rem 0.24rem',
+                    ...(hotspot.position === 'm2-s18-hotspot--credibility' || hotspot.position === 'm2-s18-hotspot--influence'
+                      ? { right: '12%' }
+                      : {}),
+                  }}
                   onClick={() => openHotspot(hotspot.id)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
@@ -861,15 +919,15 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
                     }
                   }}
                 >
-                  <span>{opened ? 'OK' : index + 1}</span>
-                  <strong>{hotspot.label}</strong>
-                  <em>{hotspot.short}</em>
+                  <span style={{ gridRow: 'auto' }}>{opened ? 'OK' : index + 1}</span>
+                  <strong style={{ fontSize: '0.58rem', overflowWrap: 'anywhere' }}>{hotspot.displayLabel}</strong>
+                  <em className="sr-only">{hotspot.short}</em>
                 </button>
               );
             })}
           </div>
 
-          <article className="m2-s18-insight">
+          <article className="m2-s18-insight" style={{ gridColumn: '1', gridRow: '2' }}>
             <p className="m2-s18-kicker">Selected hotspot</p>
             <h2>{activeHotspot.label}</h2>
             <p>{activeHotspot.text}</p>
@@ -1011,7 +1069,16 @@ export function Module2TraceExclusionPathway({ state, onChangeState }: Props) {
           <div className="m2-s19-title-card">
             <p className="m2-s19-kicker">Module 2 · Exclusion practice</p>
             <h1 id="m2-s219-title">Practice: Trace the Exclusion Pathway</h1>
-            <p>Do not stop at “someone was excluded.” Trace where the pathway narrowed, then choose the practical adjustment that opens it.</p>
+            <p>Trace where the pathway narrows, then choose the adjustment that opens it.</p>
+            <div className="m2-s19-feedback">
+              <strong>Pathway demo:</strong> Barrier: late information → Participation effect:
+              fewer prepared questions → Decision effect: early listeners shape the result →
+              Safe action: use more than one channel and check who may still be missed.
+            </div>
+            <div className="m2-s19-feedback" style={{ marginTop: '0.35rem' }}>
+              Workflow: choose a pathway stage, select the strongest adjustment, review the
+              feedback, then continue when all five stages are matched.
+            </div>
           </div>
           <aside className="m2-s19-progress" aria-live="polite">
             <span>{completedCount} of {pathway.length} adjustments matched</span>
@@ -1628,15 +1695,24 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
           <div className="m2-s21-portfolio-title">
             <p className="m2-s21-portfolio-kicker">MODULE 2 · PORTFOLIO CHECKPOINT</p>
             <h1 id="m2-s221-title">Portfolio Checkpoint: My Everyday Rights Lens</h1>
-            <p>Review the rights-lens summary you built in this module. Edit only if needed, choose one habit to carry forward, then save it to My Portfolio.</p>
+            <p>Review the safe sample first. Then check your summary, choose or write one safe generalized habit/action, and save it to My Portfolio.</p>
+            <p>
+              Safe sample: In a fictional service activity, some members may hear meeting
+              information too late to participate. One improvement I could test is to share
+              information through two channels and check whether people understood the
+              decision point before the meeting.
+            </p>
           </div>
           <aside className="m2-s21-portfolio-privacy">
             <strong>Saved privately by default.</strong>
-            <span>This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case. Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.</span>
+            <span>Keep entries generalized and non-sensitive. Do not include names, exact locations, identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.</span>
           </aside>
         </header>
 
-        <section className="m2-s21-portfolio-grid">
+        <section
+          className="m2-s21-portfolio-grid"
+          style={{ gridTemplateColumns: 'minmax(0, 0.58fr) minmax(260px, 0.42fr)' }}
+        >
           <article className="m2-s21-summary-card">
             <div className="m2-s21-card-head">
               <p className="m2-s21-portfolio-kicker">Portfolio summary card</p>
@@ -1657,11 +1733,11 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
             </div>
           </article>
 
-          <aside className="m2-s21-habit-card">
+          <aside className="m2-s21-habit-card" style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
             <div className="m2-s21-card-head">
               <p className="m2-s21-portfolio-kicker">Carry-forward habit</p>
               <h2>One habit to carry forward</h2>
-              <span>Choose one practical HRBA habit to use in your everyday CSO work.</span>
+              <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>Choose one practical HRBA habit to use in your everyday CSO work.</span>
             </div>
             <div className="m2-s21-habit-options" role="radiogroup" aria-label="Choose one carry-forward habit">
               {habitOptions.map((habit) => (
@@ -1683,7 +1759,10 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
             </div>
             <label className="m2-s21-custom-habit">
               <span>Or write one safe sentence in your own words</span>
-              <em>Use a fictional, generalized, or non-sensitive example only.</em>
+              <em style={{ display: 'block', maxWidth: '100%', minWidth: 0, overflowWrap: 'anywhere', whiteSpace: 'normal' }}>
+                <span style={{ display: 'block' }}>Use a fictional, generalized, or non-sensitive</span>
+                <span style={{ display: 'block' }}>example only.</span>
+              </em>
               <textarea
                 value={customHabit}
                 onChange={(event) => {
