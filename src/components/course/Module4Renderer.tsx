@@ -938,13 +938,12 @@ function Module4IntroVideoScreen({ onChangeState }: Module4RendererProps) {
           <ModuleContextLabel>MODULE 4 · APPLYING HRBA DURING IMPLEMENTATION</ModuleContextLabel>
           <h1 id="m4-intro-video-title">Before you begin</h1>
           <p>
-            Watch this short introduction to see how Module 4 will help you keep HRBA alive while a project is
-            being delivered — through participation, access, feedback, responsibility, safety, adaptation, and
-            accountable follow-up.
+            Module 4 focuses on keeping HRBA alive while a project is being delivered, using participation,
+            access, feedback, responsibility, safety, adaptation, and accountable follow-up.
           </p>
         </header>
 
-        <section className="m4-video-card" aria-label="Module 4 intro video">
+        <section className="m4-video-card" aria-label="Module 4 learning prompt">
           <div className="m4-video-frame">
             {module4IntroVideoUrl ? (
               <iframe
@@ -956,14 +955,20 @@ function Module4IntroVideoScreen({ onChangeState }: Module4RendererProps) {
             ) : (
               <div className="m4-video-placeholder">
                 <span aria-hidden="true">▶</span>
-                <p className="m4-card-kicker">Intro video placeholder</p>
-                <strong>Video will appear here when a URL is added.</strong>
+                <p className="m4-card-kicker">Implementation prompt</p>
+                <strong>
+                  During delivery, rights-based practice depends on who is reached, who is heard, what
+                  changes, and how the team responds when feedback or risk signals appear.
+                </strong>
               </div>
             )}
           </div>
           <article className="m4-transcript-card">
-            <p className="m4-card-kicker">Transcript</p>
-            <p>Transcript will be added here.</p>
+            <p className="m4-card-kicker">Before you begin</p>
+            <p>
+              Treat implementation as a set of active choices: check inclusion, listen safely, document
+              concerns, adapt when needed, and keep responsibility visible.
+            </p>
           </article>
         </section>
 

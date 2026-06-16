@@ -2133,19 +2133,20 @@ export function Module2IntroVideoScreen({ state, onChangeState }: Props) {
     <main className="m2-s01a-intro-screen" aria-labelledby="m2-s01a-title">
       <section className="m2-s01a-intro-shell">
         <header className="m2-s01a-intro-header">
-          <p className="m2-s01a-intro-kicker">Module 2 · Intro video</p>
+          <p className="m2-s01a-intro-kicker">Module 2 · Before you begin</p>
           <div>
             <h1 id="m2-s01a-title">Before you begin</h1>
             <p>
-              Watch this short introduction to understand what Module 2 will help you practice seeing everyday CSO work through rights, actors, principles, power, participation, and accountability.
+              Module 2 starts with a simple practice lens: everyday CSO work can be read through rights,
+              responsible actors, HRBA principles, power, participation, and accountability.
             </p>
           </div>
         </header>
 
         <section className="m2-s01a-video-card" aria-labelledby="m2-s01a-video-label">
           <div className="m2-s01a-video-label-row">
-            <p id="m2-s01a-video-label">Intro video placeholder</p>
-            <span>Ready for URL</span>
+            <p id="m2-s01a-video-label">Practice lens</p>
+            <span>Module lens</span>
           </div>
           <div className="m2-s01a-video-box">
             {hasVideo ? (
@@ -2156,23 +2157,24 @@ export function Module2IntroVideoScreen({ state, onChangeState }: Props) {
                 allowFullScreen
               />
             ) : (
-              <div className="m2-s01a-video-placeholder" role="img" aria-label="Video placeholder waiting for a configured URL">
+              <div className="m2-s01a-video-placeholder" role="img" aria-label="Module 2 practice lens poster">
                 <img
                   src={introVideoPoster}
                   alt="Module 2 video poster for Rights, Actors, Principles, and Power showing a play button and people connected to HRBA icons."
                 />
                 <span aria-hidden="true">▶</span>
-                <strong>Video will appear here when a URL is added.</strong>
+                <strong>Use the poster and prompt below to prepare for the practice screens.</strong>
               </div>
             )}
           </div>
           <p className="m2-s01a-transcript-link">
-            Transcript will be added here.
+            As you continue, look for where a right is being claimed, who has responsibility to respond,
+            whose voice or access may be missing, and how power affects the choices available.
           </p>
         </section>
 
         <footer className="m2-s01a-intro-footer">
-          <p>Rights, actors, principles, and power are the core lenses for the practice screens ahead.</p>
+          <p>Keep those lenses open as you move into the learning objectives and short practice activities.</p>
           <button type="button" onClick={continueToObjectives}>
             Continue to learning objectives
           </button>

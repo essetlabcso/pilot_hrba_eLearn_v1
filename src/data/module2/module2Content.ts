@@ -32,12 +32,12 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
   },
   'M2-S01A': {
     id: 'M2-S01A',
-    title: 'Module 2 Intro Video Rights, Actors, Principles, and Power',
+    title: 'Before you begin: Rights, Actors, Principles, and Power',
     section: 1,
-    blockType: 'Intro video placeholder',
+    blockType: 'Before you begin / Practice lens',
     content: {
       paragraphs: [
-        'Watch this short introduction to understand what Module 2 will help you practice seeing everyday CSO work through rights, actors, principles, power, participation, and accountability.'
+        'Module 2 starts with a simple practice lens: everyday CSO work can be read through rights, responsible actors, HRBA principles, power, participation, and accountability.'
       ]
     },
     buttonText: 'Continue to learning objectives'

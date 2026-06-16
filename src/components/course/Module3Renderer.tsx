@@ -1010,13 +1010,13 @@ function Module3IntroVideoScreen({ onChangeState }: Module3RendererProps) {
           <ModuleContextLabel>MODULE 3 · APPLYING HRBA IN PROJECT DESIGN</ModuleContextLabel>
           <ScreenTitle
             id="m3-intro-title"
-            lead="Watch this short introduction to see how Module 3 will help you move from a project idea to a stronger rights-based project design."
+            lead="Module 3 helps you move from a project idea to a design that is clearer, more accountable, and easier to test against rights-based commitments."
           >
             Before you begin
           </ScreenTitle>
         </div>
 
-        <div className="m3-video-frame" aria-label="Module 3 intro video">
+        <div className="m3-video-frame" aria-label="Module 3 learning prompt">
           {videoUrl ? (
             <iframe
               src={videoUrl}
@@ -1026,15 +1026,22 @@ function Module3IntroVideoScreen({ onChangeState }: Module3RendererProps) {
             />
           ) : (
             <div className="m3-video-placeholder">
-              <span>Intro video placeholder</span>
-              <p>Video will appear here when a URL is added.</p>
+              <span>Design prompt</span>
+              <p>
+                Before choosing activities, ask what should change for rights-holders, which actors hold
+                responsibility, and what evidence would show that participation, access, and accountability
+                are built into the project design.
+              </p>
             </div>
           )}
         </div>
 
-        <div className="m3-video-transcript" aria-label="Video transcript">
-          <p className="m3-card-kicker">Transcript</p>
-          <p>Transcript will be added here.</p>
+        <div className="m3-video-transcript" aria-label="Module 3 before you begin summary">
+          <p className="m3-card-kicker">Before you begin</p>
+          <p>
+            Use the next screens to test a project idea through rights, actor roles, assumptions, risk,
+            indicators, and practical design choices.
+          </p>
         </div>
 
         <div className="m3-intro-video-actions">

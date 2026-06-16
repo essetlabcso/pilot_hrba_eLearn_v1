@@ -1137,7 +1137,7 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
           <ModuleContextLabel>MODULE 5 · APPLYING HRBA IN MEAL</ModuleContextLabel>
           <ScreenTitle
             id="m5-intro-video-title"
-            lead="Watch this short introduction to see how Module 5 will help you move from counting activities to using evidence, indicators, feedback, safe data, learning, and reporting in a rights-based way."
+            lead="Module 5 helps you move from counting activities to using evidence, indicators, feedback, safe data, learning, and reporting in a rights-based way."
           >
             Before you begin
           </ScreenTitle>
@@ -1152,8 +1152,8 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
 
         <section className="m5-video-card" aria-labelledby="m5-video-placeholder-label">
           <div className="m5-video-card__header">
-            <p className="m5-card-kicker" id="m5-video-placeholder-label">Intro video placeholder</p>
-            <span>16:9</span>
+            <p className="m5-card-kicker" id="m5-video-placeholder-label">Intro focus</p>
+            <span>MEAL lens</span>
           </div>
           <div className="m5-video-frame">
             {module5IntroVideoUrl ? (
@@ -1166,13 +1166,19 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
             ) : (
               <div className="m5-video-placeholder">
                 <span aria-hidden="true">▶</span>
-                <p>Video will appear here when a URL is added.</p>
+                <p>
+                  Before reviewing numbers, ask whether the evidence shows inclusion, feedback, safety,
+                  change, and adaptation for the people the project is meant to serve.
+                </p>
               </div>
             )}
           </div>
           <article className="m5-transcript-placeholder">
-            <p className="m5-card-kicker">Transcript</p>
-            <p>Transcript will be added here.</p>
+            <p className="m5-card-kicker">Before you begin</p>
+            <p>
+              Use the next screens to connect indicators, feedback, safe data, learning decisions, and
+              reporting back to rights-based accountability.
+            </p>
           </article>
         </section>
 
