@@ -821,7 +821,7 @@ const module3PortfolioFields: PortfolioField[] = [
     key: 'actorsAndResponsibilities',
     label: 'Which actors and responsibilities matter for the design?',
     example:
-      'Rights-holders should shape the design; duty-bearers and service actors may hold responsibilities; the CSO should support, connect, facilitate, document, and advocate without taking over every role.',
+      'Rights-holders should shape the design; state institutions are the primary duty-bearers with obligations to respect, protect, and fulfil rights; the CSO should support, connect, facilitate, document, and advocate without replacing duty-bearers.',
   },
   {
     key: 'designImprovement',
@@ -2363,8 +2363,10 @@ function Module3PortfolioCheckpointScreen({ state, onChangeState }: Module3Rende
           <article className="m3-portfolio-safety-card">
             <strong>Keep this safe and general.</strong>
             <p>
-              Do not enter real names, active complaints, safeguarding details, legal disputes, confidential
-              project data, beneficiary lists, or identifiable community information.
+              This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case.
+              Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations,
+              identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes,
+              or sensitive incidents.
             </p>
           </article>
 
@@ -2389,7 +2391,7 @@ function Module3PortfolioCheckpointScreen({ state, onChangeState }: Module3Rende
             </div>
             {customHabitRequired && (
               <label className="m3-portfolio-custom-habit">
-                <span>My safe design habit is...</span>
+                <span>My safe design habit is... Use a fictional, generalized, or non-sensitive example only.</span>
                 <input
                   type="text"
                   value={customHabit}
@@ -5319,17 +5321,17 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     revealTitle: 'Map the actors around the rights issue',
     revealItems: [
       'Rights-holders: people affected by unequal access, including youth, women with unpaid care responsibilities, persons with disabilities, displaced households, and less visible households.',
-      'Formal duty-bearers: woreda offices, kebele structures, sector offices, or public service providers with relevant responsibilities.',
+      'Formal duty-bearers: state institutions such as woreda offices, kebele structures, sector offices, water offices, local councils, or public service providers with obligations to respect, protect, and fulfil rights.',
       'Community leaders: influential actors who can support inclusion but may also narrow participation if they control selection alone.',
       'Women groups, disability representatives, and youth networks: actors who can reveal barriers and help shape design.',
       'Service providers and private actors: training providers, cooperatives, employers, suppliers, or market actors connected to livelihood opportunities.',
-      'The CSO team: facilitator, supporter, coordinator, capacity builder, monitor, advocate, connector, and accountability holder in how it works.',
+      'The CSO team: facilitator, supporter, coordinator, capacity builder, monitor, advocate, connector, and accountability holder in how it works, without replacing duty-bearers.',
     ],
     activityTitle: 'Classify actors and match roles to design questions',
     correctPrompt: 'Why is actor analysis important in HRBA project design?',
     correctAnswer: 'It helps clarify rights-holders, duty-bearers, influencing actors, capacity gaps, power relations, and the CSO proper role.',
     outputTitle: 'How actor analysis changes project design',
-    outputBody: 'Partnerships become purposeful, capacity gaps become visible, responsibility becomes clearer, and the project does not depend only on the CSO.',
+    outputBody: 'Partnerships become purposeful, capacity gaps become visible, responsibility becomes clearer, and the project does not depend only on the CSO. HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action.',
     noteHeading: 'Common design mistake',
     noteBody: 'Do not write “stakeholders will be engaged” without explaining who they are and why they matter.',
     ctaHeading: 'Now build the actor map.',
@@ -5348,10 +5350,10 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     revealTitle: 'Actor classification and capacity-gap mapping',
     revealItems: [
       'Rights-holders: youth, women with unpaid care responsibilities, persons with disabilities, and displaced or shock-affected households.',
-      'Formal duty-bearers: woreda sector office and kebele administration or local public structure.',
+      'Formal duty-bearers: state institutions such as a woreda sector office, kebele administration, school or health committee, water office, local council, or other mandated local public structure.',
       'Influencing actors: community leaders, women groups, youth networks, and disability representatives.',
       'Supporting or service actors: training providers, cooperatives, market actors, other CSOs, or existing livelihood programs.',
-      'CSO role: facilitate, support, coordinate, build capacity, monitor, learn, and remain accountable.',
+      'CSO role: facilitate, support, coordinate, build capacity, monitor, learn, and remain accountable without replacing duty-bearers.',
     ],
     activityTitle: 'Classify actors and identify capacity gaps',
     correctPrompt: 'Which actor map is strongest for HRBA project design?',
@@ -5382,14 +5384,14 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
       'Information barriers require multiple channels, early criteria, direct outreach, and clear deadlines.',
       'Participation barriers require safe spaces, accessible timing, facilitation, and visible influence.',
       'Gender and disability barriers require adapted schedules, venues, communication, reasonable accommodation, and risk checks.',
-      'Accountability barriers require feedback channels, complaint options, response timelines, and transparent selection.',
+      'Accountability barriers require a safe sequence: verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.',
       'Duty-bearer and service gaps require coordination, capacity support, and clear roles.',
     ],
     activityTitle: 'Build the activity sequence.',
     correctPrompt: 'Which activity package sequence is strongest?',
     correctAnswer: 'Start with validation and outreach, then transparent selection, adapted participation and training, actor coordination, feedback, monitoring, and learning.',
     outputTitle: 'Model HRBA activity package',
-    outputBody: 'A coherent package includes context validation, inclusive outreach, transparent selection, adapted training and coaching, local actor engagement, accessible feedback, risk monitoring, and learning for adaptation.',
+    outputBody: 'A coherent package includes context validation, inclusive outreach, transparent selection, adapted training and coaching, local actor engagement, accessible feedback, risk monitoring, and learning for adaptation. For accountability, verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.',
     noteHeading: 'Common design mistake',
     noteBody: 'Do not let the donor template or timeline decide the activity logic. The analysis should decide the package and order.',
     ctaHeading: 'Next, connect the package to intervention logic.',
@@ -5592,7 +5594,7 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     context: 'Project Design Studio · Portfolio Checkpoint',
     title: 'Portfolio Checkpoint: My HRBA Project Design Improvement Map',
     heading: 'Turn the module into a practical improvement map.',
-    body: 'This checkpoint is inferred from the approved Module 3 screen list because a separate uploaded specification for Screen 3.22 was not provided. It helps learners review how they could improve a project design safely without entering real sensitive data.',
+    body: 'This checkpoint is inferred from the approved Module 3 screen list because a separate uploaded specification for Screen 3.22 was not provided. It helps learners review how they could improve a project design safely without entering real sensitive data. This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case.',
     startButton: 'Open the improvement map',
     revealTitle: 'Improvement map prompts',
     revealItems: [
@@ -5607,7 +5609,7 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     outputTitle: 'My HRBA project design improvement map',
     outputBody: 'A safe improvement map can focus on habits rather than real case details: ask better context questions, specify rights-holders, design participation, clarify actors, test risk, and choose safe evidence.',
     noteHeading: 'Privacy reminder',
-    noteBody: 'Do not enter real complaint details, personal data, politically sensitive actor names, or confidential project information.',
+    noteBody: 'Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children\'s details, officials\' names, organizational disputes, or sensitive incidents.',
     ctaHeading: 'Next, collect the toolkit.',
     ctaText: 'The improvement map is ready. Next, collect the Module 3 resource pack.',
     ctaButton: 'Continue to Resource Pack',
@@ -5650,7 +5652,7 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     revealItems: [
       'Notice assumptions in a project design without blaming the team.',
       'Ask practical questions about people, barriers, responsibility, participation, risk, and evidence.',
-      'Respect privacy and avoid sharing sensitive real cases or personal data.',
+      'Respect privacy and use fictional, generalized, or non-sensitive examples. Do not share names, phone numbers, exact locations, identifiable stories, survivor details, children\'s details, officials\' names, organizational disputes, or sensitive incidents.',
       'Use a simple 45-minute HRBA proposal clinic to review one design question at a time.',
       'Use prompt cards that ask better peer review questions rather than giving generic advice.',
     ],
@@ -5660,7 +5662,7 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     outputTitle: 'A simple peer exchange guide',
     outputBody: 'A useful peer exchange sets a safe scope, reviews the fictional or non-sensitive project idea, asks focused design questions, identifies one improvement, and agrees on a practical next step.',
     noteHeading: 'Safe exchange reminder',
-    noteBody: 'Do not share confidential cases, active complaints, personal data, or sensitive political actor mapping in peer discussion.',
+    noteBody: 'Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children\'s details, officials\' names, organizational disputes, or sensitive incidents.',
     ctaHeading: 'Next, complete Module 3.',
     ctaText: 'You have reviewed how to keep practicing HRBA project design with peers.',
     ctaButton: 'Continue to Module 3 Completion',

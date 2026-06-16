@@ -24,7 +24,7 @@ export const assetRegistry: Record<string, AssetSpec> = {
     purpose: 'Everyday human rights scene',
     required: false,
     filename: 'placeholder-everyday-human-rights-scene',
-    altText: 'Ordinary community settings such as a school, health post, meeting space, and public service point where dignity, fairness, participation, and accountability may arise.',
+    altText: 'Ordinary community settings such as a school, health post, meeting space, and public service point where rights standards guide fair access, participation, non-discrimination, accountability, and safe action.',
     type: 'placeholder'
   },
   'A-M2-03': {
@@ -33,7 +33,7 @@ export const assetRegistry: Record<string, AssetSpec> = {
     purpose: 'Rights dimensions hotspot/labeled graphic',
     required: true,
     filename: 'hrba-m02-everyday-rights-hotspot.svg',
-    altText: 'Fictional community meeting scene showing information, participation, accessibility, equality, safety and dignity, and accountability labels.',
+    altText: 'Fictional community meeting scene showing how information, participation, accessibility, equality, safety, dignity, and accountability can reveal different rights dimensions in everyday CSO work.',
     type: 'svg'
   },
   'A-M2-04': {
@@ -69,7 +69,7 @@ export const assetRegistry: Record<string, AssetSpec> = {
     purpose: 'Human rights systems timeline',
     required: true,
     filename: 'hrba-m02-human-rights-systems-timeline.svg',
-    altText: 'Timeline showing international, African, Ethiopian, organizational, and community accountability levels.',
+    altText: 'Timeline showing international, African, Ethiopian, organizational, and community accountability levels that can guide practical standards-based questions without replacing local duty-bearer responsibilities.',
     type: 'svg'
   },
   'A-M2-08': {
@@ -96,7 +96,7 @@ export const assetRegistry: Record<string, AssetSpec> = {
     purpose: 'Feedback loop illustration',
     required: false,
     filename: 'placeholder-feedback-loop-illustration',
-    altText: 'Illustration showing that accountability requires receiving, responding to, explaining, and learning from feedback.',
+    altText: 'Illustration showing a safe accountability loop: receive feedback, verify evidence, assess risk, protect rights-holders, respond constructively, document follow-up, and learn.',
     type: 'placeholder'
   },
   'A-M2-11': {
@@ -105,7 +105,7 @@ export const assetRegistry: Record<string, AssetSpec> = {
     purpose: 'Rights Relevance Worksheet',
     required: true,
     filename: 'hrba-m02-rights-relevance-worksheet.pdf',
-    altText: 'Worksheet with fields for project, rights-holders, exclusion, rights dimensions, duty-bearers, participation, accountability, safety, and improvement action.',
+    altText: 'Worksheet with fields for project, rights-holders, exclusion, rights dimensions, duty-bearers, local governance actors, participation, safe accountability, and improvement action.',
     type: 'pdf'
   },
   'A-M2-12': {

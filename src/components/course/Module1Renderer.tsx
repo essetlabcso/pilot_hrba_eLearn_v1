@@ -591,7 +591,7 @@ function Module1JourneyScreen({
 
       <footer className="m1-b2-footer">
         <div>
-          <p>You will build a small private portfolio as you go.</p>
+          <p>You will build a small private portfolio as you go. This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case.</p>
           <small aria-live="polite">
             {isComplete ? 'All six steps explored. Continue when ready.' : 'Explore all six steps to continue.'}
           </small>
@@ -1702,8 +1702,8 @@ function Module1ResponsibilityMapScreen({
       title: 'Duty-bearers',
       shortLabel: 'Actors with obligations',
       icon: '🏢',
-      detail: 'Duty-bearers are actors with obligations or formal responsibilities to respect, protect, and fulfil rights.',
-      example: 'In a local water project, duty-bearers may include relevant public authorities, local administration, water offices, or mandated public service actors responsible for access, safety, maintenance, regulation, or response.',
+      detail: 'State institutions are the primary duty-bearers. They have obligations to respect, protect, and fulfil rights.',
+      example: 'In a local water project, duty-bearers may include a woreda sector office, kebele structure, water office, local council, or mandated public service provider responsible for access, safety, maintenance, regulation, or response.',
       question: 'Who must respond if the water point breaks, becomes unsafe, excludes some people, or fails to serve the community fairly?'
     },
     {
@@ -1711,8 +1711,8 @@ function Module1ResponsibilityMapScreen({
       title: 'Supporting / facilitating actors',
       shortLabel: 'Actors who support change',
       icon: '🤝',
-      detail: 'Supporting or facilitating actors help rights-holders participate and help duty-bearers respond, but they should not be confused with the primary duty-bearer unless they have a formal mandate.',
-      example: 'This may include the local CSO, community committee, service provider, donor, technical partner, or peer organization. Their role may be to facilitate participation, identify barriers, provide resources, support safe feedback, monitor issues, or connect community concerns with responsible actors.',
+      detail: 'Supporting or facilitating actors help rights-holders participate and help duty-bearers respond, but CSOs support rights-holders and accountability; they do not replace duty-bearers.',
+      example: 'This may include the local CSO, school or health committee, community representatives, service provider, CSO partners, donor, technical partner, or peer organization. Their role may be to facilitate participation, identify barriers, provide resources, support safe feedback, monitor issues, or connect community concerns with responsible actors.',
       question: 'How can supporting actors strengthen participation, inclusion, evidence, and accountability without replacing the duty-bearer?'
     }
   ];
@@ -1801,7 +1801,7 @@ function Module1ResponsibilityMapScreen({
             <div className="m1-next-kicker">MODULE 1 | HRBA ACTOR MAP</div>
             <h1 id="m1-s12-title">Who has responsibility?</h1>
             <p className="m1-s12-intro">
-              In HRBA, people affected by a project are rights-holders. Public authorities and mandated institutions are often duty-bearers. CSOs and other actors can support or facilitate change by strengthening participation, evidence, dialogue, and accountability.
+              In HRBA, people affected by a project are rights-holders. State institutions are the primary duty-bearers, with obligations to respect, protect, and fulfil rights. CSOs and other actors can support rights-holders and accountability by strengthening participation, evidence, dialogue, and follow-up, but they do not replace duty-bearers.
             </p>
           </header>
 
@@ -3319,6 +3319,9 @@ function Module1ActionCommitmentScreen({
                   <label htmlFor="m1-action-note">
                     Add a short note to make this action more specific to your work.
                   </label>
+                  <p className="m1-inline-helper">
+                    Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.
+                  </p>
                   <textarea
                     id="m1-action-note"
                     value={commitment.optionalNote || ''}
@@ -4596,7 +4599,7 @@ function renderBlockContent(
           />
 
           <div style={{ border: '1px solid var(--color-warning)', padding: '0.75rem 1rem', borderRadius: '6px', backgroundColor: 'rgba(249, 115, 22, 0.05)', fontSize: '0.85rem', color: '#94a3b8' }}>
-            🔒 Keep notes general. Do not input real staff names, specific communities, complaints, or case details.
+            This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case. Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.
           </div>
 
           {saved && (
@@ -4701,6 +4704,9 @@ function renderBlockContent(
           <h3 style={{ fontSize: '1.6rem', color: '#fff', fontFamily: 'var(--font-family-headings)' }}>
             Portfolio Checkpoint: My Starting HRBA Shift
           </h3>
+          <p style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case.
+          </p>
           
           <label style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>Which HRBA shift stood out most for you?</label>
           <select
@@ -4740,6 +4746,9 @@ function renderBlockContent(
             rows={2}
             style={{ width: '100%', padding: '0.7rem', borderRadius: '6px', backgroundColor: '#0f172a', border: '1px solid var(--color-border-dark)', color: '#fff', outline: 'none', resize: 'vertical' }}
           />
+          <p className="m1-inline-helper">
+            Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.
+          </p>
 
           {saved && (
             <div className="m1-portfolio-save-confirmation" aria-live="polite">

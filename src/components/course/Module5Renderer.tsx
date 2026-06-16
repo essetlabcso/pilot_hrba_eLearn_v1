@@ -207,7 +207,7 @@ const module5ObjectiveCards = [
   {
     number: '03',
     title: 'Use data safely',
-    text: 'Apply safer disaggregation and data-minimization choices so evidence helps inclusion without exposing people or sensitive information.',
+    text: 'Apply minimum necessary data, anonymization, and safer disaggregation choices so evidence helps inclusion without exposing people, small groups, or sensitive information.',
     accent: 'gold',
   },
   {
@@ -312,10 +312,10 @@ const indicatorDimensions = [
 ];
 
 const safetyStoryDetails = [
-  ['Name and exact small community', 'These details can make a person identifiable, especially when combined with age, displacement, or disability information.'],
+  ['Name and exact small community', 'These details can make a person identifiable, especially in small-cell situations or when combined with age, displacement, disability information, photos, or quotes.'],
   ['Disability-related detail', 'Only collect and report disability-related information when it has a clear access or inclusion purpose and can be protected.'],
   ['Direct quote about fear', 'A quote can create risk if it points to power dynamics, criticism, or private safety concerns.'],
-  ['Photo from the session', 'Images can identify people and link them to sensitive experiences unless consent and safe use are clear.'],
+  ['Photo from the session', 'Images can identify people and link them to sensitive experiences unless informed consent, safe refusal, and safe use are clear.'],
 ];
 
 function makeReveal(items: string[][]): RevealItem[] {
@@ -623,7 +623,7 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     revealItems: safetyStoryDetails,
     activityTitle: 'Choose the safer data approach',
     activityPrompt: 'How should the team report exclusion without exposing people?',
-    options: makeOptions(['Use minimum necessary, aggregated, anonymized evidence and explain barriers without identifying individuals.', 'Publish all personal details to prove the case.', 'Avoid all inclusion evidence.']),
+    options: makeOptions(['Use minimum necessary, aggregated, anonymized evidence and explain barriers without identifying individuals or small groups.', 'Publish all personal details to prove the case.', 'Avoid all inclusion evidence.']),
     insight: ['HRBA MEAL makes exclusion visible while protecting people from avoidable harm.'],
     cta: 'Continue to safer disaggregation practice',
     nextId: 'M5-S1-09',
@@ -636,14 +636,14 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     story: ['The team needs evidence by group, but it must decide what level of detail is useful, safe, and necessary for action.'],
     revealTitle: 'Data safety decisions',
     revealItems: [
-      ['Aggregate when groups are small', 'Small counts can identify people, especially in small communities or sensitive categories.'],
+      ['Aggregate when groups are small', 'Small counts can identify people, especially in small communities, small-cell combinations, or sensitive categories.'],
       ['Collect detail only for a purpose', 'Disaggregation should connect to access, inclusion, adaptation, or accountability decisions.'],
       ['Protect sensitive combinations', 'Age, location, disability, displacement, and quotes can identify someone when combined.'],
       ['Report barriers, not identities', 'The team can describe exclusion patterns without exposing individuals.'],
     ],
     activityTitle: 'Select the safer disaggregation',
     activityPrompt: 'Which approach best balances visibility and protection?',
-    options: makeOptions(['Report aggregated patterns and barriers, keep sensitive detail protected, and use detail internally only when needed for safe follow-up.', 'Publish individual-level details by name and location.', 'Remove all group analysis from the report.']),
+    options: makeOptions(['Report aggregated patterns and barriers, keep sensitive detail protected, and use detail internally only when needed for safe follow-up with consent and safeguards.', 'Publish individual-level details by name and location.', 'Remove all group analysis from the report.']),
     insight: ['Safe disaggregation is a judgment: enough detail to act, not so much detail that people can be harmed.'],
     cta: 'Continue to disability inclusion',
     nextId: 'M5-S1-09A',
@@ -780,15 +780,15 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     story: ['The team has 20 story notes. A story can help explain change, but it must be collected and shared with dignity, consent, accuracy, and safety.'],
     revealTitle: 'Ethical storytelling checklist',
     revealItems: [
-      ['Consent', 'The person understands how the story may be used and can refuse without losing support.'],
+      ['Consent', 'The person understands how the story may be used and can refuse without losing support, pressure, or loss of services.'],
       ['Minimum detail', 'Only use details necessary for learning and reporting.'],
-      ['Anonymization', 'Remove names, exact locations, and identifying combinations unless safe consent is explicit.'],
+      ['Anonymization', 'Remove names, exact locations, small-cell clues, and identifying combinations unless safe consent is explicit.'],
       ['Dignity', 'Avoid pity, sensationalism, or claims the evidence cannot support.'],
       ['Verification', 'Do not overstate what the project caused.'],
     ],
     activityTitle: 'Choose the safer story practice',
     activityPrompt: 'Which approach protects dignity and usefulness?',
-    options: makeOptions(['Use anonymized, consented, non-identifying story themes and avoid unsupported “changed her life” claims.', 'Publish full names and photos to make the report powerful.', 'Use the story without checking consent because it is positive.']),
+    options: makeOptions(['Use anonymized, consented, non-identifying story themes or safe composite learning and avoid unsupported “changed her life” claims.', 'Publish full names and photos to make the report powerful.', 'Use the story without checking consent because it is positive.']),
     insight: ['Qualitative evidence is strongest when it is respectful, safe, accurate, and connected to learning.'],
     cta: 'Continue to donor story request',
     nextId: 'M5-S1-13',
@@ -804,11 +804,11 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
       ['Identification risk', 'Name, photo, exact location, and sensitive details can identify someone.'],
       ['Consent risk', 'Consent must be informed, voluntary, and specific to use.'],
       ['Unsupported claim risk', 'A transformation claim may overstate what the evidence shows.'],
-      ['Alternative evidence', 'Aggregated themes, anonymized quotes, and safe composite learning can still communicate value.'],
+      ['Alternative evidence', 'Aggregated themes, anonymized quotes, safe composite learning, and evidence-backed non-identifying examples can still communicate value.'],
     ],
     activityTitle: 'Choose the professional response',
     activityPrompt: 'How should the team respond?',
-    options: makeOptions(['Explain the safety concern, decline identifying details, and offer anonymized themes, consented non-identifying quotes, and evidence-backed claims.', 'Send the full story because the donor asked.', 'Say no without offering any safer alternative.']),
+    options: makeOptions(['Explain the safety concern, decline identifying details, and offer anonymized themes, consented non-identifying quotes, safe composite learning, and evidence-backed claims.', 'Send the full story because the donor asked.', 'Say no without offering any safer alternative.']),
     insight: ['A strong response protects people while still helping partners understand evidence and learning.'],
     cta: 'Continue to evidence signals',
     nextId: 'M5-S1-14',
@@ -989,18 +989,18 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     title: 'Portfolio Checkpoint: HRBA MEAL Improvement Plan',
     block: 'Tool Activity / Portfolio Output',
     storyTitle: 'Turn learning into an improvement plan',
-    story: ['The learner now identifies one practical MEAL improvement to take back to their organization.'],
+    story: ['The learner now identifies one practical MEAL improvement to take back to their organization. This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case.'],
     revealTitle: 'Improvement plan prompts',
     revealItems: [
       ['Evidence gap', 'What important HRBA evidence is currently missing or weak?'],
       ['Indicator repair', 'Which indicator or evidence source needs strengthening?'],
       ['Feedback response', 'How will feedback be analyzed, answered, and reported back?'],
-      ['Safety check', 'What data or story detail should be protected?'],
+      ['Safety check', 'What data or story detail should be protected, anonymized, aggregated, or not collected?'],
       ['Adaptation habit', 'How will the team use evidence to change practice?'],
     ],
     activityTitle: 'Choose a first improvement',
     activityPrompt: 'Which first step is practical and rights-aware?',
-    options: makeOptions(['Repair one indicator and add one safer feedback-response routine for the next reporting cycle.', 'Rewrite every tool immediately without consultation.', 'Collect more personal detail to make the report stronger.']),
+    options: makeOptions(['Repair one indicator and add one safer feedback-response routine for the next reporting cycle using fictional, generalized, or non-sensitive examples.', 'Rewrite every tool immediately without consultation.', 'Collect more personal detail to make the report stronger.']),
     insight: ['A small practical improvement can shift MEAL from counting activities toward learning and accountability.'],
     cta: 'Continue to portfolio synthesis',
     nextId: 'M5-S1-21',
@@ -1010,7 +1010,7 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     title: 'Final Course Portfolio Synthesis',
     block: 'Portfolio Review Checklist',
     storyTitle: 'Connect the full HRBA practice portfolio',
-    story: ['Module 5 outputs now connect with the full Modules 1-5 HRBA practice portfolio.'],
+    story: ['Module 5 outputs now connect with the full Modules 1-5 HRBA practice portfolio. This portfolio is for learning; keep it private and safe and do not add names, exact locations, identifiable stories, survivor details, children\'s details, officials\' names, organizational disputes, or sensitive incidents.'],
     revealTitle: 'Portfolio review checklist',
     revealItems: [
       ['Rights issue', 'Can you describe the rights issue behind the service or project problem?'],
@@ -1021,7 +1021,7 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     activityTitle: 'Choose the strongest portfolio habit',
     activityPrompt: 'What should the learner carry forward?',
     options: makeOptions(['Use the portfolio as a living practice tool: review, update, adapt, and discuss safely with the team.', 'Treat the portfolio as a one-time course assignment.', 'Use it to collect sensitive personal complaints.']),
-    insight: ['The course portfolio is strongest when it helps a team make better, safer, more accountable decisions.'],
+    insight: ['The course portfolio is strongest when it helps a team make better, safer, more accountable decisions without collecting sensitive personal details.'],
     cta: 'Continue to 90-day action plan',
     nextId: 'M5-S1-22',
   }),
@@ -1036,7 +1036,7 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
       ['Review one report', 'Check what activity numbers show and what they hide.'],
       ['Repair one indicator', 'Add inclusion, feedback, safety, or change evidence.'],
       ['Improve feedback response', 'Clarify analysis, action, and report-back.'],
-      ['Strengthen safe story use', 'Review consent, anonymization, and claim accuracy.'],
+      ['Strengthen safe story use', 'Review consent, safe refusal, anonymization, small-cell identification risk, and claim accuracy.'],
     ],
     activityTitle: 'Choose a realistic action',
     activityPrompt: 'Which action is strongest for a 90-day commitment?',
@@ -1080,7 +1080,7 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     ],
     activityTitle: 'Choose the safest exchange practice',
     activityPrompt: 'Which peer exchange approach fits the course safeguards?',
-    options: makeOptions(['Use fictionalized, non-identifying examples and focus on learning decisions, not sensitive personal data.', 'Share real complaints and names to make the discussion concrete.', 'Avoid peer learning altogether.']),
+    options: makeOptions(['Use fictionalized, non-identifying examples and focus on learning decisions, not sensitive personal data, disputes, survivor details, children\'s details, or officials\' names.', 'Share real complaints and names to make the discussion concrete.', 'Avoid peer learning altogether.']),
     insight: ['Peer practice is strongest when it is practical, respectful, and safe.'],
     cta: 'Continue to final completion bridge',
     nextId: 'M5-S1-25',
@@ -1100,7 +1100,7 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     ],
     activityTitle: 'Choose the final practice commitment',
     activityPrompt: 'What is the best next step after the course?',
-    options: makeOptions(['Apply one HRBA MEAL tool to a real team discussion using safe, non-identifying evidence.', 'Wait for perfect data before acting.', 'Use HRBA only in proposal language.']),
+    options: makeOptions(['Apply one HRBA MEAL tool to a real team discussion using safe, non-identifying evidence and generalized examples.', 'Wait for perfect data before acting.', 'Use HRBA only in proposal language.']),
     insight: ['The course ends, but HRBA practice continues in everyday choices about design, implementation, evidence, feedback, and reporting.'],
     cta: 'Complete Module 5',
     nextId: 'M5-PLAYER-COMPLETE',
@@ -1227,7 +1227,7 @@ function Module5LearningObjectivesScreen({ onChangeState }: Module5RendererProps
           </article>
           <article className="m5-objectives-closing">
             <p>
-              HRBA in MEAL means asking what the evidence really shows: who was reached, who was missed, what changed, what risks appeared, and what the CSO should learn or adjust.
+              HRBA in MEAL means asking what the evidence really shows: who was reached, who was missed, what changed, what risks appeared, and what the CSO should learn or adjust, while using minimum necessary data and protecting privacy.
             </p>
           </article>
         </section>

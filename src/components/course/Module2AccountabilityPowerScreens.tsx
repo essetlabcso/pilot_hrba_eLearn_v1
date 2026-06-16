@@ -286,6 +286,9 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
               understand the process, can use it safely, receive a response, and see
               repeated concerns lead to change.
             </p>
+            <p>
+              Verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.
+            </p>
           </div>
           <aside className="m2-s16-progress-card" aria-label="Accountability repair progress">
             <p className="m2-s16-progress-count" aria-live="polite">
@@ -558,6 +561,9 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
             <h1 id="m2-s217-title">Practice: Repair the Feedback Loop</h1>
             <p>
               Diagnose where a feedback loop breaks, then choose the repair that gives people a clearer, safer, more visible response.
+            </p>
+            <p>
+              Verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.
             </p>
           </div>
           <aside className="m2-s17-progress" aria-live="polite">
@@ -1626,7 +1632,7 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
           </div>
           <aside className="m2-s21-portfolio-privacy">
             <strong>Saved privately by default.</strong>
-            <span>Keep this broad and safe. Do not enter names, real complaints, safeguarding details, legal disputes, confidential documents, beneficiary lists, or raw organizational data.</span>
+            <span>This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case. Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.</span>
           </aside>
         </header>
 
@@ -1677,6 +1683,7 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
             </div>
             <label className="m2-s21-custom-habit">
               <span>Or write one safe sentence in your own words</span>
+              <em>Use a fictional, generalized, or non-sensitive example only.</em>
               <textarea
                 value={customHabit}
                 onChange={(event) => {

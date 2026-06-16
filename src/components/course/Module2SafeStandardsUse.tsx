@@ -94,12 +94,12 @@ export default function Module2SafeStandardsUse({ state, onChangeState }: Props)
       nextRoute={NEXT_ROUTE}
       kicker="Module 2 · Safe standards use"
       title="Using Human Rights Standards Safely"
-      intro="Human rights standards can guide better questions, safer planning, and stronger accountability. They should not be used for unsupported accusations."
+      intro="HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action."
       progressLabel="safe-use gates explored"
       instruction="Open all four safe-use gates, then choose the safest wording."
       items={items}
       asideTitle="Safe standards habit"
-      asideBody="Use standards to improve analysis, evidence, participation, and engagement while protecting people from avoidable risk."
+      asideBody="Use standards to improve analysis, evidence, participation, and engagement while protecting people from avoidable risk. They should not be used for unsupported accusations."
       footer="Safe use of standards helps CSOs be clearer and more accountable without exposing people or overstepping their role."
       continueLabel="Continue to SDGs and LNOB"
       choiceTitle="Safe wording check"

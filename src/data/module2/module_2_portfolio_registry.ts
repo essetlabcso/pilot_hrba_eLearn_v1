@@ -7,7 +7,7 @@ export interface PortfolioField {
   placeholder?: string;
 }
 
-export const safetyHelperText = "Keep this safe and general. Do not include names, real cases, active complaints, safeguarding details, legal disputes, political details, confidential documents, beneficiary lists, or raw organizational data.";
+export const safetyHelperText = "This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case. Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details, children's details, officials' names, organizational disputes, or sensitive incidents.";
 
 export const portfolioFields: Record<string, PortfolioField> = {
   m2_issue_area: {
@@ -119,12 +119,14 @@ export const portfolioFields: Record<string, PortfolioField> = {
     type: 'multiselect',
     required: true,
     options: [
-      "Local public office",
+      "Woreda sector office",
+      "Kebele structure",
       "Service provider",
-      "School or health facility",
-      "Local administration",
-      "Community structure",
-      "CSO or implementing partner",
+      "School or health committee",
+      "Water office",
+      "Local council",
+      "Community representatives",
+      "CSO partners",
       "Donor or funding partner",
       "Coordination platform",
       "Traditional or informal community actor",

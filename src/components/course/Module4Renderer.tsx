@@ -138,7 +138,7 @@ const module4Objectives: Module4Objective[] = [
   {
     number: '04',
     title: 'Repair weak feedback loops',
-    text: 'Strengthen feedback systems so concerns are listened to, analyzed, responded to, followed up, and used for learning.',
+    text: 'Strengthen feedback systems so concerns are listened to, analyzed, responded to, followed up, and used for learning: verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.',
     accent: 'blue',
   },
   {
@@ -249,7 +249,7 @@ const implementationLensPoints: ImplementationLensPoint[] = [
     title: 'Feedback and response',
     question: 'Do concerns lead to analysis, response, and follow-up?',
     reveal:
-      'A feedback channel is not enough. The team must review concerns, protect confidentiality, respond safely, and explain what changed or why something cannot change.',
+      'A feedback channel is not enough. The team must verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, document follow-up, protect confidentiality, respond safely, and explain what changed or why something cannot change.',
     signal: 'Comments are collected, but people do not know whether anyone listened or acted.',
     icon: 'Loop',
   },
@@ -534,7 +534,7 @@ const feedbackRepairCards: FeedbackRepairCard[] = [
 const feedbackAccountabilityMicroOptions = [
   { id: 'A', text: 'A feedback mechanism is enough if people know it exists.', feedback: 'Incomplete. Awareness of a channel is only the starting point.' },
   { id: 'B', text: 'Accountability means recording all comments accurately.', feedback: 'Partial. Accurate records help, but response and follow-up are also needed.' },
-  { id: 'C', text: 'Feedback becomes accountability when people can raise concerns safely and receive a meaningful response or explanation.', feedback: 'Correct. This captures safety, response, explanation, and follow-up.', correct: true },
+  { id: 'C', text: 'Feedback becomes accountability when people can raise concerns safely and receive a meaningful response or explanation.', feedback: 'Correct. This captures safety, response, explanation, and follow-up: verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up.', correct: true },
   { id: 'D', text: 'Sensitive feedback should be avoided because it may create risk.', feedback: 'Incorrect. Sensitive feedback should be handled safely, not avoided.' },
 ];
 
@@ -561,7 +561,7 @@ const actorEngagementCards: ActorEngagementCard[] = [
     choices: [
       { id: 'A', text: 'Publicly blame the office so the community sees that the CSO is on their side.', feedback: 'Unsafe and premature. Public blame may damage relationships, increase tension, or expose communities to risk. It should not be the first response.' },
       { id: 'B', text: 'Quietly drop the office from the process and let the CSO handle everything.', feedback: 'Too much overreach. Taking over may hide the duty-bearer’s responsibility and create unrealistic expectations of the CSO.' },
-      { id: 'C', text: 'Clarify the issue, document the barrier, request a coordination discussion, and explain to communities what the CSO can and cannot control.', feedback: 'Strongest. This keeps responsibility visible, uses evidence, opens a practical engagement pathway, and communicates honestly with rights-holders.', correct: true },
+      { id: 'C', text: 'Clarify the issue, document the barrier, request a coordination discussion, and explain to communities what the CSO can and cannot control.', feedback: 'Strongest. This keeps responsibility visible, verifies the evidence, assesses risk, protects rights-holders, opens a constructive engagement pathway, and documents follow-up honestly.', correct: true },
       { id: 'D', text: 'Tell community members that the issue is outside the CSO’s mandate.', feedback: 'Too limited. The CSO may not control the public office, but it can still support clarification, evidence, referral, coordination, and follow-up.' },
     ],
   },
@@ -2611,11 +2611,12 @@ function Module4AdaptationLabScreen({ state, onChangeState }: Module4RendererPro
                 </p>
                 <ol>
                   <li>respond to a real implementation signal;</li>
+                  <li>verify the evidence and assess risk before action;</li>
                   <li>check who may be affected differently;</li>
                   <li>involve affected people safely before changing the plan;</li>
                   <li>avoid blaming people for barriers they do not control;</li>
                   <li>reduce exclusion, gatekeeping, or unsafe visibility;</li>
-                  <li>document the reason for the change honestly.</li>
+                  <li>choose a constructive engagement route and document the reason for the change honestly.</li>
                 </ol>
               </article>
               <section className="m4-feedback-micro m4-adaptation-micro" aria-labelledby="m4-adaptation-micro-title">
@@ -2846,8 +2847,10 @@ function Module4PortfolioCheckpointScreen({ state, onChangeState }: Module4Rende
           <aside className="m4-portfolio-safety">
             <strong>Keep it safe and general.</strong>
             <span>
-              Do not include names, active complaints, survivor details, safeguarding information, legal case
-              details, confidential project data, beneficiary lists, or identifiable community information.
+              This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case.
+              Use a fictional, generalized, or non-sensitive example. Do not include names, phone numbers, exact locations,
+              identifiable stories, survivor details, children&apos;s details, officials&apos; names, organizational disputes,
+              or sensitive incidents.
             </span>
           </aside>
 
@@ -2914,7 +2917,7 @@ function Module4PortfolioCheckpointScreen({ state, onChangeState }: Module4Rende
               type="text"
               maxLength={150}
               value={customInputs[activeField.id]}
-              placeholder="Write a short general sentence without names or sensitive details."
+              placeholder="Write a fictional, generalized, or non-sensitive sentence only."
               onFocus={() => activateCustom(activeField)}
               onChange={(event) => updateCustom(activeField, event.target.value)}
             />
@@ -3429,9 +3432,10 @@ function Module4CompletionTransitionScreen({ state, onChangeState }: Module4Rend
               <span>Documentation note: {portfolioValue('accountabilityDocumentation', 'Saved in Module 4 portfolio.')}</span>
             </div>
             <p className="m4-completion-privacy">
-              Your portfolio entry is private by default. Keep it general and safe. Do not include real names,
-              active complaints, survivor details, confidential project data, identifiable community information,
-              or sensitive case information.
+              Your portfolio entry is private by default. This portfolio is for learning. Keep it private and safe.
+              Use a generalized issue rather than a real sensitive case. Use a fictional, generalized, or non-sensitive
+              example. Do not include names, phone numbers, exact locations, identifiable stories, survivor details,
+              children&apos;s details, officials&apos; names, organizational disputes, or sensitive incidents.
             </p>
           </article>
           <article className="m4-completion-next">

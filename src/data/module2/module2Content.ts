@@ -58,6 +58,7 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "Human rights are not only legal words. In everyday CSO work, they often appear as practical claims: people need information they can understand, access they can use, voice in decisions, fair treatment, responsible actors, and a response when something goes wrong.",
+        "HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action.",
         "Explore the six everyday rights dimensions. Think about how each one can appear in ordinary CSO activities."
       ],
       keyMessage: "A rights lens helps a CSO move from “we delivered an activity” to “people had information, access, voice, inclusion, responsible actors, and a pathway for response.”"
@@ -112,6 +113,7 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "Human rights become practical when CSOs use them to guide everyday decisions.",
+        "HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action.",
         "The five HRBA working principles help a project team look beyond activity completion and ask who is included, who participates meaningfully, who may face discrimination or barriers, who is responsible, and who has information and a way to seek response."
       ]
     },
@@ -151,7 +153,8 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "A barrier is rarely caused by one person or one institution.",
-        "The next HRBA question is who has responsibility, who has influence, and what role a CSO can safely play."
+        "The next HRBA question is who has responsibility, who has influence, and what role a CSO can safely play.",
+        "State institutions are the primary duty-bearers. They have obligations to respect, protect, and fulfil rights. CSOs support rights-holders and accountability, but they do not replace duty-bearers. Local examples may include a woreda sector office, kebele structure, school or health committee, water office, local council, service provider, community representatives, and CSO partners."
       ]
     },
     buttonText: 'Continue to CSOs in the rights-based ecosystem'
@@ -164,7 +167,8 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "A CSO is not the only actor in a rights-based situation.",
-        "A rights-based CSO strengthens the conditions for people to access information, participate, claim rights, engage responsible actors, and seek response."
+        "A rights-based CSO strengthens the conditions for people to access information, participate, claim rights, engage responsible actors, and seek response.",
+        "CSOs support rights-holders and accountability, but they do not replace duty-bearers."
       ]
     },
     buttonText: 'Continue to using standards safely'
@@ -177,7 +181,9 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "Human rights standards can help CSOs ask stronger questions and design better projects.",
-        "This course does not train you to make legal judgments. It helps you use standards as practical reference points for better questions, safer planning, and stronger accountability."
+        "This course does not train you to make legal judgments. It helps you use standards as practical reference points for better questions, safer planning, and stronger accountability.",
+        "HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action.",
+        "For accountability, verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up."
       ],
       keyMessage: "Use human rights standards to guide better questions and safer action, not to make unsupported accusations."
     },
@@ -231,7 +237,8 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "In many projects, accountability is reduced to one visible tool: a complaint box, hotline number, focal person, form, or feedback meeting.",
-        "These tools can help. But HRBA asks whether people can actually understand, use, trust, and receive a response from the accountability process."
+        "These tools can help. But HRBA asks whether people can actually understand, use, trust, and receive a response from the accountability process.",
+        "A safe accountability sequence is to verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up."
       ],
       keyMessage: "Accountability is not only a channel for receiving concerns. It is a response loop that people can understand, use safely, and trust."
     },
@@ -245,7 +252,8 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "You have seen that accountability becomes weak when one or more parts of the loop are missing.",
-        "Now you will repair a weak process by identifying what is broken and choosing the strongest practical fix."
+        "Now you will repair a weak process by identifying what is broken and choosing the strongest practical fix.",
+        "Verify the evidence, assess risk, protect rights-holders, choose a constructive engagement route, and document follow-up."
       ],
       keyMessage: "A weak accountability process often looks functional from the outside. Repair starts by asking what people do not understand, cannot use safely, never hear back from, or do not see changed."
     },
@@ -301,7 +309,8 @@ export const module2ContentRegistry: Record<string, ScreenContent> = {
     content: {
       paragraphs: [
         "You have reached the end of Module 2. Before moving on, use the everyday rights lens one more time.",
-        "This is not about getting a perfect answer. It is about practicing the habit of pausing and looking again."
+        "This is not about getting a perfect answer. It is about practicing the habit of pausing and looking again.",
+        "This portfolio is for learning. Keep it private and safe. Use a generalized issue rather than a real sensitive case."
       ],
       keyMessage: "A useful rights lens is one you can actually carry into meetings, designs, reviews, and everyday decisions."
     },

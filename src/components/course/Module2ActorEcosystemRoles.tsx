@@ -30,7 +30,7 @@ const items: CompactRevealItem[] = [
     title: 'Duty-bearers',
     cue: 'Some actors have formal responsibility to respect, protect, or fulfil rights.',
     body:
-      'Public offices, mandated institutions, and formal service systems may have responsibilities linked to cooperative registration, accessibility, protection, labour, finance, or accountability.',
+      'State institutions are the primary duty-bearers. They have obligations to respect, protect, and fulfil rights. CSOs support rights-holders and accountability, but they do not replace duty-bearers.',
     question: 'Which actor has a formal responsibility, and what response is reasonable to seek?',
     marker: 'D',
     accent: 'green',
@@ -99,8 +99,8 @@ export default function Module2ActorEcosystemRoles({ state, onChangeState }: Pro
       instruction="Open all four actor roles, then choose the clearest HRBA response."
       items={items}
       asideTitle="Role clarity protects practice"
-      asideBody="A good actor map helps CSOs avoid blaming rights-holders or absorbing every responsibility themselves."
-      footer="Actor mapping turns a vague problem into practical questions about rights, responsibility, influence, support, and accountability."
+      asideBody="A good actor map helps CSOs avoid blaming rights-holders or absorbing every responsibility themselves. Depending on the issue, relevant actors may include a woreda sector office, kebele structure, school or health committee, water office, local council, service provider, community representatives, or CSO partners."
+      footer="Actor mapping turns a vague problem into practical questions about rights, responsibility, influence, support, and accountability. Depending on the issue, relevant actors may include a woreda sector office, kebele structure, school or health committee, water office, local council, service provider, community representatives, or CSO partners."
       continueLabel="Continue to CSOs in the ecosystem"
       choiceTitle="Quick role check"
       choiceInstruction="What is the strongest HRBA move when a barrier involves several actors?"
