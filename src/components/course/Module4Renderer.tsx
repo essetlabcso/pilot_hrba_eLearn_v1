@@ -2873,9 +2873,11 @@ function Module4PortfolioCheckpointScreen({ state, onChangeState }: Module4Rende
               return (
                 <button
                   key={field.id}
+                  id={`m4-portfolio-tab-${field.id}`}
                   type="button"
                   role="tab"
                   aria-selected={active}
+                  aria-controls="m4-portfolio-active-field-panel"
                   className={`m4-portfolio-field-tab ${active ? 'is-active' : ''} ${done ? 'is-done' : ''}`}
                   onClick={() => {
                     setActiveFieldId(field.id);
@@ -2889,9 +2891,14 @@ function Module4PortfolioCheckpointScreen({ state, onChangeState }: Module4Rende
             })}
           </div>
 
-          <article className="m4-portfolio-field-card" role="tabpanel">
+          <article
+            id="m4-portfolio-active-field-panel"
+            className="m4-portfolio-field-card"
+            role="tabpanel"
+            aria-labelledby={`m4-portfolio-tab-${activeField.id}`}
+          >
             <p className="m4-card-kicker">Field {activeField.number}</p>
-            <h2>{activeField.prompt}</h2>
+            <h2 id={`m4-portfolio-prompt-${activeField.id}`}>{activeField.prompt}</h2>
             <div className="m4-portfolio-option-grid">
               {activeField.options.map((option) => {
                 const selected = values[activeField.id] === option && !customActive[activeField.id];
@@ -2926,6 +2933,7 @@ function Module4PortfolioCheckpointScreen({ state, onChangeState }: Module4Rende
               maxLength={150}
               value={customInputs[activeField.id]}
               placeholder="Write a fictional, generalized, or non-sensitive sentence only."
+              aria-describedby={`m4-portfolio-prompt-${activeField.id}`}
               onFocus={() => activateCustom(activeField)}
               onChange={(event) => updateCustom(activeField, event.target.value)}
             />

@@ -907,7 +907,7 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
                   aria-label={`Open hotspot ${index + 1}: ${hotspot.label}. ${hotspot.short}`}
                   style={{
                     width: '58px',
-                    minHeight: '42px',
+                    minHeight: '44px',
                     gridTemplateColumns: '1fr',
                     justifyItems: 'center',
                     textAlign: 'center',
@@ -941,6 +941,35 @@ export function Module2PowerExclusion({ state, onChangeState }: Props) {
               <span>{activeHotspot.question}</span>
             </div>
           </article>
+
+          <section className="m2-s18-text-alt cso-content-safe-surface" aria-label="Keyboard list of power and exclusion hotspots">
+            <p className="m2-s18-kicker">Keyboard list</p>
+            <div>
+              {hotspots.map((hotspot, index) => {
+                const opened = openedHotspots.includes(hotspot.id);
+                const active = activeHotspot.id === hotspot.id;
+
+                return (
+                  <button
+                    key={hotspot.id}
+                    type="button"
+                    className={active ? 'is-active' : ''}
+                    aria-pressed={active}
+                    onClick={() => openHotspot(hotspot.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openHotspot(hotspot.id);
+                      }
+                    }}
+                  >
+                    {index + 1}. {hotspot.label}
+                    <span>{opened ? 'opened' : 'not opened'}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </section>
 
         <footer className="m2-s18-footer">

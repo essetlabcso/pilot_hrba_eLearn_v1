@@ -13,6 +13,7 @@ interface PlayerSidebarProps {
   onExit: () => void;
   menuButtonRef?: RefObject<HTMLButtonElement | null>;
   helpButtonRef?: RefObject<HTMLButtonElement | null>;
+  accessibilityButtonRef?: RefObject<HTMLButtonElement | null>;
 }
 
 type ToolModal = 'menu' | 'glossary' | 'resources' | 'help' | 'accessibility';
@@ -74,7 +75,8 @@ export default function PlayerSidebar({
   onReplay,
   onExit,
   menuButtonRef,
-  helpButtonRef
+  helpButtonRef,
+  accessibilityButtonRef
 }: PlayerSidebarProps) {
   return (
     <aside className="player-sidebar-aside" aria-label="Course tools and media controls">
@@ -85,6 +87,7 @@ export default function PlayerSidebar({
           const isActive = activeModal === tool.modal;
           const isMenuLauncher = tool.modal === 'menu';
           const isHelpLauncher = tool.modal === 'help';
+          const isAccessibilityLauncher = tool.modal === 'accessibility';
           const modalLauncherAttributes = tool.modalRootId
             ? {
                 'aria-expanded': isActive,
@@ -109,7 +112,7 @@ export default function PlayerSidebar({
               onClick={() => onToggleModal(isActive ? null : tool.modal)}
               aria-label={ariaLabel}
               className={`player-sidebar-button ${isActive ? 'is-active' : ''}`}
-              ref={isMenuLauncher ? menuButtonRef : isHelpLauncher ? helpButtonRef : undefined}
+              ref={isMenuLauncher ? menuButtonRef : isHelpLauncher ? helpButtonRef : isAccessibilityLauncher ? accessibilityButtonRef : undefined}
               {...modalLauncherAttributes}
               {...menuLauncherAttributes}
             >
@@ -128,6 +131,7 @@ export default function PlayerSidebar({
             type="button"
             onClick={onToggleTranscript}
             aria-label={transcriptVisible ? 'Hide transcript panel' : 'Show transcript panel'}
+            aria-pressed={transcriptVisible}
             aria-expanded={transcriptVisible}
             aria-controls={transcriptVisible ? 'player-transcript-panel' : undefined}
             className={`player-sidebar-button player-sidebar-button--media ${transcriptVisible ? 'is-active' : ''}`}
@@ -140,6 +144,7 @@ export default function PlayerSidebar({
             type="button"
             onClick={onTogglePlay}
             aria-label={playEnabled ? 'Pause screen' : 'Play screen'}
+            aria-pressed={playEnabled}
             className="player-sidebar-button player-sidebar-button--media"
           >
             <span className="player-sidebar-icon" aria-hidden="true">{playEnabled ? 'II' : '>'}</span>
@@ -150,6 +155,7 @@ export default function PlayerSidebar({
             type="button"
             onClick={onToggleSound}
             aria-label={soundEnabled ? 'Mute audio' : 'Unmute audio'}
+            aria-pressed={soundEnabled}
             className="player-sidebar-button player-sidebar-button--media"
           >
             <span className="player-sidebar-icon" aria-hidden="true">{soundEnabled ? 'ON' : 'OFF'}</span>

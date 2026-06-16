@@ -1,15 +1,39 @@
 import { useRef } from 'react';
 import { useModalFocusContainment } from './useModalFocusContainment';
 
+export type AccessibilityTextSize = 'standard' | 'large' | 'extra-large';
+
+export type AccessibilityPreferences = {
+  highContrast: boolean;
+  textSize: AccessibilityTextSize;
+  reduceMotion: boolean;
+};
+
 interface AccessibilityModalProps {
   onClose: () => void;
+  preferences: AccessibilityPreferences;
+  onUpdatePreferences: (preferences: AccessibilityPreferences) => void;
 }
 
-export default function AccessibilityModal({ onClose }: AccessibilityModalProps) {
+export default function AccessibilityModal({
+  onClose,
+  preferences,
+  onUpdatePreferences
+}: AccessibilityModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useModalFocusContainment(modalRef, closeButtonRef, onClose);
+
+  const updatePreference = <Key extends keyof AccessibilityPreferences>(
+    key: Key,
+    value: AccessibilityPreferences[Key],
+  ) => {
+    onUpdatePreferences({
+      ...preferences,
+      [key]: value,
+    });
+  };
 
   return (
     <div 
@@ -56,14 +80,16 @@ export default function AccessibilityModal({ onClose }: AccessibilityModalProps)
           <button 
             ref={closeButtonRef}
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label="Close accessibility options"
             style={{
               background: 'transparent',
               border: 'none',
               color: 'var(--color-secondary-text)',
               fontSize: '1.5rem',
               cursor: 'pointer',
-              padding: '0.2rem'
+              minWidth: '44px',
+              minHeight: '44px',
+              padding: '0.35rem'
             }}
           >
             &times;
@@ -71,6 +97,47 @@ export default function AccessibilityModal({ onClose }: AccessibilityModalProps)
         </div>
 
         <div style={{ fontSize: '0.95rem', color: '#94a3b8', display: 'flex', flexDirection: 'column', gap: '1.25rem', overflowY: 'auto', maxHeight: '60vh' }}>
+          <section aria-labelledby="a11y-display-title">
+            <h4 id="a11y-display-title" style={{ color: '#fff', fontWeight: 600, marginBottom: '0.5rem' }}>Display Preferences</h4>
+            <div className="player-a11y-control-grid" role="group" aria-label="Accessibility display preferences">
+              <button
+                type="button"
+                className={`player-a11y-toggle ${preferences.highContrast ? 'is-active' : ''}`}
+                aria-pressed={preferences.highContrast}
+                onClick={() => updatePreference('highContrast', !preferences.highContrast)}
+              >
+                <span>High contrast</span>
+                <strong>{preferences.highContrast ? 'On' : 'Off'}</strong>
+              </button>
+
+              <label className="player-a11y-select-label">
+                <span>Text size</span>
+                <select
+                  value={preferences.textSize}
+                  onChange={(event) => updatePreference('textSize', event.target.value as AccessibilityTextSize)}
+                >
+                  <option value="standard">Standard</option>
+                  <option value="large">Large</option>
+                  <option value="extra-large">Extra large</option>
+                </select>
+              </label>
+
+              <button
+                type="button"
+                className={`player-a11y-toggle ${preferences.reduceMotion ? 'is-active' : ''}`}
+                aria-pressed={preferences.reduceMotion}
+                onClick={() => updatePreference('reduceMotion', !preferences.reduceMotion)}
+              >
+                <span>Reduce motion</span>
+                <strong>{preferences.reduceMotion ? 'On' : 'Off'}</strong>
+              </button>
+            </div>
+            <p>
+              These display preferences apply to this player view while the course remains open. They do not change progress,
+              scoring, captions, or storage behavior.
+            </p>
+          </section>
+
           <section>
             <h4 style={{ color: '#fff', fontWeight: 600, marginBottom: '0.5rem' }}>Keyboard Navigation</h4>
             <p>
@@ -114,6 +181,7 @@ export default function AccessibilityModal({ onClose }: AccessibilityModalProps)
               backgroundColor: 'var(--color-primary)',
               color: '#fff',
               border: 'none',
+              minHeight: '44px',
               padding: '0.6rem 1.5rem',
               borderRadius: '6px',
               fontWeight: 600,

@@ -2294,7 +2294,7 @@ function Module3PortfolioCheckpointScreen({ state, onChangeState }: Module3Rende
   const stored = state.practiceCheckState.module3PortfolioSnapshot || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M3-S1-22');
   const starterValues = module3PortfolioFields.reduce<Record<string, string>>((acc, field) => {
-    acc[field.key] = (stored[field.key] as string) || field.example;
+    acc[field.key] = ((stored[field.key] as string) || field.example).slice(0, 220);
     return acc;
   }, {});
   const storedHabit = (stored.carryForwardHabit as string) || '';
@@ -2391,11 +2391,12 @@ function Module3PortfolioCheckpointScreen({ state, onChangeState }: Module3Rende
             </div>
             {customHabitRequired && (
               <label className="m3-portfolio-custom-habit">
-                <span>My safe design habit is... Use a fictional, generalized, or non-sensitive example only.</span>
+                <span id="m3-portfolio-custom-habit-help">My safe design habit is... Use a fictional, generalized, or non-sensitive example only.</span>
                 <input
                   type="text"
                   value={customHabit}
                   maxLength={120}
+                  aria-describedby="m3-portfolio-custom-habit-help"
                   onChange={(event) => {
                     setCustomHabit(event.target.value);
                     setSaved(false);
@@ -2419,18 +2420,24 @@ function Module3PortfolioCheckpointScreen({ state, onChangeState }: Module3Rende
           </div>
 
           <div className="m3-portfolio-field-grid">
-            {module3PortfolioFields.map((field) => (
-              <label key={field.key} className="m3-portfolio-field-card">
+            {module3PortfolioFields.map((field) => {
+              const fieldId = `m3-portfolio-${field.key}`;
+              const counterId = `${fieldId}-counter`;
+
+              return (
+              <label key={field.key} className="m3-portfolio-field-card" htmlFor={fieldId}>
                 <span>{field.label}</span>
                 <textarea
+                  id={fieldId}
                   value={values[field.key] || ''}
                   maxLength={220}
                   onChange={(event) => updateField(field.key, event.target.value)}
-                  aria-label={field.label}
+                  aria-describedby={counterId}
                 />
-                <small>{(values[field.key] || '').length}/220</small>
+                <small id={counterId}>{(values[field.key] || '').length}/220 characters used</small>
               </label>
-            ))}
+              );
+            })}
           </div>
 
           <div className="m3-portfolio-action-row">

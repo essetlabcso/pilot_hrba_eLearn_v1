@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { LearningState } from '../../state/learningState';
 import { getHRBAModuleById } from '../../data/hrbaCourseModules';
 
@@ -9,6 +9,7 @@ import MainScreenCanvas from './MainScreenCanvas';
 import PartnerLogoFooter from './PartnerLogoFooter';
 import HelpOverlay from './HelpOverlay';
 import AccessibilityModal from './AccessibilityModal';
+import type { AccessibilityPreferences } from './AccessibilityModal';
 import GlossaryModal from './GlossaryModal';
 import ResourcesModal from './ResourcesModal';
 import ScreenRenderer from '../course/ScreenRenderer';
@@ -47,10 +48,17 @@ export default function CoursePlayerShell({
 }: CoursePlayerShellProps) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const helpButtonRef = useRef<HTMLButtonElement>(null);
+  const accessibilityButtonRef = useRef<HTMLButtonElement>(null);
   const menuDrawerRef = useRef<HTMLDivElement>(null);
   const menuDrawerTitleRef = useRef<HTMLHeadingElement>(null);
   const mainContentRef = useRef<HTMLElement>(null);
   const focusMainContentAfterMenuSelectionRef = useRef(false);
+  const previousScreenIdRef = useRef<string | null>(null);
+  const [accessibilityPreferences, setAccessibilityPreferences] = useState<AccessibilityPreferences>({
+    highContrast: false,
+    textSize: 'standard',
+    reduceMotion: false,
+  });
 
   // Filter player-specific screens from the sequence data
   const allPlayerScreens = sequenceData.filter(
@@ -261,6 +269,45 @@ export default function CoursePlayerShell({
       }, 0);
     };
   }, [state.activeModal]);
+
+  useEffect(() => {
+    if (state.activeModal !== 'accessibility') {
+      return;
+    }
+
+    const accessibilityButtonElement = accessibilityButtonRef.current;
+
+    return () => {
+      window.setTimeout(() => {
+        if (focusHTMLElement(accessibilityButtonElement)) {
+          return;
+        }
+
+        focusHTMLElement(document.querySelector('.player-sidebar-button[aria-label="Open accessibility options"]'));
+      }, 0);
+    };
+  }, [state.activeModal]);
+
+  useEffect(() => {
+    if (!screenId || previousScreenIdRef.current === null) {
+      previousScreenIdRef.current = screenId || null;
+      return;
+    }
+
+    if (previousScreenIdRef.current === screenId) {
+      return;
+    }
+
+    previousScreenIdRef.current = screenId;
+
+    if (state.activeModal !== null) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      focusHTMLElement(mainContentRef.current);
+    }, 0);
+  }, [screenId, state.activeModal]);
 
   const handleReplay = () => {
     // Reload state: toggle and reset state variables to clear local interactive inputs
@@ -573,7 +620,12 @@ export default function CoursePlayerShell({
       : `${activeModule.itemLabel}: ${activeModule.title}`
     : 'Module 1: Starting the HRBA Learning Journey';
   return (
-    <div className="player-container course-shell">
+    <div
+      className="player-container course-shell"
+      data-a11y-high-contrast={accessibilityPreferences.highContrast ? 'true' : 'false'}
+      data-a11y-text-size={accessibilityPreferences.textSize}
+      data-a11y-reduce-motion={accessibilityPreferences.reduceMotion ? 'true' : 'false'}
+    >
       <ProgressStrip percentage={progressPercent} />
 
       <PlayerHeader
@@ -594,6 +646,7 @@ export default function CoursePlayerShell({
           activeModal={state.activeModal}
           menuButtonRef={menuButtonRef}
           helpButtonRef={helpButtonRef}
+          accessibilityButtonRef={accessibilityButtonRef}
           transcriptVisible={state.transcriptVisible}
           onToggleTranscript={() => onChangeState(p => ({ ...p, transcriptVisible: !p.transcriptVisible }))}
           soundEnabled={state.soundState}
@@ -702,7 +755,11 @@ export default function CoursePlayerShell({
 
       {/* Accessibility Modal */}
       {state.activeModal === 'accessibility' && (
-        <AccessibilityModal onClose={() => handleToggleModal(null)} />
+        <AccessibilityModal
+          onClose={() => handleToggleModal(null)}
+          preferences={accessibilityPreferences}
+          onUpdatePreferences={setAccessibilityPreferences}
+        />
       )}
 
       {/* Glossary Modal */}

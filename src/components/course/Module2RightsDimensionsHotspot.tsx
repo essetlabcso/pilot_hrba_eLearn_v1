@@ -379,8 +379,8 @@ export default function Module2RightsDimensionsHotspot({
                     top: item.coordinates.top,
                     left: item.coordinates.left,
                     transform: 'translate(-50%, -50%)',
-                    width: '34px',
-                    height: '34px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '50%',
                     border: 'none',
                     backgroundColor: 'transparent',
@@ -437,6 +437,32 @@ export default function Module2RightsDimensionsHotspot({
                   >
                     {viewed ? '✓' : item.id}
                   </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="m2-s04-hotspot-list" aria-label="Keyboard list of rights dimension hotspots">
+            {hotspotItems.map((item) => {
+              const viewed = viewedKeys.includes(item.key);
+              const isActive = selectedKey === item.key;
+
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={isActive ? 'is-active' : ''}
+                  aria-pressed={isActive}
+                  onClick={() => handleHotspotClick(item.key)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handleHotspotClick(item.key);
+                    }
+                  }}
+                >
+                  <span>{item.id}. {item.title}</span>
+                  <strong>{viewed ? 'Viewed' : 'Not viewed'}</strong>
                 </button>
               );
             })}
