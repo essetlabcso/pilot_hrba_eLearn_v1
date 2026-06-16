@@ -287,6 +287,11 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
               repeated concerns lead to change.
             </p>
             <p>
+              Core idea: the loop is visible before you repair it. A useful feedback process
+              receives concerns, reviews patterns, responds safely, adapts when needed,
+              and follows up without exposing people.
+            </p>
+            <p>
               Your task: open each broken stage, choose the response that closes that
               part of the loop, read the feedback, then continue when all four stages are repaired.
             </p>
@@ -396,7 +401,7 @@ export function Module2AccountabilityLoop({ state, onChangeState }: Props) {
                 <p>
                   {selectedRepairs[activeStage.id] === activeStage.repair
                     ? activeStage.repair
-                    : 'A channel alone does not complete the loop. Accountability needs clarity, safety, response, and adaptation.'}
+                    : 'A channel alone does not complete the loop. Match the repair to the break so people can understand the process, use it safely, receive a response, and see adaptation.'}
                 </p>
               </>
             ) : (
@@ -441,7 +446,7 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
       cue: 'A box is available, but members say they are not sure who reads it or whether comments stay private.',
       breakId: 'understand',
       fixId: 'explain-channel',
-      insight: 'The first repair is clarity. People need to understand what can be raised, who sees it, and what response to expect.',
+      insight: 'The first repair is clarity. People need to understand what can be raised, who sees it, how privacy is protected, and what response to expect.',
     },
     {
       id: 'heard-once',
@@ -459,7 +464,7 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
       cue: 'The team discusses feedback internally, but members receive no general response and assume nothing changed.',
       breakId: 'share-back',
       fixId: 'share-back',
-      insight: 'Trust grows when people can see the response loop. Share back what was heard, what was decided, and what will change.',
+      insight: 'Trust grows when people can see the response loop. Share back in safe general terms: what was heard, what was decided, and what will change.',
     },
     {
       id: 'same-problem',
@@ -468,7 +473,7 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
       cue: 'Several members keep saying public opportunities go to the same group, but the selection process stays the same.',
       breakId: 'adapt',
       fixId: 'adapt',
-      insight: 'When the same barrier repeats, the process itself needs repair. Adapt the decision process, not only the message.',
+      insight: 'When the same barrier repeats, the process itself needs repair. Adapt the decision process, not only the message, and explain the change safely.',
     },
   ] as const;
   const breakOptions = [
@@ -536,7 +541,7 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
   const selectBreak = (id: string) => {
     const next = { ...breakSelections, [activeCase.id]: id };
     const selected = breakOptions.find((item) => item.id === id);
-    const nextFeedback = id === activeCase.breakId ? `Correct break: ${selected?.label}. Now choose the repair.` : 'That may matter in some cases, but it is not the main break in this example.';
+    const nextFeedback = id === activeCase.breakId ? `Correct break: ${selected?.label}. Now choose the repair that closes this part of the loop.` : 'That may matter in some cases, but it is not the main break in this example. Look again at what people cannot yet understand, use, hear back from, or see changed.';
     setBreakSelections(next);
     setFeedback(nextFeedback);
     persistState({ breakSelections: next, feedback: nextFeedback });
@@ -544,7 +549,7 @@ export function Module2FeedbackLoopRepair({ state, onChangeState }: Props) {
   const selectFix = (id: string) => {
     const next = { ...fixSelections, [activeCase.id]: id };
     const correct = breakSelections[activeCase.id] === activeCase.breakId && id === activeCase.fixId;
-    const nextFeedback = correct ? activeCase.insight : currentBreakCorrect ? 'This is a possible action, but another repair fits this break more directly.' : 'Choose the main break first so the repair matches the problem.';
+    const nextFeedback = correct ? activeCase.insight : currentBreakCorrect ? 'This is a possible action, but another repair closes this break more directly.' : 'Choose the main break first so the repair matches the problem and does not become a surface fix.';
     setFixSelections(next);
     setFeedback(nextFeedback);
     persistState({ fixSelections: next, feedback: nextFeedback });
@@ -2230,6 +2235,7 @@ export function Module2CloseTransition({ state, onChangeState }: Props) {
             <h1 id="m2-s23-completion-title">Module 2 complete</h1>
             <p>
               You have practiced using HRBA to notice rights, actors, principles, participation, accountability, power, and exclusion in ordinary CSO work.
+              Carry that lens into design by asking what needs to change, who may be missed, and how feedback can be answered safely.
             </p>
           </div>
           <div className="m2-s23-completion-badge" aria-label="Module 2 completion badge">
@@ -2270,7 +2276,8 @@ export function Module2CloseTransition({ state, onChangeState }: Props) {
             <p className="m2-s23-completion-kicker">What comes next in Module 3</p>
             <h2 id="m2-s23-next-title">From analysis to design</h2>
             <p>
-              Module 3 moves from analysis to design. You will use the rights lens in project design decisions.
+              Module 3 moves from analysis to design. You will use the rights lens to shape objectives, activities,
+              participation, risks, and evidence choices without changing any saved Module 2 progress from this screen.
             </p>
           </div>
           <div className="m2-s23-transition-steps" aria-label="Module 3 transition focus">

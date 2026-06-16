@@ -63,12 +63,12 @@ const MODULE_ID = 'module_03_project_design';
 export const module3IntroVideoUrl = '';
 
 const module3LearningObjectives = [
-  'Diagnose what a strong-looking proposal may still miss from an HRBA project-design perspective.',
+  'Diagnose what a strong-looking proposal may still miss from an HRBA project-design perspective, then use that diagnosis in the design studio.',
   'Identify specific rights-holders, exclusion risks, and practical barriers before choosing activities.',
   'Map duty-bearers, influencing actors, and the CSO role needed for a stronger project design.',
   'Build participation, transparency, feedback, and accountability into design decisions.',
   'Translate analysis into rights-aware objectives, activities, risks, assumptions, and evidence choices.',
-  'Review a project idea and decide what needs to change before implementation begins.',
+  'Review a project idea and decide what needs to change before implementation begins, then carry one safe improvement into the module output.',
 ];
 
 const snapshotParts = [
@@ -1067,10 +1067,10 @@ function Module3LearningObjectivesScreen({ onChangeState }: Module3RendererProps
           <p className="m3-objectives-subtitle">What you will be able to do</p>
           <p>
             In this module, you will practice moving from a project idea to a design that is clearer,
-            more accountable, and more useful for CSO project decisions.
+            more accountable, and more useful for CSO project decisions. Each objective connects to a design choice you will test in the studio screens.
           </p>
           <div className="m3-objectives-closing">
-            <p>A stronger project design starts before the activity list.</p>
+            <p>A stronger project design starts before the activity list and leaves evidence about who was considered, what changed, and why.</p>
           </div>
         </div>
 
@@ -4964,6 +4964,7 @@ const studioScreens: Record<string, StudioScreenConfig> = {
     body: [
       'The team has completed a context snapshot and a basic alignment scan. Now they return to the proposal’s problem statement.',
       'The first draft says: “Vulnerable community members lack livelihood skills and need training to improve their income opportunities.” At first, this sentence sounds clear. But the team now sees that it is too narrow. It describes a need. It does not yet explain the rights issue behind the need.',
+      'Your role is to read the case as a design reviewer: look for who may be missed, what barrier is visible, and what the project must change before activities are chosen.',
     ],
     startButton: 'Compare the two framings',
     revealTitle: 'Needs-based statement vs rights-aware problem framing',
@@ -5620,20 +5621,20 @@ function makeCompactStudioScreen(spec: CompactStudioSpec): StudioScreenConfig {
     context: 'Project Design Studio · Resource Pack',
     title: 'Module 3 Resource Pack: HRBA Project Design Toolkit',
     heading: 'Collect your HRBA project design tools.',
-    body: 'The resource pack gathers the practical tools used across Module 3 so learners can return to them when improving project design.',
+    body: 'The resource pack groups the practical tools used across Module 3 by design purpose so learners can choose the right support without treating the pack as a checklist.',
     startButton: 'Open the toolkit',
     revealTitle: 'What is inside the toolkit?',
     revealItems: [
-      'Context analysis worksheet and policy alignment scan.',
-      'Rights-SDG-LNOB tool and rights-holder segmentation guide.',
-      'Stakeholder and actor map, gender worksheet, and disability checklist.',
-      'Root-cause tree, participation planner, activity package builder, intervention logic builder, risk checklist, and evidence design checklist.',
+      'Understand the context: context analysis worksheet, policy alignment scan, and Rights-SDG-LNOB tool.',
+      'Identify who may be missed: rights-holder segmentation guide, gender worksheet, and disability checklist.',
+      'Clarify responsibility and influence: stakeholder and actor map, participation planner, and feedback questions.',
+      'Turn analysis into design: root-cause tree, activity package builder, intervention logic builder, risk checklist, and evidence design checklist.',
     ],
     activityTitle: 'Preview the toolkit.',
     correctPrompt: 'How should learners use the resource pack?',
-    correctAnswer: 'Use the tools selectively and adapt them to the actual project, context, evidence, risks, and participation process.',
+    correctAnswer: 'Choose the tool that fits the design decision in front of you, then adapt it to the project context, evidence, risks, and participation process.',
     outputTitle: 'Three practical ways to use this resource pack',
-    outputBody: 'Use it before writing a proposal, during proposal review, or during a team design clinic. The tools are supports for judgment, not forms to complete mechanically.',
+    outputBody: 'Use it before writing a proposal, during proposal review, or during a team design clinic. Pick one design question first, then choose the tool that helps the team make a safer, more inclusive decision.',
     noteHeading: 'Common design mistake',
     noteBody: 'Do not treat the toolkit as a compliance checklist. Use the tools when they help the team make safer, more inclusive, and more accountable design decisions.',
     ctaHeading: 'Next, continue your practice with peers.',
@@ -6036,6 +6037,11 @@ function Module3StudioScreen({
               <p key={paragraph}>{paragraph}</p>
             ))}
             {config.quote && <QuoteBlock>{config.quote}</QuoteBlock>}
+            {!started && (
+              <p>
+                Start by looking for the HRBA design signal: affected groups, barriers, responsibilities, risks, and the decision evidence the team needs.
+              </p>
+            )}
             {!started && <PrimaryButton onClick={startScreen}>{config.startButton}</PrimaryButton>}
           </div>
         </div>

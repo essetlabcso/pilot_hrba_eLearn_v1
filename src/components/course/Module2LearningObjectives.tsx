@@ -22,13 +22,13 @@ const objectiveCards: ObjectiveCard[] = [
     id: 'explain-human-rights-simply',
     front: 'Explain human rights simply',
     reveal:
-      'Describe human rights in plain language connected to dignity, equality, safety, voice, opportunity, and accountability.',
+      'Describe human rights in plain language connected to dignity, equality, safety, voice, opportunity, and accountability, then use that language in the opening scenario.',
   },
   {
     id: 'recognize-rights-issues',
     front: 'Recognize rights issues',
     reveal:
-      'Notice when an everyday service or project problem may also involve exclusion, discrimination, lack of participation, or unmet responsibility.',
+      'Notice when an everyday service or project problem may also involve exclusion, discrimination, lack of participation, or unmet responsibility, then test that lens in practice screens.',
   },
   {
     id: 'identify-rights-dimensions',
@@ -52,7 +52,7 @@ const objectiveCards: ObjectiveCard[] = [
     id: 'apply-everyday-rights-lens',
     front: 'Apply an everyday rights lens',
     reveal:
-      'Use a simple rights-mapping worksheet to analyze one CSO project issue and identify a safer, more rights-based improvement.',
+      'Use a simple rights-mapping worksheet to analyze one CSO project issue and identify a safer, more rights-based improvement for your portfolio checkpoint.',
   },
 ];
 
@@ -137,7 +137,7 @@ export default function Module2LearningObjectives({
           </div>
           <p className="m2-s02-instruction">
             Explore the objectives. Each one shows how this module will help you use
-            human rights as a practical lens in everyday CSO work.
+            human rights as a practical lens in everyday CSO work and where you will practice that lens.
           </p>
           <p className="m2-s02-intro">
             In this module, human rights will move from distant legal language into

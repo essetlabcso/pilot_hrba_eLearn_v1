@@ -1002,7 +1002,7 @@ function Module4LearningObjectivesScreen({ onChangeState }: Module4RendererProps
           <p>
             In this module, you will practice how to keep HRBA alive after a project starts. You will look for
             warning signs during delivery, adjust activities safely, protect participation, strengthen feedback,
-            and document changes responsibly.
+            and document changes responsibly. Each objective links to a delivery decision you will diagnose, repair, or carry into a safe adaptation habit.
           </p>
           <article className="m4-implementation-lens" aria-label="Implementation lens motif">
             <span>!</span>
@@ -1011,7 +1011,7 @@ function Module4LearningObjectivesScreen({ onChangeState }: Module4RendererProps
           </article>
           <blockquote>
             HRBA during implementation means staying alert: noticing who may be slipping out, who is not being
-            heard, what risks are emerging, and what needs to change safely.
+            heard, what risks are emerging, and what needs to change safely before the project simply continues.
           </blockquote>
           <PrimaryButton
             onClick={() =>
@@ -1173,6 +1173,10 @@ function Module4WarningScenarioScreen({ state, onChangeState }: Module4RendererP
               The plan may be approved. The budget may be clear. Activities may be happening on time. But if
               participation weakens, access barriers appear, feedback is not answered, or some people quietly
               stop coming, the CSO needs to pause and ask better questions.
+            </p>
+            <p>
+              Look for five signals as you read: access, voice, safety, feedback, and who is responsible for
+              acting on what the team learns.
             </p>
             <div className="m4-warning-story">
               <p>
@@ -1356,7 +1360,7 @@ function Module4ImplementationLensScreen({ state, onChangeState }: Module4Render
             a response, or small implementation decisions may create new risks.
           </p>
           <p className="m4-lens-instruction">
-            Open each lens point. For each one, ask what the project team should keep checking during implementation.
+            Open each lens point. For each one, ask what the project team should keep checking during implementation and what evidence would show whether delivery is still rights-based.
           </p>
           <div className="m4-lens-progress" role="status" aria-live="polite">
             <strong>{visitedCount} of 8</strong>
@@ -1999,6 +2003,10 @@ function Module4FeedbackAccountabilityScreen({ state, onChangeState }: Module4Re
           </strong>
           <article className="m4-feedback-scenario">
             <h2>Scenario: The feedback is coming in — but people are still unsure</h2>
+            <p>
+              Your role is to repair the accountability loop. Look for the step where people lose clarity,
+              safety, response, or follow-up.
+            </p>
             <p>
               A local CSO is delivering livelihood support. It has three feedback channels: a phone number,
               a suggestion box, and field staff visits.
@@ -3273,6 +3281,10 @@ function Module4SummaryScreen({ onChangeState }: Module4RendererProps) {
               noticing what is changing and responding in ways that protect dignity, inclusion, participation,
               safety, and accountability.
             </p>
+            <p>
+              Carry forward one practical habit: when delivery starts to drift, pause, check who is affected,
+              explain the response, and document the adaptation safely.
+            </p>
           </article>
           <article className="m4-summary-reflection">
             <h2>Before you complete the module</h2>
@@ -3306,7 +3318,8 @@ function Module4SummaryScreen({ onChangeState }: Module4RendererProps) {
             <p className="m4-card-kicker">Module 4 takeaway</p>
             <strong>
               Strong implementation is not only delivering the plan. It is noticing what changes, responding
-              safely, and keeping dignity, participation, inclusion, and accountability alive.
+              safely, documenting what changed, and keeping dignity, participation, inclusion, and accountability
+              alive.
             </strong>
           </article>
           <div className="m4-summary-actions">

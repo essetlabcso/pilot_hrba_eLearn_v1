@@ -239,7 +239,7 @@ export default function Module2EverydayClaimsResponsibilities({
               <strong>Everyday Rights Lens:</strong> A rights lens helps a CSO move from <em>“we delivered an activity”</em> to <em>“people had information, access, voice, inclusion, responsible actors, and a pathway for response.”</em>
             </p>
             <p style={{ margin: '0.65rem 0 0', fontSize: '0.84rem', lineHeight: 1.45, color: 'var(--color-deep-navy)' }}>
-              HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action.
+              HRBA uses human rights standards and principles as a practical reference for fair decisions, meaningful participation, non-discrimination, accountability, and safe action. As you open the cards, look for who is affected, who has responsibility, and what evidence would make the next decision safer.
             </p>
           </div>
         </section>
@@ -266,7 +266,7 @@ export default function Module2EverydayClaimsResponsibilities({
             }}
           >
             <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-deep-navy)' }}>
-              Explore the cards
+              Explore the cards to build the lens
             </span>
             <span 
               className="m2-s03-progress-chip"

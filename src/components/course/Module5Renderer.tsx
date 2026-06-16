@@ -1050,18 +1050,18 @@ const module5Screens: Record<string, Module5ScreenConfig> = {
     title: 'Module 5 Resource Pack',
     block: 'Resource and Download Blocks',
     storyTitle: 'Tools to keep using',
-    story: ['This resource screen gathers the practical Module 5 tools for continued use.'],
+    story: ['This resource screen groups the practical Module 5 tools by the decision they help you make, so the pack is easier to use after the module.'],
     revealTitle: 'Resource pack items',
     revealItems: [
-      ['HRBA MEAL lens checklist', 'Questions on inclusion, participation, feedback, gender, disability, safety, change, and adaptation.'],
-      ['Indicator repair prompts', 'Prompts for strengthening weak output indicators.'],
-      ['Safe disaggregation guide', 'A quick check for useful, minimum, protected data.'],
-      ['Responsible reporting checklist', 'A check for evidence-based, safe, honest reporting claims.'],
+      ['Review evidence quality', 'HRBA MEAL lens questions on inclusion, participation, feedback, gender, disability, safety, change, and adaptation.'],
+      ['Repair indicators', 'Prompts for strengthening weak output indicators so they show access, voice, feedback, and change.'],
+      ['Protect data and stories', 'A quick check for useful, minimum, aggregated, anonymized, and protected evidence.'],
+      ['Report responsibly', 'A checklist for evidence-based, safe, honest claims and clear adaptation decisions.'],
     ],
     activityTitle: 'Choose how to use the pack',
     activityPrompt: 'Which use is most practical?',
     options: makeOptions(['Use one tool in the next team reporting or reflection meeting.', 'Store the tools without discussing them.', 'Use the tools to collect identifying complaint details.']),
-    insight: ['Resources are useful when they become part of normal team decisions.'],
+    insight: ['Resources are useful when they help a team make a safer decision, repair weak evidence, or explain an adaptation honestly.'],
     cta: 'Continue to peer exchange',
     nextId: 'M5-S1-24',
   }),
@@ -1216,13 +1216,13 @@ function Module5LearningObjectivesScreen({ onChangeState }: Module5RendererProps
             <p>What you will be able to do</p>
           </div>
           <p className="m5-objectives-orientation">
-            In this module, you will practice how to use MEAL to see whether rights-based practice is actually happening. You will look beyond activity numbers to examine who benefited, who may be missing, what changed, what feedback shows, and how evidence can guide safer adaptation and reporting.
+            In this module, you will practice how to use MEAL to see whether rights-based practice is actually happening. Each objective connects to a practical evidence check: who benefited, who may be missing, what changed, what feedback shows, and how evidence can guide safer adaptation and reporting.
           </p>
           <article className="m5-objectives-lens" aria-label="Module 5 visual accent">
             <span aria-hidden="true">↗</span>
             <div>
               <h2>Evidence for learning</h2>
-              <p>Use indicators, feedback, data, stories, and reports to support safer decisions.</p>
+              <p>Use indicators, feedback, data, stories, and reports to support safer decisions and show what should change next.</p>
             </div>
           </article>
           <article className="m5-objectives-closing">

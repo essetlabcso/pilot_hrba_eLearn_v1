@@ -391,7 +391,7 @@ function Module1ObjectivesScreen({ onNext }: { onNext: () => void }) {
         <div className="m1-b2-eyebrow">Module 1</div>
         <h1 id="m1-objectives-title">What You Will Be Able to Do</h1>
         <p>
-          This module gives you a practical starting point. By the end, you will have a simple way to explain HRBA and a first personal commitment for using it in your work.
+          This module gives you a practical starting point. By the end, you will have a simple way to explain HRBA, practice noticing exclusion in an everyday story, and carry one private action commitment into the rest of the course.
         </p>
       </header>
 
@@ -411,7 +411,7 @@ function Module1ObjectivesScreen({ onNext }: { onNext: () => void }) {
       </ol>
 
       <footer className="m1-b2-footer">
-        <p>This is the beginning of the journey. Module 2 will go deeper into rights, actors, principles, and power.</p>
+        <p>This is the beginning of the journey. Your practice evidence is a safe reflection habit and one action commitment. Module 2 will go deeper into rights, actors, principles, and power.</p>
         <button className="m1-b2-primary" type="button" onClick={onNext}>
           Continue
         </button>
@@ -3686,7 +3686,7 @@ function Module1FinishedScreen({
         <h1 id="m1-finished-title">Module 1 completed</h1>
         <h2>Starting the HRBA Learning Journey</h2>
         <p>
-          You have completed the first step in your HRBA learning journey. Your private learning reflections are saved in your browser.
+          You have completed the first step in your HRBA learning journey. Your private learning reflections are saved in your browser, and your next step is to use the same safe noticing habit in Module 2.
         </p>
         <div className="m1-finished-summary" aria-label="Module 1 finished summary">
           <strong>Module 1 completed</strong>
