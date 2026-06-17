@@ -1,4 +1,5 @@
 import type { LearningState } from '../../state/learningState';
+import type { KeyboardEvent } from 'react';
 import actorMapImage from '../../assets/hrba/module-2/visuals/m2-s08-rights-holders-actor-map.png';
 
 type Module2RightsHoldersMapProps = {
@@ -187,6 +188,25 @@ export default function Module2RightsHoldersMap({
     }
   };
 
+  const moveTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const keyMap: Record<string, number> = {
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      Home: 0,
+      End: segments.length - 1,
+    };
+    const nextValue = keyMap[event.key];
+    if (typeof nextValue !== 'number') return;
+    event.preventDefault();
+    const nextIndex = (nextValue + segments.length) % segments.length;
+    openSegment(segments[nextIndex].id);
+    window.setTimeout(() => {
+      document.getElementById(`m2-s08-tab-${segments[nextIndex].id}`)?.focus();
+    }, 0);
+  };
+
   return (
     <main className="m2-s08-screen" aria-labelledby="m2-s08-title">
       <section className="m2-s08-shell">
@@ -244,7 +264,9 @@ export default function Module2RightsHoldersMap({
                     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
                       event.preventDefault();
                       openSegment(segment.id);
+                      return;
                     }
+                    moveTabFocus(event, segments.findIndex((item) => item.id === segment.id));
                   }}
                 >
                   <span aria-hidden="true">{explored ? '✓' : segment.marker}</span>

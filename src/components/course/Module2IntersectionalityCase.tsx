@@ -1,4 +1,5 @@
 import type { LearningState } from '../../state/learningState';
+import type { KeyboardEvent } from 'react';
 
 type Module2IntersectionalityCaseProps = {
   state: LearningState;
@@ -240,6 +241,25 @@ export default function Module2IntersectionalityCase({
     }
   };
 
+  const moveMomentTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const keyMap: Record<string, number> = {
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      Home: 0,
+      End: caseMoments.length - 1,
+    };
+    const nextValue = keyMap[event.key];
+    if (typeof nextValue !== 'number') return;
+    event.preventDefault();
+    const nextIndex = (nextValue + caseMoments.length) % caseMoments.length;
+    openMoment(caseMoments[nextIndex].id);
+    window.setTimeout(() => {
+      document.getElementById(`m2-s09-tab-${caseMoments[nextIndex].id}`)?.focus();
+    }, 0);
+  };
+
   return (
     <main className="m2-s09-screen" aria-labelledby="m2-s09-title">
       <section className="m2-s09-shell">
@@ -270,7 +290,7 @@ export default function Module2IntersectionalityCase({
 
         <section className="m2-s09-case-board" aria-labelledby="m2-s09-case-title">
           <div className="m2-s09-moment-list" role="tablist" aria-label="Case pathway moments">
-            {caseMoments.map((moment) => {
+            {caseMoments.map((moment, index) => {
               const active = moment.id === activeMomentId;
               const opened = openedMomentIds.includes(moment.id);
 
@@ -290,7 +310,9 @@ export default function Module2IntersectionalityCase({
                     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
                       event.preventDefault();
                       openMoment(moment.id);
+                      return;
                     }
+                    moveMomentTabFocus(event, index);
                   }}
                 >
                   <span aria-hidden="true">{opened ? '✓' : moment.marker}</span>

@@ -1,4 +1,5 @@
 import type { LearningState } from '../../state/learningState';
+import type { KeyboardEvent } from 'react';
 
 export type CompactRevealItem = {
   id: string;
@@ -166,6 +167,25 @@ export default function Module2CompactRevealScreen({
     });
   };
 
+  const moveTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const keyMap: Record<string, number> = {
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      Home: 0,
+      End: items.length - 1,
+    };
+    const nextValue = keyMap[event.key];
+    if (typeof nextValue !== 'number') return;
+    event.preventDefault();
+    const nextIndex = (nextValue + items.length) % items.length;
+    openItem(items[nextIndex].id);
+    window.setTimeout(() => {
+      document.getElementById(`${screenId}-tab-${items[nextIndex].id}`)?.focus();
+    }, 0);
+  };
+
   const completeAndContinue = () => {
     if (!completionReady) return;
 
@@ -250,7 +270,9 @@ export default function Module2CompactRevealScreen({
                     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
                       event.preventDefault();
                       openItem(item.id);
+                      return;
                     }
+                    moveTabFocus(event, index);
                   }}
                 >
                   <span aria-hidden="true">{opened ? '✓' : item.marker}</span>

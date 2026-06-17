@@ -94,10 +94,11 @@ export default function Module2RightsDimensionsHotspot({
 }: Props) {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   
-  // Retrieve saved hotspot progress
+  // Retrieve saved hotspot progress, filtering out any legacy/shared hotspot keys.
   const viewedKeys = state.m2HotspotViewed || [];
-  const exploredCount = viewedKeys.length;
-  const allExplored = exploredCount === hotspotItems.length;
+  const hotspotKeys = hotspotItems.map((item) => item.key);
+  const exploredCount = new Set(viewedKeys.filter((key) => hotspotKeys.includes(key))).size;
+  const allExplored = hotspotKeys.every((key) => viewedKeys.includes(key));
 
   const handleHotspotClick = (key: string) => {
     setSelectedKey(key);
@@ -107,7 +108,7 @@ export default function Module2RightsDimensionsHotspot({
       if (currentViewed.includes(key)) return prev;
       
       const nextViewed = [...currentViewed, key];
-      const isComplete = nextViewed.length === hotspotItems.length;
+      const isComplete = hotspotKeys.every((itemKey) => nextViewed.includes(itemKey));
       const progressList = new Set(prev.screenProgress[MODULE_ID] || []);
       
       if (isComplete) {

@@ -339,10 +339,10 @@ function renderBlock(
             <button
               type="button"
               className="m2-cover-screen__cta"
-              aria-label="Start Module 2 and go to Module 2, Screen 2"
+              aria-label="Start Module 2 and go to the Module 2 before you begin screen"
               onClick={() => {
                 if (typeof window !== 'undefined') {
-                  window.history.pushState(null, '', '/module-2/screen-2-2');
+                  window.history.pushState(null, '', '/module-2/intro-video');
                 }
                 onNext();
               }}

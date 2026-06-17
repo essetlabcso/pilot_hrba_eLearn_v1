@@ -1,4 +1,5 @@
 import type { LearningState } from '../../state/learningState';
+import type { KeyboardEvent } from 'react';
 
 type Props = {
   state: LearningState;
@@ -209,6 +210,25 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
     }
   };
 
+  const moveExampleTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const keyMap: Record<string, number> = {
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      Home: 0,
+      End: examples.length - 1,
+    };
+    const nextValue = keyMap[event.key];
+    if (typeof nextValue !== 'number') return;
+    event.preventDefault();
+    const nextIndex = (nextValue + examples.length) % examples.length;
+    setActiveExample(examples[nextIndex].id);
+    window.setTimeout(() => {
+      document.getElementById(`m2-s15-tab-${examples[nextIndex].id}`)?.focus();
+    }, 0);
+  };
+
   return (
     <main className="m2-s15-screen" aria-labelledby="m2-s15-title">
       <section className="m2-s15-shell">
@@ -262,7 +282,7 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
           style={{ gridTemplateColumns: 'minmax(170px, 0.3fr) minmax(0, 0.7fr)', gridTemplateRows: 'auto auto' }}
         >
           <div className="m2-s15-example-list" role="tablist" aria-label="Participation examples">
-            {examples.map((example) => {
+            {examples.map((example, index) => {
               const active = example.id === activeExample.id;
               const rated = Boolean(ratings[example.id]);
               const level = levels.find((entry) => entry.id === ratings[example.id]);
@@ -281,7 +301,9 @@ export default function Module2ParticipationPractice({ state, onChangeState }: P
                     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
                       event.preventDefault();
                       setActiveExample(example.id);
+                      return;
                     }
+                    moveExampleTabFocus(event, index);
                   }}
                 >
                   <span aria-hidden="true">{rated ? '✓' : example.marker}</span>

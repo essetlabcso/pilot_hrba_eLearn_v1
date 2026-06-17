@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 import introVideoPoster from '../../assets/hrba/module-2/visuals/m2-s01a-intro-video-poster.png';
 import powerExclusionHotspotImage from '../../assets/hrba/module-2/visuals/m2-s18-power-exclusion-hotspot-bg.png';
@@ -1396,6 +1396,26 @@ export function Module2ProjectManagerInbox({ state, onChangeState }: Props) {
     });
   };
   const selectedResponse = selectedMessage.responses.find((response) => response.id === messageResponses[selectedMessage.id]);
+  const moveInboxTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const keyMap: Record<string, number> = {
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      Home: 0,
+      End: inboxMessages.length - 1,
+    };
+    const nextValue = keyMap[event.key];
+    if (typeof nextValue !== 'number') return;
+    event.preventDefault();
+    const nextIndex = (nextValue + inboxMessages.length) % inboxMessages.length;
+    const nextMessage = inboxMessages[nextIndex];
+    setSelectedMessageId(nextMessage.id);
+    persistState({ selectedMessageId: nextMessage.id });
+    window.setTimeout(() => {
+      document.getElementById(`m2-s20-tab-${nextMessage.id}`)?.focus();
+    }, 0);
+  };
 
   return (
     <main className="m2-s32-screen" aria-labelledby="m2-s220-title">
@@ -1412,7 +1432,16 @@ export function Module2ProjectManagerInbox({ state, onChangeState }: Props) {
             {inboxMessages.map((message, index) => {
               const complete = completedMessages.some((item) => item.id === message.id);
               return (
-                <button key={message.id} type="button" role="tab" aria-selected={message.id === selectedMessageId} className={`${message.id === selectedMessageId ? 'is-active' : ''} ${complete ? 'is-completed' : ''}`} onClick={() => { setSelectedMessageId(message.id); persistState({ selectedMessageId: message.id }); }}>
+                <button
+                  key={message.id}
+                  type="button"
+                  role="tab"
+                  id={`m2-s20-tab-${message.id}`}
+                  aria-selected={message.id === selectedMessageId}
+                  className={`${message.id === selectedMessageId ? 'is-active' : ''} ${complete ? 'is-completed' : ''}`}
+                  onClick={() => { setSelectedMessageId(message.id); persistState({ selectedMessageId: message.id }); }}
+                  onKeyDown={(event) => moveInboxTabFocus(event, index)}
+                >
                   <span>{complete ? '✓' : index + 1}</span>
                   {message.subject}
                 </button>
@@ -1684,43 +1713,42 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
     setPortfolioSaved(false);
     persistState({ summaryFields: next, portfolioSaved: false, portfolioObject: { ...portfolioObject, [id]: value, status: 'in_progress' } });
   };
-  const savePortfolio = () => {
+  const completeAndContinue = () => {
     if (!habitReady) return;
     const savedObject = { ...portfolioObject, status: 'completed' };
+    const completedAt = new Date().toISOString();
     setPortfolioSaved(true);
-    onChangeState((prev) => ({
-      ...prev,
-      practiceCheckState: {
-        ...prev.practiceCheckState,
-        my_portfolio: {
-          ...(prev.practiceCheckState?.my_portfolio || {}),
-          module2: savedObject,
-        },
-        module2_screen222_portfolio_checkpoint_lens: {
-          screenId: 'M2-S21',
-          summaryFields,
-          carryForwardHabit,
-          customHabit,
-          portfolioSaved: true,
-          portfolioObject: savedObject,
-          completionStatus: 'completed',
-        },
-      },
-    }));
-  };
-  const completeAndContinue = () => {
-    if (!portfolioSaved) {
-      savePortfolio();
-      return;
-    }
     setScreenComplete(true);
-    markCompleteAndNavigate('module2_screen222_portfolio_checkpoint_lens', 'M2-S21', 'M2-S22', '/module-2/screen-2-22', onChangeState, {
-      summaryFields,
-      carryForwardHabit,
-      customHabit,
-      portfolioSaved: true,
-      portfolioObject: { ...portfolioObject, status: 'completed' },
+    onChangeState((prev) => {
+      const moduleProgress = new Set(prev.screenProgress[MODULE_ID] || []);
+      moduleProgress.add('M2-S21');
+      return {
+        ...prev,
+        currentScreenId: 'M2-S22',
+        screenProgress: {
+          ...prev.screenProgress,
+          [MODULE_ID]: Array.from(moduleProgress),
+        },
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          my_portfolio: {
+            ...(prev.practiceCheckState?.my_portfolio || {}),
+            module2: savedObject,
+          },
+          module2_screen222_portfolio_checkpoint_lens: {
+            screenId: 'M2-S21',
+            summaryFields,
+            carryForwardHabit,
+            customHabit,
+            portfolioSaved: true,
+            portfolioObject: savedObject,
+            completionStatus: 'completed',
+            completedAt,
+          },
+        },
+      };
     });
+    if (typeof window !== 'undefined') window.history.pushState(null, '', '/module-2/screen-2-22');
   };
   return (
     <main className="m2-s21-portfolio-screen" aria-labelledby="m2-s221-title">
@@ -1751,13 +1779,14 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
             <div className="m2-s21-card-head">
               <p className="m2-s21-portfolio-kicker">Portfolio summary card</p>
               <h2>My Everyday Rights Lens Summary</h2>
-              <span>This summary will appear in your My Portfolio page under Module 2.</span>
+              <span>This summary will appear in your My Portfolio page under Module 2. Keep every field generalized and non-identifying.</span>
             </div>
             <div className="m2-s21-field-grid">
               {portfolioFields.map((field) => (
                 <label key={field.id} className="m2-s21-field-card">
                   <span>{field.label}</span>
                   <textarea
+                    aria-label={`${field.label}. Use generalized, non-identifying learning text only.`}
                     value={summaryFields[field.id]}
                     onChange={(event) => updateField(field.id, event.target.value)}
                     rows={2}
@@ -1773,7 +1802,7 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
               <h2>One habit to carry forward</h2>
               <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>Choose one practical HRBA habit to use in your everyday CSO work.</span>
             </div>
-            <div className="m2-s21-habit-options" role="radiogroup" aria-label="Choose one carry-forward habit">
+            <div className="m2-s21-habit-options" role="radiogroup" aria-label="Choose one safe generalized carry-forward habit">
               {habitOptions.map((habit) => (
                 <button
                   key={habit}
@@ -1798,6 +1827,7 @@ export function Module2PortfolioCheckpointLens({ state, onChangeState }: Props) 
                 <span style={{ display: 'block' }}>example only.</span>
               </em>
               <textarea
+                aria-label="Optional custom safe carry-forward habit. Use a broad non-identifying sentence only."
                 value={customHabit}
                 onChange={(event) => {
                   setCustomHabit(event.target.value);

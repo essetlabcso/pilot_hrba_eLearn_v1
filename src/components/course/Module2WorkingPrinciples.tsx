@@ -1,4 +1,5 @@
 import type { LearningState } from '../../state/learningState';
+import type { KeyboardEvent } from 'react';
 
 type Module2WorkingPrinciplesProps = {
   state: LearningState;
@@ -165,6 +166,25 @@ export default function Module2WorkingPrinciples({
     }
   };
 
+  const moveTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const keyMap: Record<string, number> = {
+      ArrowRight: index + 1,
+      ArrowDown: index + 1,
+      ArrowLeft: index - 1,
+      ArrowUp: index - 1,
+      Home: 0,
+      End: principles.length - 1,
+    };
+    const nextValue = keyMap[event.key];
+    if (typeof nextValue !== 'number') return;
+    event.preventDefault();
+    const nextIndex = (nextValue + principles.length) % principles.length;
+    openPrinciple(principles[nextIndex].id);
+    window.setTimeout(() => {
+      document.getElementById(`m2-s07-tab-${principles[nextIndex].id}`)?.focus();
+    }, 0);
+  };
+
   return (
     <main className="m2-s07-screen" aria-labelledby="m2-s07-title">
       <section className="m2-s07-shell">
@@ -212,7 +232,9 @@ export default function Module2WorkingPrinciples({
                     if (event.key === 'Enter' || event.key === ' ' || event.key === 'Space') {
                       event.preventDefault();
                       openPrinciple(principle.id);
+                      return;
                     }
+                    moveTabFocus(event, principles.findIndex((item) => item.id === principle.id));
                   }}
                 >
                   <span aria-hidden="true">{explored ? '✓' : principle.marker}</span>
