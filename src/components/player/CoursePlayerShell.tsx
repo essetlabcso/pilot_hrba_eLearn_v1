@@ -13,6 +13,10 @@ import type { AccessibilityPreferences } from './AccessibilityModal';
 import GlossaryModal from './GlossaryModal';
 import ResourcesModal from './ResourcesModal';
 import ScreenRenderer from '../course/ScreenRenderer';
+import {
+  module2FinalScreenIds,
+  module2FinalScreenRoutes,
+} from '../../data/module2-final/module2FinalScreens';
 
 interface CoursePlayerShellProps {
   state: LearningState;
@@ -31,6 +35,8 @@ const menuDrawerFocusableSelector = [
   '[tabindex]:not([tabindex="-1"])'
 ].join(',');
 
+const module2ScreenRoutes: Record<string, string> = module2FinalScreenRoutes;
+
 function focusHTMLElement(element: Element | null | undefined) {
   if (!(element instanceof HTMLElement)) {
     return false;
@@ -38,6 +44,20 @@ function focusHTMLElement(element: Element | null | undefined) {
 
   element.focus();
   return document.activeElement === element;
+}
+
+function syncRouteToScreen(moduleId: string | null | undefined, screenId: string) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const route = moduleId === 'module_02_everyday_cso_work'
+    ? module2ScreenRoutes[screenId]
+    : undefined;
+
+  if (route && window.location.pathname !== route) {
+    window.history.pushState(null, '', route);
+  }
 }
 
 export default function CoursePlayerShell({
@@ -116,6 +136,7 @@ export default function CoursePlayerShell({
     if (playerIndex > 0) {
       const nextIdx = playerIndex - 1;
       const targetScreen = playerScreens[nextIdx];
+      syncRouteToScreen(state.currentModuleId, targetScreen['Screen/State ID']);
       onChangeState((prev) => ({
         ...prev,
         currentScreenId: targetScreen['Screen/State ID']
@@ -127,6 +148,7 @@ export default function CoursePlayerShell({
     if (playerIndex < totalScreens - 1) {
       const nextIdx = playerIndex + 1;
       const targetScreen = playerScreens[nextIdx];
+      syncRouteToScreen(state.currentModuleId, targetScreen['Screen/State ID']);
       onChangeState((prev) => {
         // Record screen progress
         const currentProgress = prev.screenProgress[prev.currentModuleId || 'module_01_hrba_foundations'] || [];
@@ -496,6 +518,10 @@ export default function CoursePlayerShell({
   // Disable Next button logic based on screen rules
   const isNextDisabled = () => {
     if (state.currentModuleId === 'module_02_everyday_cso_work') {
+      if ((module2FinalScreenIds as readonly string[]).includes(screenId)) {
+        return screenId === 'M2-KC' && !state.m2FinalKnowledgeCheckCompleted;
+      }
+
       if (
         screenId === 'M2-S02' &&
         (

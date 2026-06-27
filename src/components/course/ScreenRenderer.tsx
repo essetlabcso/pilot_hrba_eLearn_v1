@@ -5,6 +5,8 @@ import Module2Renderer from './Module2Renderer';
 import Module3Renderer from './Module3Renderer';
 import Module4Renderer from './Module4Renderer';
 import Module5Renderer from './Module5Renderer';
+import Module2FinalRenderer from './module2-final/Module2FinalRenderer';
+import { module2FinalScreenIds } from '../../data/module2-final/module2FinalScreens';
 import CourseItemCoverScreen from './CourseItemCoverScreen';
 
 interface ScreenRendererProps {
@@ -28,6 +30,20 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
   const isModule2CuratedWideScreen = ['M2-S01A', 'M2-S02', 'M2-S03', 'M2-S04', 'M2-S05', 'M2-S06', 'M2-S07', 'M2-S08', 'M2-S09', 'M2-S10', 'M2-S11', 'M2-S12', 'M2-S13', 'M2-S14', 'M2-S15', 'M2-S16', 'M2-S17', 'M2-S18', 'M2-S19', 'M2-S20', 'M2-S21', 'M2-S22', 'M2-S23'].includes(screenId);
   const isWideOpeningScreen = isModule5BuiltScreen || isModule4BuiltScreen || isModule3BuiltScreen || isModule2CoverScreen || isModule2CuratedWideScreen || screenId === 'M1-PLAYER-00' || screenId === 'M1-S1-01' || screenId === 'M1-S1-02' || screenId === 'M1-S1-03' || screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03';
   const moduleDefinition = getHRBAModuleById(state.currentModuleId);
+  const isModule2FinalScreen =
+    state.currentModuleId === 'module_02_everyday_cso_work' &&
+    (module2FinalScreenIds as readonly string[]).includes(screenId);
+
+  if (state.currentModuleId === 'module_02_everyday_cso_work') {
+    return (
+      <Module2FinalRenderer
+        screenId={isModule2FinalScreen ? screenId : 'M2-00'}
+        state={state}
+        onChangeState={onChangeState}
+        onNext={onNext}
+      />
+    );
+  }
 
   if (isCourseItemCoverScreen && moduleDefinition) {
     return (

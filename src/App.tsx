@@ -6,7 +6,10 @@ import CoursePlayerShell from './components/player/CoursePlayerShell';
 import { HRBA_COURSE_MODULES, getHRBAModuleById } from './data/hrbaCourseModules';
 
 import m1Sequence from './data/module1/module_1_screen_sequence.json';
-import m2Sequence from './data/module2/module_2_screen_sequence.json';
+import {
+  module2FinalRouteTargets,
+  module2FinalSequence,
+} from './data/module2-final/module2FinalScreens';
 
 export default function App() {
   const [state, setState] = useState<LearningState>(() => {
@@ -145,7 +148,13 @@ export default function App() {
       '/final-assessment': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
       '/final-assessment/cover': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
     };
-    const routeTarget = module2RouteTargets[pathname] || null;
+    const isModule2Path = pathname === '/module-2' || pathname.startsWith('/module-2/');
+    const routeTarget = isModule2Path
+      ? module2FinalRouteTargets[pathname] || {
+          moduleId: 'module_02_everyday_cso_work',
+          screenId: 'M2-00',
+        }
+      : module2RouteTargets[pathname] || null;
 
     const canOpenModule = (moduleId: string, completedModules: string[]) => {
       const moduleDefinition = getHRBAModuleById(moduleId);
@@ -289,6 +298,19 @@ export default function App() {
           updatedState.m2EverydayRightsLens = {};
           updatedState.m2QuizAnswers = {};
           updatedState.m2QuizCompleted = false;
+          updatedState.m2FinalPortfolio = {
+            reframedLanguageNote: '',
+            actorRightsHolder: '',
+            actorDutyBearer: '',
+            inclusionAudit: '',
+            inclusionGroupOftenMissing: '',
+            inclusionPracticalStep: '',
+            powerInsight: '',
+            safeFeedbackMethod: '',
+            updatedAt: '',
+          };
+          updatedState.m2FinalKnowledgeCheckAnswers = {};
+          updatedState.m2FinalKnowledgeCheckCompleted = false;
           updatedState.m2SortingState = {};
           updatedState.m2SortingCompleted = false;
           updatedState.m2MatchingState = {};
@@ -514,7 +536,7 @@ export default function App() {
     })),
   ];
   const currentSequence = state.currentModuleId === 'module_02_everyday_cso_work'
-    ? m2Sequence
+    ? module2FinalSequence
     : state.currentModuleId === 'module_01_hrba_foundations'
       ? m1Sequence
     : state.currentModuleId === 'module_03_project_design'

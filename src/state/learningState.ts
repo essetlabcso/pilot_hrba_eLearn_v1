@@ -106,6 +106,19 @@ export interface LearningState {
   m2MatchingState: Record<string, string>;
   m2MatchingCompleted: boolean;
   m2ObjectiveCardsViewed: string[];
+  m2FinalPortfolio: {
+    reframedLanguageNote: string;
+    actorRightsHolder: string;
+    actorDutyBearer: string;
+    inclusionAudit: string;
+    inclusionGroupOftenMissing: string;
+    inclusionPracticalStep: string;
+    powerInsight: string;
+    safeFeedbackMethod: string;
+    updatedAt: string;
+  };
+  m2FinalKnowledgeCheckAnswers: Record<string, string>;
+  m2FinalKnowledgeCheckCompleted: boolean;
   m2HotspotViewed: string[];
   m2FlashcardsViewed: string[];
   m2TabsViewed: string[];
@@ -218,6 +231,19 @@ export const initialLearningState: LearningState = {
   m2MatchingState: {},
   m2MatchingCompleted: false,
   m2ObjectiveCardsViewed: [],
+  m2FinalPortfolio: {
+    reframedLanguageNote: '',
+    actorRightsHolder: '',
+    actorDutyBearer: '',
+    inclusionAudit: '',
+    inclusionGroupOftenMissing: '',
+    inclusionPracticalStep: '',
+    powerInsight: '',
+    safeFeedbackMethod: '',
+    updatedAt: '',
+  },
+  m2FinalKnowledgeCheckAnswers: {},
+  m2FinalKnowledgeCheckCompleted: false,
   m2HotspotViewed: [],
   m2FlashcardsViewed: [],
   m2TabsViewed: [],
@@ -288,9 +314,15 @@ function validateLearningState(candidate: unknown): LearningState | null {
     return null;
   }
 
+  const initialState = cloneInitialLearningState();
+
   return {
-    ...cloneInitialLearningState(),
+    ...initialState,
     ...candidate,
+    m2FinalPortfolio: {
+      ...initialState.m2FinalPortfolio,
+      ...(isObject(candidate.m2FinalPortfolio) ? candidate.m2FinalPortfolio : {}),
+    },
     storageVersion: STORAGE_KEY,
   };
 }
