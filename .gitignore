@@ -32,6 +32,13 @@ tmp-*
 vite-*.out.log
 vite-*.err.log
 
+# QA screenshots and generated review artifacts
+qa-*.png
+*_production*.png
+docs/module-review/**/screenshots/
+docs/module-review/**/current-state/screenshots/
+docs/module-review/**/redesign/qa/screenshots/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
