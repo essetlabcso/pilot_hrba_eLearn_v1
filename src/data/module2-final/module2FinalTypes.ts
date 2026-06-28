@@ -54,6 +54,8 @@ export interface Module2FinalPortfolioState {
   actorRightsHolder: string;
   actorDutyBearer: string;
   inclusionAudit: string;
+  inclusionGroupOftenMissing: string;
+  inclusionPracticalStep: string;
   powerInsight: string;
   safeFeedbackMethod: string;
   updatedAt: string;

@@ -700,6 +700,11 @@
   gap: 0.75rem;
 }
 
+.m2-final-option-item {
+  display: grid;
+  gap: 0.5rem;
+}
+
 .m2-final-option-list button {
   display: grid;
   gap: 0.35rem;
@@ -725,6 +730,203 @@
   color: var(--text-main);
   font-weight: 700;
   line-height: 1.5;
+}
+
+.m2-final-option-feedback {
+  margin: 0;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  background: var(--player-stage-soft);
+  padding: 0.85rem;
+  color: var(--text-main);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.m2-final-audio-block {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  background: var(--player-card-bg);
+  padding: 1rem;
+}
+
+.m2-final-audio-block__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.m2-final-audio-block__header h2,
+.m2-final-audio-block__header p {
+  margin: 0;
+}
+
+.m2-final-audio-block audio {
+  width: 100%;
+  min-height: 44px;
+}
+
+.m2-final-transcript {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--player-stage-soft);
+}
+
+.m2-final-transcript summary {
+  min-height: 44px;
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+.m2-final-transcript summary:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.m2-final-transcript__body {
+  display: grid;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-border);
+  padding: 1rem;
+}
+
+.m2-final-transcript__body p {
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.m2-final-toolkit {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  background: var(--player-card-bg);
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.m2-final-toolkit__header {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.m2-final-toolkit__header h2,
+.m2-final-toolkit__header p {
+  margin: 0;
+}
+
+.m2-final-slide-viewer,
+.m2-final-curated-resources article,
+.m2-final-resource-card {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--player-stage-soft);
+}
+
+.m2-final-slide-viewer {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.m2-final-slide-viewer__topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.m2-final-slide-viewer__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.m2-final-slide-viewer__controls button,
+.m2-final-resource-card a {
+  min-height: 44px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  background: var(--player-card-bg);
+  padding: 0.65rem 0.9rem;
+  color: var(--text-main);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.m2-final-slide-viewer__controls button:focus-visible,
+.m2-final-resource-card a:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.m2-final-slide-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.m2-final-slide-card h3,
+.m2-final-slide-card p {
+  margin: 0;
+}
+
+.m2-final-slide-card ul,
+.m2-final-curated-resources ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.m2-final-slide-card__headline {
+  font-weight: 800;
+}
+
+.m2-final-slide-card aside {
+  border-left: 4px solid var(--color-primary);
+  padding-left: 0.85rem;
+}
+
+.m2-final-resource-downloads {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.m2-final-resource-card,
+.m2-final-curated-resources article {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.m2-final-resource-card h3,
+.m2-final-resource-card p,
+.m2-final-curated-resources h3 {
+  margin: 0;
+}
+
+.m2-final-curated-resources {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.m2-final-hint-box {
+  border: 1px solid var(--color-border-dark);
+  border-left: 5px solid var(--color-primary);
+  border-radius: 8px;
+  background: var(--player-card-bg);
+  padding: 1rem;
+}
+
+.m2-final-hint-box h2 {
+  margin-top: 0;
+}
+
+.m2-final-hint-box ul {
+  margin-bottom: 0;
 }
 
 .m2-final-panel-grid {
@@ -1274,6 +1476,7 @@
   .m2-final-myth-actions,
   .m2-final-flow-step,
   .m2-final-kc-summary,
+  .m2-final-resource-downloads,
   .m2-final-close-hero,
   .m2-final-close-grid {
     grid-template-columns: 1fr;

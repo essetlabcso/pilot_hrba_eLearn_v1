@@ -5,7 +5,14 @@ import {
   MODULE2_FINAL_TITLE,
   module2FinalScreenById,
 } from '../../../data/module2-final/module2FinalScreens';
-import { module2FinalAssets, module2FinalVideoPlaceholder } from '../../../data/module2-final/module2FinalAssets';
+import {
+  module2FinalAssets,
+  module2FinalAudio,
+  module2FinalCuratedResources,
+  module2FinalReferenceSlides,
+  module2FinalResources,
+  module2FinalVideoPlaceholder,
+} from '../../../data/module2-final/module2FinalAssets';
 import { module2FinalKnowledgeCheckQuestions } from '../../../data/module2-final/module2FinalKnowledgeCheck';
 import type { Module2FinalScreenId } from '../../../data/module2-final/module2FinalTypes';
 import './module2Final.css';
@@ -115,6 +122,122 @@ function SaveConfirmation({ show }: { show: boolean }) {
   );
 }
 
+function OptionalAudioBlock({
+  title,
+  src,
+  transcript,
+}: {
+  title: string;
+  src: string;
+  transcript: string[];
+}) {
+  return (
+    <aside className="m2-final-audio-block" aria-label={`Optional audio deep dive: ${title}`}>
+      <div className="m2-final-audio-block__header">
+        <span className="m2-final-tag">Optional audio deep dive</span>
+        <h2>Listen: {title}</h2>
+        <p>Audio support is optional and is not required to continue.</p>
+      </div>
+      <audio controls preload="none" src={src}>
+        Your browser does not support embedded audio. Use the transcript below instead.
+      </audio>
+      <details className="m2-final-transcript">
+        <summary>Expand Transcript</summary>
+        <div className="m2-final-transcript__body">
+          {transcript.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+      </details>
+    </aside>
+  );
+}
+
+function OptionalReferenceToolkit() {
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const activeSlide = module2FinalReferenceSlides[activeSlideIndex];
+  const goToSlide = (direction: -1 | 1) => {
+    setActiveSlideIndex((current) => (
+      current + direction + module2FinalReferenceSlides.length
+    ) % module2FinalReferenceSlides.length);
+  };
+  const quickTools = [
+    module2FinalResources.everydayRightsLensChecklist,
+    module2FinalResources.overlappingBarriersReflectionCard,
+  ];
+  const resourceGroups = [
+    ['Existing Core References', module2FinalCuratedResources.coreReferences],
+    ['Course-Created Quick Tools', module2FinalCuratedResources.courseTools],
+    ['External References to Verify Before Linking', module2FinalCuratedResources.externalReferences],
+  ] as const;
+
+  return (
+    <section className="m2-final-toolkit" aria-labelledby="m2-final-toolkit-title">
+      <header className="m2-final-toolkit__header">
+        <span className="m2-final-tag">Optional resource</span>
+        <h2 id="m2-final-toolkit-title">Optional Reference Toolkit</h2>
+        <p>
+          Use these optional resources to review the Module 2 foundations or keep a safe offline copy.
+          These resources are not required for progress.
+        </p>
+      </header>
+
+      <article className="m2-final-slide-viewer" aria-label="Twelve-slide HRBA foundations reference deck viewer">
+        <div className="m2-final-slide-viewer__topline">
+          <span className="m2-final-tag">Slide {activeSlideIndex + 1} of {module2FinalReferenceSlides.length}</span>
+          <div className="m2-final-slide-viewer__controls" aria-label="Reference slide controls">
+            <button type="button" onClick={() => goToSlide(-1)}>Previous slide</button>
+            <button type="button" onClick={() => goToSlide(1)}>Next slide</button>
+          </div>
+        </div>
+        <div className="m2-final-slide-card">
+          <h3>{activeSlide.title}</h3>
+          <p className="m2-final-slide-card__headline">{activeSlide.headline}</p>
+          <ul>
+            {activeSlide.bullets.map((bullet) => (
+              <li key={bullet}>{bullet}</li>
+            ))}
+          </ul>
+          <aside>
+            <strong>Speaker note</strong>
+            <p>{activeSlide.speakerNote}</p>
+          </aside>
+        </div>
+      </article>
+
+      <section className="m2-final-resource-downloads" aria-label="Downloadable course-created quick tools">
+        {quickTools.map((resource) => (
+          <article key={resource.href} className="m2-final-resource-card">
+            <span className="m2-final-tag">{resource.fileType}</span>
+            <h3>{resource.title}</h3>
+            <p>{resource.description}</p>
+            <a href={resource.href} download>
+              Download {resource.title} ({resource.fileType})
+            </a>
+          </article>
+        ))}
+      </section>
+
+      <section className="m2-final-curated-resources" aria-label="Curated reference list">
+        {resourceGroups.map(([title, items]) => (
+          <article key={title}>
+            <h3>{title}</h3>
+            <ul>
+              {items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+        <SafetyNote>
+          Do not use these tools to record real identities, exact communities, active disputes, or sensitive personal details.
+          Keep notes general and safe.
+        </SafetyNote>
+      </section>
+    </section>
+  );
+}
+
 function CoverScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
   return (
     <main className="m2-final-cover" aria-labelledby="m2-final-cover-title">
@@ -172,7 +295,7 @@ function ObjectivesScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
     'Apply the PANEL principles in simple, practical CSO work.',
     'Recognize participation barriers, power dynamics, and overlapping forms of exclusion.',
     'Describe accountability as information, feedback, response, correction, and learning.',
-    'Use plain-language rights standards safely and constructively.',
+    'Use simple-to-understand rights standards safely and constructively.',
     'Create an Everyday Rights Lens Summary for use in Module 3.',
   ];
 
@@ -315,11 +438,14 @@ function Screen13WaterProjects({
     <Module2FinalShell
       eyebrow="Screen 1.3"
       title="A Tale of Two Water Projects"
-      lead="To understand the difference between a needs-based lens and a rights-holder lens, compare how two different CSOs might respond to a water shortage."
+      lead="To understand the difference between a needs-based lens and a rights-holder lens, let's look at a brief contrast scenario."
     >
       <TextBlock>
         <p><strong>Story setup:</strong> Two neighboring rural communities are facing severe water shortages due to expanding agricultural land.</p>
-        <p>Use the slider below to compare the Needs Lens and the Rights Lens. The handle is keyboard accessible with Left and Right arrow keys.</p>
+        <p>
+          Move the slider, or use the keyboard controls, to compare the Needs Lens and Rights Lens. Then, let’s apply this to your own work.
+          Think of a current or recent project at your CSO. Use the example below as a guide to reframe a passive project description into active rights-based language.
+        </p>
       </TextBlock>
       <section
         className="m2-final-compare"
@@ -355,30 +481,38 @@ function Screen13WaterProjects({
         </label>
         <div className="m2-final-two-col">
           <article>
-            <h2>Needs Lens: Community A</h2>
+            <h2>Left Side - Needs Lens</h2>
             <p>
               The CSO drives a water truck into the village once a week. The community depends on repeated deliveries.
-              The CSO reports success because "1,000 liters of water were delivered to beneficiaries."
+              The CSO reports success to the donor because "1,000 liters of water were delivered to beneficiaries."
             </p>
           </article>
           <article>
-            <h2>Rights Lens: Community B</h2>
+            <h2>Right Side - Rights Lens</h2>
             <p>
-              The CSO helps the community understand their right to safe and reliable water for household use. Together,
-              they safely petition the woreda water desk to be included in the annual extension plan.
+              The CSO helps the community understand their right to safe and reliable water for household use. Together, they constructively request the woreda water desk to be included in the annual extension plan.
+              The CSO reports success because "Rights-holders claimed their entitlements and secured sustainable water access."
             </p>
           </article>
         </div>
       </section>
       <Takeaway>
-        Providing a water truck saves lives today, but building the community's capacity to claim their rights ensures water flows tomorrow. HRBA empowers communities to be active claimants rather than people only receiving repeated support.
+        Building the community's capacity to claim their rights ensures resources flow long after a single delivery.
       </Takeaway>
       <section className="m2-final-portfolio-block">
         <h2>Everyday Rights Lens Summary</h2>
         <p>
+          <strong>Task:</strong>{' '}
           How could you reframe a project description from "beneficiaries receiving aid" into language that highlights
           "rights-holders claiming access or participating"?
         </p>
+        <aside className="m2-final-hint-box" aria-label="Worked example">
+          <h2>Worked example</h2>
+          <ul>
+            <li><strong>Before (Needs Lens):</strong> "We distributed 50 agricultural toolkits to the village."</li>
+            <li><strong>After (Rights-Holder Lens):</strong> "Farmers used the project to access agricultural resources, discuss barriers with the local agriculture desk, and strengthen their ability to claim support."</li>
+          </ul>
+        </aside>
         <label className="m2-final-field">
           <span>Reframed project language</span>
           <textarea
@@ -391,7 +525,7 @@ function Screen13WaterProjects({
           />
         </label>
         <SafetyNote>
-          Do not write the names of real local officials, exact service locations, active community disputes, identifiable complaints, or survivor stories. Keep your reflection focused on general project language.
+          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your reflection focused on general project language.
         </SafetyNote>
         <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
         <SaveConfirmation show={saved} />
@@ -499,7 +633,7 @@ function Screen22DutyBearers({ onNext }: Pick<Module2FinalRendererProps, 'onNext
       label: 'Fulfil',
       fullTitle: 'Obligation to Fulfil: Take Active Steps',
       meaning: 'The state must take proactive steps through budgeting, planning, and building services to ensure rights can be realized.',
-      example: 'The woreda water office actively budgets for and constructs accessible water points in marginalized kebeles that were previously ignored.',
+      example: 'The woreda water office actively budgets for and constructs accessible water points in kebeles where groups facing barriers were previously overlooked.',
     },
   ];
   const [active, setActive] = useState('respect');
@@ -590,21 +724,20 @@ function Screen23Enablers({
   const options = [
     {
       id: 'A',
-      text: "Buy and install the pump using Awra's emergency funds to solve the immediate problem quickly.",
-      feedback: "Let's rethink this. While this provides immediate relief, it substitutes the state. The duty-bearer learns nothing, and when the pump breaks again next year, the community will be stuck waiting for another CSO delivery.",
+      text: 'Hire a contractor to repair the pump immediately to restore urgent water access and provide immediate community relief.',
+      feedback: "Risky if used alone. While this provides urgent relief, it accidentally substitutes the state. The duty-bearer's capacity is not strengthened, and the community may continue to rely on repeated external support.",
     },
     {
       id: 'B',
-      text: 'Send a public accusation without first checking facts or opening dialogue.',
-      feedback: "Let's rethink this. While accountability is important, this woreda official lacks knowledge and resources, not just motivation. A public accusation without dialogue might create hostility and shut down communication entirely.",
+      text: 'Submit a formal, time-bound written request to the Woreda Water Desk holding them accountable to fix the pump, before first checking the repair process, budget constraints, or who needs to be involved.',
+      feedback: 'Risky. A firm formal request without first understanding capacity constraints can create an adversarial relationship and shut down communication.',
     },
     {
       id: 'C',
-      text: 'Share plain-language water standards with the official and help the community organize their evidence to collaboratively request a repair budget.',
-      feedback: 'Strong HRBA response! Awra acts as a powerful bridge. By educating the duty-bearer on their obligations and helping the rights-holders present organized evidence, Awra builds long-term capacity and sustainable accountability.',
+      text: 'Facilitate a constructive working discussion where the community presents safe evidence of the breakage, and offer technical support to help the woreda draft a joint maintenance budget request.',
+      feedback: 'Strong HRBA choice. Awra acts as an enabler by offering planning support to the duty-bearer, building sustainable accountability without creating hostility.',
     },
   ];
-  const feedback = options.find((option) => option.id === selected)?.feedback;
 
   const save = () => {
     updateFinalPortfolio(onChangeState, {
@@ -626,36 +759,50 @@ function Screen23Enablers({
       <TextBlock>
         <h2>Story Segment: The Broken Water Pump</h2>
         <p>
-          A vital water pump breaks in Jiru Amba. The community asks Awra to quickly buy and install a new one. When Tadesse
-          visits the Woreda Water Desk, he finds the official is well-meaning but unaware of national guidelines that prioritize domestic water budgets.
+          A vital water pump breaks in Jiru Amba. The community, fearing waterborne disease, asks Awra’s Director to quickly hire a contractor to fix it.
+          Tadesse, a project officer, knows the Woreda Water Desk has the primary maintenance responsibility, but the desk is chronically under-resourced.
         </p>
         <p>
-          CSOs are enablers and connectors. If a CSO simply replaces the state, the community depends on repeated CSO action,
-          and the duty-bearer never builds capacity or accountability.
+          Help Tadesse decide how Awra should handle the broken water pump. Select the most constructive, HRBA-aligned choice below.
+          After, let’s map the actors in your own work.
         </p>
       </TextBlock>
       <section className="m2-final-option-list" aria-label="Broken water pump response options">
-        {options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            className={selected === option.id ? 'is-selected' : ''}
-            aria-pressed={selected === option.id}
-            onClick={() => setSelected(option.id)}
-          >
-            <strong>Option {option.id}</strong>
-            <span>{option.text}</span>
-          </button>
-        ))}
+        {options.map((option) => {
+          const isSelected = selected === option.id;
+          return (
+            <div key={option.id} className="m2-final-option-item">
+              <button
+                type="button"
+                className={isSelected ? 'is-selected' : ''}
+                aria-pressed={isSelected}
+                onClick={() => setSelected(option.id)}
+              >
+                <strong>Option {option.id}</strong>
+                <span>{option.text}</span>
+              </button>
+              {isSelected && (
+                <p className="m2-final-option-feedback" aria-live="polite">
+                  {option.id === 'C' ? '✓ ' : '! '}
+                  {option.feedback}
+                </p>
+              )}
+            </div>
+          );
+        })}
       </section>
-      <div className="m2-final-feedback" aria-live="polite">
-        {feedback && <p>{selected === 'C' ? '✓ ' : '! '}{feedback}</p>}
-      </div>
       <section className="m2-final-portfolio-block">
         <h2>Actor Map</h2>
         <p>
-          Identify one specific rights-holder group and one specific local duty-bearer connected to an upcoming project or issue.
+          <strong>Task:</strong> Identify one specific rights-holder group and one specific local duty-bearer, who may be under-resourced, relevant to your daily CSO work.
         </p>
+        <aside className="m2-final-hint-box" aria-label="Worked example">
+          <h2>Worked example</h2>
+          <ul>
+            <li><strong>Rights-holder:</strong> Young people with visual impairments.</li>
+            <li><strong>Duty-bearer:</strong> The Kebele Education Office.</li>
+          </ul>
+        </aside>
         <div className="m2-final-field-grid">
           <label className="m2-final-field">
             <span>Rights-holder group</span>
@@ -681,7 +828,7 @@ function Screen23Enablers({
           </label>
         </div>
         <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, or sensitive service details. Use general titles, for example, "Woreda Health Desk" instead of a person's name.
+          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Use general titles, such as "Woreda Health Desk."
         </SafetyNote>
         <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
         <SaveConfirmation show={saved} />
@@ -736,6 +883,7 @@ function Screen31Panel({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
           );
         })}
       </section>
+      <OptionalAudioBlock {...module2FinalAudio.panelPrinciples} />
       {allOpen && (
         <Takeaway>
           The PANEL principles are complementary. You cannot have true empowerment without meaningful participation, and you cannot have accountability if certain groups face discrimination.
@@ -851,7 +999,7 @@ function Screen33Inclusion({
   const items = [
     {
       id: 'workday',
-      text: 'Holding the meeting at 10:00 AM on a workday when most rural women are doing household or agricultural labor.',
+      text: 'Holding the meeting at 10:00 AM on a workday.',
       target: 'token',
     },
     {
@@ -866,7 +1014,7 @@ function Screen33Inclusion({
     },
     {
       id: 'safe-circle',
-      text: 'Offering an optional, safe feedback circle where young women can speak freely, ensuring their ideas are directly carried into the main decision process.',
+      text: 'Offering an additional safe feedback space where young women can speak freely.',
       target: 'meaningful',
     },
   ] as const;
@@ -897,11 +1045,12 @@ function Screen33Inclusion({
     >
       <TextBlock>
         <p>
-          Almaz reviews the last meeting and wants to ensure women, youth, and persons with disabilities in Jiru Amba can safely share insights
-          and actually influence the project's direction.
+          Almaz reviews barriers from the last meeting to ensure that groups facing barriers in Jiru Amba can safely share insights
+          and influence the project's direction.
         </p>
         <p>
-          Meaningful participation requires deliberate choices about location, language, timing, and safety.
+          Help Almaz sort the following facilitation choices. Match or select each action into either the Token Attendance box,
+          meaning Needs work, or the Meaningful Influence box, meaning Strong HRBA.
         </p>
       </TextBlock>
       <section className="m2-final-sorter" aria-label="Token Attendance versus Meaningful Influence sorting task">
@@ -937,7 +1086,13 @@ function Screen33Inclusion({
                 </label>
               </div>
               <p className="m2-final-item-feedback" aria-live="polite">
-                {hasAnswer ? (isCorrect ? '✓ Strong HRBA choice.' : 'X Needs adjustment.') : ''}
+                {hasAnswer
+                  ? isCorrect
+                    ? '✓ Strong HRBA choice.'
+                    : item.id === 'leaders-only'
+                      ? 'X Needs adjustment. Asking leaders to make decisions before the community arrives is token attendance. Meaningful influence requires shared decision-making.'
+                      : 'X Needs adjustment.'
+                  : ''}
               </p>
             </fieldset>
           );
@@ -951,8 +1106,15 @@ function Screen33Inclusion({
       <section className="m2-final-portfolio-block">
         <h2>Inclusion Audit</h2>
         <p>
-          Identify one group in your community that is often missing from planning meetings, and list one practical step your CSO could take to ensure their meaningful inclusion.
+          <strong>Task:</strong> Conduct a quick inclusion reflection. Who is missing from your meetings, and what is one practical step to remove their barrier?
         </p>
+        <aside className="m2-final-hint-box" aria-label="Worked example">
+          <h2>Worked example</h2>
+          <ul>
+            <li><strong>Group missing:</strong> Rural caregivers.</li>
+            <li><strong>Practical step:</strong> Provide childcare at the venue and hold the meeting in the late afternoon.</li>
+          </ul>
+        </aside>
         <div className="m2-final-field-grid">
           <label className="m2-final-field">
             <span>Group Often Missing</span>
@@ -978,7 +1140,7 @@ function Screen33Inclusion({
           </label>
         </div>
         <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, sensitive service details, or politically sensitive examples. Keep your examples focused on general groups and systemic barriers.
+          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your examples focused on general groups and systemic barriers.
         </SafetyNote>
         <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
         <SaveConfirmation show={saved} />
@@ -994,18 +1156,18 @@ function Screen41Power({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
   const items = [
     {
       id: 'rules',
-      text: 'The Woreda Water Desk publishes the official rules for requesting a new water connection.',
+      text: 'The Woreda Agriculture Desk publishes official rules requiring a formal land-holding certificate.',
       target: 'visible',
     },
     {
-      id: 'silent',
-      text: 'A young woman feels unable to raise her hand because social norms and meeting design signal that public planning is for older community members.',
-      target: 'invisible',
+      id: 'tea-houses',
+      text: 'Extension workers only share application deadlines at local tea houses where recognized household representatives gather.',
+      target: 'hidden',
     },
     {
-      id: 'agenda',
-      text: 'Due to weak facilitation, the meeting only covers agenda items established committee leaders want to discuss, leaving no time for displaced youth priorities.',
-      target: 'hidden',
+      id: 'widowed-farmer',
+      text: 'A widowed female farmer does not apply because she believes negotiating resources is "not for someone like her."',
+      target: 'invisible',
     },
   ] as const;
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -1015,22 +1177,25 @@ function Screen41Power({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
     <Module2FinalShell
       eyebrow="Screen 4.1"
       title="Unmasking Power"
-      lead="Even in an accessible room, some voices dominate while others stay quiet. To understand why, we need to unmask power."
+      lead="Even when a support program is formally open to everyone, some people may still be excluded by rules, information channels, or long-standing social expectations."
     >
       <section className="m2-final-scenario-visual">
         <img src={module2FinalAssets.powerMap.src} alt={module2FinalAssets.powerMap.alt} />
       </section>
       <TextBlock>
-        <h2>Story Segment: The Silent Committee Continues</h2>
+        <h2>Story Segment: Agricultural Subsidy Rollout</h2>
         <p>
-          Almaz reflects on the first JAI consultation and wonders why young women and displaced youth did not speak up when
-          the floor was open. She realizes unseen forces were shaping the meeting.
+          The Woreda Agriculture Desk is rolling out a new drought-resistant seed subsidy in Jiru Amba. We must map formal rules,
+          informal networks, and internalized beliefs.
         </p>
         <p>
-          <strong>Visible power</strong> is formal authority, rules, and laws. <strong>Hidden power</strong> controls who gets to the table
-          and what gets discussed. <strong>Invisible power</strong> includes internalized beliefs and social norms that shape whose voice feels safe or important.
+          Help Almaz analyze the power dynamics at play in the Jiru Amba agricultural subsidy rollout. Match or select each scenario card into one of three power types.
         </p>
       </TextBlock>
+      <aside className="m2-final-hint-box" aria-label="Worked example">
+        <h2>Hint</h2>
+        <p>Visible = Formal rules; Hidden = Informal networks/information; Invisible = Long-standing social expectations.</p>
+      </aside>
       <section className="m2-final-sorter m2-final-power-match" aria-label="Visible, hidden, and invisible power matching">
         <div className="m2-final-sorter-zones" aria-hidden="true">
           <div><span className="m2-final-zone-icon">1</span><strong>Visible Power</strong><span>Formal authority and rules</span></div>
@@ -1069,7 +1234,11 @@ function Screen41Power({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
               <p className={['m2-final-item-feedback', hasAnswer ? (isCorrect ? 'is-correct' : 'is-incorrect') : ''].filter(Boolean).join(' ')} aria-live="polite">
                 {hasAnswer
                   ? isCorrect
-                    ? '✓ Matched. Strong HRBA choice! Recognizing these dynamics is the first step to addressing them.'
+                    ? item.target === 'visible'
+                      ? '✓ Strong HRBA choice. This is Visible Power. Formal rules decide who can access the subsidy.'
+                      : item.target === 'hidden'
+                        ? '✓ Strong HRBA choice. This is Hidden Power. Informal networks and information channels shape who hears about the opportunity.'
+                        : '✓ Strong HRBA choice. This is Invisible Power. Long-standing social expectations can cause individuals to censor themselves and believe they cannot claim support.'
                     : 'X Needs adjustment. Consider whether the power is formal, controls the agenda, or is shaped by social norms.'
                   : ''}
               </p>
@@ -1077,9 +1246,10 @@ function Screen41Power({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
           );
         })}
       </section>
+      <OptionalAudioBlock {...module2FinalAudio.unmaskingPower} />
       {allCorrect && (
         <Takeaway>
-          Power itself is not inherently bad; it is a reality in every community. CSOs must understand informal influence and weak facilitation so they can intentionally design meetings that balance the scales and safely amplify unheard voices.
+          Power itself is not inherently bad; it is a reality in every community. CSOs must understand rules, information channels, and long-standing social expectations so they can safely expand access.
         </Takeaway>
       )}
       <footer className="m2-final-footer">
@@ -1094,20 +1264,20 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
   const cards = [
     {
       id: 'line',
-      title: 'Kebele Office Registration Line',
-      barrier: 'Displacement Barrier',
+      title: 'The Registration Line',
+      barrier: 'Displacement / documentation barrier',
       text: 'Because her family is displaced, Chaltu lacks the standard local residency ID required by the clerk to easily process her forms.',
     },
     {
       id: 'desk',
       title: 'The Information Desk',
-      barrier: 'Disability Barrier',
+      barrier: 'Communication access barrier',
       text: 'The registration instructions are only given verbally over a loudspeaker, meaning Chaltu cannot hear the announcements and misses her turn.',
     },
     {
       id: 'waiting',
       title: 'The Waiting Area',
-      barrier: 'Gender & Age Barrier',
+      barrier: 'Gender and age barrier',
       text: 'As a young woman, Chaltu is repeatedly bypassed due to informal social hierarchies that prioritize older, more established community members at the desk.',
     },
   ];
@@ -1117,7 +1287,7 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
     <Module2FinalShell
       eyebrow="Screen 4.2"
       title="Overlapping Barriers"
-      lead="Marginalization is rarely simple. People often face more than one barrier at the same time."
+      lead="When we look at power, we see that exclusion is rarely simple. People often face more than one barrier at the same time."
     >
       <section className="m2-final-scenario-visual">
         <img src={module2FinalAssets.overlappingBarriersCards.src} alt={module2FinalAssets.overlappingBarriersCards.alt} />
@@ -1125,18 +1295,19 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
       <TextBlock>
         <h2>Worked Example: How Barriers Combine</h2>
         <p>
-          Imagine an older man living in a remote village. Distance from the road creates a geographic barrier to healthcare.
-          If he also has a visual impairment, he faces physical and informational barriers too. These barriers overlap.
+          Example: In Chaltu's case, her lack of formal documentation, a displacement barrier; her inability to hear megaphone announcements,
+          a communication access barrier; and being bypassed by others, a social hierarchy barrier, combine to prevent her from completing the registration process.
+          Fixing just one barrier is not enough.
         </p>
       </TextBlock>
       <TextBlock>
         <h2>Meet Chaltu</h2>
         <p>
-          Chaltu is a young woman in Jiru Amba. Her family was internally displaced a few years ago, and she has a severe hearing impairment.
-          She wants to register for JAI livelihood support at the Kebele office, but she is struggling to access the process.
+          Meet Chaltu, a young woman whose family was internally displaced. Chaltu also has a hearing impairment.
+          She wants to register for the new livelihood support program.
         </p>
         <p>
-          An everyday rights lens asks how age, gender, displacement, disability, language, and poverty combine to lock certain individuals out.
+          Explore Chaltu’s experience below to see how overlapping barriers combine to prevent her from completing the registration process.
         </p>
       </TextBlock>
       <section className="m2-final-card-grid" aria-label="Three interactive cards showing the Registration Line, Information Desk, and Waiting Area.">
@@ -1161,9 +1332,10 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
           );
         })}
       </section>
+      <OptionalAudioBlock {...module2FinalAudio.overlappingBarriers} />
       {allOpen && (
         <Takeaway>
-          Chaltu is not just facing one issue; her displacement, disability, gender, and age overlap to create a unique experience of exclusion. An HRBA project must be designed to intentionally remove these combined barriers.
+          Chaltu is not facing one issue only; her displacement, communication access needs, gender, and age overlap. Making one single adjustment is rarely enough.
         </Takeaway>
       )}
       <footer className="m2-final-footer">
@@ -1184,21 +1356,20 @@ function Screen43CustomaryPower({
   const options = [
     {
       id: 'A',
-      text: 'Tell the elders they are no longer allowed to speak first because their tradition violates human rights standards for equal participation.',
-      feedback: 'Needs adjustment. Attacking customary leaders creates instant defensiveness and conflict. HRBA seeks to build understanding, not unnecessary hostility.',
+      text: 'Work only through formal Kebele/woreda administration channels to reduce the risk of exclusion.',
+      feedback: 'Risky if used alone. Relying only on formal systems ignores trusted local influence and can create defensiveness.',
     },
     {
       id: 'B',
-      text: 'Hold a separate meeting without explaining how it will connect to the main decision process.',
-      feedback: 'Needs adjustment. Holding separate, disconnected meetings might seem easier, but it does not integrate marginalized voices into the main decision process and can create misunderstanding.',
+      text: 'Ask respected community leaders and informal gatekeepers to organize the consultation and identify speakers, so the process moves smoothly and avoids local friction.',
+      feedback: 'Risky if used alone. Asking informal gatekeepers to control who participates can make implementation smoother, but it may also create hidden exclusion.',
     },
     {
       id: 'C',
-      text: "Visit the elders beforehand. Respectfully explain that hearing from the young women in a dedicated circle will provide the elders with better information to guide the community's overall development.",
-      feedback: 'Strong HRBA choice! This approach treats the elders with dignity while finding a shared value, community development, to respectfully introduce inclusive practices.',
+      text: 'Respectfully engage formal authorities and informal actors as allies while intentionally creating context-validated, safe channels for less-heard voices to share their input directly.',
+      feedback: 'Strong HRBA choice. This approach respectfully leverages trusted local influence while protecting inclusion through separate safe discussion options.',
     },
   ];
-  const feedback = options.find((option) => option.id === selected)?.feedback;
 
   const save = () => {
     updateFinalPortfolio(onChangeState, { powerInsight: draft });
@@ -1216,43 +1387,51 @@ function Screen43CustomaryPower({
       </section>
       <TextBlock>
         <p>
-          Ato Kebede wants the next JAI consultation to include a safe feedback circle for young women. Customary elders are used
-          to leading these meetings, and changing the rules without consulting them could cause them to withdraw support.
+          Ato Kebede wants the JAI community consultation to be inclusive. However, community leaders and informal gatekeepers are used to guiding
+          how gatherings are organized and whose voices are heard first. Bypassing them may cause disrespect and conflict.
         </p>
         <p>
-          Customary structures and elders are not the enemy. CSOs can act as bridges by engaging leaders through dialogue,
-          finding shared values, and explaining how inclusion benefits the whole community.
-        </p>
-        <p>
-          <strong>General design note:</strong> CSOs may also consider trusted local communication channels or customary communication
-          practices to share rights information and gather feedback, but only when those channels have been context-validated as safe,
-          appropriate, and inclusive for marginalized groups.
+          Help Ato Kebede decide how to approach the community leaders. Select the most constructive, HRBA-aligned strategy below.
         </p>
       </TextBlock>
       <section className="m2-final-option-list" aria-label="Customary power response options">
-        {options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            className={selected === option.id ? 'is-selected' : ''}
-            aria-pressed={selected === option.id}
-            onClick={() => setSelected(option.id)}
-          >
-            <strong>Option {option.id}</strong>
-            <span>{option.text}</span>
-          </button>
-        ))}
+        {options.map((option) => {
+          const isSelected = selected === option.id;
+          return (
+            <div key={option.id} className="m2-final-option-item">
+              <button
+                type="button"
+                className={isSelected ? 'is-selected' : ''}
+                aria-pressed={isSelected}
+                onClick={() => setSelected(option.id)}
+              >
+                <strong>Option {option.id}</strong>
+                <span>{option.text}</span>
+              </button>
+              {isSelected && (
+                <p className="m2-final-option-feedback" aria-live="polite">
+                  {option.id === 'C' ? '✓ ' : '! '}
+                  {option.feedback}
+                </p>
+              )}
+            </div>
+          );
+        })}
       </section>
-      <div className="m2-final-feedback" aria-live="polite">
-        {feedback && <p>{selected === 'C' ? '✓ ' : '! '}{feedback}</p>}
-      </div>
+      <OptionalAudioBlock {...module2FinalAudio.customaryPower} />
       <section className="m2-final-portfolio-block">
         <h2>Power Insight</h2>
         <p>
-          Identify one hidden or invisible power dynamic that affects rights-holders. How might you respectfully navigate it?
+          <strong>Task:</strong> Identify one general community influence channel or trusted communication channel, and note how you might respectfully engage it while ensuring safe inclusion.
         </p>
+        <aside className="m2-final-hint-box" aria-label="Worked example">
+          <h2>Worked example</h2>
+          <p>
+            "Important community decisions are often guided by elder councils. We could respectfully engage them while also hosting a separate safe discussion option that includes female cooperative members."
+          </p>
+        </aside>
         <label className="m2-final-field">
-          <span>Power dynamic and safe approach</span>
+          <span>Community influence channel and safe approach</span>
           <textarea
             value={draft}
             onChange={(event) => {
@@ -1263,7 +1442,7 @@ function Screen43CustomaryPower({
           />
         </label>
         <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, sensitive service details, or politically sensitive examples. Describe the dynamic in general terms.
+          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Describe the community influence channel in general terms.
         </SafetyNote>
         <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
         <SaveConfirmation show={saved} />
@@ -1294,7 +1473,7 @@ function Screen51Accountability({ onNext }: Pick<Module2FinalRendererProps, 'onN
       id: 'safe',
       statement: 'Accountability requires safe channels where people know they will not face retaliation for speaking up.',
       correct: 'true',
-      explanation: 'Safety is essential. If reporting a problem puts a marginalized person at risk, the accountability system has failed.',
+      explanation: 'Safety is essential. If reporting a problem puts a person facing barriers at risk, the accountability system has failed.',
     },
   ];
   const allAnswered = myths.every((myth) => answers[myth.id]);
@@ -1303,15 +1482,14 @@ function Screen51Accountability({ onNext }: Pick<Module2FinalRendererProps, 'onN
     <Module2FinalShell
       eyebrow="Screen 5.1"
       title="What is Accountability?"
-      lead="Accountability is a continuous cycle of responsibility, information, feedback, response, correction, and learning."
+      lead="When a project is running, how do we ensure commitments are kept? This brings us to the A in the PANEL principles: Accountability."
     >
       <TextBlock>
         <p>
-          Ato Kebede suggests putting a locked complaint box outside the kebele office. Almaz agrees it is a start, then asks:
-          Who opens it, how do we protect identity, and how do we ensure the woreda responds?
+          Ato Kebede suggests putting a locked "Complaint Box" outside the kebele office. Almaz asks what happens after the paper drops in.
         </p>
         <p>
-          True accountability includes responsibility, information, safe feedback, response, correction, and learning.
+          Evaluate the statements below. Accountability is a continuous cycle of responsibility, information, feedback, response, correction, and learning.
         </p>
       </TextBlock>
       <section className="m2-final-myth-grid" aria-label="Three true or false accountability myth cards">
@@ -1370,21 +1548,19 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
     <Module2FinalShell
       eyebrow="Screen 5.2"
       title="Constructive Engagement"
-      lead="When things go wrong, emotions can run high. HRBA turns frustration into safe evidence and constructive dialogue."
+      lead="When things go wrong, emotions can run high. How can a CSO help a community claim their rights without creating unsafe hostility?"
     >
       <TextBlock>
-        <h2>Story Segment: The Misallocated Health Supply</h2>
+        <h2>Story Segment: The Misallocated Health Supplies</h2>
         <p>
-          A batch of health supplies for the IDP youth settlement is unexpectedly redirected to a general clinic. The youth want a public confrontation,
-          but Awra knows that reckless confrontation could cause officials to shut down communication.
+          Health supplies meant for youth facing barriers do not reach the intended group as planned. Awra must help.
         </p>
         <p>
-          Accountability does not mean attacking duty-bearers. Officials often manage severe resource constraints and overlapping pressures.
-          HRBA encourages constructive engagement.
+          Accountability is a continuous loop, not a one-time event. Help Awra build a safe accountability pathway by selecting the correct order of the accountability pathway,
+          from identifying the issue to the final correction.
         </p>
         <p>
-          <strong>Duty-bearer collaboration note:</strong> Organizing safe evidence is not about attacking officials. It can equip the health desk with
-          clear, objective information they need to review the gap, explain the administrative error, respond constructively, follow up, or raise the issue internally.
+          <strong>Hint:</strong> Start with Organize Safe Evidence before engaging in Constructive Dialogue.
         </p>
       </TextBlock>
       <section className="m2-final-flow" aria-label="Accountability pathway sequence builder">
@@ -1422,8 +1598,8 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
         {allFilled && (
           <p>
             {allCorrect
-              ? '✓ Strong HRBA choice! By using a simple, low-tech scorecard, Awra helped the youth shift from risky confrontation to safe, compelling dialogue.'
-              : 'X Needs adjustment. Gather safe evidence before opening dialogue, and ensure there is follow-up after the official response.'}
+              ? '✓ Strong HRBA choice.'
+              : 'X Needs adjustment. Remember to gather safe evidence, like using a simple feedback tool, before opening a dialogue, and ensure there is follow-up after the official response.'}
           </p>
         )}
       </div>
@@ -1433,7 +1609,7 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Plain Language Standards" onClick={onNext} />
+        <ContinueButton label="Next: Simple-to-Understand Standards" onClick={onNext} />
       </footer>
     </Module2FinalShell>
   );
@@ -1451,17 +1627,17 @@ function Screen53Standards({
     {
       id: 'A',
       text: 'We are begging you to please help us because we are suffering and have nothing.',
-      feedback: 'Needs adjustment. Block A relies on pity and charity.',
+      feedback: 'Needs adjustment. The overly technical/legalistic or charity-based wording is unnecessarily adversarial or strips agency. Try to find the balance: respectful, firm, and rooted in equitable standards.',
     },
     {
       id: 'B',
-      text: 'We demand you immediately fix this violation using formal legal accusations and complex legal language.',
-      feedback: 'Needs adjustment. Block B is unnecessarily adversarial and dense.',
+      text: 'We formally declare non-compliance with recognized legal standards and request immediate corrective action.',
+      feedback: 'Needs adjustment. The overly technical/legalistic or charity-based wording is unnecessarily adversarial or strips agency. Try to find the balance: respectful, firm, and rooted in equitable standards.',
     },
     {
       id: 'C',
       text: 'We are presenting this scorecard so we can work together to ensure equitable health access for everyone, as recognized in our national standards.',
-      feedback: 'Strong HRBA choice! This statement is respectful, references recognized standards plainly, and invites collaboration rather than hostility.',
+      feedback: 'Strong HRBA choice.',
     },
   ];
   const feedback = blocks.find((block) => block.id === selected)?.feedback;
@@ -1474,19 +1650,25 @@ function Screen53Standards({
   return (
     <Module2FinalShell
       eyebrow="Screen 5.3"
-      title="Plain Language Standards"
-      lead="Legality does not require dense legal language. It means grounding practical requests in recognized rights and responsibilities."
+      title="Simple-to-Understand Standards"
+      lead="When Awra facilitated the meeting, they didn't just ask for a favor. They grounded their request in recognized standards."
     >
       <TextBlock>
         <p>
-          Tadesse tells the youth that they do not need to memorize complex legal language. They can remind the desk of its recognized
-          public duty to provide equitable care.
+          Let’s look at the L in PANEL: Legality. Tadesse helps youth frame their request without needing complex legal language.
         </p>
         <p>
-          Plain-language standards shift the conversation from "Please give us aid" to "We are here to help you fulfill recognized responsibilities."
+          Let’s apply this to your everyday work. Identify one safe, low-tech way your CSO can collect feedback or evidence from the community
+          in your CSO’s regular work or in a future activity, using simple-to-understand standards.
         </p>
       </TextBlock>
-      <section className="m2-final-statement-list" aria-label="Plain-language rights claim options">
+      <aside className="m2-final-hint-box" aria-label="Worked example">
+        <h2>Worked example</h2>
+        <p>
+          "We can set up a secure, verbal feedback hour during our next agricultural training where a trusted facilitator takes anonymous notes."
+        </p>
+      </aside>
+      <section className="m2-final-statement-list" aria-label="Simple-to-understand rights-based wording options">
         {blocks.map((block) => (
           <button
             key={block.id}
@@ -1495,7 +1677,7 @@ function Screen53Standards({
             aria-pressed={selected === block.id}
             onClick={() => setSelected(block.id)}
           >
-            <strong>Text Block {block.id}</strong>
+            <strong>{block.id === 'A' ? 'Charity-based wording' : block.id === 'B' ? 'Overly technical/legalistic wording' : 'Simple-to-understand rights-based wording'}</strong>
             <span>{block.text}</span>
           </button>
         ))}
@@ -1506,7 +1688,7 @@ function Screen53Standards({
       <section className="m2-final-portfolio-block">
         <h2>Safe Feedback Method</h2>
         <p>
-          Identify one safe, low-tech way your CSO can collect feedback or evidence from the community this month.
+          <strong>Task:</strong> What is one safe, low-tech method your CSO can use to gather community feedback or evidence?
         </p>
         <label className="m2-final-field">
           <span>Safe feedback method</span>
@@ -1520,7 +1702,7 @@ function Screen53Standards({
           />
         </label>
         <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, sensitive service details, or politically sensitive examples. Keep your examples focused on the methods of collecting feedback safely.
+          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your examples focused on the methods of collecting feedback safely.
         </SafetyNote>
         <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
         <SaveConfirmation show={saved} />
@@ -1583,6 +1765,7 @@ function Screen61Lens({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
           Strong HRBA mindset! You are now looking at community development not just through temporary services, but through structural equity, dignity, and recognized rights.
         </Takeaway>
       )}
+      <OptionalReferenceToolkit />
       <footer className="m2-final-footer">
         <ContinueButton label="Next: Your Portfolio Snapshot" onClick={onNext} />
       </footer>
@@ -1660,8 +1843,8 @@ function PortfolioSnapshotScreen({ state, onNext }: Pick<Module2FinalRendererPro
     { title: 'Evolving Our Approach', value: portfolio.reframedLanguageNote || blank },
     { title: 'Identifying the Actors', value: [portfolio.actorRightsHolder, portfolio.actorDutyBearer].filter(Boolean).join(' / ') || blank },
     { title: 'Designing for Inclusion', value: inclusionSummary || blank },
-    { title: 'Navigating Power', value: portfolio.powerInsight || blank },
-    { title: 'Constructive Accountability', value: portfolio.safeFeedbackMethod || blank },
+    { title: 'Power insight', value: portfolio.powerInsight || blank },
+    { title: 'Safe feedback method', value: portfolio.safeFeedbackMethod || blank },
   ];
   const offlineCardItems = [
     ['Rights & Actors', 'Who are the specific rights-holders, and who are the primary state duty-bearers responsible for responding?'],
@@ -1695,15 +1878,14 @@ function PortfolioSnapshotScreen({ state, onNext }: Pick<Module2FinalRendererPro
     <Module2FinalShell
       eyebrow="Screen 6.2"
       title="Your Portfolio Snapshot"
-      lead="Review your Everyday Rights Lens Summary before the Module 2 knowledge check."
+      lead="Throughout this module, you have reflected on how HRBA concepts apply to your own organization. Let’s review the insights you’ve gathered."
     >
       <TextBlock>
         <p>
-          Awra's team compiles their reflection notes. They are not drafting a logframe or MEAL indicators yet; they are summarizing
-          their new rights-based perspective so they are prepared for project design in Module 3.
+          Below is your Everyday Rights Lens Summary. It captures your reflections on shifting mindsets, mapping actors, and navigating power.
         </p>
         <p>
-          If a saved section is blank, you may leave it blank or return to the earlier screen to complete it.
+          Review your snapshot below. If a saved section is blank, you may leave it blank or return to the earlier screen to complete it.
         </p>
       </TextBlock>
       <section className="m2-final-snapshot-document" aria-label="Everyday Rights Lens Summary">
@@ -1722,13 +1904,16 @@ function PortfolioSnapshotScreen({ state, onNext }: Pick<Module2FinalRendererPro
       <TextBlock>
         <h2>Print/Save fallback</h2>
         <p>
+          <strong>Task:</strong> Review your compiled notes and use the Print/Save button to keep a safe copy of your reflections for your records.
+        </p>
+        <p>
           If the button does not work on your device, use your browser print function, copy the summary into a private offline document,
           or download the blank checklist below.
         </p>
       </TextBlock>
       <SafetyNote>
         Please review your summary before saving or printing. Ensure you have not included real names, exact locations, active disputes,
-        survivor stories, identifiable complaints, sensitive service details, or politically sensitive examples. Your output should summarize
+        survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Your output should summarize
         your learning safely and generally to protect yourself and your community.
       </SafetyNote>
       <section className="m2-final-offline-card">

@@ -5,6 +5,8 @@ export const module2FinalPortfolioInitialState: Module2FinalPortfolioState = {
   actorRightsHolder: '',
   actorDutyBearer: '',
   inclusionAudit: '',
+  inclusionGroupOftenMissing: '',
+  inclusionPracticalStep: '',
   powerInsight: '',
   safeFeedbackMethod: '',
   updatedAt: '',
@@ -44,4 +46,4 @@ export const module2FinalPortfolioFields = [
 ];
 
 export const module2FinalPortfolioSafetyNote =
-  'Keep portfolio notes safe and general. Do not include names, exact locations, active disputes, survivor stories, identifiable complaints, sensitive service details, or politically sensitive examples.';
+  'Keep portfolio notes safe and general. Do not include names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information.';
