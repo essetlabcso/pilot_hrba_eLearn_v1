@@ -13,7 +13,7 @@ export default function CourseItemCoverScreen({
   onNext,
 }: CourseItemCoverScreenProps) {
   const titleId = `${module.moduleId}-cover-title`;
-  const ctaLabel = `Start ${module.itemLabel}`;
+  const ctaLabel = module.moduleId === 'module_03_project_design' ? 'Start Here' : `Start ${module.itemLabel}`;
 
   return (
     <section className="m2-cover-screen" aria-labelledby={titleId}>
@@ -62,6 +62,8 @@ export default function CourseItemCoverScreen({
             onNext();
             if (module.moduleId === 'module_02_everyday_cso_work' && typeof window !== 'undefined') {
               window.history.pushState(null, '', '/module-2/intro-video');
+            } else if (module.moduleId === 'module_03_project_design' && typeof window !== 'undefined') {
+              window.history.pushState(null, '', '/module-3/screen-3-1');
             } else if (module.moduleId === 'module_04_implementation' && typeof window !== 'undefined') {
               window.history.pushState(null, '', '/module-4/screen-4-1');
             }

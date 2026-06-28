@@ -13,6 +13,7 @@ import type { AccessibilityPreferences } from './AccessibilityModal';
 import GlossaryModal from './GlossaryModal';
 import ResourcesModal from './ResourcesModal';
 import ScreenRenderer from '../course/ScreenRenderer';
+import { module3RevisedScreenRoutes } from '../../data/module3/module3RevisedScreens';
 import {
   module2FinalScreenIds,
   module2FinalScreenRoutes,
@@ -36,6 +37,7 @@ const menuDrawerFocusableSelector = [
 ].join(',');
 
 const module2ScreenRoutes: Record<string, string> = module2FinalScreenRoutes;
+const module3ScreenRoutes: Record<string, string> = module3RevisedScreenRoutes;
 
 function focusHTMLElement(element: Element | null | undefined) {
   if (!(element instanceof HTMLElement)) {
@@ -53,7 +55,9 @@ function syncRouteToScreen(moduleId: string | null | undefined, screenId: string
 
   const route = moduleId === 'module_02_everyday_cso_work'
     ? module2ScreenRoutes[screenId]
-    : undefined;
+    : moduleId === 'module_03_project_design'
+      ? module3ScreenRoutes[screenId]
+      : undefined;
 
   if (route && window.location.pathname !== route) {
     window.history.pushState(null, '', route);
@@ -129,6 +133,19 @@ export default function CoursePlayerShell({
   const currentScreen = playerScreens[playerIndex];
   const screenTitle = currentScreen ? currentScreen['Screen/State Title'] : '';
   const screenId = currentScreen ? currentScreen['Screen/State ID'] : '';
+  const isModule3RevisedFlow = state.currentModuleId === 'module_03_project_design';
+  const module3InstructionalScreens = isModule3RevisedFlow
+    ? playerScreens.filter((item) => String(item['Screen/State ID']).startsWith('M3-R'))
+    : [];
+  const module3InstructionalIndex = module3InstructionalScreens.findIndex(
+    (item) => item['Screen/State ID'] === screenId
+  );
+  const displayedCurrentIndex = isModule3RevisedFlow
+    ? screenId === 'M3-PLAYER-00'
+      ? 0
+      : Math.max(1, module3InstructionalIndex + 1)
+    : playerIndex + 1;
+  const displayedTotalScreens = isModule3RevisedFlow ? module3InstructionalScreens.length : totalScreens;
   const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-S1-07' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03' || screenId === 'M1-S2-04' || screenId === 'M1-S2-05' || screenId === 'M1-S3-01' || screenId === 'M1-S3-02' || screenId === 'M1-PLAYER-COMPLETE';
 
   // Handle Navigation — operates entirely on playerScreens array bounds
@@ -152,7 +169,10 @@ export default function CoursePlayerShell({
       onChangeState((prev) => {
         // Record screen progress
         const currentProgress = prev.screenProgress[prev.currentModuleId || 'module_01_hrba_foundations'] || [];
-        const updatedProgress = currentProgress.includes(screenId)
+        const shouldRecordScreenProgress = !(
+          prev.currentModuleId === 'module_03_project_design' && screenId === 'M3-PLAYER-00'
+        );
+        const updatedProgress = !shouldRecordScreenProgress || currentProgress.includes(screenId)
           ? currentProgress
           : [...currentProgress, screenId];
 
@@ -513,7 +533,11 @@ export default function CoursePlayerShell({
   };
 
   // Progress percentage derived from playerIndex position within playerScreens — fully dynamic
-  const progressPercent = Math.round(((playerIndex + 1) / totalScreens) * 100);
+  const progressPercent = isModule3RevisedFlow
+    ? screenId === 'M3-PLAYER-00'
+      ? 0
+      : Math.round(((module3InstructionalIndex + 1) / Math.max(1, module3InstructionalScreens.length)) * 100)
+    : Math.round(((playerIndex + 1) / totalScreens) * 100);
 
   // Disable Next button logic based on screen rules
   const isNextDisabled = () => {
@@ -545,7 +569,7 @@ export default function CoursePlayerShell({
       return false;
     } else if (state.currentModuleId === 'module_03_project_design') {
       if (
-        screenId.startsWith('M3-S1-') &&
+        screenId.startsWith('M3-R') &&
         !(state.screenProgress.module_03_project_design || []).includes(screenId)
       ) {
         return true;
@@ -657,8 +681,8 @@ export default function CoursePlayerShell({
       <PlayerHeader
         moduleTitle={moduleTitle}
         screenTitle={screenTitle}
-        currentIndex={playerIndex + 1}
-        totalScreens={totalScreens}
+        currentIndex={displayedCurrentIndex}
+        totalScreens={displayedTotalScreens}
         onPrev={handlePrev}
         onNext={handleNext}
         onExit={onExit}
@@ -742,11 +766,18 @@ export default function CoursePlayerShell({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               {playerScreens.map((screen, idx) => {
                 const active = idx === playerIndex;
+                const menuScreenId = String(screen['Screen/State ID']);
+                const menuNumber = isModule3RevisedFlow
+                  ? menuScreenId === 'M3-PLAYER-00'
+                    ? '0'
+                    : String(module3InstructionalScreens.findIndex((item) => item['Screen/State ID'] === menuScreenId) + 1)
+                  : String(idx + 1);
 
                 return (
                   <button
                     key={screen['Screen/State ID']}
                     onClick={() => {
+                      syncRouteToScreen(state.currentModuleId, menuScreenId);
                       focusMainContentAfterMenuSelectionRef.current = true;
                       onChangeState(prev => ({ ...prev, currentScreenId: screen['Screen/State ID'] }));
                       handleToggleModal(null);
@@ -765,7 +796,7 @@ export default function CoursePlayerShell({
                       whiteSpace: 'nowrap'
                     }}
                   >
-                    {idx + 1}. {screen['Screen/State Title']}
+                    {menuNumber}. {screen['Screen/State Title']}
                   </button>
                 );
               })}

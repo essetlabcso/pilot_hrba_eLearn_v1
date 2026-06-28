@@ -3,6 +3,7 @@ import { getHRBAModuleById } from '../../data/hrbaCourseModules';
 import Module1Renderer from './Module1Renderer';
 import Module2Renderer from './Module2Renderer';
 import Module3Renderer from './Module3Renderer';
+import Module3RevisedRenderer from './Module3RevisedRenderer';
 import Module4Renderer from './Module4Renderer';
 import Module5Renderer from './Module5Renderer';
 import Module2FinalRenderer from './module2-final/Module2FinalRenderer';
@@ -24,7 +25,8 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
   const isFinalAssessmentCoverScreen = screenId === 'FINAL-ASSESSMENT-PLAYER-00';
   const isModule1CoverScreen = screenId === 'M1-PLAYER-00';
   const isCourseItemCoverScreen = isModule1CoverScreen || isModule2CoverScreen || isModule3CoverScreen || isModule4CoverScreen || isModule5CoverScreen || isFinalAssessmentCoverScreen;
-  const isModule3BuiltScreen = screenId.startsWith('M3-S1-') || screenId === 'M3-PLAYER-COMPLETE';
+  const isModule3RevisedScreen = screenId.startsWith('M3-R');
+  const isModule3BuiltScreen = isModule3RevisedScreen || screenId.startsWith('M3-S1-') || screenId === 'M3-PLAYER-COMPLETE';
   const isModule4BuiltScreen = screenId.startsWith('M4-S1-');
   const isModule5BuiltScreen = screenId.startsWith('M5-S1-') || screenId === 'M5-PLAYER-COMPLETE';
   const isModule2CuratedWideScreen = ['M2-S01A', 'M2-S02', 'M2-S03', 'M2-S04', 'M2-S05', 'M2-S06', 'M2-S07', 'M2-S08', 'M2-S09', 'M2-S10', 'M2-S11', 'M2-S12', 'M2-S13', 'M2-S14', 'M2-S15', 'M2-S16', 'M2-S17', 'M2-S18', 'M2-S19', 'M2-S20', 'M2-S21', 'M2-S22', 'M2-S23'].includes(screenId);
@@ -56,6 +58,16 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
   }
 
   if (isModule3BuiltScreen) {
+    if (isModule3RevisedScreen) {
+      return (
+        <Module3RevisedRenderer
+          screenId={screenId}
+          state={state}
+          onChangeState={onChangeState}
+        />
+      );
+    }
+
     return (
       <Module3Renderer
         screenId={screenId}

@@ -56,7 +56,7 @@ export const HRBA_COURSE_MODULES: HRBAModuleDefinition[] = [
     thumbnailSrc: '/assets/hrba/modules/module-3.png',
     thumbnailAlt: 'Module 3 cover image showing project design choices shaped by rights-holder analysis, duty-bearer roles, participation, risk, and evidence.',
     startScreenId: 'M3-PLAYER-00',
-    completionScreenId: 'M3-PLAYER-COMPLETE',
+    completionScreenId: 'M3-R22',
     contentAvailable: true,
   },
   {

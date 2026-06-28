@@ -10,6 +10,10 @@ import {
   module2FinalRouteTargets,
   module2FinalSequence,
 } from './data/module2-final/module2FinalScreens';
+import {
+  module3PlayerSequence,
+  module3RevisedRouteTargets,
+} from './data/module3/module3RevisedScreens';
 
 export default function App() {
   const [state, setState] = useState<LearningState>(() => {
@@ -56,44 +60,7 @@ export default function App() {
       '/module-2/screen-2-22': { moduleId: 'module_02_everyday_cso_work', screenId: 'M2-S22' },
       '/module-2/screen-2-23': { moduleId: 'module_02_everyday_cso_work', screenId: 'M2-S23' },
       '/module-2/complete': { moduleId: 'module_02_everyday_cso_work', screenId: 'M2-S23' },
-      '/module-3': { moduleId: 'module_03_project_design', screenId: 'M3-PLAYER-00' },
-      '/module-3/cover': { moduleId: 'module_03_project_design', screenId: 'M3-PLAYER-00' },
-      '/module-3/screen-3-1': { moduleId: 'module_03_project_design', screenId: 'M3-S1-01' },
-      '/module-3/screen-3-2': { moduleId: 'module_03_project_design', screenId: 'M3-S1-02' },
-      '/module-3/screen-3-3': { moduleId: 'module_03_project_design', screenId: 'M3-S1-03' },
-      '/module-3/screen-3-3a': { moduleId: 'module_03_project_design', screenId: 'M3-S1-03A' },
-      '/module-3/screen-3-3b': { moduleId: 'module_03_project_design', screenId: 'M3-S1-03B' },
-      '/module-3/screen-3-3c': { moduleId: 'module_03_project_design', screenId: 'M3-S1-03C' },
-      '/module-3/screen-3-3d': { moduleId: 'module_03_project_design', screenId: 'M3-S1-03D' },
-      '/module-3/screen-3-4': { moduleId: 'module_03_project_design', screenId: 'M3-S1-04' },
-      '/module-3/screen-3-5': { moduleId: 'module_03_project_design', screenId: 'M3-S1-05' },
-      '/module-3/screen-3-6': { moduleId: 'module_03_project_design', screenId: 'M3-S1-06' },
-      '/module-3/screen-3-6a': { moduleId: 'module_03_project_design', screenId: 'M3-S1-06A' },
-      '/module-3/screen-3-6b': { moduleId: 'module_03_project_design', screenId: 'M3-S1-06B' },
-      '/module-3/screen-3-6c': { moduleId: 'module_03_project_design', screenId: 'M3-S1-06C' },
-      '/module-3/screen-3-7': { moduleId: 'module_03_project_design', screenId: 'M3-S1-07' },
-      '/module-3/screen-3-8': { moduleId: 'module_03_project_design', screenId: 'M3-S1-08' },
-      '/module-3/screen-3-9': { moduleId: 'module_03_project_design', screenId: 'M3-S1-09' },
-      '/module-3/screen-3-9a': { moduleId: 'module_03_project_design', screenId: 'M3-S1-09A' },
-      '/module-3/screen-3-10': { moduleId: 'module_03_project_design', screenId: 'M3-S1-10' },
-      '/module-3/screen-3-11': { moduleId: 'module_03_project_design', screenId: 'M3-S1-11' },
-      '/module-3/screen-3-12': { moduleId: 'module_03_project_design', screenId: 'M3-S1-12' },
-      '/module-3/screen-3-13': { moduleId: 'module_03_project_design', screenId: 'M3-S1-13' },
-      '/module-3/screen-3-14': { moduleId: 'module_03_project_design', screenId: 'M3-S1-14' },
-      '/module-3/screen-3-15': { moduleId: 'module_03_project_design', screenId: 'M3-S1-15' },
-      '/module-3/screen-3-16': { moduleId: 'module_03_project_design', screenId: 'M3-S1-16' },
-      '/module-3/screen-3-16a': { moduleId: 'module_03_project_design', screenId: 'M3-S1-16A' },
-      '/module-3/screen-3-16b': { moduleId: 'module_03_project_design', screenId: 'M3-S1-16B' },
-      '/module-3/screen-3-17': { moduleId: 'module_03_project_design', screenId: 'M3-S1-17' },
-      '/module-3/screen-3-18': { moduleId: 'module_03_project_design', screenId: 'M3-S1-18' },
-      '/module-3/screen-3-19': { moduleId: 'module_03_project_design', screenId: 'M3-S1-19' },
-      '/module-3/screen-3-20': { moduleId: 'module_03_project_design', screenId: 'M3-S1-20' },
-      '/module-3/screen-3-21': { moduleId: 'module_03_project_design', screenId: 'M3-S1-21' },
-      '/module-3/screen-3-22': { moduleId: 'module_03_project_design', screenId: 'M3-S1-22' },
-      '/module-3/screen-3-23': { moduleId: 'module_03_project_design', screenId: 'M3-S1-23' },
-      '/module-3/screen-3-24': { moduleId: 'module_03_project_design', screenId: 'M3-S1-24' },
-      '/module-3/screen-3-25': { moduleId: 'module_03_project_design', screenId: 'M3-S1-25' },
-      '/module-3/complete': { moduleId: 'module_03_project_design', screenId: 'M3-PLAYER-COMPLETE' },
+      ...module3RevisedRouteTargets,
       '/module-4': { moduleId: 'module_04_implementation', screenId: 'M4-PLAYER-00' },
       '/module-4/cover': { moduleId: 'module_04_implementation', screenId: 'M4-PLAYER-00' },
       '/module-4/screen-4-1': { moduleId: 'module_04_implementation', screenId: 'M4-S1-01' },
@@ -435,57 +402,6 @@ export default function App() {
   };
 
   const currentModule = getHRBAModuleById(state.currentModuleId) || HRBA_COURSE_MODULES[0];
-  const module3Sequence = [
-    {
-      Layer: 'Layer 2 Player',
-      'Screen/State ID': 'M3-PLAYER-00',
-      'Screen/State Title': 'Module 3 Cover Screen',
-      'Learning/Purpose': 'Launch Module 3: Applying HRBA in Project Design.',
-    },
-    ...[
-      ['M3-S1-01', 'Module 3 Intro Video: Designing Projects Through a Rights Lens', 'Watch a short introduction to the Module 3 project-design journey.'],
-      ['M3-S1-02', 'Learning Objectives', 'Review what you will be able to do as you apply HRBA in project design.'],
-      ['M3-S1-03', 'The Proposal Looks Strong — What Is Missing?', 'Review a fictional project proposal that looks organized but misses deeper HRBA design questions.'],
-      ['M3-S1-04', 'Build the HRBA Design Snapshot', 'Build a compact design snapshot that connects people, barriers, responsibilities, participation, risks, and the problem statement.'],
-      ['M3-S1-05', 'Design for Rights-Holders, Actors, and Responsibilities', 'Map rights-holders, barriers, actors, responsibilities, and the CSO role for a stronger project design.'],
-      ['M3-S1-06', 'Find the Root Cause, Capacity Gap, and Participation Risk', 'Diagnose symptoms, root causes, capacity gaps, and participation risks before activities are finalized.'],
-      ['M3-S1-06A', 'Strengthen the Objective and Activity Package', 'Convert a weak activity-based objective into a stronger HRBA objective and coherent activity package.'],
-      ['M3-S1-06B', 'Practice: Identify Gendered Barriers and Design Implications', 'Connect gendered barriers to practical design implications.'],
-      ['M3-S1-06C', 'Disability-Inclusive Project Design', 'Build accessibility and reasonable accommodation into project design.'],
-      ['M3-S1-03A', 'HRBA Design Studio: What Must Be Analyzed Before Design?', 'Use a seven-step design studio map to see what analysis should come before activities.'],
-      ['M3-S1-03B', 'Practice: Build a Context Snapshot', 'Build a short context snapshot for the fictional project using guided selections.'],
-      ['M3-S1-03C', 'Policy Alignment Without Copy-Paste', 'Connect project design choices to rights, SDGs/LNOB, policy priorities, donor priorities, gender, and disability inclusion.'],
-      ['M3-S1-03D', 'Practice: Complete a Policy and Standards Alignment Scan', 'Complete a simple alignment scan and turn commitments into practical design choices.'],
-      ['M3-S1-07', 'Design Around Responsibilities and Influence', 'Clarify actors, responsibilities, influence, and capacity gaps.'],
-      ['M3-S1-08', 'Practice: Build a Design Actor Map', 'Classify rights-holders, duty-bearers, influencing actors, supporting actors, and CSO roles.'],
-      ['M3-S1-09', 'Symptom, Root Cause, or Capacity Gap?', 'Separate symptoms, root causes, capacity gaps, discrimination, and structural barriers.'],
-      ['M3-S1-09A', 'Lessons Learnt and Synergies Scan', 'Check what already exists before adding new activities.'],
-      ['M3-S1-10', 'Practice: Build a Root-Cause and Capacity-Gap Tree', 'Organize diagnosis notes into a practical design tree.'],
-      ['M3-S1-11', 'Participation by Design', 'Design meaningful participation into the project.'],
-      ['M3-S1-12', 'Practice: Design Meaningful Participation', 'Repair a weak participation plan.'],
-      ['M3-S1-13', 'From Activity-Based Objective to HRBA Objective', 'Move from an activity-based objective to a rights-aware objective.'],
-      ['M3-S1-14', 'Practice: Strengthen the Objective', 'Practice repairing weak objectives.'],
-      ['M3-S1-15', 'Design Activities That Match the Rights Problem', 'Match activities to analyzed barriers, responsibilities, risks, and evidence needs.'],
-      ['M3-S1-16', 'Practice: Build a Coherent Activity Package', 'Build an activity package from the analysis.'],
-      ['M3-S1-16A', 'From Analysis to Intervention Logic', 'Connect analysis, objective, outputs, activities, risks, assumptions, and evidence.'],
-      ['M3-S1-16B', 'Practice: Build a Simple HRBA Intervention Logic', 'Build a simple HRBA intervention logic from the fictional case.'],
-      ['M3-S1-17', 'HRBA Do-No-Harm and Design Risk Lab', 'Test project design risks before implementation.'],
-      ['M3-S1-18', 'Practice: Build a Risk and Mitigation Plan', 'Turn risk thinking into a practical mitigation and adaptation plan.'],
-      ['M3-S1-19', 'Evidence Choices During Design', 'Choose minimum useful and safe evidence for design decisions.'],
-      ['M3-S1-20', 'Module Challenge: Repair a Weak HRBA Project Design', 'Apply the full design studio sequence to repair a weak project concept.'],
-      ['M3-S1-21', 'Module 3 Knowledge Check', 'Choose the strongest HRBA project design response across six scenarios.'],
-      ['M3-S1-22', 'Portfolio Checkpoint: My HRBA Project Design Improvement Snapshot', 'Save a safe project design improvement snapshot to My Portfolio.'],
-      ['M3-S1-23', 'Module 3 Resource Pack: HRBA Project Design Toolkit', 'Review the practical HRBA project design toolkit.'],
-      ['M3-S1-24', 'Peer Exchange: Using HRBA Design Tools Together', 'Use HRBA design tools safely with peers and teams.'],
-      ['M3-S1-25', 'Module 3 Completion: Ready to Move from Design to Implementation', 'Complete Module 3 and prepare for implementation thinking.'],
-      ['M3-PLAYER-COMPLETE', 'Module 3 Complete', 'Record Module 3 completion and return to the course page.'],
-    ].map(([id, title, purpose]) => ({
-      Layer: 'Layer 2 Player',
-      'Screen/State ID': id,
-      'Screen/State Title': title,
-      'Learning/Purpose': purpose,
-    })),
-  ];
   const module5Sequence = [
     {
       Layer: 'Layer 2 Player',
@@ -540,7 +456,7 @@ export default function App() {
     : state.currentModuleId === 'module_01_hrba_foundations'
       ? m1Sequence
     : state.currentModuleId === 'module_03_project_design'
-        ? module3Sequence
+        ? module3PlayerSequence
     : state.currentModuleId === 'module_04_implementation'
         ? [
             {
