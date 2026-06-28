@@ -90,23 +90,14 @@ export default function CoursePlayerShell({
   );
   const module1ActiveScreenIds = [
     'M1-PLAYER-00',
-    'M1-S1-02',
     'M1-S1-01',
+    'M1-S1-02',
     'M1-S1-03',
     'M1-S1-04',
     'M1-S1-05',
     'M1-S1-06',
     'M1-S1-06A',
     'M1-S1-06B',
-    'M1-S1-07',
-    'M1-S1-08',
-    'M1-S2-01',
-    'M1-S2-02',
-    'M1-S2-03',
-    'M1-S2-04',
-    'M1-S2-05',
-    'M1-S3-01',
-    'M1-S3-02',
     'M1-PLAYER-COMPLETE'
   ];
   const module1ScreenById = new Map(
@@ -146,7 +137,7 @@ export default function CoursePlayerShell({
       : Math.max(1, module3InstructionalIndex + 1)
     : playerIndex + 1;
   const displayedTotalScreens = isModule3RevisedFlow ? module3InstructionalScreens.length : totalScreens;
-  const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-S1-07' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03' || screenId === 'M1-S2-04' || screenId === 'M1-S2-05' || screenId === 'M1-S3-01' || screenId === 'M1-S3-02' || screenId === 'M1-PLAYER-COMPLETE';
+  const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-PLAYER-COMPLETE';
 
   // Handle Navigation — operates entirely on playerScreens array bounds
   const handlePrev = () => {
@@ -427,9 +418,19 @@ export default function CoursePlayerShell({
       });
     } else {
       if (screenId === 'M1-S1-06A') {
-        onChangeState((prev) => ({ ...prev, m1EverydayWorkExplored: [] }));
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1StartingConfidence;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
       } else if (screenId === 'M1-S1-06B') {
-        onChangeState((prev) => ({ ...prev, m1InclusionPerspectivesExplored: [] }));
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1LearningPriority;
+          delete nextPracticeCheckState.module1PriorityCommitment;
+          delete nextPracticeCheckState.module1PriorityCommitmentSaved;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
       } else if (screenId === 'M1-S1-07') {
         onChangeState((prev) => ({ ...prev, m1ConnectedRightsExplored: [] }));
       } else if (screenId === 'M1-S1-08') {
@@ -496,23 +497,43 @@ export default function CoursePlayerShell({
             }
           };
         });
+      } else if (screenId === 'M1-S1-01') {
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1WelcomeCourseReason;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
+      } else if (screenId === 'M1-S1-02') {
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1AboutCourseViewedCards;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
       } else if (screenId === 'M1-S1-03') {
-        onChangeState((prev) => ({ ...prev, m1JourneyActiveStep: 1, m1JourneyVisitedSteps: [] }));
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1HrbaLensFirstQuestion;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
+      } else if (screenId === 'M1-S1-04') {
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1LearningJourneyViewedCards;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
       } else if (screenId === 'M1-S1-05') {
-        onChangeState((prev) => ({
-          ...prev,
-          m1WaterPointVisitedClues: []
-        }));
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1LearningCycleViewedSteps;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
       } else if (screenId === 'M1-S1-06') {
-        onChangeState((prev) => ({
-          ...prev,
-          m1WaterPointSelectedOption: '',
-          m1WaterPointSummaryViewed: false,
-          scenarioCompleted: {
-            ...prev.scenarioCompleted,
-            'M1-S1-06': false
-          }
-        }));
+        onChangeState((prev) => {
+          const nextPracticeCheckState = { ...prev.practiceCheckState };
+          delete nextPracticeCheckState.module1FirstSafePortfolioFocus;
+          delete nextPracticeCheckState.module1FirstSafePortfolioNote;
+          return { ...prev, practiceCheckState: nextPracticeCheckState };
+        });
       } else if (screenId === 'M1-S4-02') {
         onChangeState((prev) => ({ ...prev, sortingState: {}, sortingCompleted: false }));
       } else if (screenId === 'M1-S5-03') {
@@ -592,26 +613,45 @@ export default function CoursePlayerShell({
       }
       return false;
     } else {
-      if (screenId === 'M1-S1-03' && state.m1JourneyVisitedSteps.length < 6) {
-        return true; // all six journey steps must be explored
+      const practiceCheckState = state.practiceCheckState || {};
+      const aboutCardsViewed = Array.isArray(practiceCheckState.module1AboutCourseViewedCards)
+        ? practiceCheckState.module1AboutCourseViewedCards
+        : [];
+      const journeyCardsViewed = Array.isArray(practiceCheckState.module1LearningJourneyViewedCards)
+        ? practiceCheckState.module1LearningJourneyViewedCards
+        : [];
+      const learningCycleViewed = Array.isArray(practiceCheckState.module1LearningCycleViewedSteps)
+        ? practiceCheckState.module1LearningCycleViewedSteps
+        : [];
+      const portfolioFocus = Array.isArray(practiceCheckState.module1FirstSafePortfolioFocus)
+        ? practiceCheckState.module1FirstSafePortfolioFocus
+        : [];
+      const portfolioNote = String(practiceCheckState.module1FirstSafePortfolioNote || '').trim();
+      const startingConfidence = practiceCheckState.module1StartingConfidence || {};
+
+      if (screenId === 'M1-S1-01' && !practiceCheckState.module1WelcomeCourseReason) {
+        return true; // one relevance point must be selected
       }
-      if (
-        screenId === 'M1-S1-05' &&
-        state.m1WaterPointVisitedClues.length < 4
-      ) {
-        return true; // explore all four water point clues before advancing
+      if (screenId === 'M1-S1-02' && aboutCardsViewed.length < 4) {
+        return true; // all four about-course cards must be viewed
       }
-      if (
-        screenId === 'M1-S1-06' &&
-        (!state.m1WaterPointSelectedOption || !state.m1WaterPointSummaryViewed)
-      ) {
-        return true; // choose an answer and review feedback before advancing
+      if (screenId === 'M1-S1-03' && !practiceCheckState.module1HrbaLensFirstQuestion) {
+        return true; // one HRBA lens question must be selected
       }
-      if (screenId === 'M1-S1-06A' && state.m1EverydayWorkExplored.length < 6) {
-        return true; // explore all six everyday work areas before advancing
+      if (screenId === 'M1-S1-04' && journeyCardsViewed.length < 5) {
+        return true; // all five module roadmap cards must be viewed
       }
-      if (screenId === 'M1-S1-06B' && state.m1InclusionPerspectivesExplored.length < 6) {
-        return true; // explore all six inclusion perspectives before advancing
+      if (screenId === 'M1-S1-05' && learningCycleViewed.length < 6) {
+        return true; // all six learning-cycle steps must be viewed
+      }
+      if (screenId === 'M1-S1-06' && portfolioFocus.length === 0 && !portfolioNote) {
+        return true; // safe portfolio focus or note required
+      }
+      if (screenId === 'M1-S1-06A' && !startingConfidence.submitted) {
+        return true; // self-assessment must be submitted
+      }
+      if (screenId === 'M1-S1-06B' && !practiceCheckState.module1PriorityCommitmentSaved) {
+        return true; // commitment must be saved to portfolio
       }
       if (screenId === 'M1-S1-07' && state.m1ConnectedRightsExplored.length < 6) {
         return true; // explore all six connected rights before advancing

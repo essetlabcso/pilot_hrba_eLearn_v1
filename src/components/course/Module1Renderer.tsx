@@ -291,131 +291,1853 @@ function Module1OpeningScreen({ onNext }: { onNext: () => void }) {
   );
 }
 
-function Module1WhyMattersScreen({ onNext }: { onNext: () => void }) {
-  const valueCards = [
-    {
-      title: 'Exclusion can hide inside success.',
-      text: 'A project may reach its target and still miss people who face barriers.',
-      icon: module1RefinementAssets.m1S03.exclusion,
-    },
-    {
-      title: 'Responsibility matters.',
-      text: 'HRBA helps us ask who has duties, who has influence, and what role a CSO can safely play.',
-      icon: module1RefinementAssets.m1S03.responsibility,
-    },
-    {
-      title: 'Participation is more than attendance.',
-      text: 'People should have meaningful ways to understand, speak, influence, and receive a response.',
-      icon: module1RefinementAssets.m1S03.participation,
-    },
-    {
-      title: 'Feedback should lead to action.',
-      text: 'A complaint box or meeting is not enough if people never hear what changed.',
-      icon: module1RefinementAssets.m1S03.feedbackAction,
-    }
+function Module1WelcomeCourseScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const relevanceOptions = [
+    'We want to improve participation and inclusion.',
+    'We want to strengthen advocacy and accountability.',
+    'We want to design stronger projects.',
+    'We want to use evidence and feedback better.',
+    'We want to connect HRBA more clearly to our daily work.'
   ];
+  const selectedReason = String(state.practiceCheckState.module1WelcomeCourseReason || '');
+  const transcript = [
+    'Welcome to Starting the HRBA Learning Journey.',
+    'This course is part of the wider CSF Plus capacity development support for local and grassroots CSOs in Ethiopia.',
+    'Many local CSOs already work close to communities. You know the real challenges people face. You work with limited time, limited resources, and many expectations from communities, partners, and donors.',
+    'This course is designed to support that work.',
+    'It will help you use the Human Rights-Based Approach (HRBA) in practical ways. HRBA helps CSOs ask better questions: Who is affected? Who may be left out? Who should be heard? Who has responsibility? What should change after people participate?',
+    'HRBA is not about creating conflict. It helps CSOs work constructively, support people\'s voice, engage duty-bearers, and strengthen accountability in safe and practical ways.',
+    'Across this course, you will use examples, simple tools, portfolio notes, and peer learning to connect HRBA to your own CSO work.',
+    'This first module will help you understand the course, the learning journey, the portfolio, and your own learning priority.'
+  ];
+  const shellStyle: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.25rem',
+    padding: '1.4rem 1.25rem 7rem',
+    maxWidth: '960px',
+    margin: '0 auto'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 16px 34px rgba(15, 23, 42, 0.10)',
+    color: '#10233f',
+    padding: '1.1rem'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.6rem)',
+    lineHeight: 1.04,
+    margin: '0'
+  };
+  const transcriptStyle: CSSProperties = {
+    ...panelStyle,
+    marginTop: '1rem'
+  };
+  const handleSelectReason = (reason: string) => {
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: {
+        ...prev.practiceCheckState,
+        module1WelcomeCourseReason: reason
+      }
+    }));
+  };
 
   return (
-    <section className="m1-b2-screen m1-b2-value" aria-labelledby="m1-why-title">
-      <header className="m1-b2-compact-header">
-        <div className="m1-b2-eyebrow">Module 1</div>
-        <h1 id="m1-why-title">Why This Module Matters</h1>
-        <p>
-          Many CSO activities look successful on paper. A meeting is held. A water point is built. A training is completed. A report is submitted.
-        </p>
-        <p>But HRBA asks a deeper question:</p>
-      </header>
+    <section className="m1-b2-screen" aria-labelledby="m1-welcome-course-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', minWidth: 0 }}>
+          <div className="m1-next-kicker">MODULE 1 | INTRO VIDEO</div>
+          <h1 id="m1-welcome-course-title" style={titleStyle}>Why This Course, Why Now?</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.15rem', margin: 0 }}>
+            A short welcome to the HRBA learning journey
+          </p>
 
-      <div className="m1-b2-question-panel">
-        Did the work respect people’s dignity, voice, inclusion, participation, and accountability?
-      </div>
-
-      <ul className="m1-b2-value-grid" aria-label="Reasons this module matters">
-        {valueCards.map((card) => (
-          <li key={card.title} className="m1-b2-value-card">
-            <img
-              src={iconSource(card.icon)}
-              alt={card.icon.alt}
-              loading="eager"
-              onError={(event) => useSvgFallback(event, card.icon)}
-            />
-            <div>
-              <strong>{card.title}</strong>
-              <p>{card.text}</p>
+          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+            <div style={{ position: 'relative' }}>
+              <img
+                src="/assets/hrba/modules/module-1/m1-s01-why-this-course-video-poster.png"
+                alt="A diverse local CSO learning group reviews a course journey board showing participation, planning, accountability, and community connection."
+                loading="eager"
+                style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+              />
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'grid',
+                  placeItems: 'center',
+                  borderRadius: '6px',
+                  background: 'linear-gradient(180deg, rgba(7, 28, 51, 0.08), rgba(7, 28, 51, 0.34))'
+                }}
+              >
+                <span
+                  style={{
+                    display: 'block',
+                    width: '5.25rem',
+                    height: '5.25rem',
+                    borderRadius: '999px',
+                    background: 'rgba(255, 255, 255, 0.94)',
+                    boxShadow: '0 18px 38px rgba(7, 28, 51, 0.24)',
+                    position: 'relative'
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: '2.12rem',
+                      top: '1.58rem',
+                      width: 0,
+                      height: 0,
+                      borderTop: '1rem solid transparent',
+                      borderBottom: '1rem solid transparent',
+                      borderLeft: '1.45rem solid #0b2a55'
+                    }}
+                  />
+                </span>
+              </div>
             </div>
-          </li>
-        ))}
-      </ul>
+            <figcaption style={{ color: '#42566d', fontSize: '0.9rem', marginTop: '0.55rem' }}>
+              Intro video poster. Transcript is available below.
+            </figcaption>
+          </figure>
 
-      <footer className="m1-b2-footer">
-        <p>This module helps you begin seeing those issues earlier.</p>
-        <button className="m1-b2-primary" type="button" onClick={onNext}>
-          Continue
-        </button>
-      </footer>
+          <section aria-labelledby="m1-welcome-transcript-title" style={transcriptStyle}>
+            <strong id="m1-welcome-transcript-title" style={{ display: 'block', color: '#0b2a55', fontSize: '1.1rem', marginBottom: '0.6rem' }}>
+              Transcript
+            </strong>
+            {transcript.map((paragraph) => (
+              <p key={paragraph} style={{ color: '#26394f', lineHeight: 1.55, margin: '0 0 0.75rem' }}>{paragraph}</p>
+            ))}
+          </section>
+
+          <section aria-labelledby="m1-welcome-relevance-title" style={panelStyle}>
+            <strong id="m1-welcome-relevance-title" style={{ display: 'block', color: '#0b2a55', fontSize: '1.1rem', marginBottom: '0.65rem' }}>
+              Which reason feels most relevant to your CSO work now?
+            </strong>
+            <div style={{ display: 'grid', gap: '0.55rem' }}>
+              {relevanceOptions.map((option) => {
+                const selected = selectedReason === option;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    className={`m1-next-choice ${selected ? 'is-selected' : ''}`}
+                    onClick={() => handleSelectReason(option)}
+                    aria-pressed={selected}
+                    style={{
+                      border: selected ? '2px solid #105c5b' : '1px solid rgba(16, 92, 91, 0.22)',
+                      borderRadius: '8px',
+                      background: selected ? '#e4f4ee' : '#ffffff',
+                      color: '#10233f',
+                      padding: '0.75rem 0.85rem',
+                      textAlign: 'left',
+                      fontWeight: selected ? 700 : 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedReason && (
+              <p style={{ color: '#105c5b', fontWeight: 700, margin: '0.85rem 0 0' }}>
+                Good starting point. Keep this in mind as you move through the course. You will return to this priority in your portfolio.
+              </p>
+            )}
+          </section>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.35rem' }}>
+            <button type="button" className="m1-next-continue" onClick={onNext} disabled={!selectedReason}>
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
 
-function Module1ObjectivesScreen({ onNext }: { onNext: () => void }) {
-  const outcomes = [
+function Module1AboutCourseScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const cards = [
     {
-      text: 'Explain HRBA in simple words.',
-      icon: module1RefinementAssets.m1S02.explainHrba,
+      id: 'what-course-is',
+      title: 'What This Course Is',
+      text: [
+        'This is a practical HRBA e-learning course for local and grassroots CSOs.',
+        'It helps you connect HRBA to project design, implementation, MEAL, advocacy, inclusion, participation, and accountability.'
+      ]
     },
     {
-      text: 'Recognize people as rights-holders, not only beneficiaries.',
-      icon: module1RefinementAssets.m1S02.rightsHolder,
+      id: 'why-course-matters',
+      title: 'Why This Course Matters',
+      text: [
+        'Local CSOs are close to communities and understand many real problems.',
+        'HRBA helps CSOs look more carefully at who is affected, who is left out, who should participate, who has responsibility, and how decisions should be followed up.'
+      ]
     },
     {
-      text: 'Notice who may be invisible or left at the edge.',
-      icon: module1RefinementAssets.m1S02.noticeExclusion,
+      id: 'who-course-is-for',
+      title: 'Who This Course Is For',
+      text: [
+        'This course is for CSO leaders, project staff, MEAL staff, advocacy staff, gender and inclusion focal points, facilitators, grassroots CSO representatives, and local CSO networks.',
+        'It is designed for people who want to strengthen their day-to-day CSO work.'
+      ]
     },
     {
-      text: 'Ask better rights-based questions before acting.',
-      icon: module1RefinementAssets.m1S02.askQuestions,
-    },
-    {
-      text: 'Reflect safely without exposing real people or cases.',
-      icon: module1RefinementAssets.m1S02.safeReflection,
-    },
-    {
-      text: 'Choose one action commitment to carry forward.',
-      icon: module1RefinementAssets.m1S02.actionCommitment,
+      id: 'how-you-will-learn',
+      title: 'How You Will Learn',
+      text: [
+        'You will work with short examples, simple choices, reflection prompts, feedback, portfolio notes, and peer exchange.',
+        'The course uses a practice-based learning approach so you can connect HRBA to real CSO work.'
+      ]
     }
   ];
+  const viewedCards = Array.isArray(state.practiceCheckState.module1AboutCourseViewedCards)
+    ? state.practiceCheckState.module1AboutCourseViewedCards as string[]
+    : [];
+  const viewedSet = new Set(viewedCards);
+  const isComplete = cards.every((card) => viewedSet.has(card.id));
+  const aboutShellStyle: CSSProperties = {
+    padding: '1.25rem 1.25rem 7rem',
+    maxWidth: '1180px',
+    margin: '0 auto'
+  };
+  const aboutPanelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    color: '#10233f'
+  };
+  const cardGridStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+    gap: '1rem',
+    marginTop: '1rem'
+  };
+
+  const viewCard = (cardId: string) => {
+    onChangeState((prev) => {
+      const previousViewed = Array.isArray(prev.practiceCheckState.module1AboutCourseViewedCards)
+        ? prev.practiceCheckState.module1AboutCourseViewedCards as string[]
+        : [];
+      const nextViewed = previousViewed.includes(cardId)
+        ? previousViewed
+        : [...previousViewed, cardId];
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      const allViewed = cards.every((card) => nextViewed.includes(card.id));
+
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1AboutCourseViewedCards: nextViewed
+        },
+        screenProgress: allViewed
+          ? {
+              ...prev.screenProgress,
+              [moduleId]: currentProgress.includes('M1-S1-02')
+                ? currentProgress
+                : [...currentProgress, 'M1-S1-02']
+            }
+          : prev.screenProgress
+      };
+    });
+  };
 
   return (
-    <section className="m1-b2-screen m1-b2-objectives" aria-labelledby="m1-objectives-title">
-      <header className="m1-b2-compact-header">
+    <section className="m1-b2-screen" aria-labelledby="m1-about-course-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={aboutShellStyle}>
+      <header className="m1-b2-compact-header" style={{ marginBottom: '1rem' }}>
         <div className="m1-b2-eyebrow">Module 1</div>
-        <h1 id="m1-objectives-title">What You Will Be Able to Do</h1>
-        <p>
-          This module gives you a practical starting point. By the end, you will have a simple way to explain HRBA, practice noticing exclusion in an everyday story, and carry one private action commitment into the rest of the course.
-        </p>
+        <h1 id="m1-about-course-title">About This Course</h1>
+        <p>What this course helps local and grassroots CSOs do</p>
       </header>
 
-      <ol className="m1-b2-outcome-grid" aria-label="Module 1 learning outcomes">
-        {outcomes.map((outcome, index) => (
-          <li key={outcome.text} className="m1-b2-outcome-card">
-            <img
-              src={iconSource(outcome.icon)}
-              alt={outcome.icon.alt}
-              loading="eager"
-              onError={(event) => useSvgFallback(event, outcome.icon)}
-            />
-            <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-            <strong>{outcome.text}</strong>
-          </li>
-        ))}
+      <figure style={{ ...aboutPanelStyle, margin: 0, padding: '0.65rem' }}>
+        <img
+          src="/assets/hrba/modules/module-1/m1-s02-about-course-four-cards.png"
+          alt="Four course orientation cards showing what the course is, why it matters, who it is for, and how learners will learn."
+          loading="eager"
+          style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+        />
+      </figure>
+
+      <ol aria-label="About this course cards" style={cardGridStyle}>
+        {cards.map((card, index) => {
+          const viewed = viewedSet.has(card.id);
+          return (
+            <li
+              key={card.id}
+              style={{
+                ...aboutPanelStyle,
+                listStyle: 'none',
+                padding: '1rem',
+                minWidth: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.85rem'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => viewCard(card.id)}
+                aria-expanded={viewed}
+                aria-controls={`m1-about-card-${card.id}`}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '2.25rem 1fr auto',
+                  gap: '0.75rem',
+                  alignItems: 'center',
+                  width: '100%',
+                  textAlign: 'left',
+                  border: viewed ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.24)',
+                  background: viewed ? '#e7f5f1' : '#f8fbfb',
+                  color: '#10233f',
+                  borderRadius: '8px',
+                  padding: '0.75rem',
+                  cursor: 'pointer',
+                  font: 'inherit'
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    display: 'inline-grid',
+                    placeItems: 'center',
+                    width: '2.25rem',
+                    height: '2.25rem',
+                    borderRadius: '999px',
+                    background: viewed ? '#0f766e' : '#d9eeea',
+                    color: viewed ? '#ffffff' : '#0b2a55',
+                    fontWeight: 800
+                  }}
+                >
+                  {index + 1}
+                </span>
+                <strong>{card.title}</strong>
+                <span style={{ fontSize: '0.85rem', fontWeight: 800 }}>{viewed ? 'Viewed' : 'Open'}</span>
+              </button>
+              <div id={`m1-about-card-${card.id}`} hidden={!viewed}>
+                {card.text.map((paragraph) => (
+                  <p key={paragraph} style={{ color: '#26394f', lineHeight: 1.55, margin: '0 0 0.75rem' }}>{paragraph}</p>
+                ))}
+              </div>
+            </li>
+          );
+        })}
       </ol>
 
-      <footer className="m1-b2-footer">
-        <p>This is the beginning of the journey. Your practice evidence is a safe reflection habit and one action commitment. Module 2 will go deeper into rights, actors, principles, and power.</p>
-        <button className="m1-b2-primary" type="button" onClick={onNext}>
+      <section aria-labelledby="m1-about-supporting-note" style={{ ...aboutPanelStyle, marginTop: '1rem', padding: '1rem' }}>
+        <strong id="m1-about-supporting-note" style={{ display: 'block', color: '#0b2a55', marginBottom: '0.6rem' }}>
+          Supporting note
+        </strong>
+        <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+          This course connects with practical areas many CSOs already work on, including advocacy, gender equality, economic inclusion, local development, service access, community participation, and accountability.
+        </p>
+        <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+          You will also gain a practical HRBA lens, simple tools, examples, portfolio notes, and action ideas that you can connect to your own CSO work.
+        </p>
+      </section>
+
+      <footer className="m1-b2-footer" style={{ marginTop: '1rem' }}>
+        <p aria-live="polite" style={{ margin: 0 }}>
+          {isComplete ? 'All four cards viewed. Continue when ready.' : 'Open all four cards to complete this screen.'}
+        </p>
+        <button className="m1-b2-primary" type="button" onClick={onNext} disabled={!isComplete}>
           Continue
         </button>
       </footer>
+      </div>
+    </section>
+  );
+}
+
+function Module1HrbaPracticalLensScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const questions = [
+    'Who is affected?',
+    'Who may be left out or unheard?',
+    'Who should participate and influence decisions?',
+    'Who has responsibility?',
+    'What should be transparent, accountable, and followed up?'
+  ];
+  const selectedQuestion = String(state.practiceCheckState.module1HrbaLensFirstQuestion || '');
+  const isComplete = Boolean(selectedQuestion);
+  const shellStyle: CSSProperties = {
+    display: 'grid',
+    gap: '1.1rem',
+    width: 'min(100%, 1180px)',
+    margin: '0 auto',
+    padding: '1.25rem 1.25rem 7rem',
+    color: '#10233f'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    color: '#10233f',
+    padding: '1rem'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+    lineHeight: 1.06,
+    margin: 0
+  };
+  const gridStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gap: '1rem',
+    alignItems: 'start'
+  };
+
+  const selectQuestion = (question: string) => {
+    onChangeState((prev) => {
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1HrbaLensFirstQuestion: question
+        },
+        screenProgress: {
+          ...prev.screenProgress,
+          [moduleId]: currentProgress.includes('M1-S1-03')
+            ? currentProgress
+            : [...currentProgress, 'M1-S1-03']
+        }
+      };
+    });
+  };
+
+  return (
+    <section className="m1-b2-screen" aria-labelledby="m1-hrba-lens-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <header>
+          <div className="m1-next-kicker">HRBA IN ONE PRACTICAL LENS</div>
+          <h1 id="m1-hrba-lens-title" style={titleStyle}>HRBA in One Practical Lens</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+            A simple way to start noticing what matters
+          </p>
+        </header>
+
+        <div style={gridStyle}>
+          <div style={{ display: 'grid', gap: '1rem', minWidth: 0 }}>
+            <section aria-labelledby="m1-hrba-orientation-heading" style={panelStyle}>
+              <h2 id="m1-hrba-orientation-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
+                Start with five practical questions
+              </h2>
+              <p style={{ lineHeight: 1.55 }}>
+                In this course, HRBA means using human rights standards and principles to improve how CSOs plan, implement, monitor, and learn from their work.
+              </p>
+              <p style={{ lineHeight: 1.55 }}>For now, you do not need to know all the technical details.</p>
+              <p style={{ lineHeight: 1.55 }}>Start with five practical questions:</p>
+              <ol style={{ display: 'grid', gap: '0.55rem', margin: 0, paddingLeft: '1.35rem' }}>
+                {questions.map((question) => (
+                  <li key={question} style={{ color: '#26394f', lineHeight: 1.45 }}>{question}</li>
+                ))}
+              </ol>
+            </section>
+
+            <section aria-labelledby="m1-hrba-message-heading" style={{ ...panelStyle, background: '#f8fbfb' }}>
+              <h2 id="m1-hrba-message-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>
+                Key message
+              </h2>
+              <p style={{ color: '#10233f', fontSize: '1.08rem', fontWeight: 800, lineHeight: 1.45 }}>
+                HRBA is not an extra paragraph in a proposal. It is a way of working.
+              </p>
+              <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+                HRBA helps CSOs support people&apos;s voice, engage duty-bearers, and improve accountability in safe and practical ways.
+              </p>
+              <p style={{ color: '#42566d', lineHeight: 1.55 }}>
+                In the next module, you will look more closely at rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe use of human rights standards.
+              </p>
+            </section>
+          </div>
+
+          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+            <img
+              src="/assets/hrba/modules/module-1/m1-s03-hrba-five-question-lens.png"
+              alt="HRBA practical lens diagram with five questions about who is affected, who may be left out, who participates, who has responsibility, and what should be followed up."
+              loading="eager"
+              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+            />
+          </figure>
+        </div>
+
+        <section aria-labelledby="m1-hrba-practice-heading" style={panelStyle}>
+          <h2 id="m1-hrba-practice-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.65rem' }}>
+            Micro-practice
+          </h2>
+          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+            Think about one project, activity, or service your CSO works on. Which HRBA question would be most useful to ask first?
+          </p>
+          <div role="group" aria-label="Choose the first HRBA question to ask" style={{ display: 'grid', gap: '0.7rem', marginTop: '0.85rem' }}>
+            {questions.map((question, index) => {
+              const isSelected = selectedQuestion === question;
+              return (
+                <button
+                  key={question}
+                  type="button"
+                  onClick={() => selectQuestion(question)}
+                  aria-pressed={isSelected}
+                  aria-describedby={isSelected ? 'm1-hrba-lens-feedback' : undefined}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '2.25rem minmax(0, 1fr) auto',
+                    gap: '0.75rem',
+                    alignItems: 'center',
+                    width: '100%',
+                    minHeight: '44px',
+                    border: isSelected ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.24)',
+                    borderRadius: '8px',
+                    background: isSelected ? '#e7f5f1' : '#ffffff',
+                    color: '#10233f',
+                    cursor: 'pointer',
+                    font: 'inherit',
+                    padding: '0.75rem',
+                    textAlign: 'left'
+                  }}
+                >
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      display: 'inline-grid',
+                      placeItems: 'center',
+                      width: '2.25rem',
+                      height: '2.25rem',
+                      borderRadius: '999px',
+                      background: isSelected ? '#0f766e' : '#d9eeea',
+                      color: isSelected ? '#ffffff' : '#0b2a55',
+                      fontWeight: 800
+                    }}
+                  >
+                    {index + 1}
+                  </span>
+                  <span>{question}</span>
+                  <strong style={{ fontSize: '0.85rem' }}>{isSelected ? 'Selected' : 'Choose'}</strong>
+                </button>
+              );
+            })}
+          </div>
+          {isComplete && (
+            <div
+              id="m1-hrba-lens-feedback"
+              aria-live="polite"
+              style={{
+                marginTop: '1rem',
+                border: '1px solid rgba(15, 118, 110, 0.35)',
+                borderRadius: '8px',
+                background: '#ecfdf5',
+                color: '#124236',
+                padding: '0.9rem'
+              }}
+            >
+              Good. This is your first HRBA noticing habit. You will build on this in Module 2.
+            </div>
+          )}
+        </section>
+
+        <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
+          <p aria-live="polite" style={{ margin: 0 }}>
+            {isComplete ? 'Selection saved. Continue when ready.' : 'Choose one question to complete this screen.'}
+          </p>
+          <button className="m1-b2-primary" type="button" onClick={onNext} disabled={!isComplete}>
+            Continue
+          </button>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function Module1CourseJourneyScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const roadmapCards = [
+    {
+      id: 'module-1',
+      title: 'Module 1 — Start the journey',
+      text: [
+        'Understand the course, the CSF Plus capacity development context, the portfolio, and your own learning priority.'
+      ]
+    },
+    {
+      id: 'module-2',
+      title: 'Module 2 — Build the HRBA foundation',
+      text: [
+        'Learn the main HRBA concepts: rights, rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe standards use.'
+      ]
+    },
+    {
+      id: 'module-3',
+      title: 'Module 3 — Apply HRBA in project design',
+      text: [
+        'Use practical tools to review and improve a project idea before implementation.',
+        'You will look at rights-holders, duty-bearers, barriers, power, gender, disability, risk, participation, accountability, intervention logic, and indicators.'
+      ]
+    },
+    {
+      id: 'module-4',
+      title: 'Module 4 — Apply HRBA during implementation',
+      text: [
+        'Practice noticing whether implementation is staying inclusive, participatory, accountable, and safe.',
+        'You will learn how to respond when participation weakens, barriers appear, or feedback is not being acted on.'
+      ]
+    },
+    {
+      id: 'module-5',
+      title: 'Module 5 — Apply HRBA in MEAL',
+      text: [
+        'Use monitoring, evaluation, accountability, feedback, reporting, evidence, and learning in safer and more rights-based ways.',
+        'You will practice improving indicators, using feedback responsibly, and reporting without causing harm.'
+      ]
+    }
+  ];
+  const continuationCards = [
+    {
+      title: 'Final assessment and certificate',
+      text: 'Show what you have learned across the full course and complete the course requirements.'
+    },
+    {
+      title: 'Continue learning together',
+      text: 'Keep learning through peer exchange, collaboration, co-creation, and shared reflection as you apply HRBA in real CSO work.'
+    }
+  ];
+  const viewedCards = Array.isArray(state.practiceCheckState.module1LearningJourneyViewedCards)
+    ? state.practiceCheckState.module1LearningJourneyViewedCards as string[]
+    : [];
+  const viewedSet = new Set(viewedCards);
+  const isComplete = roadmapCards.every((card) => viewedSet.has(card.id));
+  const shellStyle: CSSProperties = {
+    display: 'grid',
+    gap: '1.1rem',
+    width: 'min(100%, 1180px)',
+    margin: '0 auto',
+    padding: '1.25rem 1.25rem 7rem',
+    color: '#10233f'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    color: '#10233f'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+    lineHeight: 1.06,
+    margin: 0
+  };
+  const cardGridStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+    gap: '0.9rem'
+  };
+
+  const viewRoadmapCard = (cardId: string) => {
+    onChangeState((prev) => {
+      const previousViewed = Array.isArray(prev.practiceCheckState.module1LearningJourneyViewedCards)
+        ? prev.practiceCheckState.module1LearningJourneyViewedCards as string[]
+        : [];
+      const nextViewed = previousViewed.includes(cardId)
+        ? previousViewed
+        : [...previousViewed, cardId];
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      const allViewed = roadmapCards.every((card) => nextViewed.includes(card.id));
+
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1LearningJourneyViewedCards: nextViewed
+        },
+        screenProgress: allViewed
+          ? {
+              ...prev.screenProgress,
+              [moduleId]: currentProgress.includes('M1-S1-04')
+                ? currentProgress
+                : [...currentProgress, 'M1-S1-04']
+            }
+          : prev.screenProgress
+      };
+    });
+  };
+
+  return (
+    <section className="m1-b2-screen" aria-labelledby="m1-course-journey-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <header>
+          <div className="m1-next-kicker">YOUR LEARNING JOURNEY</div>
+          <h1 id="m1-course-journey-title" style={titleStyle}>Your Learning Journey</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+            How the course moves from understanding to practice
+          </p>
+        </header>
+
+        <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+          <img
+            src="/assets/hrba/modules/module-1/m1-s04-five-module-learning-roadmap.png"
+            alt="Five-module HRBA learning roadmap from starting the journey through HRBA foundation, project design, implementation, MEAL, final assessment, and continued learning."
+            loading="eager"
+            style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+          />
+        </figure>
+
+        <section aria-labelledby="m1-roadmap-cards-heading" style={{ ...panelStyle, padding: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.8rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+            <div>
+              <h2 id="m1-roadmap-cards-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: 0 }}>
+                Course roadmap
+              </h2>
+              <p style={{ color: '#42566d', margin: '0.35rem 0 0' }}>Open each module card to complete this screen.</p>
+            </div>
+            <span aria-live="polite" style={{ color: '#0f766e', fontWeight: 900 }}>
+              {viewedSet.size} of 5 viewed
+            </span>
+          </div>
+
+          <ol aria-label="Five course modules" style={cardGridStyle}>
+            {roadmapCards.map((card, index) => {
+              const viewed = viewedSet.has(card.id);
+              const detailId = `m1-roadmap-card-${card.id}`;
+
+              return (
+                <li
+                  key={card.id}
+                  style={{
+                    listStyle: 'none',
+                    minWidth: 0,
+                    border: viewed ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.18)',
+                    borderRadius: '8px',
+                    background: viewed ? '#e7f5f1' : '#f8fbfb',
+                    padding: '0.75rem'
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => viewRoadmapCard(card.id)}
+                    aria-expanded={viewed}
+                    aria-controls={detailId}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '2.25rem minmax(0, 1fr) auto',
+                      gap: '0.75rem',
+                      alignItems: 'center',
+                      width: '100%',
+                      minHeight: '44px',
+                      border: 0,
+                      background: 'transparent',
+                      color: '#10233f',
+                      cursor: 'pointer',
+                      font: 'inherit',
+                      padding: 0,
+                      textAlign: 'left'
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        display: 'inline-grid',
+                        placeItems: 'center',
+                        width: '2.25rem',
+                        height: '2.25rem',
+                        borderRadius: '999px',
+                        background: viewed ? '#0f766e' : '#d9eeea',
+                        color: viewed ? '#ffffff' : '#0b2a55',
+                        fontWeight: 800
+                      }}
+                    >
+                      {viewed ? '✓' : index + 1}
+                    </span>
+                    <strong>{card.title}</strong>
+                    <span style={{ color: '#0f766e', fontSize: '0.85rem', fontWeight: 900 }}>{viewed ? 'Viewed' : 'Open'}</span>
+                  </button>
+                  <div id={detailId} hidden={!viewed} style={{ marginTop: '0.75rem' }}>
+                    {card.text.map((paragraph) => (
+                      <p key={paragraph} style={{ color: '#26394f', lineHeight: 1.55, margin: '0 0 0.65rem' }}>{paragraph}</p>
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+
+        <section aria-labelledby="m1-after-modules-heading" style={{ ...panelStyle, padding: '1rem' }}>
+          <h2 id="m1-after-modules-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.85rem' }}>
+            After the modules
+          </h2>
+          <div style={cardGridStyle}>
+            {continuationCards.map((card) => (
+              <article key={card.title} style={{ border: '1px solid rgba(16, 92, 91, 0.18)', borderRadius: '8px', background: '#f8fbfb', padding: '0.9rem' }}>
+                <h3 style={{ color: '#0b2a55', fontSize: '1.1rem', margin: '0 0 0.45rem' }}>{card.title}</h3>
+                <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>{card.text}</p>
+              </article>
+            ))}
+          </div>
+          <p style={{ color: '#26394f', lineHeight: 1.55, margin: '1rem 0 0' }}>
+            Each module gives you something practical to carry forward. By the end of the course, you should have a clearer HRBA lens, useful portfolio notes, and a practical action commitment for your CSO work.
+          </p>
+        </section>
+
+        <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
+          <p aria-live="polite" style={{ margin: 0 }}>
+            {isComplete ? 'All five module cards viewed. Continue when ready.' : 'Open all five module cards to complete this screen.'}
+          </p>
+          <button className="m1-b2-primary" type="button" onClick={onNext} disabled={!isComplete}>
+            Continue
+          </button>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function Module1LearningMethodologyScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const learningSteps = [
+    {
+      id: 'watch-read',
+      title: 'Watch or read',
+      text: 'Start with a short video, example, story, or explanation.'
+    },
+    {
+      id: 'notice',
+      title: 'Notice',
+      text: 'Look for what is happening: who is included, who is left out, who has responsibility, and what is missing.'
+    },
+    {
+      id: 'practice',
+      title: 'Practice',
+      text: 'Make a choice, answer a question, complete a small activity, or review a case.'
+    },
+    {
+      id: 'portfolio-note',
+      title: 'Save a portfolio note',
+      text: 'Write a short private note that connects the learning to your own CSO work.'
+    },
+    {
+      id: 'discuss-safely',
+      title: 'Discuss safely',
+      text: 'Use general lessons from your portfolio to participate in peer exchange or discussion forums.'
+    },
+    {
+      id: 'apply',
+      title: 'Apply in CSO work',
+      text: 'Take one idea back to your project, team, activity, MEAL process, or advocacy work.'
+    }
+  ];
+  const viewedSteps = Array.isArray(state.practiceCheckState.module1LearningCycleViewedSteps)
+    ? state.practiceCheckState.module1LearningCycleViewedSteps as string[]
+    : [];
+  const viewedSet = new Set(viewedSteps);
+  const isComplete = learningSteps.every((step) => viewedSet.has(step.id));
+  const shellStyle: CSSProperties = {
+    display: 'grid',
+    gap: '1.1rem',
+    width: 'min(100%, 1180px)',
+    margin: '0 auto',
+    padding: '1.25rem 1.25rem 7rem',
+    color: '#10233f'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    color: '#10233f'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+    lineHeight: 1.06,
+    margin: 0
+  };
+  const cardGridStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gap: '0.85rem'
+  };
+
+  const viewStep = (stepId: string) => {
+    onChangeState((prev) => {
+      const previousViewed = Array.isArray(prev.practiceCheckState.module1LearningCycleViewedSteps)
+        ? prev.practiceCheckState.module1LearningCycleViewedSteps as string[]
+        : [];
+      const nextViewed = previousViewed.includes(stepId)
+        ? previousViewed
+        : [...previousViewed, stepId];
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      const allViewed = learningSteps.every((step) => nextViewed.includes(step.id));
+
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1LearningCycleViewedSteps: nextViewed
+        },
+        screenProgress: allViewed
+          ? {
+              ...prev.screenProgress,
+              [moduleId]: currentProgress.includes('M1-S1-05')
+                ? currentProgress
+                : [...currentProgress, 'M1-S1-05']
+            }
+          : prev.screenProgress
+      };
+    });
+  };
+
+  return (
+    <section className="m1-b2-screen" aria-labelledby="m1-learning-methodology-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <header>
+          <div className="m1-next-kicker">HOW YOU WILL LEARN</div>
+          <h1 id="m1-learning-methodology-title" style={titleStyle}>How You Will Learn</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+            Short examples, practical choices, portfolio notes, and peer exchange
+          </p>
+        </header>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1rem', alignItems: 'start' }}>
+          <section aria-labelledby="m1-learning-intro-heading" style={{ ...panelStyle, padding: '1rem' }}>
+            <h2 id="m1-learning-intro-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
+              Practical learning methodology
+            </h2>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>This course uses a practical learning methodology.</p>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+              You will not only read definitions. You will work with short examples, simple choices, reflection prompts, feedback, portfolio notes, and peer exchange.
+            </p>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>The learning cycle is simple:</p>
+          </section>
+
+          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+            <img
+              src="/assets/hrba/modules/module-1/m1-s05-learning-methodology-cycle.png"
+              alt="Six-step learning cycle: watch or read, notice, practice, save a portfolio note, discuss safely, and apply in CSO work."
+              loading="eager"
+              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+            />
+          </figure>
+        </div>
+
+        <section aria-labelledby="m1-learning-cycle-heading" style={{ ...panelStyle, padding: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.8rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+            <div>
+              <h2 id="m1-learning-cycle-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: 0 }}>
+                Six learning steps
+              </h2>
+              <p style={{ color: '#42566d', margin: '0.35rem 0 0' }}>Open each step to complete this screen.</p>
+            </div>
+            <span aria-live="polite" style={{ color: '#0f766e', fontWeight: 900 }}>
+              {viewedSet.size} of 6 viewed
+            </span>
+          </div>
+
+          <ol aria-label="Six-step learning cycle" style={cardGridStyle}>
+            {learningSteps.map((step, index) => {
+              const viewed = viewedSet.has(step.id);
+              const detailId = `m1-learning-step-${step.id}`;
+              return (
+                <li
+                  key={step.id}
+                  style={{
+                    listStyle: 'none',
+                    minWidth: 0,
+                    border: viewed ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.18)',
+                    borderRadius: '8px',
+                    background: viewed ? '#e7f5f1' : '#f8fbfb',
+                    padding: '0.75rem'
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => viewStep(step.id)}
+                    aria-expanded={viewed}
+                    aria-controls={detailId}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '2.25rem minmax(0, 1fr) auto',
+                      gap: '0.75rem',
+                      alignItems: 'center',
+                      width: '100%',
+                      minHeight: '44px',
+                      border: 0,
+                      background: 'transparent',
+                      color: '#10233f',
+                      cursor: 'pointer',
+                      font: 'inherit',
+                      padding: 0,
+                      textAlign: 'left'
+                    }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        display: 'inline-grid',
+                        placeItems: 'center',
+                        width: '2.25rem',
+                        height: '2.25rem',
+                        borderRadius: '999px',
+                        background: viewed ? '#0f766e' : '#d9eeea',
+                        color: viewed ? '#ffffff' : '#0b2a55',
+                        fontWeight: 800
+                      }}
+                    >
+                      {viewed ? '✓' : index + 1}
+                    </span>
+                    <strong>{step.title}</strong>
+                    <span style={{ color: '#0f766e', fontSize: '0.85rem', fontWeight: 900 }}>{viewed ? 'Viewed' : 'Open'}</span>
+                  </button>
+                  <div id={detailId} hidden={!viewed} style={{ marginTop: '0.75rem' }}>
+                    <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>{step.text}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+
+        <section aria-label="Practical learning note" style={{ ...panelStyle, padding: '1rem', background: '#f8fbfb' }}>
+          <p style={{ color: '#10233f', fontSize: '1.05rem', fontWeight: 800, lineHeight: 1.5, margin: 0 }}>
+            You do not need to memorize legal terms. You will practice asking better questions and improving real CSO work.
+          </p>
+        </section>
+
+        <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
+          <p aria-live="polite" style={{ margin: 0 }}>
+            {isComplete ? 'All six learning steps viewed. Continue when ready.' : 'Open all six learning steps to complete this screen.'}
+          </p>
+          <button className="m1-b2-primary" type="button" onClick={onNext} disabled={!isComplete}>
+            Continue
+          </button>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function Module1SafePortfolioScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const focusOptions = [
+    'advocacy',
+    'gender equality',
+    'economic inclusion',
+    'project design',
+    'implementation',
+    'MEAL',
+    'participation',
+    'accountability',
+    'feedback',
+    'inclusion of people who may be left out'
+  ];
+  const usefulnessItems = [
+    'remember important ideas;',
+    'connect the course to your own CSO work;',
+    'prepare for peer exchange and discussion forums;',
+    'track your learning priority;',
+    'collect practical action ideas.'
+  ];
+  const unsafeItems = [
+    'names of people;',
+    'exact locations linked to sensitive issues;',
+    'complaints that can identify someone;',
+    'survivor stories;',
+    'private community information;',
+    'politically sensitive details;',
+    'anything that could put a person, group, CSO, or community at risk.'
+  ];
+  const safeItems = [
+    'general patterns;',
+    'common barriers;',
+    'lessons learned;',
+    'project decisions;',
+    'participation challenges;',
+    'accountability gaps;',
+    'ideas for improvement.'
+  ];
+  const selectedFocus = Array.isArray(state.practiceCheckState.module1FirstSafePortfolioFocus)
+    ? state.practiceCheckState.module1FirstSafePortfolioFocus as string[]
+    : [];
+  const note = String(state.practiceCheckState.module1FirstSafePortfolioNote || '');
+  const trimmedNote = note.trim();
+  const isComplete = selectedFocus.length > 0 || trimmedNote.length > 0;
+  const shellStyle: CSSProperties = {
+    display: 'grid',
+    gap: '1.1rem',
+    width: 'min(100%, 1180px)',
+    margin: '0 auto',
+    padding: '1.25rem 1.25rem 7rem',
+    color: '#10233f'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    color: '#10233f',
+    padding: '1rem'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+    lineHeight: 1.06,
+    margin: 0
+  };
+  const twoColumnStyle: CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gap: '1rem',
+    alignItems: 'start'
+  };
+
+  const toggleFocus = (option: string) => {
+    onChangeState((prev) => {
+      const previousFocus = Array.isArray(prev.practiceCheckState.module1FirstSafePortfolioFocus)
+        ? prev.practiceCheckState.module1FirstSafePortfolioFocus as string[]
+        : [];
+      const nextFocus = previousFocus.includes(option)
+        ? previousFocus.filter((item) => item !== option)
+        : [...previousFocus, option];
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1FirstSafePortfolioFocus: nextFocus
+        }
+      };
+    });
+  };
+
+  const updateNote = (value: string) => {
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: {
+        ...prev.practiceCheckState,
+        module1FirstSafePortfolioNote: value
+      }
+    }));
+  };
+
+  const handleContinue = () => {
+    if (!isComplete) {
+      return;
+    }
+
+    onChangeState((prev) => {
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      return {
+        ...prev,
+        screenProgress: {
+          ...prev.screenProgress,
+          [moduleId]: currentProgress.includes('M1-S1-06')
+            ? currentProgress
+            : [...currentProgress, 'M1-S1-06']
+        }
+      };
+    });
+    onNext();
+  };
+
+  return (
+    <section className="m1-b2-screen" aria-labelledby="m1-safe-portfolio-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <header>
+          <div className="m1-next-kicker">YOUR PORTFOLIO AND SAFE PEER LEARNING</div>
+          <h1 id="m1-safe-portfolio-title" style={titleStyle}>Your Portfolio and Safe Peer Learning</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+            A private place to reflect, remember, and prepare for discussion
+          </p>
+        </header>
+
+        <div style={twoColumnStyle}>
+          <section aria-labelledby="m1-portfolio-intro-heading" style={panelStyle}>
+            <h2 id="m1-portfolio-intro-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
+              Your private learning notebook
+            </h2>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>Your portfolio is your private learning notebook for this course.</p>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>It is not a test. It does not need perfect answers.</p>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>It helps you:</p>
+            <ul style={{ color: '#26394f', display: 'grid', gap: '0.45rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.25rem' }}>
+              {usefulnessItems.map((item) => <li key={item}>{item}</li>)}
+            </ul>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+              You may use your portfolio to prepare what you want to share with others. But your portfolio itself should stay safe and respectful.
+            </p>
+          </section>
+
+          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+            <img
+              src="/assets/hrba/modules/module-1/m1-s06-safe-portfolio-peer-learning.png"
+              alt="Safe portfolio notebook with examples of what is safe to write and what should not be recorded."
+              loading="eager"
+              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+            />
+          </figure>
+        </div>
+
+        <section aria-labelledby="m1-portfolio-safety-heading" style={panelStyle}>
+          <h2 id="m1-portfolio-safety-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.85rem' }}>
+            Safety guidance
+          </h2>
+          <div style={twoColumnStyle}>
+            <article style={{ border: '1px solid rgba(190, 64, 42, 0.24)', borderRadius: '8px', background: '#fff7ed', padding: '0.9rem' }}>
+              <h3 style={{ color: '#7c2d12', fontSize: '1.12rem', margin: '0 0 0.55rem' }}>Do not write:</h3>
+              <ul style={{ color: '#26394f', display: 'grid', gap: '0.4rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.25rem' }}>
+                {unsafeItems.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </article>
+            <article style={{ border: '1px solid rgba(16, 92, 91, 0.2)', borderRadius: '8px', background: '#f0fdfa', padding: '0.9rem' }}>
+              <h3 style={{ color: '#134e4a', fontSize: '1.12rem', margin: '0 0 0.55rem' }}>Instead, write about:</h3>
+              <ul style={{ color: '#26394f', display: 'grid', gap: '0.4rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.25rem' }}>
+                {safeItems.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section aria-labelledby="m1-safe-example-heading" style={{ ...panelStyle, background: '#f8fbfb' }}>
+          <h2 id="m1-safe-example-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.75rem' }}>
+            Safe example
+          </h2>
+          <div style={twoColumnStyle}>
+            <article style={{ borderLeft: '4px solid #dc2626', background: '#fff7ed', borderRadius: '8px', padding: '0.85rem' }}>
+              <h3 style={{ color: '#7c2d12', fontSize: '1rem', margin: '0 0 0.45rem' }}>Instead of writing:</h3>
+              <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>A woman from X kebele complained that Y person blocked her from joining the project.</p>
+            </article>
+            <article style={{ borderLeft: '4px solid #0f766e', background: '#ecfdf5', borderRadius: '8px', padding: '0.85rem' }}>
+              <h3 style={{ color: '#134e4a', fontSize: '1rem', margin: '0 0 0.45rem' }}>Write:</h3>
+              <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>In one activity, some women faced gatekeeping and could not participate equally. I want to learn how HRBA helps us notice and respond to this safely.</p>
+            </article>
+          </div>
+        </section>
+
+        <section aria-labelledby="m1-first-note-heading" style={panelStyle}>
+          <h2 id="m1-first-note-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.6rem' }}>
+            Write one safe private note:
+          </h2>
+          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+            Which area of your CSO work do you most want to connect with HRBA during this course?
+          </p>
+
+          <fieldset style={{ border: '1px solid rgba(16, 92, 91, 0.18)', borderRadius: '8px', padding: '0.9rem', margin: '0 0 1rem' }}>
+            <legend style={{ color: '#0b2a55', fontWeight: 900, padding: '0 0.35rem' }}>Guide options</legend>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
+              {focusOptions.map((option) => {
+                const selected = selectedFocus.includes(option);
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => toggleFocus(option)}
+                    aria-pressed={selected}
+                    style={{
+                      minHeight: '44px',
+                      border: selected ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.24)',
+                      borderRadius: '999px',
+                      background: selected ? '#e7f5f1' : '#ffffff',
+                      color: '#10233f',
+                      cursor: 'pointer',
+                      font: 'inherit',
+                      fontWeight: 800,
+                      padding: '0.55rem 0.8rem'
+                    }}
+                  >
+                    {selected ? 'Selected: ' : ''}{option}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <label htmlFor="m1-first-safe-note" style={{ color: '#0b2a55', display: 'block', fontWeight: 900, marginBottom: '0.45rem' }}>
+            Safe private note
+          </label>
+          <textarea
+            id="m1-first-safe-note"
+            value={note}
+            onChange={(event) => updateNote(event.target.value)}
+            rows={5}
+            placeholder="Write a general, safe note. Avoid names, exact locations, sensitive complaints, and identifying details."
+            style={{
+              width: '100%',
+              border: '1px solid rgba(16, 92, 91, 0.24)',
+              borderRadius: '8px',
+              color: '#10233f',
+              font: 'inherit',
+              lineHeight: 1.5,
+              padding: '0.8rem',
+              resize: 'vertical'
+            }}
+          />
+          <p aria-live="polite" style={{ color: isComplete ? '#0f766e' : '#42566d', fontWeight: 800, margin: '0.65rem 0 0' }}>
+            {isComplete ? 'Portfolio starting point saved. Continue when ready.' : 'Select at least one guide option or write a short safe note to continue.'}
+          </p>
+        </section>
+
+        <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
+          <p aria-live="polite" style={{ margin: 0 }}>
+            {isComplete ? 'Safe portfolio note ready.' : 'Complete the portfolio prompt before continuing.'}
+          </p>
+          <button className="m1-b2-primary" type="button" onClick={handleContinue} disabled={!isComplete}>
+            Continue
+          </button>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function Module1StartingPointSelfAssessmentScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const ratingLevels = [
+    { value: 1, label: 'Not confident yet' },
+    { value: 2, label: 'Somewhat confident' },
+    { value: 3, label: 'Confident' },
+    { value: 4, label: 'Very confident' }
+  ];
+  const questions = [
+    'Explain HRBA in simple CSO language.',
+    'Identify rights-holders and duty-bearers in a project.',
+    'Notice who may be excluded from a project or activity.',
+    'Distinguish attendance from meaningful participation.',
+    'Recognize when accountability and follow-up are weak.',
+    'Connect HRBA to project design.',
+    'Apply HRBA during implementation.',
+    'Use MEAL, evidence, feedback, and reporting safely.',
+    'Connect HRBA to advocacy, gender equality, or economic inclusion.',
+    'Identify one practical change your CSO could make after this course.'
+  ];
+  const savedAssessment = state.practiceCheckState.module1StartingConfidence || {};
+  const ratings = typeof savedAssessment.ratings === 'object' && savedAssessment.ratings
+    ? savedAssessment.ratings as Record<string, number>
+    : {};
+  const submitted = Boolean(savedAssessment.submitted);
+  const answeredCount = questions.filter((_, index) => ratings[`q${index + 1}`]).length;
+  const canSubmit = answeredCount === questions.length;
+  const averageScore = canSubmit
+    ? questions.reduce((total, _, index) => total + Number(ratings[`q${index + 1}`] || 0), 0) / questions.length
+    : 0;
+  const feedbackCategory = averageScore < 2 ? 'good_starting_point' : averageScore < 3.2 ? 'some_strengths' : 'strong_confidence';
+  const feedbackText = feedbackCategory === 'good_starting_point'
+    ? 'This is a good starting point. The course is designed to build confidence step by step. You do not need to know everything now.'
+    : feedbackCategory === 'some_strengths'
+      ? 'You already have some strengths. Use the course to deepen the areas where you want more confidence.'
+      : 'You are starting with strong confidence. Use the course to sharpen your practice, reflect on your CSO work, and support peer learning.';
+  const shellStyle: CSSProperties = {
+    display: 'grid',
+    gap: '1rem',
+    width: 'min(100%, 880px)',
+    margin: '0 auto',
+    padding: '1.25rem 1rem 7rem',
+    color: '#10233f'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    padding: '1rem'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.15rem)',
+    lineHeight: 1.08,
+    margin: 0
+  };
+
+  const setRating = (questionId: string, value: number) => {
+    onChangeState((prev) => {
+      const current = prev.practiceCheckState.module1StartingConfidence || {};
+      const currentRatings = typeof current.ratings === 'object' && current.ratings
+        ? current.ratings as Record<string, number>
+        : {};
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1StartingConfidence: {
+            ...current,
+            ratings: { ...currentRatings, [questionId]: value },
+            submitted: false
+          }
+        }
+      };
+    });
+  };
+
+  const submitAssessment = () => {
+    if (!canSubmit) {
+      return;
+    }
+    onChangeState((prev) => {
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1StartingConfidence: {
+            ratings,
+            averageScore: Number(averageScore.toFixed(1)),
+            feedbackCategory,
+            submitted: true
+          }
+        },
+        screenProgress: {
+          ...prev.screenProgress,
+          [moduleId]: currentProgress.includes('M1-S1-06A') ? currentProgress : [...currentProgress, 'M1-S1-06A']
+        }
+      };
+    });
+  };
+
+  return (
+    <section className="m1-b2-screen" aria-labelledby="m1-starting-confidence-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <header>
+          <div className="m1-next-kicker">STARTING POINT SELF-ASSESSMENT</div>
+          <h1 id="m1-starting-confidence-title" style={titleStyle}>Starting Point Self-Assessment</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+            Where are you starting from?
+          </p>
+        </header>
+
+        <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+          <img
+            src="/assets/hrba/modules/module-1/m1-s07-starting-point-confidence-scale.png"
+            alt="Four-point confidence scale for checking readiness to apply HRBA, from not confident yet to very confident."
+            loading="eager"
+            style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+          />
+        </figure>
+
+        <section style={panelStyle}>
+          <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>Before you begin</h2>
+          <p style={{ color: '#26394f', lineHeight: 1.55 }}>This is not a test.</p>
+          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+            It helps you notice your starting point before the course begins. Your answers can help you see where you want to focus your learning.
+          </p>
+        </section>
+
+        <section style={panelStyle}>
+          <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.75rem' }}>Rating scale</h2>
+          <ol style={{ display: 'grid', gap: '0.55rem', margin: 0, paddingLeft: '1.35rem' }}>
+            {ratingLevels.map((level) => (
+              <li key={level.value} style={{ color: '#26394f', lineHeight: 1.45 }}>{level.label}</li>
+            ))}
+          </ol>
+        </section>
+
+        <form aria-labelledby="m1-confidence-form-heading" style={{ display: 'grid', gap: '0.9rem' }}>
+          <section style={panelStyle}>
+            <h2 id="m1-confidence-form-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.35rem' }}>
+              How confident are you now to:
+            </h2>
+            <p aria-live="polite" style={{ color: '#0f766e', fontWeight: 900, margin: 0 }}>{answeredCount} of 10 answered</p>
+          </section>
+
+          {questions.map((question, index) => {
+            const questionId = `q${index + 1}`;
+            const currentRating = Number(ratings[questionId] || 0);
+            return (
+              <fieldset key={question} style={{ ...panelStyle, display: 'grid', gap: '0.75rem', margin: 0 }}>
+                <legend style={{ color: '#0b2a55', fontWeight: 900, padding: '0 0.35rem' }}>{index + 1}. {question}</legend>
+                <div style={{ display: 'grid', gap: '0.55rem' }}>
+                  {ratingLevels.map((level) => (
+                    <label
+                      key={level.value}
+                      style={{
+                        display: 'flex',
+                        gap: '0.65rem',
+                        alignItems: 'center',
+                        minHeight: '44px',
+                        border: currentRating === level.value ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.2)',
+                        borderRadius: '8px',
+                        background: currentRating === level.value ? '#e7f5f1' : '#ffffff',
+                        color: '#10233f',
+                        cursor: 'pointer',
+                        padding: '0.65rem 0.75rem'
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name={`m1-confidence-${questionId}`}
+                        value={level.value}
+                        checked={currentRating === level.value}
+                        onChange={() => setRating(questionId, level.value)}
+                      />
+                      <span>{level.label}</span>
+                      {currentRating === level.value && <strong style={{ marginLeft: 'auto' }}>Selected</strong>}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            );
+          })}
+        </form>
+
+        <section aria-label="Self-assessment actions" style={panelStyle}>
+          <button type="button" className="m1-b2-primary" onClick={submitAssessment} disabled={!canSubmit}>
+            {submitted ? 'Update self-assessment' : 'Submit self-assessment'}
+          </button>
+          <p style={{ color: canSubmit ? '#42566d' : '#7c2d12', fontWeight: 800, margin: '0.75rem 0 0' }}>
+            {canSubmit ? 'All items answered. Submit to see your starting-point feedback.' : 'Answer all 10 items before submitting.'}
+          </p>
+        </section>
+
+        {submitted && (
+          <section aria-labelledby="m1-confidence-results-heading" style={{ ...panelStyle, background: '#ecfdf5' }}>
+            <h2 id="m1-confidence-results-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>Your starting-point result</h2>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>You answered 10 of 10 items.</p>
+            <p style={{ color: '#10233f', fontSize: '1.08rem', fontWeight: 900, lineHeight: 1.45 }}>
+              Average confidence score: {Number(averageScore.toFixed(1)).toFixed(1)} out of 4
+            </p>
+            <p style={{ color: '#26394f', lineHeight: 1.55 }}>{feedbackText}</p>
+            <p style={{ color: '#134e4a', fontWeight: 900, lineHeight: 1.55 }}>
+              Use this result to choose a learning priority on the next screen.
+            </p>
+          </section>
+        )}
+
+        <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
+          <p aria-live="polite" style={{ margin: 0 }}>{submitted ? 'Self-assessment submitted. Continue when ready.' : 'Submit the self-assessment to continue.'}</p>
+          <button className="m1-b2-primary" type="button" onClick={onNext} disabled={!submitted}>Continue</button>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
+function Module1FirstLearningCommitmentScreen({
+  state,
+  onChangeState,
+  onNext
+}: {
+  state: LearningState;
+  onChangeState: (updater: (prev: LearningState) => LearningState) => void;
+  onNext: () => void;
+}) {
+  const priorities = [
+    'I want to better understand HRBA foundations.',
+    'I want to identify rights-holders and duty-bearers more clearly.',
+    'I want to improve participation and inclusion.',
+    'I want to strengthen advocacy and accountability.',
+    'I want to improve project design.',
+    'I want to apply HRBA during implementation.',
+    'I want to use MEAL, evidence, feedback, and reporting more safely.',
+    'I want to connect HRBA to gender equality or economic inclusion.',
+    'I want to strengthen accountability to communities and rights-holders.'
+  ];
+  const examples = [
+    'During this course, I will pay special attention to how our CSO includes women, youth, and persons with disabilities in project decisions.',
+    'During this course, I will pay special attention to how we identify duty-bearers and avoid making the CSO responsible for everything.',
+    'During this course, I will pay special attention to how feedback from communities is recorded, answered, and used.',
+    'During this course, I will pay special attention to how HRBA can strengthen our advocacy work.'
+  ];
+  const takeaways = [
+    'This course is part of a wider capacity development journey for local and grassroots CSOs.',
+    'HRBA is a practical way of improving CSO work, not only a legal topic.',
+    'HRBA helps CSOs ask who is affected, who may be left out, who should participate, who has responsibility, and what should be followed up.',
+    'Your portfolio is private and should be used safely.',
+    'Module 2 will build the HRBA foundation in more depth.'
+  ];
+  const selectedPriority = String(state.practiceCheckState.module1LearningPriority || '');
+  const commitmentText = String(state.practiceCheckState.module1PriorityCommitment || '');
+  const saved = Boolean(state.practiceCheckState.module1PriorityCommitmentSaved);
+  const canSave = Boolean(selectedPriority) && commitmentText.trim().length >= 12;
+  const shellStyle: CSSProperties = {
+    display: 'grid',
+    gap: '1rem',
+    width: 'min(100%, 880px)',
+    margin: '0 auto',
+    padding: '1.25rem 1rem 7rem',
+    color: '#10233f'
+  };
+  const panelStyle: CSSProperties = {
+    background: '#ffffff',
+    border: '1px solid rgba(16, 92, 91, 0.16)',
+    borderRadius: '8px',
+    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
+    padding: '1rem'
+  };
+  const titleStyle: CSSProperties = {
+    color: '#0b2a55',
+    fontFamily: 'var(--font-family-headings)',
+    fontSize: 'clamp(2rem, 4vw, 3.15rem)',
+    lineHeight: 1.08,
+    margin: 0
+  };
+
+  const setPriority = (priority: string) => {
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: {
+        ...prev.practiceCheckState,
+        module1LearningPriority: priority,
+        module1PriorityCommitmentSaved: false
+      }
+    }));
+  };
+
+  const setCommitment = (value: string) => {
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: {
+        ...prev.practiceCheckState,
+        module1PriorityCommitment: value,
+        module1PriorityCommitmentSaved: false
+      }
+    }));
+  };
+
+  const saveCommitment = () => {
+    if (!canSave) {
+      return;
+    }
+    onChangeState((prev) => {
+      const moduleId = prev.currentModuleId || 'module_01_hrba_foundations';
+      const currentProgress = prev.screenProgress[moduleId] || [];
+      return {
+        ...prev,
+        practiceCheckState: {
+          ...prev.practiceCheckState,
+          module1LearningPriority: selectedPriority,
+          module1PriorityCommitment: commitmentText.trim(),
+          module1PriorityCommitmentSaved: true
+        },
+        screenProgress: {
+          ...prev.screenProgress,
+          [moduleId]: currentProgress.includes('M1-S1-06B') ? currentProgress : [...currentProgress, 'M1-S1-06B']
+        }
+      };
+    });
+  };
+
+  return (
+    <section className="m1-b2-screen" aria-labelledby="m1-first-commitment-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+      <div style={shellStyle}>
+        <header>
+          <div className="m1-next-kicker">YOUR FIRST LEARNING COMMITMENT</div>
+          <h1 id="m1-first-commitment-title" style={titleStyle}>Your First Learning Commitment</h1>
+          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+            Choose one priority to carry into Module 2
+          </p>
+        </header>
+
+        <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+          <img
+            src="/assets/hrba/modules/module-1/m1-s08-learning-commitment-completion.png"
+            alt="Learners writing a commitment while looking toward a course pathway with participation, feedback, portfolio, roadmap, and learning icons."
+            loading="eager"
+            style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+          />
+        </figure>
+
+        <section style={panelStyle}>
+          <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>Keep it practical</h2>
+          <p style={{ color: '#26394f', lineHeight: 1.55 }}>You are not promising to change everything now.</p>
+          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+            Choose one thing you want to pay attention to during this course. Keep it practical. You will build on this priority as you move through the next modules.
+          </p>
+        </section>
+
+        <fieldset style={{ ...panelStyle, margin: 0 }}>
+          <legend style={{ color: '#0b2a55', fontSize: '1.25rem', fontWeight: 900, padding: '0 0.35rem' }}>
+            Choose one learning priority:
+          </legend>
+          <div style={{ display: 'grid', gap: '0.55rem', marginTop: '0.75rem' }}>
+            {priorities.map((priority) => (
+              <label
+                key={priority}
+                style={{
+                  display: 'flex',
+                  gap: '0.65rem',
+                  alignItems: 'center',
+                  minHeight: '44px',
+                  border: selectedPriority === priority ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.2)',
+                  borderRadius: '8px',
+                  background: selectedPriority === priority ? '#e7f5f1' : '#ffffff',
+                  cursor: 'pointer',
+                  padding: '0.65rem 0.75rem'
+                }}
+              >
+                <input
+                  type="radio"
+                  name="m1-learning-priority"
+                  value={priority}
+                  checked={selectedPriority === priority}
+                  onChange={() => setPriority(priority)}
+                />
+                <span>{priority}</span>
+                {selectedPriority === priority && <strong style={{ marginLeft: 'auto' }}>Selected</strong>}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <section style={panelStyle}>
+          <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.75rem' }}>Write portfolio-linked commitment</h2>
+          <label htmlFor="m1-priority-commitment" style={{ color: '#0b2a55', display: 'block', fontWeight: 900, marginBottom: '0.45rem' }}>
+            During this course, I will pay special attention to...
+          </label>
+          <p style={{ color: '#42566d', fontWeight: 800, lineHeight: 1.45 }}>
+            Write one short, safe commitment. Do not include names, exact locations, complaints, or sensitive details.
+          </p>
+          <textarea
+            id="m1-priority-commitment"
+            value={commitmentText}
+            onChange={(event) => setCommitment(event.target.value)}
+            rows={5}
+            style={{
+              width: '100%',
+              border: '1px solid rgba(16, 92, 91, 0.24)',
+              borderRadius: '8px',
+              color: '#10233f',
+              font: 'inherit',
+              lineHeight: 1.5,
+              padding: '0.8rem',
+              resize: 'vertical'
+            }}
+          />
+          <div aria-label="Example commitments" style={{ display: 'grid', gap: '0.55rem', marginTop: '0.85rem' }}>
+            {examples.map((example) => (
+              <button
+                key={example}
+                type="button"
+                onClick={() => setCommitment(example)}
+                style={{
+                  minHeight: '44px',
+                  border: '1px solid rgba(16, 92, 91, 0.24)',
+                  borderRadius: '8px',
+                  background: '#f8fbfb',
+                  color: '#10233f',
+                  cursor: 'pointer',
+                  font: 'inherit',
+                  padding: '0.7rem',
+                  textAlign: 'left'
+                }}
+              >
+                Use example: {example}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section aria-label="Save commitment" style={panelStyle}>
+          <button type="button" className="m1-b2-primary" onClick={saveCommitment} disabled={!canSave}>
+            Save commitment to portfolio
+          </button>
+          <p aria-live="polite" style={{ color: canSave ? '#42566d' : '#7c2d12', fontWeight: 800, margin: '0.75rem 0 0' }}>
+            {canSave ? 'Ready to save your portfolio commitment.' : 'Select one learning priority and write a short safe commitment before saving.'}
+          </p>
+        </section>
+
+        {saved && (
+          <>
+            <section aria-labelledby="m1-commitment-saved-heading" style={{ ...panelStyle, background: '#ecfdf5' }}>
+              <h2 id="m1-commitment-saved-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>
+                Saved to your portfolio.
+              </h2>
+              <p style={{ color: '#26394f', lineHeight: 1.55 }}><strong>Selected priority:</strong> {selectedPriority}</p>
+              <p style={{ color: '#26394f', lineHeight: 1.55 }}><strong>Commitment:</strong> {commitmentText.trim()}</p>
+              <p style={{ color: '#134e4a', fontWeight: 900, lineHeight: 1.55 }}>
+                You will return to this priority as you move through the course.
+              </p>
+            </section>
+
+            <section style={panelStyle}>
+              <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.75rem' }}>Key takeaways</h2>
+              <ol style={{ color: '#26394f', display: 'grid', gap: '0.55rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.35rem' }}>
+                {takeaways.map((takeaway) => <li key={takeaway}>{takeaway}</li>)}
+              </ol>
+            </section>
+
+            <section style={{ ...panelStyle, background: '#f8fbfb' }}>
+              <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>You have completed Module 1.</h2>
+              <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+                You are now ready to continue to Module 2: Foundations of HRBA — Rights, Actors, Principles, and Power.
+              </p>
+            </section>
+          </>
+        )}
+
+        <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
+          <p aria-live="polite" style={{ margin: 0 }}>{saved ? 'Commitment saved. Continue when ready.' : 'Save your portfolio commitment to continue.'}</p>
+          <button className="m1-b2-primary" type="button" onClick={onNext} disabled={!saved}>Continue</button>
+        </footer>
+      </div>
     </section>
   );
 }
@@ -662,7 +2384,9 @@ function Module1WaterProjectStoryScreen({ onNext }: { onNext: () => void }) {
       </figure>
 
       <footer className="m1-b3-bottom-strip">
-        <p>Before we call the project successful, let’s look at it through an HRBA lens.</p>
+        <p>
+          Before we call the project successful, ask who maintains the water point, who receives feedback, and who reports back - for example a water committee, woreda water office, service provider, or maintenance actor.
+        </p>
         <button className="m1-b3-primary" type="button" onClick={onNext}>
           Continue
         </button>
@@ -670,6 +2394,10 @@ function Module1WaterProjectStoryScreen({ onNext }: { onNext: () => void }) {
     </section>
   );
 }
+
+// Retained only during staged Module 1 replacement; these are no longer wired to Batch 2 runtime IDs.
+void Module1JourneyScreen;
+void Module1WaterProjectStoryScreen;
 
 function Module1WaterPointInvestigationScreen({
   state,
@@ -795,9 +2523,10 @@ function Module1WaterPointInvestigationScreen({
           </div>
 
           <article className="m1-b3-reveal-panel m1-b3-reveal-panel--quiet" aria-live="polite">
-            <span>How to explore</span>
-            <h2>Open each clue</h2>
-            <p>Each card opens a focused explanation. Mark all four clues explored to continue.</p>
+            <span>Bridge to HRBA</span>
+            <h2>What the clues show</h2>
+            <p>The clues show that a completed activity can still hide unequal access, missing voices, unclear responsibility, and weak feedback.</p>
+            <p>Use a safe standards habit: verify evidence, assess risk, protect people, choose a constructive route, and document follow-up.</p>
           </article>
         </div>
       </div>
@@ -927,6 +2656,9 @@ function Module1WaterPointDefinitionScreen({
         <p>
           HRBA is a practical way of planning, implementing, monitoring, and learning from CSO work by asking who has rights, who may be excluded, who has responsibility, who has power, whether participation is meaningful, and whether accountability is real.
         </p>
+        <p>
+          It uses human rights standards and principles as a practical guide, while keeping action safe, evidence-based, and constructive.
+        </p>
       </article>
 
       <section className="m1-b3-choice-panel" aria-labelledby="m1-water-definition-question">
@@ -991,6 +2723,10 @@ function Module1WaterPointDefinitionScreen({
     </section>
   );
 }
+
+// Retained only during staged Module 1 replacement; these are no longer wired to Batch 3 runtime IDs.
+void Module1WaterPointInvestigationScreen;
+void Module1WaterPointDefinitionScreen;
 
 function Module1EverydayWorkScreen({
   state,
@@ -1120,6 +2856,7 @@ function Module1EverydayWorkScreen({
                         <img
                           src={iconSource(area.icon)}
                           alt=""
+                          aria-hidden="true"
                           loading="eager"
                           onError={(event) => useSvgFallback(event, area.icon)}
                         />
@@ -1149,6 +2886,7 @@ function Module1EverydayWorkScreen({
                 <img
                   src={iconSource(area.icon)}
                   alt=""
+                  aria-hidden="true"
                   loading="eager"
                   onError={(event) => useSvgFallback(event, area.icon)}
                 />
@@ -1310,6 +3048,7 @@ function Module1InclusionLensScreen({
                       <img
                         src={iconSource(perspective.icon)}
                         alt=""
+                        aria-hidden="true"
                         loading="eager"
                         onError={(event) => useSvgFallback(event, perspective.icon)}
                       />
@@ -1367,6 +3106,10 @@ function Module1InclusionLensScreen({
     </section>
   );
 }
+
+// Retained only during staged Module 1 replacement; these are no longer wired to Batch 4 runtime IDs.
+void Module1EverydayWorkScreen;
+void Module1InclusionLensScreen;
 
 function Module1ConnectedRightsScreen({
   state,
@@ -2118,7 +3861,8 @@ function Module1HrbaShiftScreen({
       short: 'Look beyond needs.',
       reveal: 'Instead of seeing only a need, HRBA asks what right is connected to the issue. A water shortage is not only a service gap; it may also relate to dignity, health, safety, and access to safe water.',
       takeaway: 'Ask: What right is affected?',
-      icon: needToRightIcon
+      icon: needToRightIcon,
+      iconAlt: 'Visual for shifting from needs to rights.'
     },
     {
       id: 2,
@@ -2126,7 +3870,8 @@ function Module1HrbaShiftScreen({
       short: 'Look beyond recipients.',
       reveal: 'Instead of seeing people only as vulnerable beneficiaries, HRBA asks how they can participate, raise concerns, and influence decisions.',
       takeaway: 'Ask: Who has voice and agency?',
-      icon: beneficiaryToRightsholderIcon
+      icon: beneficiaryToRightsholderIcon,
+      iconAlt: 'Visual for shifting from beneficiaries to rights-holders.'
     },
     {
       id: 3,
@@ -2134,7 +3879,8 @@ function Module1HrbaShiftScreen({
       short: 'Look beyond delivery.',
       reveal: 'Instead of asking only what the CSO provides, HRBA asks who has responsibility and what role the CSO should safely play.',
       takeaway: 'Ask: Who is responsible?',
-      icon: providerToResponsibilityIcon
+      icon: providerToResponsibilityIcon,
+      iconAlt: 'Visual for shifting from provider role to responsibility.'
     },
     {
       id: 4,
@@ -2142,7 +3888,8 @@ function Module1HrbaShiftScreen({
       short: 'Look beyond attendance.',
       reveal: 'Instead of counting who attended, HRBA asks whether people understood, spoke safely, influenced decisions, and received a response.',
       takeaway: 'Ask: Was participation meaningful?',
-      icon: consultationToParticipationIcon
+      icon: consultationToParticipationIcon,
+      iconAlt: 'Visual for shifting from consultation to meaningful participation.'
     },
     {
       id: 5,
@@ -2150,7 +3897,8 @@ function Module1HrbaShiftScreen({
       short: 'Look beyond completed reports.',
       reveal: 'Instead of reporting only what was done, HRBA asks whether people can raise concerns and see what changed.',
       takeaway: 'Ask: Can people raise concerns and receive a response?',
-      icon: reportingToAccountabilityIcon
+      icon: reportingToAccountabilityIcon,
+      iconAlt: 'Visual for shifting from reporting to accountability.'
     }
   ];
 
@@ -2239,7 +3987,7 @@ function Module1HrbaShiftScreen({
                       aria-label={`Shift ${shift.id}: ${shift.label}. ${isVisited ? 'Explored' : 'Not explored'}`}
                     >
                       <span className="m1-s14-shift-card__icon" aria-hidden="true">
-                        <img src={shift.icon} alt="" />
+                        <img src={shift.icon} alt={shift.iconAlt} />
                       </span>
                       <strong>{shift.label}</strong>
                       <span className="m1-s14-shift-card__status">{isVisited ? '✓ Explored' : 'Tap'}</span>
@@ -2257,7 +4005,7 @@ function Module1HrbaShiftScreen({
 
             <div className="m1-s14-detail-panel" aria-live="polite">
               <div className="m1-s14-detail-icon-bg" aria-hidden="true">
-                <img src={activeShift.icon} alt="" />
+                <img src={activeShift.icon} alt={activeShift.iconAlt} />
               </div>
               <div className="m1-s14-detail-content">
                 <span className="m1-s14-detail-badge">Shift {activeShift.id} · {activeShift.label}</span>
@@ -3245,6 +4993,9 @@ function Module1ActionCommitmentScreen({
             <p>
               In HRBA practice, learning is not only about knowing the right words. It is about building better habits: asking who may be excluded, listening to people’s voices, clarifying responsibilities, and making feedback safer and more useful.
             </p>
+            <p>
+              Mini portfolio pattern: the group I may be missing is generalized, the question I will ask before acting is safe, and the accountability step I will add is small enough to follow up.
+            </p>
           </div>
           <strong>Select one or two priority areas below. Your choice will be saved as part of your Module 1 learning record.</strong>
         </div>
@@ -3254,7 +5005,7 @@ function Module1ActionCommitmentScreen({
             <div className="m1-action-section-head">
               <div>
                 <h2 id="m1-action-priority-title">Based on your self-assessment, choose one or two areas to focus on.</h2>
-                <p>You can choose what feels most relevant to your current role or CSO context.</p>
+                <p>You can choose what feels most relevant to your current role or CSO context: field work, program management, MEAL, advocacy, engagement, or team learning.</p>
               </div>
               <strong aria-live="polite">
                 {selectedPriorityAreas.length === 2 ? 'You can choose up to two priority areas.' : `${selectedPriorityAreas.length} of 2 selected`}
@@ -3490,7 +5241,7 @@ function Module1CompletionScreen({
             <div className="m1-completion-kicker">MODULE 1 | COMPLETION</div>
             <h1 id="m1-completion-title">Key takeaways and Module 1 completion</h1>
             <p>
-              You have completed the first step in your HRBA learning journey. Review the key ideas, carry forward your action commitment, and continue to the next module when you are ready.
+              You are at the final review step in your HRBA learning journey. Review the key ideas, carry forward your action commitment, and continue to the next module when you are ready.
             </p>
           </div>
         </header>
@@ -3498,14 +5249,14 @@ function Module1CompletionScreen({
         <section className="m1-completion-panel" aria-label="Module 1 completion overview">
           <span className="m1-completion-check" aria-hidden="true">✓</span>
           <div>
-            <h2>Module 1 complete</h2>
+            <h2>Module 1 review checkpoint</h2>
             <p>
-              You have explored how HRBA changes the way CSOs look at services, people, participation, responsibility, and accountability.
+              Complete the review items below to finish Module 1 and move to the closing screen.
             </p>
           </div>
           <strong>
             <span aria-hidden="true">✓</span>
-            Starting HRBA learning journey completed
+            Starting HRBA learning journey review in progress
           </strong>
         </section>
 
@@ -3626,7 +5377,7 @@ function Module1FinishedScreen({
     onChangeState((prev) => {
       const moduleId = 'module_01_hrba_foundations';
       const moduleProgress = prev.screenProgress[moduleId] || [];
-      const nextProgress = Array.from(new Set([...moduleProgress, 'M1-S3-02', 'M1-PLAYER-COMPLETE']));
+      const nextProgress = Array.from(new Set([...moduleProgress, 'M1-S1-06B', 'M1-PLAYER-COMPLETE']));
       return {
         ...prev,
         module1Completion: {
@@ -3672,35 +5423,143 @@ function Module1FinishedScreen({
       currentLayer: 'player',
       currentCourseId: 'hrba_course',
       currentModuleId: 'module_01_hrba_foundations',
-      currentScreenId: 'M1-S3-02',
+      currentScreenId: 'M1-S1-06B',
       currentSubState: null,
       activeModal: null
     }));
   };
 
+  const summaryItems = [
+    'You explored why the course matters for local and grassroots CSOs.',
+    'You reviewed the learning journey and methodology.',
+    'You prepared your portfolio for safe reflection and peer exchange.',
+    'You completed a starting self-assessment and saved a first learning commitment.'
+  ];
+
   return (
-    <section className="m1-finished-screen" aria-labelledby="m1-finished-title">
-      <div className="m1-finished-slide">
-        <div className="m1-finished-mark" aria-hidden="true">✓</div>
-        <div className="m1-completion-kicker">MODULE 1 | COMPLETED</div>
-        <h1 id="m1-finished-title">Module 1 completed</h1>
-        <h2>Starting the HRBA Learning Journey</h2>
-        <p>
-          You have completed the first step in your HRBA learning journey. Your private learning reflections are saved in your browser, and your next step is to use the same safe noticing habit in Module 2.
-        </p>
-        <div className="m1-finished-summary" aria-label="Module 1 finished summary">
-          <strong>Module 1 completed</strong>
-          <span>Starting the HRBA Learning Journey</span>
+    <section
+      className="m1-revised-finished-screen"
+      aria-labelledby="m1-finished-title"
+      style={{
+        display: 'grid',
+        width: '100%',
+        placeItems: 'center',
+        background: '#eef7f5',
+        padding: '1.25rem 1rem 7rem'
+      }}
+    >
+      <div
+        className="m1-revised-finished-slide"
+        style={{
+          display: 'grid',
+          gap: '1rem',
+          width: 'min(100%, 880px)',
+          border: '1px solid rgba(16, 92, 91, 0.16)',
+          borderRadius: '8px',
+          background: '#ffffff',
+          boxShadow: '0 18px 42px rgba(15, 23, 42, 0.12)',
+          color: '#10233f',
+          padding: 'clamp(1.25rem, 3vw, 2rem)',
+          textAlign: 'left'
+        }}
+      >
+        <div
+          className="m1-revised-finished-mark"
+          aria-hidden="true"
+          style={{
+            display: 'inline-grid',
+            placeItems: 'center',
+            width: '3.5rem',
+            height: '3.5rem',
+            borderRadius: '999px',
+            background: '#d9eeea',
+            color: '#0b2a55',
+            fontSize: '1.65rem',
+            fontWeight: 950
+          }}
+        >
+          ✓
         </div>
-        <div className="m1-finished-actions">
-          <button type="button" className="m1-finished-secondary" onClick={returnToCourseMenu}>
-            Return to Course Page
+        <div className="m1-completion-kicker" style={{ color: '#0f766e', fontWeight: 900, letterSpacing: '0.08em' }}>
+          MODULE 1 | COMPLETED
+        </div>
+        <h1 id="m1-finished-title" style={{ color: '#0b2a55', fontSize: 'clamp(2rem, 4vw, 3.25rem)', lineHeight: 1.08, margin: 0 }}>
+          Module 1 Complete
+        </h1>
+        <p style={{ color: '#26394f', fontSize: '1.08rem', lineHeight: 1.55, margin: 0 }}>
+          You have completed Module 1: Starting the HRBA Learning Journey.
+        </p>
+        <p style={{ color: '#26394f', fontSize: '1.08rem', lineHeight: 1.55, margin: 0 }}>
+          You are now ready to continue to Module 2: Foundations of HRBA — Rights, Actors, Principles, and Power.
+        </p>
+        <section
+          className="m1-revised-finished-summary"
+          aria-labelledby="m1-finished-summary-title"
+          style={{
+            border: '1px solid rgba(16, 92, 91, 0.16)',
+            borderRadius: '8px',
+            background: '#f8fbfb',
+            color: '#10233f',
+            padding: '1rem'
+          }}
+        >
+          <h2 id="m1-finished-summary-title" style={{ color: '#0b2a55', fontSize: '1.25rem', margin: '0 0 0.75rem' }}>
+            Completion summary
+          </h2>
+          <ul style={{ display: 'grid', gap: '0.55rem', margin: 0, paddingLeft: '1.25rem' }}>
+            {summaryItems.map((item) => (
+              <li key={item} style={{ color: '#26394f', lineHeight: 1.45 }}>{item}</li>
+            ))}
+          </ul>
+        </section>
+        <div className="m1-revised-finished-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'flex-start' }}>
+          <button
+            type="button"
+            className="m1-revised-finished-secondary"
+            onClick={returnToCourseMenu}
+            style={{
+              minHeight: '44px',
+              border: '1px solid rgba(11, 42, 85, 0.28)',
+              borderRadius: '999px',
+              background: '#ffffff',
+              color: '#0b2a55',
+              fontWeight: 900,
+              padding: '0.75rem 1.15rem'
+            }}
+          >
+            Return to course
           </button>
-          <button type="button" className="m1-finished-review" onClick={reviewModule}>
-            Review Module 1
+          <button
+            type="button"
+            className="m1-revised-finished-review"
+            onClick={reviewModule}
+            style={{
+              minHeight: '44px',
+              border: '1px solid rgba(11, 42, 85, 0.28)',
+              borderRadius: '999px',
+              background: '#ffffff',
+              color: '#0b2a55',
+              fontWeight: 900,
+              padding: '0.75rem 1.15rem'
+            }}
+          >
+            Review commitment
           </button>
-          <button type="button" className="m1-finished-primary" onClick={continueToModule2}>
-            Continue to Module 2
+          <button
+            type="button"
+            className="m1-revised-finished-primary"
+            onClick={continueToModule2}
+            style={{
+              minHeight: '44px',
+              border: '1px solid #0b5a7e',
+              borderRadius: '999px',
+              background: '#0b5a7e',
+              color: '#ffffff',
+              fontWeight: 900,
+              padding: '0.75rem 1.15rem'
+            }}
+          >
+            Proceed to Module 2
           </button>
         </div>
       </div>
@@ -3719,28 +5578,28 @@ function renderBlockContent(
       return <Module1OpeningScreen onNext={onNext} />;
 
     case 'M1-S1-01':
-      return <Module1WhyMattersScreen onNext={onNext} />;
+      return <Module1WelcomeCourseScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-02':
-      return <Module1ObjectivesScreen onNext={onNext} />;
+      return <Module1AboutCourseScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-03':
-      return <Module1JourneyScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
+      return <Module1HrbaPracticalLensScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-04':
-      return <Module1WaterProjectStoryScreen onNext={onNext} />;
+      return <Module1CourseJourneyScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-05':
-      return <Module1WaterPointInvestigationScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
+      return <Module1LearningMethodologyScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-06':
-      return <Module1WaterPointDefinitionScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
+      return <Module1SafePortfolioScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-06A':
-      return <Module1EverydayWorkScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
+      return <Module1StartingPointSelfAssessmentScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-06B':
-      return <Module1InclusionLensScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
+      return <Module1FirstLearningCommitmentScreen state={state} onChangeState={onChangeState} onNext={onNext} />;
 
     case 'M1-S1-07':
       return <Module1ConnectedRightsScreen state={state} onChangeState={onChangeState} onNext={onNext} />;

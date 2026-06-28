@@ -293,6 +293,7 @@ export default function App() {
             'module_02_everyday_cso_work': []
           };
         } else if (moduleId === 'module_01_hrba_foundations') {
+          updatedState.practiceCheckState = {};
           updatedState.agreementAccepted = false;
           updatedState.orientationAnswers = {};
           updatedState.orientationCompleted = false;

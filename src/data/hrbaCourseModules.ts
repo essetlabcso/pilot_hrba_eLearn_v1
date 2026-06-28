@@ -20,7 +20,7 @@ export const HRBA_COURSE_MODULES: HRBAModuleDefinition[] = [
     moduleSeq: 1,
     itemLabel: 'Module 1',
     title: 'Starting the HRBA Learning Journey',
-    subtitle: 'Introduction to HRBA for Local CSOs',
+    subtitle: 'Introduction to HRBA for Local and Grassroots CSOs',
     description: 'Begin safely, explore the course pathway, practice a simple HRBA noticing habit, and choose one private action commitment to carry forward.',
     coverFocus: 'Start with a safe, practical HRBA lens for everyday CSO work without needing legal expertise.',
     duration: '20-25 minutes',
