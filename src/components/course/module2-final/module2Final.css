@@ -16,6 +16,12 @@
   display: grid;
   gap: 0.65rem;
   max-width: 820px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  padding: clamp(1rem, 1.8vw, 1.35rem);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
 }
 
 .m2-final-header h1,
@@ -56,6 +62,12 @@
 .m2-final-cover__copy {
   display: grid;
   gap: 1rem;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border-dark);
+  border-radius: 8px;
+  padding: clamp(1rem, 1.8vw, 1.35rem);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
 }
 
 .m2-final-cover__visual {

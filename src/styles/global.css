@@ -27489,14 +27489,14 @@ body:has(.course-shell) {
 }
 
 @media (min-width: 901px) {
-  .main-screen-canvas__content:has(:is(main, section)[class^="m2-"]:not(.m2-cover-screen)) {
+  .main-screen-canvas__content:has(:is(main, section)[class^="m2-"]:not(.m2-cover-screen):not([class^="m2-final-"])) {
     --m2-desktop-scale: 0.86;
     padding: 0.72rem;
     overflow: hidden;
   }
 
-  .main-screen-canvas__content:has(:is(main, section)[class^="m2-"]:not(.m2-cover-screen)) > div,
-  .main-screen-canvas__content:has(:is(main, section)[class^="m2-"]:not(.m2-cover-screen)) > div > div {
+  .main-screen-canvas__content:has(:is(main, section)[class^="m2-"]:not(.m2-cover-screen):not([class^="m2-final-"])) > div,
+  .main-screen-canvas__content:has(:is(main, section)[class^="m2-"]:not(.m2-cover-screen):not([class^="m2-final-"])) > div > div {
     display: flex;
     flex: 1 1 auto;
     align-items: stretch;
@@ -27508,7 +27508,7 @@ body:has(.course-shell) {
     max-width: none !important;
   }
 
-  .main-screen-canvas__content :is(main, section)[class^="m2-"]:not(.m2-cover-screen) {
+  .main-screen-canvas__content :is(main, section)[class^="m2-"]:not(.m2-cover-screen):not([class^="m2-final-"]) {
     width: 116.28%;
     max-width: none !important;
     height: 116.28%;
@@ -27526,7 +27526,7 @@ body:has(.course-shell) {
     box-shadow: 0 16px 36px rgba(7, 28, 51, 0.12);
   }
 
-  .main-screen-canvas__content :is(section, div)[class^="m2-"][class*="-shell"],
+  .main-screen-canvas__content :is(section, div)[class^="m2-"][class*="-shell"]:not([class^="m2-final-"]),
   .main-screen-canvas__content .m2-s02-canvas,
   .main-screen-canvas__content .m2-s03-layout-grid,
   .main-screen-canvas__content .m2-s04-layout-grid,
