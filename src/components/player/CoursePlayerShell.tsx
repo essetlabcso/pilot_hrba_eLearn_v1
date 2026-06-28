@@ -38,6 +38,25 @@ const menuDrawerFocusableSelector = [
 
 const module2ScreenRoutes: Record<string, string> = module2FinalScreenRoutes;
 const module3ScreenRoutes: Record<string, string> = module3RevisedScreenRoutes;
+const module5ScreenRoutes: Record<string, string> = {
+  'M5-PLAYER-00': '/module-5/cover',
+  'M5-R01': '/module-5/screen-5-1',
+  'M5-R02': '/module-5/screen-5-2',
+  'M5-R03': '/module-5/screen-5-3',
+  'M5-R04': '/module-5/screen-5-4',
+  'M5-R05': '/module-5/screen-5-5',
+  'M5-R06': '/module-5/screen-5-6',
+  'M5-R07': '/module-5/screen-5-7',
+  'M5-R08': '/module-5/screen-5-8',
+  'M5-R09': '/module-5/screen-5-9',
+  'M5-R10': '/module-5/screen-5-10',
+  'M5-R11': '/module-5/screen-5-11',
+  'M5-R12': '/module-5/screen-5-12',
+  'M5-R13': '/module-5/screen-5-13',
+  'M5-R14': '/module-5/screen-5-14',
+  'M5-R15': '/module-5/screen-5-15',
+  'M5-PLAYER-COMPLETE': '/module-5/complete',
+};
 
 function focusHTMLElement(element: Element | null | undefined) {
   if (!(element instanceof HTMLElement)) {
@@ -57,7 +76,9 @@ function syncRouteToScreen(moduleId: string | null | undefined, screenId: string
     ? module2ScreenRoutes[screenId]
     : moduleId === 'module_03_project_design'
       ? module3ScreenRoutes[screenId]
-      : undefined;
+      : moduleId === 'module_05_hrba_meal'
+        ? module5ScreenRoutes[screenId]
+        : undefined;
 
   if (route && window.location.pathname !== route) {
     window.history.pushState(null, '', route);
@@ -163,16 +184,28 @@ export default function CoursePlayerShell({
         const shouldRecordScreenProgress = !(
           prev.currentModuleId === 'module_03_project_design' && screenId === 'M3-PLAYER-00'
         );
-        const updatedProgress = !shouldRecordScreenProgress || currentProgress.includes(screenId)
+        const targetScreenId = targetScreen['Screen/State ID'];
+        const targetModuleId = prev.currentModuleId || 'module_01_hrba_foundations';
+        const isModule5CompletionTarget =
+          prev.currentModuleId === 'module_05_hrba_meal' && targetScreenId === 'M5-PLAYER-COMPLETE';
+        const updatedProgressBase = !shouldRecordScreenProgress || currentProgress.includes(screenId)
           ? currentProgress
           : [...currentProgress, screenId];
+        const updatedProgress =
+          isModule5CompletionTarget && !updatedProgressBase.includes('M5-PLAYER-COMPLETE')
+            ? [...updatedProgressBase, 'M5-PLAYER-COMPLETE']
+            : updatedProgressBase;
 
         return {
           ...prev,
-          currentScreenId: targetScreen['Screen/State ID'],
+          currentScreenId: targetScreenId,
+          completedModules:
+            isModule5CompletionTarget && !prev.completedModules.includes('module_05_hrba_meal')
+              ? [...prev.completedModules, 'module_05_hrba_meal']
+              : prev.completedModules,
           screenProgress: {
             ...prev.screenProgress,
-            [prev.currentModuleId || 'module_01_hrba_foundations']: updatedProgress
+            [targetModuleId]: updatedProgress
           }
         };
       });
@@ -606,7 +639,7 @@ export default function CoursePlayerShell({
       return false;
     } else if (state.currentModuleId === 'module_05_hrba_meal') {
       if (
-        screenId.startsWith('M5-S1-') &&
+        (screenId.startsWith('M5-S1-') || screenId.startsWith('M5-R')) &&
         !(state.screenProgress.module_05_hrba_meal || []).includes(screenId)
       ) {
         return true;

@@ -28,7 +28,7 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
   const isModule3RevisedScreen = screenId.startsWith('M3-R');
   const isModule3BuiltScreen = isModule3RevisedScreen || screenId.startsWith('M3-S1-') || screenId === 'M3-PLAYER-COMPLETE';
   const isModule4BuiltScreen = screenId.startsWith('M4-S1-');
-  const isModule5BuiltScreen = screenId.startsWith('M5-S1-') || screenId === 'M5-PLAYER-COMPLETE';
+  const isModule5BuiltScreen = screenId.startsWith('M5-R') || screenId.startsWith('M5-S1-') || screenId === 'M5-PLAYER-COMPLETE';
   const isModule2CuratedWideScreen = ['M2-S01A', 'M2-S02', 'M2-S03', 'M2-S04', 'M2-S05', 'M2-S06', 'M2-S07', 'M2-S08', 'M2-S09', 'M2-S10', 'M2-S11', 'M2-S12', 'M2-S13', 'M2-S14', 'M2-S15', 'M2-S16', 'M2-S17', 'M2-S18', 'M2-S19', 'M2-S20', 'M2-S21', 'M2-S22', 'M2-S23'].includes(screenId);
   const isWideOpeningScreen = isModule5BuiltScreen || isModule4BuiltScreen || isModule3BuiltScreen || isModule2CoverScreen || isModule2CuratedWideScreen || screenId === 'M1-PLAYER-00' || screenId === 'M1-S1-01' || screenId === 'M1-S1-02' || screenId === 'M1-S1-03' || screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-08' || screenId === 'M1-S2-01' || screenId === 'M1-S2-02' || screenId === 'M1-S2-03';
   const moduleDefinition = getHRBAModuleById(state.currentModuleId);

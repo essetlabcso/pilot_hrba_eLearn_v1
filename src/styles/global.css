@@ -34379,3 +34379,359 @@ body:has(.course-shell) {
     font-size: 0.62rem;
   }
 }
+
+.m5-orientation-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.m5-orientation-preview .m5-canvas__header {
+  grid-column: 1 / -1;
+}
+
+.m5-orientation-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.72rem;
+  min-height: 8.5rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(16, 139, 132, 0.24);
+  border-radius: 16px;
+  background: #ffffff;
+  color: var(--m5-navy);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(7, 28, 51, 0.08);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+.m5-orientation-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(16, 139, 132, 0.5);
+  box-shadow: 0 16px 32px rgba(7, 28, 51, 0.12);
+}
+
+.m5-orientation-card:focus-visible {
+  outline: 3px solid rgba(246, 180, 45, 0.55);
+  outline-offset: 3px;
+}
+
+.m5-orientation-card.is-reviewed {
+  border-color: rgba(16, 139, 132, 0.62);
+  background: rgba(236, 253, 245, 0.84);
+}
+
+.m5-orientation-card__status {
+  display: inline-grid;
+  flex: 0 0 2.05rem;
+  place-items: center;
+  width: 2.05rem;
+  height: 2.05rem;
+  border-radius: 999px;
+  background: rgba(16, 139, 132, 0.12);
+  color: var(--m5-green-dark);
+  font-weight: 950;
+}
+
+.m5-orientation-card.is-reviewed .m5-orientation-card__status {
+  background: var(--m5-green);
+  color: #ffffff;
+}
+
+.m5-orientation-card strong,
+.m5-orientation-card small {
+  display: block;
+}
+
+.m5-orientation-card strong {
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.m5-orientation-card small {
+  color: #42526a;
+  font-size: 0.84rem;
+  line-height: 1.38;
+}
+
+.m5-orientation-actions {
+  align-items: stretch;
+}
+
+.m5-orientation-actions > div:first-child {
+  flex: 1 1 18rem;
+}
+
+.m5-clinic-screen .m5-hero-panel {
+  grid-template-columns: minmax(320px, 0.86fr) minmax(420px, 1.14fr);
+}
+
+.m5-clinic-canvas {
+  gap: 0.9rem;
+  padding-bottom: 1.35rem;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 248, 0.96));
+}
+
+.m5-practice-point {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.82rem 0.9rem;
+  border: 1px solid rgba(16, 139, 132, 0.24);
+  border-left: 5px solid var(--m5-green);
+  border-radius: 16px;
+  background: rgba(238, 247, 252, 0.86);
+}
+
+.m5-practice-point p,
+.m5-carry-forward-note {
+  margin: 0;
+  color: #344256;
+  line-height: 1.45;
+}
+
+.m5-practice-point .m5-card-kicker {
+  color: var(--m5-green-dark);
+}
+
+.m5-carry-forward-note {
+  margin-top: 0.48rem;
+  padding-top: 0.48rem;
+  border-top: 1px solid rgba(183, 221, 238, 0.78);
+  font-weight: 760;
+}
+
+.m5-clinic-reveal {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: 0.85rem;
+  align-items: stretch;
+}
+
+.m5-repair-grid,
+.m5-decision-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.m5-repair-card {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(183, 221, 238, 0.78);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(7, 28, 51, 0.08);
+}
+
+.m5-repair-card.is-correct {
+  border-color: rgba(16, 139, 132, 0.48);
+  background: rgba(236, 253, 245, 0.92);
+}
+
+.m5-repair-card.is-incorrect {
+  border-color: rgba(193, 48, 48, 0.38);
+  background: rgba(255, 247, 237, 0.94);
+}
+
+.m5-repair-card h3 {
+  margin: 0;
+  color: var(--m5-navy);
+  font-size: 1rem;
+  line-height: 1.24;
+}
+
+.m5-repair-card label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--m5-navy);
+  font-weight: 820;
+}
+
+.m5-repair-card label > span {
+  font-size: 0.82rem;
+}
+
+.m5-repair-card select,
+.m5-decision-grid select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(16, 139, 132, 0.32);
+  border-radius: 12px;
+  padding: 0.58rem 0.72rem;
+  background: #ffffff;
+  color: var(--m5-navy);
+  font: inherit;
+  font-weight: 760;
+}
+
+.m5-selected-summary {
+  margin: -0.15rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(183, 221, 238, 0.72);
+  border-radius: 12px;
+  background: rgba(238, 247, 252, 0.82);
+  color: #344256;
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.42;
+}
+
+.m5-selected-summary strong {
+  color: var(--m5-navy);
+}
+
+.m5-capstone-steps {
+  display: grid;
+  gap: 0.78rem;
+}
+
+.m5-capstone-step label {
+  gap: 0.48rem;
+}
+
+.m5-capstone-step label small {
+  color: #344256;
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.m5-capstone-step select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(16, 139, 132, 0.32);
+  border-radius: 12px;
+  padding: 0.58rem 0.72rem;
+  background: #ffffff;
+  color: var(--m5-navy);
+  font: inherit;
+  font-weight: 760;
+}
+
+.m5-capstone-summary {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0.65rem 0 0;
+  padding-left: 1.22rem;
+  color: #344256;
+}
+
+.m5-classification-card small {
+  color: #344256;
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.m5-repair-note-output {
+  gap: 0.65rem;
+}
+
+.m5-repair-note-output pre {
+  max-height: 17rem;
+  margin: 0;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid rgba(183, 221, 238, 0.74);
+  border-radius: 14px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: #102033;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.m5-repair-note-output pre:focus-visible {
+  outline: 3px solid rgba(246, 180, 45, 0.5);
+  outline-offset: 2px;
+}
+
+.m5-bridge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.m5-bridge-stage {
+  display: grid;
+  align-content: start;
+  gap: 0.62rem;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid rgba(183, 221, 238, 0.78);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(7, 28, 51, 0.08);
+}
+
+.m5-bridge-stage legend {
+  padding: 0 0.35rem;
+  color: var(--m5-navy);
+  font-weight: 900;
+}
+
+.m5-bridge-stage > p {
+  margin: 0;
+  color: #344256;
+  font-weight: 700;
+  line-height: 1.42;
+}
+
+.m5-repair-card select:focus-visible,
+.m5-decision-grid select:focus-visible,
+.m5-capstone-step select:focus-visible {
+  outline: 3px solid rgba(246, 180, 45, 0.5);
+  outline-offset: 2px;
+}
+
+.m5-safety-warning {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.78rem 0.9rem;
+  border: 1px solid rgba(246, 180, 45, 0.44);
+  border-radius: 16px;
+  background: rgba(255, 251, 235, 0.96);
+  color: var(--m5-navy);
+}
+
+.m5-safety-warning strong {
+  font-size: 0.95rem;
+}
+
+.m5-safety-warning span {
+  color: #344256;
+  line-height: 1.46;
+}
+
+@media (max-width: 920px) {
+  .m5-clinic-reveal,
+  .m5-repair-grid,
+  .m5-decision-grid,
+  .m5-bridge-grid,
+  .m5-orientation-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .m5-orientation-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .m5-clinic-canvas {
+    padding-bottom: 2rem;
+  }
+}
