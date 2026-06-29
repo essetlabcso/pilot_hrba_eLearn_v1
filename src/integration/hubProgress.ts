@@ -24,9 +24,7 @@ export type HubProgressMessage = HubProgressPayload & {
   type: typeof EXTERNAL_COURSE_PROGRESS_MESSAGE;
   version: 1;
   courseSlug: string;
-  userId: string;
-  enrollmentId: string;
-  courseVersionId: string;
+  launchToken: string;
   sentAt: string;
 };
 
@@ -42,9 +40,7 @@ export function sendHubProgressMessage(
     type: EXTERNAL_COURSE_PROGRESS_MESSAGE,
     version: 1,
     courseSlug: portalContext.courseSlug,
-    userId: portalContext.userId,
-    enrollmentId: portalContext.enrollmentId,
-    courseVersionId: portalContext.courseVersionId,
+    launchToken: portalContext.launchToken,
     progressPercent: Math.max(0, Math.min(100, Math.round(payload.progressPercent))),
     completed: payload.completed,
     completedModuleIds: payload.completedModuleIds,

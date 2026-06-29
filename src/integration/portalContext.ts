@@ -2,9 +2,7 @@ export type PortalLaunchContext = {
   embed: 'portal';
   portalOrigin: string;
   courseSlug: string;
-  userId: string;
-  enrollmentId: string;
-  courseVersionId: string;
+  launchToken: string;
 };
 
 function getRequiredParam(params: URLSearchParams, key: string) {
@@ -34,11 +32,9 @@ export function parsePortalLaunchContext(search: string): PortalLaunchContext | 
 
   const portalOrigin = parseOrigin(params.get('portalOrigin')?.trim() || null);
   const courseSlug = getRequiredParam(params, 'courseSlug');
-  const userId = getRequiredParam(params, 'userId');
-  const enrollmentId = getRequiredParam(params, 'enrollmentId');
-  const courseVersionId = getRequiredParam(params, 'courseVersionId');
+  const launchToken = getRequiredParam(params, 'launchToken');
 
-  if (!portalOrigin || !courseSlug || !userId || !enrollmentId || !courseVersionId) {
+  if (!portalOrigin || !courseSlug || !launchToken) {
     return null;
   }
 
@@ -46,9 +42,7 @@ export function parsePortalLaunchContext(search: string): PortalLaunchContext | 
     embed: 'portal',
     portalOrigin,
     courseSlug,
-    userId,
-    enrollmentId,
-    courseVersionId,
+    launchToken,
   };
 }
 
