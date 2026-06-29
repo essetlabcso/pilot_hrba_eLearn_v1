@@ -124,8 +124,8 @@ export default function FinalAssessmentRenderer({
             </div>
           </div>
           <p>
-            Your certificate is issued by the CSO Learning Hub. This app records the result locally for now;
-            the Hub result callback will be connected in a later integration step.
+            Your certificate is issued by the CSO Learning Hub. In Hub portal mode, your submitted final
+            assessment result is shared with the Hub for certificate eligibility.
           </p>
           <button type="button" className="final-assessment-primary" onClick={onNext}>
             Start assessment
@@ -168,12 +168,13 @@ export default function FinalAssessmentRenderer({
                   <h2>{result.passed ? 'Passed' : 'Not passed yet'}</h2>
                   {result.passed ? (
                     <p>
-                      You passed the final assessment. In the next platform integration step, this result will be
-                      shared with the CSO Learning Hub so your certificate can be issued from the Hub.
+                      You passed the final assessment. Your result is being shared with the CSO Learning Hub so your
+                      certificate can be issued and verified from the Hub.
                     </p>
                   ) : (
                     <p>
-                      You have not reached the 80% pass mark yet. Review the suggested areas and try again.
+                      You have not reached the 80% pass mark yet. Review the suggested areas and try again. A
+                      certificate is not issued until you pass.
                     </p>
                   )}
                 </div>

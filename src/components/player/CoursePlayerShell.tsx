@@ -774,7 +774,7 @@ export default function CoursePlayerShell({
             textAlign: 'center',
           }}
         >
-          Your course progress is being shared with the CSO Learning Hub. Certificates will be issued from the Hub after the final assessment is available and completed.
+          Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.
         </p>
       )}
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { loadLearningState, resetLearningState, saveLearningState } from './state/learningState';
 import type { LearningState } from './state/learningState';
 import PlatformShell from './components/platform/PlatformShell';
@@ -28,6 +28,7 @@ const TRACKABLE_PORTAL_MODULE_IDS = [
   'module_04_implementation',
   'module_05_hrba_meal',
 ];
+const FINAL_PORTAL_MODULE_IDS = [...TRACKABLE_PORTAL_MODULE_IDS, 'final_assessment'];
 
 function getPortalCompletedModuleIds(completedModules: string[]) {
   return TRACKABLE_PORTAL_MODULE_IDS.filter((moduleId) => completedModules.includes(moduleId));
@@ -47,6 +48,7 @@ function getScreenProgressSignature(screenProgress: Record<string, string[]>) {
 }
 
 export default function App() {
+  const reportedFinalAssessmentAttemptsRef = useRef<Set<string>>(new Set());
   const [state, setState] = useState<LearningState>(() => {
     const defaultState = loadLearningState();
     const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -274,6 +276,10 @@ export default function App() {
   }, [state]);
 
   useEffect(() => {
+    if (state.finalAssessmentResult) {
+      return;
+    }
+
     sendHubProgressMessage(portalContext, {
       completed: false,
       completedModuleIds: portalCompletedModuleIds,
@@ -288,7 +294,47 @@ export default function App() {
     state.currentModuleId,
     state.currentScreenId,
     screenProgressSignature,
+    state.finalAssessmentResult,
   ]);
+
+  useEffect(() => {
+    const result = state.finalAssessmentResult;
+
+    if (!portalContext || !result) {
+      return;
+    }
+
+    const attemptSignature = `${result.attemptNumber}:${result.submittedAt}`;
+    if (reportedFinalAssessmentAttemptsRef.current.has(attemptSignature)) {
+      return;
+    }
+
+    const completedModuleIds = result.passed
+      ? FINAL_PORTAL_MODULE_IDS.filter(
+          (moduleId) => moduleId === 'final_assessment' || state.completedModules.includes(moduleId),
+        )
+      : portalCompletedModuleIds;
+
+    const sent = sendHubProgressMessage(portalContext, {
+      assessment: {
+        attemptNumber: result.attemptNumber,
+        maxScore: result.maxScore,
+        passed: result.passed,
+        percentage: result.percentage,
+        score: result.score,
+        submittedAt: result.submittedAt,
+      },
+      completed: result.passed,
+      completedModuleIds,
+      currentModuleId: 'final_assessment',
+      currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+      progressPercent: result.passed ? 100 : portalProgressPercent,
+    });
+
+    if (sent) {
+      reportedFinalAssessmentAttemptsRef.current.add(attemptSignature);
+    }
+  }, [portalContext, portalCompletedModuleIds, portalProgressPercent, state.completedModules, state.finalAssessmentResult]);
 
   const launchModule = (moduleId: string, reviewMode: boolean) => {
     setState((prev) => {

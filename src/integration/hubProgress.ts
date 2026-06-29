@@ -2,12 +2,22 @@ import type { PortalLaunchContext } from './portalContext';
 
 export const EXTERNAL_COURSE_PROGRESS_MESSAGE = 'cso-learning-hub:external-course-progress';
 
+export type HubAssessmentPayload = {
+  score: number;
+  maxScore: number;
+  percentage: number;
+  passed: boolean;
+  attemptNumber: number;
+  submittedAt: string;
+};
+
 export type HubProgressPayload = {
   progressPercent: number;
-  completed: false;
+  completed: boolean;
   completedModuleIds: string[];
   currentModuleId: string | null;
   currentScreenId: string | null;
+  assessment?: HubAssessmentPayload;
 };
 
 export type HubProgressMessage = HubProgressPayload & {
@@ -35,11 +45,12 @@ export function sendHubProgressMessage(
     userId: portalContext.userId,
     enrollmentId: portalContext.enrollmentId,
     courseVersionId: portalContext.courseVersionId,
-    progressPercent: Math.max(0, Math.min(90, Math.round(payload.progressPercent))),
-    completed: false,
+    progressPercent: Math.max(0, Math.min(100, Math.round(payload.progressPercent))),
+    completed: payload.completed,
     completedModuleIds: payload.completedModuleIds,
     currentModuleId: payload.currentModuleId,
     currentScreenId: payload.currentScreenId,
+    ...(payload.assessment ? { assessment: payload.assessment } : {}),
     sentAt: new Date().toISOString(),
   };
 

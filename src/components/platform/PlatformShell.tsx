@@ -33,7 +33,7 @@ export default function PlatformShell({
       ? 'Module 5 is complete. Final Assessment is ready.'
       : `Continue with ${nextModule.itemLabel}.`;
   const progressDescription = finalAssessmentCompleted
-    ? 'Your final assessment pass is saved in this browser. Certificates are issued by the CSO Learning Hub after the result callback integration is connected.'
+    ? 'Your final assessment pass is saved in this browser. In Hub portal mode, the result is shared with the CSO Learning Hub for certificate issuance and verification.'
     : completedModules.length === 0 && nextModuleProgress === 0
     ? 'Begin with Module 1. Your progress will be saved only in this browser as you move through the course.'
     : nextModule.moduleId === 'final_assessment'
@@ -166,7 +166,7 @@ export default function PlatformShell({
               lineHeight: 1.5,
             }}
           >
-            Your course progress is being shared with the CSO Learning Hub. Certificates will be issued from the Hub after the final assessment result callback is connected.
+            Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.
           </p>
         )}
 
