@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { loadLearningState, resetLearningState, saveLearningState } from './state/learningState';
 import type { LearningState } from './state/learningState';
 import PlatformShell from './components/platform/PlatformShell';
 import CoursePlayerShell from './components/player/CoursePlayerShell';
 import { HRBA_COURSE_MODULES, getHRBAModuleById } from './data/hrbaCourseModules';
+import { getPortalLaunchContextFromWindow } from './integration/portalContext';
+import { sendHubProgressMessage } from './integration/hubProgress';
 
 import m1Sequence from './data/module1/module_1_screen_sequence.json';
 import {
@@ -14,6 +16,31 @@ import {
   module3PlayerSequence,
   module3RevisedRouteTargets,
 } from './data/module3/module3RevisedScreens';
+
+const TRACKABLE_PORTAL_MODULE_IDS = [
+  'module_01_hrba_foundations',
+  'module_02_everyday_cso_work',
+  'module_03_project_design',
+  'module_04_implementation',
+  'module_05_hrba_meal',
+];
+
+function getPortalCompletedModuleIds(completedModules: string[]) {
+  return TRACKABLE_PORTAL_MODULE_IDS.filter((moduleId) => completedModules.includes(moduleId));
+}
+
+function getPortalProgressPercent(completedModules: string[]) {
+  const completedCount = getPortalCompletedModuleIds(completedModules).length;
+  return Math.min(90, Math.round((completedCount / TRACKABLE_PORTAL_MODULE_IDS.length) * 90));
+}
+
+function getScreenProgressSignature(screenProgress: Record<string, string[]>) {
+  return Object.entries(screenProgress)
+    .filter(([moduleId]) => TRACKABLE_PORTAL_MODULE_IDS.includes(moduleId))
+    .sort(([moduleA], [moduleB]) => moduleA.localeCompare(moduleB))
+    .map(([moduleId, screenIds]) => `${moduleId}:${[...screenIds].sort().join('|')}`)
+    .join(';');
+}
 
 export default function App() {
   const [state, setState] = useState<LearningState>(() => {
@@ -225,10 +252,40 @@ export default function App() {
     
     return defaultState;
   });
+  const portalContext = useMemo(() => getPortalLaunchContextFromWindow(), []);
+  const portalCompletedModuleIds = useMemo(
+    () => getPortalCompletedModuleIds(state.completedModules),
+    [state.completedModules],
+  );
+  const portalProgressPercent = useMemo(
+    () => getPortalProgressPercent(state.completedModules),
+    [state.completedModules],
+  );
+  const screenProgressSignature = useMemo(
+    () => getScreenProgressSignature(state.screenProgress),
+    [state.screenProgress],
+  );
 
   useEffect(() => {
     saveLearningState(state);
   }, [state]);
+
+  useEffect(() => {
+    sendHubProgressMessage(portalContext, {
+      completed: false,
+      completedModuleIds: portalCompletedModuleIds,
+      currentModuleId: state.currentModuleId,
+      currentScreenId: state.currentScreenId,
+      progressPercent: portalProgressPercent,
+    });
+  }, [
+    portalContext,
+    portalCompletedModuleIds,
+    portalProgressPercent,
+    state.currentModuleId,
+    state.currentScreenId,
+    screenProgressSignature,
+  ]);
 
   const launchModule = (moduleId: string, reviewMode: boolean) => {
     setState((prev) => {
@@ -553,6 +610,7 @@ export default function App() {
         currentScreenId={state.currentScreenId}
         onLaunchModule={launchModule}
         onResetProgress={resetCourseProgress}
+        portalModeActive={Boolean(portalContext)}
       />
     );
   }
@@ -563,6 +621,7 @@ export default function App() {
       onChangeState={setState}
       onExit={exitPlayer}
       sequenceData={currentSequence}
+      portalModeActive={Boolean(portalContext)}
     />
   );
 }

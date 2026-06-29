@@ -8,6 +8,7 @@ interface PlatformShellProps {
   currentScreenId: string | null;
   onLaunchModule: (moduleId: string, reviewMode: boolean) => void;
   onResetProgress: () => void;
+  portalModeActive?: boolean;
 }
 
 export default function PlatformShell({
@@ -17,6 +18,7 @@ export default function PlatformShell({
   currentScreenId,
   onLaunchModule,
   onResetProgress,
+  portalModeActive = false,
 }: PlatformShellProps) {
   const nextModule =
     HRBA_COURSE_MODULES.find((module) => !completedModules.includes(module.moduleId)) ||
@@ -145,6 +147,21 @@ export default function PlatformShell({
             <span aria-hidden="true">›</span>
           </button>
         </section>
+
+        {portalModeActive && (
+          <p
+            role="status"
+            style={{
+              margin: '-1rem 0 1.5rem',
+              color: 'var(--color-secondary-text)',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              lineHeight: 1.5,
+            }}
+          >
+            Your course progress is being shared with the CSO Learning Hub. Certificates will be issued from the Hub after the final assessment is available and completed.
+          </p>
+        )}
 
         {/* Roadmap component */}
         <CourseRoadmap 

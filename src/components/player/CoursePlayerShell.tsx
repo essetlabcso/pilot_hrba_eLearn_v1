@@ -25,6 +25,7 @@ interface CoursePlayerShellProps {
   onExit: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sequenceData: any[];
+  portalModeActive?: boolean;
 }
 
 const menuDrawerFocusableSelector = [
@@ -89,7 +90,8 @@ export default function CoursePlayerShell({
   state,
   onChangeState,
   onExit,
-  sequenceData
+  sequenceData,
+  portalModeActive = false
 }: CoursePlayerShellProps) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const helpButtonRef = useRef<HTMLButtonElement>(null);
@@ -750,6 +752,25 @@ export default function CoursePlayerShell({
       data-a11y-reduce-motion={accessibilityPreferences.reduceMotion ? 'true' : 'false'}
     >
       <ProgressStrip percentage={progressPercent} />
+
+      {portalModeActive && (
+        <p
+          role="status"
+          style={{
+            margin: '0',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#ecfdf5',
+            borderBottom: '1px solid rgba(22, 163, 74, 0.2)',
+            color: '#14532d',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            lineHeight: 1.4,
+            textAlign: 'center',
+          }}
+        >
+          Your course progress is being shared with the CSO Learning Hub. Certificates will be issued from the Hub after the final assessment is available and completed.
+        </p>
+      )}
 
       <PlayerHeader
         moduleTitle={moduleTitle}
