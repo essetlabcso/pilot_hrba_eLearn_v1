@@ -6,6 +6,7 @@ import Module3Renderer from './Module3Renderer';
 import Module3RevisedRenderer from './Module3RevisedRenderer';
 import Module4Renderer from './Module4Renderer';
 import Module5Renderer from './Module5Renderer';
+import FinalAssessmentRenderer from './FinalAssessmentRenderer';
 import Module2FinalRenderer from './module2-final/Module2FinalRenderer';
 import { module2FinalScreenIds } from '../../data/module2-final/module2FinalScreens';
 import CourseItemCoverScreen from './CourseItemCoverScreen';
@@ -22,9 +23,8 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
   const isModule3CoverScreen = screenId === 'M3-PLAYER-00';
   const isModule4CoverScreen = screenId === 'M4-PLAYER-00';
   const isModule5CoverScreen = screenId === 'M5-PLAYER-00';
-  const isFinalAssessmentCoverScreen = screenId === 'FINAL-ASSESSMENT-PLAYER-00';
   const isModule1CoverScreen = screenId === 'M1-PLAYER-00';
-  const isCourseItemCoverScreen = isModule1CoverScreen || isModule2CoverScreen || isModule3CoverScreen || isModule4CoverScreen || isModule5CoverScreen || isFinalAssessmentCoverScreen;
+  const isCourseItemCoverScreen = isModule1CoverScreen || isModule2CoverScreen || isModule3CoverScreen || isModule4CoverScreen || isModule5CoverScreen;
   const isModule3RevisedScreen = screenId.startsWith('M3-R');
   const isModule3BuiltScreen = isModule3RevisedScreen || screenId.startsWith('M3-S1-') || screenId === 'M3-PLAYER-COMPLETE';
   const isModule4BuiltScreen = screenId.startsWith('M4-S1-');
@@ -40,6 +40,17 @@ export default function ScreenRenderer({ screenId, state, onChangeState, onNext 
     return (
       <Module2FinalRenderer
         screenId={isModule2FinalScreen ? screenId : 'M2-00'}
+        state={state}
+        onChangeState={onChangeState}
+        onNext={onNext}
+      />
+    );
+  }
+
+  if (state.currentModuleId === 'final_assessment' && screenId.startsWith('FINAL-ASSESSMENT-')) {
+    return (
+      <FinalAssessmentRenderer
+        screenId={screenId}
         state={state}
         onChangeState={onChangeState}
         onNext={onNext}

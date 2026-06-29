@@ -93,14 +93,14 @@ export const HRBA_COURSE_MODULES: HRBAModuleDefinition[] = [
     moduleSeq: 6,
     itemLabel: 'Final Assessment',
     title: 'Final Assessment',
-    description: 'Complete the final course assessment after finishing the five-module HRBA learning pathway. Final assessment implementation remains separate.',
-    coverFocus: 'Final Course Checkpoint',
-    duration: 'Final checkpoint',
+    description: 'Complete a 10-question HRBA judgment assessment after finishing the five-module learning pathway. A score of 80% or higher marks the assessment complete locally.',
+    coverFocus: 'Final HRBA Judgment Checkpoint',
+    duration: 'Approx. 15-20 min',
     thumbnailSrc: '/assets/hrba/modules/final-assessment.png',
     thumbnailAlt: 'Final assessment cover image showing an applied HRBA checkpoint after the five-module learning pathway.',
     startScreenId: 'FINAL-ASSESSMENT-PLAYER-00',
     completionScreenId: 'FINAL-ASSESSMENT-COMPLETE',
-    contentAvailable: false,
+    contentAvailable: true,
   },
 ];
 

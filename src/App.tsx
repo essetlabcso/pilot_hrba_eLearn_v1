@@ -16,6 +16,10 @@ import {
   module3PlayerSequence,
   module3RevisedRouteTargets,
 } from './data/module3/module3RevisedScreens';
+import {
+  finalAssessmentRouteTargets,
+  finalAssessmentSequence,
+} from './data/finalAssessment';
 
 const TRACKABLE_PORTAL_MODULE_IDS = [
   'module_01_hrba_foundations',
@@ -139,8 +143,7 @@ export default function App() {
       '/module-5/screen-5-24': { moduleId: 'module_05_hrba_meal', screenId: 'M5-R15' },
       '/module-5/screen-5-25': { moduleId: 'module_05_hrba_meal', screenId: 'M5-R15' },
       '/module-5/complete': { moduleId: 'module_05_hrba_meal', screenId: 'M5-PLAYER-COMPLETE' },
-      '/final-assessment': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
-      '/final-assessment/cover': { moduleId: 'final_assessment', screenId: 'FINAL-ASSESSMENT-PLAYER-00' },
+      ...finalAssessmentRouteTargets,
     };
     const isModule2Path = pathname === '/module-2' || pathname.startsWith('/module-2/');
     const routeTarget = isModule2Path
@@ -423,6 +426,14 @@ export default function App() {
             ...prev.screenProgress,
             'module_01_hrba_foundations': []
           };
+        } else if (moduleId === 'final_assessment') {
+          updatedState.finalAssessmentAnswers = {};
+          updatedState.finalAssessmentResult = null;
+          updatedState.completedModules = prev.completedModules.filter((id) => id !== 'final_assessment');
+          updatedState.screenProgress = {
+            ...prev.screenProgress,
+            final_assessment: [],
+          };
         } else {
           updatedState.screenProgress = {
             ...prev.screenProgress,
@@ -445,7 +456,9 @@ export default function App() {
       const activeMod = prev.currentModuleId || 'module_01_hrba_foundations';
       const progressList = prev.screenProgress[activeMod] || [];
       const completeScreenId = getHRBAModuleById(activeMod)?.completionScreenId || 'M1-PLAYER-COMPLETE';
-      const isCompleted = progressList.includes(completeScreenId);
+      const isCompleted = activeMod === 'final_assessment'
+        ? Boolean(prev.finalAssessmentResult?.passed)
+        : progressList.includes(completeScreenId);
       
       const completedModules = isCompleted && !prev.completedModules.includes(activeMod)
         ? [...prev.completedModules, activeMod]
@@ -586,6 +599,8 @@ export default function App() {
           ]
     : state.currentModuleId === 'module_05_hrba_meal'
         ? module5Sequence
+      : state.currentModuleId === 'final_assessment'
+        ? finalAssessmentSequence
       : [
           {
             Layer: 'Layer 2 Player',

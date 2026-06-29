@@ -124,6 +124,18 @@ export interface LearningState {
   m2TabsViewed: string[];
   m2ProcessViewed: string[];
   m2TimelineViewed: string[];
+
+  // Final Assessment State
+  finalAssessmentAnswers: Record<string, string>;
+  finalAssessmentResult: {
+    score: number;
+    maxScore: number;
+    percentage: number;
+    passed: boolean;
+    submittedAt: string;
+    attemptNumber: number;
+  } | null;
+  finalAssessmentAttemptNumber: number;
 }
 
 export const initialLearningState: LearningState = {
@@ -249,6 +261,10 @@ export const initialLearningState: LearningState = {
   m2TabsViewed: [],
   m2ProcessViewed: [],
   m2TimelineViewed: [],
+
+  finalAssessmentAnswers: {},
+  finalAssessmentResult: null,
+  finalAssessmentAttemptNumber: 0,
 };
 
 const STORAGE_KEY = 'hrba-course-progress-v1';

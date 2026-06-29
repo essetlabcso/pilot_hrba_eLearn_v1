@@ -18,6 +18,7 @@ import {
   module2FinalScreenIds,
   module2FinalScreenRoutes,
 } from '../../data/module2-final/module2FinalScreens';
+import { finalAssessmentScreenRoutes } from '../../data/finalAssessment';
 
 interface CoursePlayerShellProps {
   state: LearningState;
@@ -39,6 +40,7 @@ const menuDrawerFocusableSelector = [
 
 const module2ScreenRoutes: Record<string, string> = module2FinalScreenRoutes;
 const module3ScreenRoutes: Record<string, string> = module3RevisedScreenRoutes;
+const finalAssessmentRoutes: Record<string, string> = finalAssessmentScreenRoutes;
 const module5ScreenRoutes: Record<string, string> = {
   'M5-PLAYER-00': '/module-5/cover',
   'M5-R01': '/module-5/screen-5-1',
@@ -79,6 +81,8 @@ function syncRouteToScreen(moduleId: string | null | undefined, screenId: string
       ? module3ScreenRoutes[screenId]
       : moduleId === 'module_05_hrba_meal'
         ? module5ScreenRoutes[screenId]
+        : moduleId === 'final_assessment'
+          ? finalAssessmentRoutes[screenId]
         : undefined;
 
   if (route && window.location.pathname !== route) {
@@ -647,6 +651,8 @@ export default function CoursePlayerShell({
         return true;
       }
       return false;
+    } else if (state.currentModuleId === 'final_assessment') {
+      return screenId === 'FINAL-ASSESSMENT-QUESTIONS' && !state.finalAssessmentResult;
     } else {
       const practiceCheckState = state.practiceCheckState || {};
       const aboutCardsViewed = Array.isArray(practiceCheckState.module1AboutCourseViewedCards)

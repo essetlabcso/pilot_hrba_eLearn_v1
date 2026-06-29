@@ -20,21 +20,28 @@ export default function PlatformShell({
   onResetProgress,
   portalModeActive = false,
 }: PlatformShellProps) {
+  const finalAssessmentCompleted = completedModules.includes('final_assessment');
   const nextModule =
     HRBA_COURSE_MODULES.find((module) => !completedModules.includes(module.moduleId)) ||
     HRBA_COURSE_MODULES[0];
   const nextModuleProgress = (screenProgress[nextModule.moduleId] || []).length;
-  const progressTitle = completedModules.length === 0 && nextModuleProgress === 0
+  const progressTitle = finalAssessmentCompleted
+    ? 'Course completed locally.'
+    : completedModules.length === 0 && nextModuleProgress === 0
     ? 'Start your HRBA learning pathway.'
     : nextModule.moduleId === 'final_assessment'
       ? 'Module 5 is complete. Final Assessment is ready.'
       : `Continue with ${nextModule.itemLabel}.`;
-  const progressDescription = completedModules.length === 0 && nextModuleProgress === 0
+  const progressDescription = finalAssessmentCompleted
+    ? 'Your final assessment pass is saved in this browser. Certificates are issued by the CSO Learning Hub after the result callback integration is connected.'
+    : completedModules.length === 0 && nextModuleProgress === 0
     ? 'Begin with Module 1. Your progress will be saved only in this browser as you move through the course.'
     : nextModule.moduleId === 'final_assessment'
-      ? 'You can now open the final course assessment. Certificate access depends only on the final assessment result.'
+      ? 'You can now open the final course assessment. Certificate access is handled by the CSO Learning Hub.'
       : `Your browser progress is saved locally. Continue ${nextModule.title} when you are ready.`;
-  const progressCta = completedModules.length === 0 && nextModuleProgress === 0
+  const progressCta = finalAssessmentCompleted
+    ? 'Review Final Assessment'
+    : completedModules.length === 0 && nextModuleProgress === 0
     ? 'Start Module 1'
     : nextModule.moduleId === 'final_assessment'
       ? 'Start Final Assessment'
@@ -141,7 +148,7 @@ export default function PlatformShell({
           <button
             type="button"
             className="course-progress-panel__cta"
-            onClick={() => onLaunchModule(nextModule.moduleId, false)}
+            onClick={() => onLaunchModule(finalAssessmentCompleted ? 'final_assessment' : nextModule.moduleId, false)}
           >
             {progressCta}
             <span aria-hidden="true">›</span>
@@ -159,7 +166,7 @@ export default function PlatformShell({
               lineHeight: 1.5,
             }}
           >
-            Your course progress is being shared with the CSO Learning Hub. Certificates will be issued from the Hub after the final assessment is available and completed.
+            Your course progress is being shared with the CSO Learning Hub. Certificates will be issued from the Hub after the final assessment result callback is connected.
           </p>
         )}
 
