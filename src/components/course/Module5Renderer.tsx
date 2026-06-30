@@ -110,7 +110,6 @@ const module5Routes: Record<string, string> = {
   'M5-R12': '/module-5/screen-5-12',
   'M5-R13': '/module-5/screen-5-13',
   'M5-R14': '/module-5/screen-5-14',
-  'M5-R15': '/module-5/screen-5-15',
   'M5-S1-01': '/module-5/screen-5-1',
   'M5-S1-02': '/module-5/screen-5-2',
   'M5-S1-03': '/module-5/screen-5-3',
@@ -476,35 +475,6 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
   }),
   'M5-R02': baseConfig({
     id: 'M5-R02',
-    title: 'What You Will Practice in This Module',
-    phase: 'Start · What you will practice',
-    lead: 'Review the module purpose, practical CSO rationale, learning objectives, final output, and safe-use boundaries before beginning the evidence diagnosis.',
-    block: 'Orientation and Objectives',
-    storyTitle: 'MEAL as learning and accountability',
-    story: [
-      'In this module, you will practice using MEAL as a rights-based learning and accountability process. You will look beyond completed activities and good numbers to ask who was missed, what feedback shows, what evidence is safe, what should change, and what must be explained back to rights-holders.',
-      'Local and grassroots CSOs often need to listen to communities, report to partners, and improve action with limited time and resources. Strong HRBA MEAL helps a CSO avoid treating reports as the end of the work. It helps the team notice exclusion, protect people\'s information, respond to feedback, adapt activities, report honestly, and account back to communities.',
-    ],
-    revealTitle: 'What you will practice',
-    revealItems: [
-      ['Track', 'What do our indicators and reports show, and what do they hide?'],
-      ['Listen', 'What feedback, complaints, access barriers, and participation signals are we hearing?'],
-      ['Protect', 'What evidence should be aggregated, anonymized, suppressed, referred, or not collected?'],
-      ['Adapt', 'What should change in timing, access, communication, referral, outreach, reporting, or account-back?'],
-      ['Account Back', 'What should we explain to communities about what changed, what did not, why, and what happens next?'],
-      ['Carry Forward', 'What repair note and 90-day action will we take into CSO practice?'],
-    ],
-    activityTitle: 'Review the module orientation',
-    activityPrompt: 'Confirm that you have reviewed the objectives and safeguarding note.',
-    options: makeOptions(['Review the orientation before beginning the evidence diagnosis.', 'Skip the safety boundaries and begin collecting real examples.']),
-    feedbackStrong: 'You are ready to begin the evidence diagnosis with a clear output and safe practice boundaries.',
-    feedbackSupport: 'Review the objectives, output preview, and safeguarding note before continuing.',
-    insight: ['You will build toward My HRBA MEAL, Accountability, and Learning Repair Note - a structured, safe note that helps your CSO identify one practical MEAL repair and one account-back action without entering sensitive information.'],
-    cta: 'Continue to Screen 5.3',
-    nextId: 'M5-R03',
-  }),
-  'M5-R03': baseConfig({
-    id: 'M5-R03',
     title: 'What Is Missing from the Report?',
     phase: 'See the problem · Diagnose the gap',
     lead: 'Diagnose what a strong-looking activity report still does not show about inclusion, participation, feedback, safety, and change.',
@@ -544,11 +514,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'Strong diagnosis. You selected the main HRBA gaps and avoided administrative distractors. Your choices covered inclusion, participation, feedback response, safe evidence, change, and adaptation.',
     feedbackSupport: 'Useful start. Check whether your answer covers the full evidence picture: inclusion, participation influence, feedback response, safe stories and data, different barriers for different groups, disability access, and change beyond attendance.',
     insight: ['A strong-looking report may still be incomplete. HRBA MEAL asks what the report shows, what it hides, what evidence is safe to use, and what action should follow.'],
-    cta: 'Continue to Screen 5.4',
-    nextId: 'M5-R04',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R03',
   }),
-  'M5-R04': baseConfig({
-    id: 'M5-R04',
+  'M5-R03': baseConfig({
+    id: 'M5-R03',
     title: 'The HRBA MEAL Lens',
     phase: 'Learn the tool · HRBA MEAL lens',
     lead: 'Use six practical questions to review whether evidence supports accountability and learning, not only activity reporting.',
@@ -581,11 +551,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'Yes. HRBA-informed learning connects evidence to exclusion, feedback, adaptation, and account-back.',
     feedbackSupport: 'Look for the question that links evidence to who may be excluded, what feedback requires, what should adapt, and what the CSO should explain back.',
     insight: ['The HRBA MEAL lens is a practical review tool. It turns monitoring evidence into questions about people, barriers, safety, change, learning, and account-back.'],
-    cta: 'Continue to Screen 5.5',
-    nextId: 'M5-R05',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R04',
   }),
-  'M5-R05': baseConfig({
-    id: 'M5-R05',
+  'M5-R04': baseConfig({
+    id: 'M5-R04',
     title: 'From Counting to Learning About Change',
     phase: 'Learn the tool · Evidence ladder',
     lead: 'Classify evidence examples on the ladder from outputs toward reach, quality, change, and learning/accountability.',
@@ -612,11 +582,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
       'Counting is not wrong. It becomes stronger when the CSO also checks reach, access quality, barriers, change, learning, and accountability back to rights-holders.',
       'Reflect: which level is usually weakest in your current reporting practice?',
     ],
-    cta: 'Continue to Screen 5.6',
-    nextId: 'M5-R06',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R05',
   }),
-  'M5-R06': baseConfig({
-    id: 'M5-R06',
+  'M5-R05': baseConfig({
+    id: 'M5-R05',
     title: 'Indicator Repair Lab',
     phase: 'Practice clinic · Repair indicators',
     lead: 'Repair weak activity indicators into signals that can show inclusion, participation, feedback, safety, and change.',
@@ -643,11 +613,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     activityPrompt: 'Choose the stronger HRBA-informed indicator and what it reveals.',
     options: makeOptions(['Repair each indicator so it can show inclusion, participation, feedback, safety, and change.', 'Keep the activity counts as the main evidence.']),
     insight: ['A stronger indicator is useful because it can trigger action: adapt the activity, engage a responsible actor, refer safely, account back, or name limits honestly.'],
-    cta: 'Continue to Screen 5.7',
-    nextId: 'M5-R07',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R06',
   }),
-  'M5-R07': baseConfig({
-    id: 'M5-R07',
+  'M5-R06': baseConfig({
+    id: 'M5-R06',
     title: 'Safe and Inclusive Evidence',
     phase: 'Practice clinic · Safe evidence',
     lead: 'Choose evidence that helps the team see inclusion and barriers without exposing people to harm.',
@@ -675,11 +645,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     activityPrompt: 'Select how the team should handle each fictional evidence example.',
     options: makeOptions(['Use safe, useful, proportionate evidence decisions.', 'Collect as much detail as possible.']),
     insight: ['The safest evidence choice is the one that is useful for action and least likely to identify, label, or expose people.'],
-    cta: 'Continue to Screen 5.8',
-    nextId: 'M5-R08',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R07',
   }),
-  'M5-R08': baseConfig({
-    id: 'M5-R08',
+  'M5-R07': baseConfig({
+    id: 'M5-R07',
     title: 'Feedback, Complaints, and Trust',
     phase: 'Practice clinic · Feedback loop',
     lead: 'Repair a weak feedback channel so feedback becomes safe evidence for response, referral, adaptation, and account-back.',
@@ -707,11 +677,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     activityPrompt: 'Select the steps that make feedback safe, useful, and accountable.',
     options: makeOptions(['Build a safe response, referral, adaptation, and account-back pathway.', 'Only count complaints received.']),
     insight: ['Feedback becomes accountability evidence when it is safely received, reviewed, responded to or referred, used for adaptation where appropriate, and explained back.'],
-    cta: 'Continue to Screen 5.9',
-    nextId: 'M5-R09',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R08',
   }),
-  'M5-R09': baseConfig({
-    id: 'M5-R09',
+  'M5-R08': baseConfig({
+    id: 'M5-R08',
     title: 'Ethical Stories and Responsible Data',
     phase: 'Practice clinic · Ethical reporting',
     lead: 'Choose a safe response when a report request asks for names, photos, quotes, complaint details, or raw data.',
@@ -739,11 +709,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     activityPrompt: 'Select the safer response for each fictional request.',
     options: makeOptions(['Protect dignity and still report useful evidence.', 'Prioritize the most dramatic report material.']),
     insight: ['Responsible reporting protects people and still tells the truth: it can refuse unsafe detail while offering safe themes, adaptation evidence, and honest limits.'],
-    cta: 'Continue to Screen 5.10',
-    nextId: 'M5-R10',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R09',
   }),
-  'M5-R10': baseConfig({
-    id: 'M5-R10',
+  'M5-R09': baseConfig({
+    id: 'M5-R09',
     title: 'Interpreting Evidence with Rights-Holders',
     phase: 'Synthesis clinic · Interpret evidence safely',
     lead: 'Practice a safe participatory review routine that interprets evidence with rights-holders without exposing names, complaint details, or sensitive information.',
@@ -770,11 +740,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'Strong review routine. You protected identity, asked who was missing, made space for less powerful voices, separated complaints from public review, and recorded next steps.',
     feedbackSupport: 'The routine still needs repair. Look for steps that interpret themes with rights-holders while protecting identities and routing sensitive concerns safely.',
     insight: ['Participatory interpretation is not a public investigation. It is a safe way to understand themes, barriers, meaning, action, and account-back with rights-holders.'],
-    cta: 'Continue to Screen 5.11',
-    nextId: 'M5-R11',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R10',
   }),
-  'M5-R11': baseConfig({
-    id: 'M5-R11',
+  'M5-R10': baseConfig({
+    id: 'M5-R10',
     title: 'Reading the Signals: When the Plan Should Change',
     phase: 'Synthesis clinic · Choose the response',
     lead: 'Match evidence signals to responsible next actions: continue, adapt, consult, refer, engage responsible actors, pause risky claims, or account back.',
@@ -803,11 +773,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'Strong decisions. You matched signals to proportionate action instead of defaulting to more data, public blame, or informal investigation.',
     feedbackSupport: 'Review the signal again. The safest action may be adaptation, consultation, referral, duty-bearer engagement, pausing a weak claim, or account-back.',
     insight: ['Evidence should change something. The responsible action depends on the signal, the risk, the team mandate, and what rights-holders need to hear back.'],
-    cta: 'Continue to Screen 5.12',
-    nextId: 'M5-R12',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R11',
   }),
-  'M5-R12': baseConfig({
-    id: 'M5-R12',
+  'M5-R11': baseConfig({
+    id: 'M5-R11',
     title: 'Reporting Without Losing the Rights Lens',
     phase: 'Synthesis clinic · Repair the report',
     lead: 'Repair risky report claims so they stay truthful, evidence-based, dignity-preserving, and accountable to communities.',
@@ -835,11 +805,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'Strong report repair. The safer claims protect dignity, avoid overclaiming, name evidence limits, and show adaptation or account-back.',
     feedbackSupport: 'Some claims still need repair. Look for truthful language that avoids identifying people, unsupported reach claims, and erased limitations.',
     insight: ['Responsible reporting protects people and strengthens credibility. It tells the truth about progress, barriers, limits, adaptation, and account-back.'],
-    cta: 'Continue to Screen 5.13',
-    nextId: 'M5-R13',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R12',
   }),
-  'M5-R13': baseConfig({
-    id: 'M5-R13',
+  'M5-R12': baseConfig({
+    id: 'M5-R12',
     title: 'Capstone: Evidence-to-Action Simulator',
     phase: 'Synthesis clinic · Full HRBA MEAL cycle',
     lead: 'Work through a guided seven-step simulator that turns fictional evidence into safer action, truthful reporting, and community account-back.',
@@ -868,11 +838,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'Strong capstone pathway. You moved from evidence to safe action, truthful reporting, and account-back without collecting sensitive free text.',
     feedbackSupport: 'Review the pathway. Each step should protect people, avoid overclaiming, use feedback responsibly, adapt where needed, and account back.',
     insight: ['The capstone brings the Module 5 practice together: evidence is useful when it is safe, interpreted with rights-holders, acted on, reported truthfully, and explained back.'],
-    cta: 'Continue to Screen 5.14',
-    nextId: 'M5-R14',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R13',
   }),
-  'M5-R14': baseConfig({
-    id: 'M5-R14',
+  'M5-R13': baseConfig({
+    id: 'M5-R13',
     title: 'My HRBA MEAL, Accountability, and Learning Repair Note',
     lead: 'Create a safe, structured repair note from choices only: one practical improvement, one honest limit, and one account-back action.',
     visualSrc: module5RepairNoteWorksheetSrc,
@@ -897,11 +867,11 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     feedbackStrong: 'The repair note is useful because it is practical, safe, honest about limits, and connected to account-back.',
     feedbackSupport: 'Complete each structured choice so the repair note is practical, safe, honest, and accountable.',
     insight: ['A good repair note helps a team improve one or two realistic practices without collecting sensitive details or overpromising change.'],
-    cta: 'Continue to Screen 5.15',
-    nextId: 'M5-R15',
+    cta: 'Continue to Screen 5.3',
+    nextId: 'M5-R14',
   }),
-  'M5-R15': baseConfig({
-    id: 'M5-R15',
+  'M5-R14': baseConfig({
+    id: 'M5-R14',
     title: '90-Day Practice Bridge and Account-Back Commitment',
     lead: 'Turn the repair note into a realistic 30/60/90-day practice bridge and finish Module 5 with an account-back commitment.',
     visualSrc: module5ActionJourneySrc,
@@ -928,6 +898,13 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
     nextId: 'M5-PLAYER-COMPLETE',
   }),
 };
+
+Object.values(module5RevisedScreens).forEach((screen) => {
+  const nextMatch = /^M5-R(\d{2})$/.exec(screen.nextId);
+  if (nextMatch) {
+    screen.ctaButton = `Continue to Screen 5.${Number(nextMatch[1])}`;
+  }
+});
 
 const module5Screens: Record<string, Module5ScreenConfig> = {
   ...module5RevisedScreens,
@@ -1917,35 +1894,35 @@ const storyResponseOptions = [
 ];
 
 const clinicPracticeNotes = {
-  'M5-R06': {
+  'M5-R05': {
     why: 'Indicator repair is not only better wording. It changes what the CSO can learn, adapt, refer, engage on, and account back.',
     carry: 'Carry forward: choose one weak indicator pattern you may want to repair later in your HRBA MEAL repair note.',
   },
-  'M5-R07': {
+  'M5-R06': {
     why: 'Safe evidence is useful for action and uses the least detail needed to see access, barriers, participation, safety, change, and accountability.',
     carry: 'Carry forward: the safest evidence choice is the one that is useful for action and least likely to identify or expose people.',
   },
-  'M5-R08': {
+  'M5-R07': {
     why: 'A complaint box or meeting is not accountability unless something safe and visible happens after feedback is received.',
     carry: 'Carry forward: later, your repair note should name one practical feedback-loop repair, not a real complaint or identifying detail.',
   },
-  'M5-R09': {
+  'M5-R08': {
     why: 'A strong report can protect people and still tell the truth through safe themes, adaptation evidence, and honest limits.',
     carry: 'Carry forward: your repair note should show how to report safely, truthfully, and without exposing people.',
   },
-  'M5-R10': {
+  'M5-R09': {
     why: 'Numbers and feedback themes do not explain themselves. A safe review with rights-holders can help the team understand what the evidence means, who may still be missing, what barriers remain, and what action should follow.',
     carry: 'Carry forward: your repair note should include one safe way to interpret evidence with rights-holders without exposing people.',
   },
-  'M5-R11': {
+  'M5-R10': {
     why: 'An HRBA MEAL signal should lead to a responsible next step. The answer is not always more data; sometimes it is adaptation, safe consultation, referral, responsible actor engagement, honest reporting, or account-back.',
     carry: 'Carry forward: your repair note should show one evidence signal and the safest next action it requires.',
   },
-  'M5-R12': {
+  'M5-R11': {
     why: 'Rights-based reporting is stronger because it tells the truth about who was reached, who may be missing, what changed, what did not change, what evidence can show, and what the team will do next.',
     carry: 'Carry forward: your repair note should include one truthful reporting repair that protects people, avoids overclaiming, and names what happens next.',
   },
-  'M5-R13': {
+  'M5-R12': {
     why: 'A strong HRBA MEAL cycle protects people, learns from evidence, changes practice when needed, and explains back what happened.',
     carry: 'Carry forward: on the next screen, you will turn this cycle into one practical repair note for your own CSO practice.',
   },
@@ -2278,7 +2255,7 @@ function getOptionSummary(options: Array<{ id: string; label: string; summary?: 
 }
 
 function getModule5Feedback(config: Module5ScreenConfig, selectedIds: string[], strongAnswer: boolean) {
-  if (config.screenId !== 'M5-R03') {
+  if (config.screenId !== 'M5-R02') {
     return {
       kicker: strongAnswer ? 'Strong judgment' : 'Keep looking deeper',
       title: strongAnswer ? 'This is the HRBA MEAL move.' : 'A useful start.',
@@ -2454,167 +2431,6 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
   );
 }
 
-const module5OrientationObjectives = [
-  'identify what activity reports and indicators may hide about inclusion, participation, feedback, safety, and change',
-  'repair weak indicators so they show access, influence, response, safety, and learning',
-  'choose safer and more inclusive evidence without collecting unnecessary or identifying details',
-  'distinguish feedback collection from real accountability, response, referral, adaptation, and account-back',
-  'interpret evidence with rights-holders without exposing sensitive information',
-  'use evidence to adapt, report truthfully, and explain back what changed, what did not, and what happens next',
-  'create a safe HRBA MEAL repair note and a realistic 90-day practice bridge',
-];
-
-function Module5OrientationScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R02'];
-  const key = practiceKey('M5-R02');
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R02');
-  const stored = state.practiceCheckState[key] || {};
-  const allCardIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allCardIds : (stored.openedIds as string[]) || []);
-  const [confirmed, setConfirmed] = useState(Boolean(stored.confirmed || completed));
-  const allCardsReviewed = openedIds.length === allCardIds.length;
-  const canContinue = completed || (allCardsReviewed && confirmed);
-
-  const openCard = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => {
-      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R02');
-      return {
-        ...prev,
-        screenProgress: {
-          ...prev.screenProgress,
-          [MODULE_ID]: Array.from(progress),
-        },
-        practiceCheckState: updatePracticeState(prev, key, {
-          openedIds: next,
-          confirmed: false,
-          status: 'in_progress',
-        }),
-      };
-    });
-    setConfirmed(false);
-  };
-
-  const confirmSafePractice = () => {
-    if (!allCardsReviewed) return;
-    setConfirmed(true);
-    onChangeState((prev) => ({
-      ...prev,
-      practiceCheckState: updatePracticeState(prev, key, {
-        openedIds,
-        confirmed: true,
-        status: 'ready',
-      }),
-    }));
-  };
-
-  return (
-    <main className="m5-screen m5-clinic-screen" aria-labelledby="M5-R02-title">
-      <section className="m5-canvas m5-clinic-canvas">
-        <div className="m5-canvas__header">
-          <div>
-            <ModuleContextLabel>Module 5 · HRBA in MEAL</ModuleContextLabel>
-            <ScreenTitle id="M5-R02-title" lead={config.lead}>
-              {config.title}
-            </ScreenTitle>
-          </div>
-          <ProgressChip>{config.phase || 'Orientation'}</ProgressChip>
-        </div>
-
-        <div className="m5-story-card">
-          <p className="m5-card-kicker">Why this matters for CSOs</p>
-          {config.story.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-
-        <section className="m5-orientation-preview" aria-labelledby="m5-r02-practice-movement">
-          <div className="m5-canvas__header">
-            <div>
-              <p className="m5-card-kicker">Track · Listen · Protect · Adapt · Account Back · Carry Forward</p>
-              <h2 id="m5-r02-practice-movement">What this module helps you practice</h2>
-            </div>
-            <ProgressChip>{openedIds.length} of {allCardIds.length} reviewed</ProgressChip>
-          </div>
-          {config.revealItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`m5-orientation-card ${openedIds.includes(item.id) ? 'is-reviewed' : ''}`}
-              onClick={() => openCard(item.id)}
-              aria-pressed={openedIds.includes(item.id)}
-            >
-              <span className="m5-orientation-card__status" aria-hidden="true">
-                {openedIds.includes(item.id) ? '✓' : '+'}
-              </span>
-              <span>
-                <strong>{item.title}</strong>
-                <small>{item.body}</small>
-              </span>
-            </button>
-          ))}
-        </section>
-
-        <section className="m5-insight-card" aria-labelledby="m5-r02-objectives">
-          <p className="m5-card-kicker">Learning objectives</p>
-          <h2 id="m5-r02-objectives">By the end of this module, you should be able to:</h2>
-          <ol>
-            {module5OrientationObjectives.map((objective) => (
-              <li key={objective}>{objective}.</li>
-            ))}
-          </ol>
-        </section>
-
-        <article className="m5-feedback-card is-strong">
-          <p className="m5-card-kicker">Practical output preview</p>
-          <h2>My HRBA MEAL, Accountability, and Learning Repair Note</h2>
-          <p>
-            You will build toward a structured, safe note that helps your CSO identify one practical
-            MEAL repair and one account-back action without entering sensitive information.
-          </p>
-        </article>
-
-        <div className="m5-safety-warning">
-          <strong>Use safe examples only.</strong>
-          <span>
-            For this course, use fictional, generalized, or non-sensitive examples only. Do not enter
-            real names, exact locations, complaints, survivor details, child data, diagnoses,
-            organization names, official names, or confidential information.
-          </span>
-        </div>
-
-        <footer className="m5-ladder-actions m5-orientation-actions">
-          <div>
-            <h3>{confirmed ? 'Orientation confirmed' : allCardsReviewed ? 'Confirm safe practice' : 'Review all six practice cards'}</h3>
-            <p>
-              {confirmed
-                ? 'You can now begin the report diagnosis.'
-                : allCardsReviewed
-                  ? 'Confirm that you will use only fictional, generalized, or non-sensitive examples.'
-                  : 'Open each practice card before continuing.'}
-            </p>
-          </div>
-          <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={confirmSafePractice} disabled={!allCardsReviewed || confirmed}>
-              {confirmed ? 'Safe practice confirmed' : 'I understand how to practice safely in this module'}
-            </PrimaryButton>
-            <PrimaryButton
-              onClick={() =>
-                completeSimpleScreen('M5-R02', 'M5-R03', module5Routes['M5-R03'], onChangeState, key, { openedIds, confirmed: true })
-              }
-              disabled={!canContinue}
-            >
-              Continue to Screen 5.3
-            </PrimaryButton>
-          </div>
-        </footer>
-      </section>
-    </main>
-  );
-}
-
 function Module5LearningObjectivesScreen({ onChangeState }: Module5RendererProps) {
   const [flippedCards, setFlippedCards] = useState<string[]>([]);
 
@@ -2722,7 +2538,7 @@ function Module5CanvasScreen({
   );
   const [selectedIds, setSelectedIds] = useState<string[]>(stored.selectedIds || []);
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
-  const isLensScreen = config.screenId === 'M5-S1-03' || config.screenId === 'M5-R04';
+  const isLensScreen = config.screenId === 'M5-S1-03' || config.screenId === 'M5-R03';
   const screenThemeClass = polishedLabScreenThemes[config.screenId] || '';
   const isPolishedLabScreen = Boolean(screenThemeClass);
 
@@ -3005,7 +2821,7 @@ function Module5CanvasScreen({
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </article>
-              {config.screenId === 'M5-R03' && (
+              {config.screenId === 'M5-R02' && (
                 <article className="m5-feedback-card is-strong">
                   <p className="m5-card-kicker">Carry forward</p>
                   <h3>Keep one gap in view.</h3>
@@ -3038,10 +2854,10 @@ function Module5CanvasScreen({
 }
 
 function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R05'];
-  const key = practiceKey('M5-R05');
+  const config = module5Screens['M5-R04'];
+  const key = practiceKey('M5-R04');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R05');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R04');
   const [answers, setAnswers] = useState<Record<string, string>>(
     (stored.answers as Record<string, string>) || {},
   );
@@ -3060,9 +2876,9 @@ function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererPr
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       if (nextSubmitted) {
-        progress.add('M5-R05');
+        progress.add('M5-R04');
       } else {
-        progress.delete('M5-R05');
+        progress.delete('M5-R04');
       }
 
       return {
@@ -3091,9 +2907,9 @@ function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererPr
 
   const finish = () => {
     completeSimpleScreen(
+      'M5-R04',
       'M5-R05',
-      'M5-R06',
-      module5Routes['M5-R06'],
+      module5Routes['M5-R05'],
       onChangeState,
       key,
       {
@@ -3105,11 +2921,11 @@ function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererPr
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-evidence-ladder-screen" aria-labelledby="M5-R05-title">
+    <main className="m5-screen m5-screen--asset-visual m5-evidence-ladder-screen" aria-labelledby="M5-R04-title">
       <section className="m5-hero-panel">
         <div className="m5-hero-panel__copy cso-content-safe-header">
           <ModuleContextLabel>{config.context}</ModuleContextLabel>
-          <ScreenTitle id="M5-R05-title" lead={config.lead}>
+          <ScreenTitle id="M5-R04-title" lead={config.lead}>
             {config.title}
           </ScreenTitle>
           <article className="m5-story-card">
@@ -3206,7 +3022,7 @@ function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererPr
               {allAnswered ? 'Check classifications' : 'Classify all examples first'}
             </PrimaryButton>
             <PrimaryButton onClick={finish} disabled={!canContinue}>
-              Continue to Screen 5.6
+              {config.ctaButton}
             </PrimaryButton>
           </div>
         </footer>
@@ -3276,10 +3092,10 @@ function Module5ClinicHero({ config }: { config: Module5ScreenConfig }) {
 }
 
 function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R06'];
-  const key = practiceKey('M5-R06');
+  const config = module5Screens['M5-R05'];
+  const key = practiceKey('M5-R05');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R06');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R05');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, { indicator?: string; reveal?: string }>>(
@@ -3308,7 +3124,7 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R06');
+      progress.delete('M5-R05');
       return {
         ...prev,
         screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
@@ -3328,7 +3144,7 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R06');
+      progress.add('M5-R05');
       return {
         ...prev,
         screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
@@ -3338,12 +3154,12 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R06-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R05-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r05-practice">
         <article className="m5-practice-point">
           <p className="m5-card-kicker">Why this matters</p>
-          <p>{clinicPracticeNotes['M5-R06'].why}</p>
+          <p>{clinicPracticeNotes['M5-R05'].why}</p>
         </article>
         <div className="m5-canvas__header">
           <div>
@@ -3399,15 +3215,15 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
           <div>
             <h3>{submitted ? `${correctCount} of ${indicatorRepairItems.length} fully repaired` : 'Complete all repairs to continue'}</h3>
             <p>{submitted ? 'You may continue after reviewing the reasoning. Revise any selections if you want to improve the repair.' : 'No real project data is needed. Use only the fictional indicators on this screen.'}</p>
-            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R06'].carry}</p>
+            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R05'].carry}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check repairs' : 'Review all checks and repair each indicator'}</PrimaryButton>
             <PrimaryButton
-              onClick={() => completeSimpleScreen('M5-R06', 'M5-R07', module5Routes['M5-R07'], onChangeState, key, { answers, correctCount, submitted: true })}
+              onClick={() => completeSimpleScreen('M5-R05', 'M5-R06', module5Routes['M5-R06'], onChangeState, key, { answers, correctCount, submitted: true })}
               disabled={!canContinue}
             >
-              Continue to Screen 5.7
+              {config.ctaButton}
             </PrimaryButton>
           </div>
         </footer>
@@ -3417,10 +3233,10 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
 }
 
 function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R07'];
-  const key = practiceKey('M5-R07');
+  const config = module5Screens['M5-R06'];
+  const key = practiceKey('M5-R06');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R07');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R06');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
@@ -3437,7 +3253,7 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R07');
+      progress.delete('M5-R06');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -3451,13 +3267,13 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R07');
+      progress.add('M5-R06');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R07-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R06-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r06-practice">
         <div className="m5-safety-warning">
@@ -3466,7 +3282,7 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
         </div>
         <article className="m5-practice-point">
           <p className="m5-card-kicker">Safe evidence rule</p>
-          <p>{clinicPracticeNotes['M5-R07'].why}</p>
+          <p>{clinicPracticeNotes['M5-R06'].why}</p>
         </article>
         <div className="m5-canvas__header">
           <div>
@@ -3512,11 +3328,11 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
           <div>
             <h3>{submitted ? `${correctCount} of ${safeEvidenceItems.length} safe decisions matched` : 'Complete all safe-data decisions to continue'}</h3>
             <p>{submitted ? 'The reasoning is visible before you continue. Revise any choice that collected too much detail or suppressed a useful safe theme.' : 'Use minimum necessary, protected, explainable evidence.'}</p>
-            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R07'].carry}</p>
+            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R06'].carry}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check safe-data decisions' : 'Review all checks and decide each example'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R07', 'M5-R08', module5Routes['M5-R08'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>Continue to Screen 5.8</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R06', 'M5-R07', module5Routes['M5-R07'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3525,10 +3341,10 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
 }
 
 function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R08'];
-  const key = practiceKey('M5-R08');
+  const config = module5Screens['M5-R07'];
+  const key = practiceKey('M5-R07');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R08');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R07');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [selectedIds, setSelectedIds] = useState<string[]>((stored.selectedIds as string[]) || []);
@@ -3545,7 +3361,7 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R08');
+      progress.delete('M5-R07');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -3561,18 +3377,18 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R08');
+      progress.add('M5-R07');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, selectedIds, submitted: true, strong, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R08-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R07-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r07-practice">
         <article className="m5-practice-point">
           <p className="m5-card-kicker">Accountability point</p>
-          <p>{clinicPracticeNotes['M5-R08'].why}</p>
+          <p>{clinicPracticeNotes['M5-R07'].why}</p>
         </article>
         <div className="m5-canvas__header">
           <div>
@@ -3606,11 +3422,11 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
           <div>
             <h3>{submitted ? `${selectedCorrect} of ${correctIds.length} strong pathway steps selected` : 'Select the repaired pathway steps'}</h3>
             <p>Use respond, refer, escalate through agreed safe pathway, protect identity, and record only minimum necessary information.</p>
-            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R08'].carry}</p>
+            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R07'].carry}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check pathway' : 'Review all checks and select steps'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R08', 'M5-R09', module5Routes['M5-R09'], onChangeState, key, { selectedIds, strong, submitted: true })} disabled={!canContinue}>Continue to Screen 5.9</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R07', 'M5-R08', module5Routes['M5-R08'], onChangeState, key, { selectedIds, strong, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3619,10 +3435,10 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
 }
 
 function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R09'];
-  const key = practiceKey('M5-R09');
+  const config = module5Screens['M5-R08'];
+  const key = practiceKey('M5-R08');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R09');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R08');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
@@ -3639,7 +3455,7 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R09');
+      progress.delete('M5-R08');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -3652,13 +3468,13 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R09');
+      progress.add('M5-R08');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R09-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R08-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r08-practice">
         <div className="m5-safety-warning">
@@ -3667,7 +3483,7 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
         </div>
         <article className="m5-practice-point">
           <p className="m5-card-kicker">Responsible reporting point</p>
-          <p>{clinicPracticeNotes['M5-R09'].why}</p>
+          <p>{clinicPracticeNotes['M5-R08'].why}</p>
         </article>
         <div className="m5-canvas__header">
           <div>
@@ -3714,11 +3530,11 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
           <div>
             <h3>{submitted ? `${correctCount} of ${storyResponseItems.length} safer responses selected` : 'Respond safely to every request'}</h3>
             <p>{submitted ? 'Useful evidence can still protect consent, refusal, identity, dignity, truth, and minimum necessary detail.' : 'Composite examples must be clearly labeled as composite and based on safe, non-identifying themes.'}</p>
-            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R09'].carry}</p>
+            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R08'].carry}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check responses' : 'Review all checks and answer each request'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R09', 'M5-R10', module5Routes['M5-R10'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>Continue to Screen 5.10</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R08', 'M5-R09', module5Routes['M5-R09'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3727,11 +3543,11 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
 }
 
 function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R10'];
-  const practiceNote = clinicPracticeNotes['M5-R10'];
-  const key = practiceKey('M5-R10');
+  const config = module5Screens['M5-R09'];
+  const practiceNote = clinicPracticeNotes['M5-R09'];
+  const key = practiceKey('M5-R09');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R10');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R09');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [selectedIds, setSelectedIds] = useState<string[]>((stored.selectedIds as string[]) || []);
@@ -3748,7 +3564,7 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R10');
+      progress.delete('M5-R09');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -3766,13 +3582,13 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R10');
+      progress.add('M5-R09');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, selectedIds, submitted: true, strong, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R10-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R09-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r10-practice">
         <div className="m5-safety-warning">
@@ -3819,7 +3635,7 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check review routine' : 'Review all checks and choose steps'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R10', 'M5-R11', module5Routes['M5-R11'], onChangeState, key, { selectedIds, strong, submitted: true })} disabled={!canContinue}>Continue to Screen 5.11</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R09', 'M5-R10', module5Routes['M5-R10'], onChangeState, key, { selectedIds, strong, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3828,11 +3644,11 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
 }
 
 function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R11'];
-  const practiceNote = clinicPracticeNotes['M5-R11'];
-  const key = practiceKey('M5-R11');
+  const config = module5Screens['M5-R10'];
+  const practiceNote = clinicPracticeNotes['M5-R10'];
+  const key = practiceKey('M5-R10');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R11');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R10');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
@@ -3849,7 +3665,7 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R11');
+      progress.delete('M5-R10');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -3863,13 +3679,13 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R11');
+      progress.add('M5-R10');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R11-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R10-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r11-practice">
         <div className="m5-safety-warning">
@@ -3929,7 +3745,7 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check signal decisions' : 'Review all options and answer each signal'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R11', 'M5-R12', module5Routes['M5-R12'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>Continue to Screen 5.12</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R10', 'M5-R11', module5Routes['M5-R11'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3938,11 +3754,11 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
 }
 
 function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R12'];
-  const practiceNote = clinicPracticeNotes['M5-R12'];
-  const key = practiceKey('M5-R12');
+  const config = module5Screens['M5-R11'];
+  const practiceNote = clinicPracticeNotes['M5-R11'];
+  const key = practiceKey('M5-R11');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R12');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R11');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
@@ -3959,7 +3775,7 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R12');
+      progress.delete('M5-R11');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -3973,13 +3789,13 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R12');
+      progress.add('M5-R11');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R12-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R11-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r12-practice">
         <div className="m5-safety-warning">
@@ -4039,7 +3855,7 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check repaired claims' : 'Review all checks and repair each claim'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R12', 'M5-R13', module5Routes['M5-R13'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>Continue to Screen 5.13</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R11', 'M5-R12', module5Routes['M5-R12'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -4048,11 +3864,11 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
 }
 
 function Module5CapstoneSimulatorScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R13'];
-  const practiceNote = clinicPracticeNotes['M5-R13'];
-  const key = practiceKey('M5-R13');
+  const config = module5Screens['M5-R12'];
+  const practiceNote = clinicPracticeNotes['M5-R12'];
+  const key = practiceKey('M5-R12');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R13');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R12');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
@@ -4069,7 +3885,7 @@ function Module5CapstoneSimulatorScreen({ state, onChangeState }: Module5Rendere
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R13');
+      progress.delete('M5-R12');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -4083,13 +3899,13 @@ function Module5CapstoneSimulatorScreen({ state, onChangeState }: Module5Rendere
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R13');
+      progress.add('M5-R12');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R13-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R12-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r13-practice">
         <div className="m5-safety-warning">
@@ -4167,7 +3983,7 @@ function Module5CapstoneSimulatorScreen({ state, onChangeState }: Module5Rendere
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check simulator pathway' : 'Review stages and answer all steps'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R13', 'M5-R14', module5Routes['M5-R14'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>Continue to Screen 5.14</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R12', 'M5-R13', module5Routes['M5-R13'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -4176,10 +3992,10 @@ function Module5CapstoneSimulatorScreen({ state, onChangeState }: Module5Rendere
 }
 
 function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R14'];
-  const key = practiceKey('M5-R14');
+  const config = module5Screens['M5-R13'];
+  const key = practiceKey('M5-R13');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R14');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R13');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
@@ -4199,7 +4015,7 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
     setCopyStatus('idle');
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R14');
+      progress.delete('M5-R13');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
     });
   };
@@ -4225,7 +4041,7 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
     setCopyStatus('idle');
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R14');
+      progress.add('M5-R13');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, repairNoteText, status: 'completed' }) };
     });
   };
@@ -4270,7 +4086,7 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R14-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R13-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r13-practice">
         <div className="m5-safety-warning">
@@ -4332,7 +4148,7 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
           </div>
           <div className="m5-ladder-actions__buttons">
             <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Generate repair note' : 'Review checks and answer all fields'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R14', 'M5-R15', module5Routes['M5-R15'], onChangeState, key, { answers, repairNoteText, submitted: true })} disabled={!canContinue}>Continue to Screen 5.15</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R13', 'M5-R14', module5Routes['M5-R14'], onChangeState, key, { answers, repairNoteText, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
           </div>
         </footer>
       </section>
@@ -4341,10 +4157,10 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
 }
 
 function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererProps) {
-  const config = module5Screens['M5-R15'];
-  const key = practiceKey('M5-R15');
+  const config = module5Screens['M5-R14'];
+  const key = practiceKey('M5-R14');
   const stored = state.practiceCheckState[key] || {};
-  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R15');
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R14');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [selected, setSelected] = useState<Record<string, string[]>>((stored.selected as Record<string, string[]>) || {});
@@ -4366,7 +4182,7 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R15');
+      progress.delete('M5-R14');
       progress.delete('M5-PLAYER-COMPLETE');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selected: next, submitted: false, status: 'in_progress' }) };
     });
@@ -4394,7 +4210,7 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R15');
+      progress.add('M5-R14');
       return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, selected, submitted: true, commitmentText, status: 'completed' }) };
     });
   };
@@ -4402,7 +4218,7 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
   const completeModule = () => {
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R15');
+      progress.add('M5-R14');
       progress.add('M5-PLAYER-COMPLETE');
       return {
         ...prev,
@@ -4416,9 +4232,9 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R15-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R14-title">
       <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r15-practice">
+      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r14-practice">
         <div className="m5-safety-warning">
           <strong>Start small and account back.</strong>
           <span>Choose realistic team actions. Do not default to collecting more personal data or asking untrained staff to investigate sensitive concerns.</span>
@@ -4426,7 +4242,7 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
         <div className="m5-canvas__header">
           <div>
             <p className="m5-card-kicker">90-day practice bridge</p>
-            <h2 id="m5-r15-practice">Select at least one action for each stage</h2>
+            <h2 id="m5-r14-practice">Select at least one action for each stage</h2>
             <p>Review the three bridge stages, then choose practical actions for 30, 60, and 90 days.</p>
           </div>
           <ProgressChip>{openedIds.length} of {allRevealIds.length} stages reviewed</ProgressChip>
@@ -4538,51 +4354,48 @@ export default function Module5Renderer(props: Module5RendererProps) {
     return <Module5IntroVideoScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R02') {
-    return <Module5OrientationScreen {...props} />;
-  }
 
-  if (props.screenId === 'M5-R05') {
+  if (props.screenId === 'M5-R04') {
     return <Module5EvidenceLadderScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R06') {
+  if (props.screenId === 'M5-R05') {
     return <Module5IndicatorRepairScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R07') {
+  if (props.screenId === 'M5-R06') {
     return <Module5SafeEvidenceScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R08') {
+  if (props.screenId === 'M5-R07') {
     return <Module5FeedbackLoopScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R09') {
+  if (props.screenId === 'M5-R08') {
     return <Module5EthicalStoriesScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R10') {
+  if (props.screenId === 'M5-R09') {
     return <Module5ParticipatoryReviewScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R11') {
+  if (props.screenId === 'M5-R10') {
     return <Module5SignalDecisionScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R12') {
+  if (props.screenId === 'M5-R11') {
     return <Module5ReportRepairScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R13') {
+  if (props.screenId === 'M5-R12') {
     return <Module5CapstoneSimulatorScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R14') {
+  if (props.screenId === 'M5-R13') {
     return <Module5RepairNoteScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-R15') {
+  if (props.screenId === 'M5-R14') {
     return <Module5PracticeBridgeScreen {...props} />;
   }
 

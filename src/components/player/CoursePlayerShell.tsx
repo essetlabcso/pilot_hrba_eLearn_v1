@@ -57,7 +57,6 @@ const module5ScreenRoutes: Record<string, string> = {
   'M5-R12': '/module-5/screen-5-12',
   'M5-R13': '/module-5/screen-5-13',
   'M5-R14': '/module-5/screen-5-14',
-  'M5-R15': '/module-5/screen-5-15',
   'M5-PLAYER-COMPLETE': '/module-5/complete',
 };
 
