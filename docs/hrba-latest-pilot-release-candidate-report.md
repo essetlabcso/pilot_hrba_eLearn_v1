@@ -52,11 +52,11 @@
   - `launchToken`: yes
   - `portalOrigin`: yes
   - `cso-learning-hub:external-course-progress`: yes
-- Does not contain:
-  - `userId`: yes
-  - `learnerId`: yes
-  - `enrollmentId`: yes
-  - `courseVersionId`: yes
+- Raw Hub ID fields absent from built asset:
+  - `userId`: absent
+  - `learnerId`: absent
+  - `enrollmentId`: absent
+  - `courseVersionId`: absent
 
 ## Final Readiness
 
