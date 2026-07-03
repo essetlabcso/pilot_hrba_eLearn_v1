@@ -6,6 +6,7 @@ import {
   module2FinalScreenById,
 } from '../../../data/module2-final/module2FinalScreens';
 import {
+  hrbaSharedIcons,
   module2FinalAssets,
   module2FinalAudio,
   module2FinalCuratedResources,
@@ -72,19 +73,26 @@ function Module2FinalShell({
   title,
   lead,
   children,
+  heroVisual,
+  heroClassName = '',
 }: {
   eyebrow: string;
   title: string;
   lead: string;
   children: ReactNode;
+  heroVisual?: ReactNode;
+  heroClassName?: string;
 }) {
   return (
     <main className="m2-final-screen" aria-labelledby="m2-final-screen-title">
       <section className="m2-final-shell">
-        <header className="m2-final-header">
-          <p className="m2-final-eyebrow">{eyebrow}</p>
-          <h1 id="m2-final-screen-title">{title}</h1>
-          <p>{lead}</p>
+        <header className={['m2-final-header', heroVisual ? 'm2-final-header--split' : '', heroClassName].filter(Boolean).join(' ')}>
+          <div className="m2-final-header__copy">
+            <p className="m2-final-eyebrow">{eyebrow}</p>
+            <h1 id="m2-final-screen-title">{title}</h1>
+            <p>{lead}</p>
+          </div>
+          {heroVisual && <div className="m2-final-header__visual" aria-hidden="true">{heroVisual}</div>}
         </header>
         {children}
       </section>
@@ -92,13 +100,12 @@ function Module2FinalShell({
   );
 }
 
-function TextBlock({ children }: { children: ReactNode }) {
-  return <section className="m2-final-text-block">{children}</section>;
-}
-
 function Takeaway({ children }: { children: ReactNode }) {
   return (
     <aside className="m2-final-takeaway" role="status">
+      <span className="m2-final-takeaway__icon" aria-hidden="true">
+        <img src={hrbaSharedIcons.takeaway.src} alt={hrbaSharedIcons.takeaway.alt} loading="lazy" />
+      </span>
       <strong>Takeaway</strong>
       <p>{children}</p>
     </aside>
@@ -133,6 +140,9 @@ function OptionalAudioBlock({
 }) {
   return (
     <aside className="m2-final-audio-block" aria-label={`Optional audio deep dive: ${title}`}>
+      <span className="m2-final-audio-block__icon" aria-hidden="true">
+        <img src={hrbaSharedIcons.listen.src} alt={hrbaSharedIcons.listen.alt} loading="lazy" />
+      </span>
       <div className="m2-final-audio-block__header">
         <span className="m2-final-tag">Optional audio deep dive</span>
         <h2>Listen: {title}</h2>
@@ -162,6 +172,7 @@ function OptionalReferenceToolkit() {
     ) % module2FinalReferenceSlides.length);
   };
   const quickTools = [
+    module2FinalResources.referenceDeck,
     module2FinalResources.everydayRightsLensChecklist,
     module2FinalResources.overlappingBarriersReflectionCard,
   ];
@@ -211,7 +222,7 @@ function OptionalReferenceToolkit() {
             <span className="m2-final-tag">{resource.fileType}</span>
             <h3>{resource.title}</h3>
             <p>{resource.description}</p>
-            <a href={resource.href} download>
+            <a href={resource.href} download aria-label={`Download ${resource.title} as a ${resource.fileType}`}>
               Download {resource.title} ({resource.fileType})
             </a>
           </article>
@@ -238,14 +249,55 @@ function OptionalReferenceToolkit() {
   );
 }
 
-function CoverScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
+const MODULE2_FINAL_DURATION = 'Approx. 75-90 min';
+const MODULE2_FINAL_COVER_HEADING = MODULE2_FINAL_TITLE.replace(/^Module 2:\s*/, '');
+
+function CoverScreen({
+  onChangeState,
+  onNext,
+}: Pick<Module2FinalRendererProps, 'onChangeState' | 'onNext'>) {
+  const returnToCourse = () => {
+    onChangeState((prev) => ({
+      ...prev,
+      currentLayer: 'platform',
+      currentSubState: null,
+      activeModal: null,
+    }));
+  };
+
   return (
     <main className="m2-final-cover" aria-labelledby="m2-final-cover-title">
-      <section className="m2-final-cover__copy">
-        <p className="m2-final-eyebrow">Applying the Human Rights-Based Approach in CSO Practice</p>
-        <h1 id="m2-final-cover-title">{MODULE2_FINAL_TITLE}</h1>
-        <p>{MODULE2_FINAL_SUBTITLE}</p>
-        <ContinueButton label="Start Module 2" onClick={onNext} />
+      <button
+        type="button"
+        className="m2-final-cover__back"
+        aria-label="Back to course page"
+        onClick={returnToCourse}
+      >
+        <span aria-hidden="true">&lt;</span>
+        Back to course
+      </button>
+      <section className="m2-final-cover__copy cso-content-safe-header cso-content-safe-surface--inverse">
+        <div className="m2-final-cover__accent" aria-hidden="true" />
+        <p className="m2-final-cover__course">Applying the Human Rights-Based Approach in CSO Practice</p>
+        <p className="m2-final-cover__module">Module 2</p>
+        <h1 id="m2-final-cover-title" className="m2-final-cover__title">
+          {MODULE2_FINAL_COVER_HEADING}
+        </h1>
+        <p className="m2-final-cover__subtitle">{MODULE2_FINAL_SUBTITLE}</p>
+        <p className="m2-final-cover__focus">The Everyday Rights Lens</p>
+        <p className="m2-final-cover__duration">
+          <span aria-hidden="true" />
+          Duration: {MODULE2_FINAL_DURATION}
+        </p>
+        <button
+          type="button"
+          className="m2-final-cover__cta"
+          aria-label="Start Module 2"
+          onClick={onNext}
+        >
+          <span>Start Here</span>
+          <span className="m2-final-cover__cta-icon" aria-hidden="true" />
+        </button>
       </section>
       <figure className="m2-final-cover__visual">
         <img src={module2FinalAssets.cover.src} alt={module2FinalAssets.cover.alt} />
@@ -260,8 +312,16 @@ function IntroScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
       eyebrow="Module 2 intro"
       title={module2FinalVideoPlaceholder.title}
       lead="The final video will be produced later. This screen keeps the approved title, transcript area, and low-bandwidth story-strip fallback stable."
+      heroClassName="m2-final-header--intro"
+      heroVisual={(
+        <div className="m2-final-intro-hero-visual">
+          <span className="m2-final-intro-frame" />
+          <span className="m2-final-intro-play" />
+          <span className="m2-final-intro-strip" />
+        </div>
+      )}
     >
-      <section className="m2-final-video-placeholder" aria-label="Intro video placeholder">
+      <section className="m2-final-video-placeholder m2-final-intro-media" aria-label="Intro video placeholder">
         <div className="m2-final-video-placeholder__poster">
           <img
             src={module2FinalVideoPlaceholder.storyStripFallback}
@@ -304,10 +364,25 @@ function ObjectivesScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
       eyebrow="Before the first lesson"
       title="Module 2 Learning Objectives"
       lead="By the end of this module, you will be able to:"
+      heroClassName="m2-final-header--objectives"
+      heroVisual={(
+        <div className="m2-final-objectives-hero-visual">
+          <span className="m2-final-objectives-clipboard">
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="m2-final-objectives-route" />
+        </div>
+      )}
     >
-      <ol className="m2-final-objectives">
-        {objectives.map((objective) => (
-          <li key={objective}>{objective}</li>
+      <ol className="m2-final-objectives m2-final-objectives-roadmap">
+        {objectives.map((objective, index) => (
+          <li key={objective}>
+            <span aria-hidden="true">{index + 1}</span>
+            <p>{objective}</p>
+          </li>
         ))}
       </ol>
       <footer className="m2-final-footer">
@@ -323,29 +398,45 @@ function Screen11Welcome({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) 
       eyebrow="Screen 1.1"
       title="Welcome to Module 2: The Everyday Rights Lens"
       lead="Welcome to Module 2. Before we dive into human rights concepts, let us look again at the Jiru Amba story and the recurring problems Awra is trying to understand."
+      heroClassName="m2-final-header--orientation"
+      heroVisual={(
+        <div className="m2-final-orientation-hero-visual">
+          <span className="m2-final-orientation-lens" />
+          <span className="m2-final-orientation-path" />
+          <span className="m2-final-orientation-node node-one" />
+          <span className="m2-final-orientation-node node-two" />
+          <span className="m2-final-orientation-node node-three" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          In the opening story, Awra has done important service delivery work: distributing relief, fixing broken pumps,
-          and inviting different community members into meetings. Yet the same problems keep returning.
-        </p>
-        <p>
-          This module asks why. Who holds the rights? Who carries public responsibility? Who is excluded from influence?
-          Where is power hidden? And how can a CSO support safe accountability without replacing the state?
-        </p>
-      </TextBlock>
-      <section className="m2-final-story-strip">
+      <section className="m2-final-orientation-story">
+        <span className="m2-final-orientation-story__icon" aria-hidden="true" />
+        <div>
+          <p>
+            In the opening story, Awra has done important service delivery work: distributing relief, fixing broken pumps,
+            and inviting different community members into meetings. Yet the same problems keep returning.
+          </p>
+          <p>
+            This module asks why. Who holds the rights? Who carries public responsibility? Who is excluded from influence?
+            Where is power hidden? And how can a CSO support safe accountability without replacing the state?
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-story-strip m2-final-orientation-strip">
         <img
           src={module2FinalAssets.openingStoryStrip.src}
           alt="Panel 1: CSO staff distributing supplies. Panel 2: CSO staff looking at a broken water pump with an under-resourced local official. Panel 3: A community meeting where a few confident speakers are speaking while people facing barriers are not heard. Panel 4: The CSO team planning a new project."
         />
       </section>
-      <aside className="m2-final-reflection">
+      <aside className="m2-final-reflection m2-final-orientation-reflection">
+        <span className="m2-final-orientation-reflection__icon" aria-hidden="true" />
+        <div>
         <h2>Hold this thought</h2>
         <p>
           Think about your own organization: What is one recurring challenge your CSO faces where providing a direct service
           does not seem to solve the root problem?
         </p>
+        </div>
       </aside>
       <footer className="m2-final-footer">
         <ContinueButton label="Next: Evolving Our Approach" onClick={onNext} />
@@ -372,35 +463,53 @@ function Screen12Approach({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
   ];
 
   const reveal = (id: string) => setOpened((prev) => ({ ...prev, [id]: true }));
+  const allOpen = cards.every((card) => opened[card.id]);
 
   return (
     <Module2FinalShell
       eyebrow="Screen 1.2"
       title="Evolving Our Approach"
       lead="Delivering urgent services and emergency relief is vital work. HRBA does not replace that work; it upgrades it."
+      heroClassName="m2-final-header--approach"
+      heroVisual={(
+        <div className="m2-final-approach-hero-visual">
+          <div className="m2-final-approach-side is-needs">
+            <span className="m2-final-approach-side__icon" />
+            <strong>Needs</strong>
+          </div>
+          <span className="m2-final-approach-vs">vs.</span>
+          <div className="m2-final-approach-side is-rights">
+            <span className="m2-final-approach-side__icon" />
+            <strong>Rights</strong>
+          </div>
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          In Awra's situation, hiring a contractor to fix the water pump provided immediate relief. But because the project
-          treated the community as passive "beneficiaries" and did not build the local government's capacity to maintain the
-          infrastructure, the problem returned the following year.
-        </p>
-        <p>
-          By evolving our approach, we stop treating the symptoms of poverty and start addressing the structural roots of exclusion.
-        </p>
-      </TextBlock>
-      <section className="m2-final-reveal-grid" aria-label="Click to reveal comparison">
+      <section className="m2-final-approach-context">
+        <span className="m2-final-approach-context__icon" aria-hidden="true" />
+        <div>
+          <p>
+            In Awra's situation, hiring a contractor to fix the water pump provided immediate relief. But because the project
+            treated the community as passive "beneficiaries" and did not build the local government's capacity to maintain the
+            infrastructure, the problem returned the following year.
+          </p>
+          <p>
+            By evolving our approach, we stop treating the symptoms of poverty and start addressing the structural roots of exclusion.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-reveal-grid m2-final-approach-reveals" aria-label="Click to reveal comparison">
         {cards.map((card) => {
           const isOpen = Boolean(opened[card.id]);
           return (
-            <article key={card.id} className={`m2-final-reveal-card ${isOpen ? 'is-open' : ''}`}>
+            <article key={card.id} className={`m2-final-reveal-card m2-final-approach-card m2-final-approach-card-${card.id} ${isOpen ? 'is-open' : ''}`}>
               <button
                 type="button"
                 aria-expanded={isOpen}
                 aria-controls={`m2-final-${card.id}-body`}
                 onClick={() => reveal(card.id)}
               >
-                <span className="m2-final-reveal-icon" aria-hidden="true">{isOpen ? '-' : '+'}</span>
+                <span className="m2-final-reveal-icon m2-final-approach-card__icon" aria-hidden="true">{isOpen ? '-' : '+'}</span>
                 <span>{card.title}</span>
               </button>
               <p className="m2-final-card-prompt">{card.prompt}</p>
@@ -414,7 +523,7 @@ function Screen12Approach({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
         })}
       </section>
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: A Tale of Two Water Projects" onClick={onNext} />
+        <ContinueButton label="Next: A Tale of Two Water Projects" onClick={onNext} disabled={!allOpen} />
       </footer>
     </Module2FinalShell>
   );
@@ -426,8 +535,10 @@ function Screen13WaterProjects({
   onNext,
 }: Pick<Module2FinalRendererProps, 'state' | 'onChangeState' | 'onNext'>) {
   const [slider, setSlider] = useState(50);
+  const [sliderInteracted, setSliderInteracted] = useState(false);
   const [draft, setDraft] = useState(state.m2FinalPortfolio.reframedLanguageNote || '');
   const [saved, setSaved] = useState(false);
+  const canContinue = sliderInteracted && saved && draft.trim().length > 0;
 
   const save = () => {
     updateFinalPortfolio(onChangeState, { reframedLanguageNote: draft });
@@ -439,22 +550,50 @@ function Screen13WaterProjects({
       eyebrow="Screen 1.3"
       title="A Tale of Two Water Projects"
       lead="To understand the difference between a needs-based lens and a rights-holder lens, let's look at a brief contrast scenario."
+      heroClassName="m2-final-header--water"
+      heroVisual={(
+        <div className="m2-final-water-hero-visual">
+          <span className="m2-final-water-drop drop-one" />
+          <span className="m2-final-water-drop drop-two" />
+          <span className="m2-final-water-wave" />
+          <span className="m2-final-water-bridge" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <p><strong>Story setup:</strong> Two neighboring rural communities are facing severe water shortages due to expanding agricultural land.</p>
-        <p>
-          Move the slider, or use the keyboard controls, to compare the Needs Lens and Rights Lens. Then, let’s apply this to your own work.
-          Think of a current or recent project at your CSO. Use the example below as a guide to reframe a passive project description into active rights-based language.
-        </p>
-      </TextBlock>
+      <section className="m2-final-water-scenario">
+        <span className="m2-final-water-scenario__icon" aria-hidden="true" />
+        <div>
+          <p><strong>Story setup:</strong> Two neighboring rural communities are facing severe water shortages due to expanding agricultural land.</p>
+          <p>
+            Move the slider, or use the keyboard controls, to compare the Needs Lens and Rights Lens. Then, let’s apply this to your own work.
+            Think of a current or recent project at your CSO. Use the example below as a guide to reframe a passive project description into active rights-based language.
+          </p>
+        </div>
+      </section>
       <section
-        className="m2-final-compare"
+        className="m2-final-compare m2-final-water-compare"
         aria-label="An interactive slider comparing Community A depending on repeated water deliveries with Community B advocating with local officials for water infrastructure."
       >
         <div className="m2-final-compare__visual">
           <img src={module2FinalAssets.waterProjectsAfter.src} alt={module2FinalAssets.waterProjectsAfter.alt} />
+          <article className="m2-final-compare-card m2-final-compare-card--rights" aria-label="Rights Lens explanation">
+            <span>Rights Lens</span>
+            <ul>
+              <li>Community members understand their right to safe and reliable water.</li>
+              <li>They constructively request inclusion in the annual extension plan.</li>
+              <li>Success means rights-holders claim entitlements and secure sustainable access.</li>
+            </ul>
+          </article>
           <div className="m2-final-compare__overlay" style={{ width: `${slider}%` }}>
             <img src={module2FinalAssets.waterProjectsBefore.src} alt={module2FinalAssets.waterProjectsBefore.alt} />
+            <article className="m2-final-compare-card m2-final-compare-card--needs" aria-label="Needs Lens explanation">
+              <span>Needs Lens</span>
+              <ul>
+                <li>The CSO drives a water truck into the village once a week.</li>
+                <li>The community depends on repeated deliveries.</li>
+                <li>Success is reported as liters of water delivered to beneficiaries.</li>
+              </ul>
+            </article>
           </div>
           <div className="m2-final-compare__handle" style={{ left: `${slider}%` }} aria-hidden="true" />
         </div>
@@ -465,73 +604,66 @@ function Screen13WaterProjects({
             min="0"
             max="100"
             value={slider}
-            onChange={(event) => setSlider(Number(event.target.value))}
+            onChange={(event) => {
+              setSlider(Number(event.target.value));
+              setSliderInteracted(true);
+            }}
             onKeyDown={(event) => {
               if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
                 event.preventDefault();
+                setSliderInteracted(true);
                 setSlider((current) => Math.max(0, current - 5));
               }
               if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
                 event.preventDefault();
+                setSliderInteracted(true);
                 setSlider((current) => Math.min(100, current + 5));
               }
             }}
             aria-valuetext={`${slider}% Needs Lens overlay`}
           />
         </label>
-        <div className="m2-final-two-col">
-          <article>
-            <h2>Left Side - Needs Lens</h2>
-            <p>
-              The CSO drives a water truck into the village once a week. The community depends on repeated deliveries.
-              The CSO reports success to the donor because "1,000 liters of water were delivered to beneficiaries."
-            </p>
-          </article>
-          <article>
-            <h2>Right Side - Rights Lens</h2>
-            <p>
-              The CSO helps the community understand their right to safe and reliable water for household use. Together, they constructively request the woreda water desk to be included in the annual extension plan.
-              The CSO reports success because "Rights-holders claimed their entitlements and secured sustainable water access."
-            </p>
-          </article>
-        </div>
       </section>
       <Takeaway>
         Building the community's capacity to claim their rights ensures resources flow long after a single delivery.
       </Takeaway>
-      <section className="m2-final-portfolio-block">
-        <h2>Everyday Rights Lens Summary</h2>
-        <p>
-          <strong>Task:</strong>{' '}
-          How could you reframe a project description from "beneficiaries receiving aid" into language that highlights
-          "rights-holders claiming access or participating"?
-        </p>
-        <aside className="m2-final-hint-box" aria-label="Worked example">
-          <h2>Worked example</h2>
-          <ul>
-            <li><strong>Before (Needs Lens):</strong> "We distributed 50 agricultural toolkits to the village."</li>
-            <li><strong>After (Rights-Holder Lens):</strong> "Farmers used the project to access agricultural resources, discuss barriers with the local agriculture desk, and strengthen their ability to claim support."</li>
-          </ul>
-        </aside>
-        <label className="m2-final-field">
-          <span>Reframed project language</span>
-          <textarea
-            value={draft}
-            onChange={(event) => {
-              setDraft(event.target.value);
-              setSaved(false);
-            }}
-            placeholder="Example: 50 youth rights-holders built the capacity to advocate for inclusive local jobs."
-          />
-        </label>
-        <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your reflection focused on general project language.
-        </SafetyNote>
-        <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
-        <SaveConfirmation show={saved} />
+      <section className="m2-final-portfolio-block m2-final-water-worksheet">
+        <span className="m2-final-water-worksheet__icon" aria-hidden="true" />
+        <div className="m2-final-water-worksheet__content">
+          <h2>Everyday Rights Lens Summary</h2>
+          <p>
+            <strong>Task:</strong>{' '}
+            Think of one current, recent, or typical project/activity from your CSO context. How could you reframe it from
+            "people receiving support" into "rights-holders participating, claiming access, or engaging duty-bearers"?
+            Keep it general and safe, and focus on rights-holders, participation, claims, barriers, duty-bearers, or sustainable access.
+          </p>
+          <aside className="m2-final-hint-box" aria-label="Worked example">
+            <h2>Worked example</h2>
+            <ul>
+              <li><strong>Before (Needs Lens):</strong> "We distributed 50 agricultural toolkits to the village."</li>
+              <li><strong>After (Rights-Holder Lens):</strong> "Farmers used the project to access agricultural resources, discuss barriers with the local agriculture desk, and strengthen their ability to claim support."</li>
+            </ul>
+          </aside>
+          <label className="m2-final-field">
+            <span>Current project/activity and rights-based reframing</span>
+            <textarea
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.target.value);
+                setSaved(false);
+              }}
+              placeholder="Example: Current description - We distributed agricultural toolkits to 50 farmers. Rights-based reframing - Farmers strengthened their ability to access agricultural support, discuss barriers with the local agriculture desk, and claim services more sustainably."
+            />
+          </label>
+          <SafetyNote>
+            Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your reflection focused on general project language.
+          </SafetyNote>
+          <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
+          <SaveConfirmation show={saved} />
+        </div>
       </section>
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Identifying the Actors" onClick={onNext} />
+        <ContinueButton label="Next: Identifying the Actors" onClick={onNext} disabled={!canContinue} />
       </footer>
     </Module2FinalShell>
   );
@@ -566,34 +698,47 @@ function Screen21RightsHolders({ onNext }: Pick<Module2FinalRendererProps, 'onNe
       eyebrow="Screen 2.1"
       title="Who Holds the Rights?"
       lead="Evolving our approach starts with changing how we see the people we work with."
+      heroClassName="m2-final-header--rights-holders"
+      heroVisual={(
+        <div className="m2-final-rights-hero-visual">
+          <span className="m2-final-rights-lens" />
+          <span className="m2-final-rights-person person-one" />
+          <span className="m2-final-rights-person person-two" />
+          <span className="m2-final-rights-person person-three" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          In planning the Jiru Amba Initiative, Awra focuses on displaced youth excluded from local services, rural women
-          who spend hours fetching water, and persons with disabilities who face physical barriers to attending community meetings.
-        </p>
-        <p>
-          In HRBA, every individual and community member is a rights-holder. They are people with rights, voice, and valid claims,
-          regardless of gender, age, disability, or displacement status.
-        </p>
-      </TextBlock>
-      <section className="m2-final-card-grid" aria-label="Three interactive cards labeled Displaced Youth, Rural Women, and Persons with Disabilities.">
+      <section className="m2-final-rights-context">
+        <span className="m2-final-rights-context__icon" aria-hidden="true" />
+        <div>
+          <p>
+            In planning the Jiru Amba Initiative, Awra focuses on displaced youth excluded from local services, rural women
+            who spend hours fetching water, and persons with disabilities who face physical barriers to attending community meetings.
+          </p>
+          <p>
+            In HRBA, every individual and community member is a rights-holder. They are people with rights, voice, and valid claims,
+            regardless of gender, age, disability, or displacement status.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-card-grid m2-final-rights-grid" aria-label="Three interactive cards labeled Displaced Youth, Rural Women, and Persons with Disabilities.">
         {cards.map((card) => {
           const isOpen = Boolean(opened[card.id]);
           return (
-            <article key={card.id} className={`m2-final-lens-card ${isOpen ? 'is-open' : ''}`}>
+            <article key={card.id} className={`m2-final-lens-card m2-final-rights-card m2-final-rights-card-${card.id} ${isOpen ? 'is-open' : ''}`}>
               <button
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => setOpened((prev) => ({ ...prev, [card.id]: true }))}
               >
-                <span aria-hidden="true">{isOpen ? 'Viewed' : 'Reveal'}</span>
+                <span className="m2-final-rights-card__icon" aria-hidden="true" />
+                <span className="m2-final-rights-card__status" aria-hidden="true">{isOpen ? 'Viewed' : 'Reveal'}</span>
                 <strong>{card.title}</strong>
               </button>
               {isOpen && (
                 <div className="m2-final-lens-card__body" aria-live="polite">
-                  <p><strong>Needs Lens:</strong> {card.needs}</p>
-                  <p><strong>Rights-Holder Lens:</strong> {card.rights}</p>
+                  <p className="is-needs"><strong>Needs Lens:</strong> {card.needs}</p>
+                  <p className="is-rights"><strong>Rights-Holder Lens:</strong> {card.rights}</p>
                 </div>
               )}
             </article>
@@ -606,7 +751,7 @@ function Screen21RightsHolders({ onNext }: Pick<Module2FinalRendererProps, 'onNe
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Who Bears the Duty?" onClick={onNext} />
+        <ContinueButton label="Next: Who Bears the Duty?" onClick={onNext} disabled={!allOpen} />
       </footer>
     </Module2FinalShell>
   );
@@ -660,18 +805,30 @@ function Screen22DutyBearers({ onNext }: Pick<Module2FinalRendererProps, 'onNext
       eyebrow="Screen 2.2"
       title="Who Bears the Duty?"
       lead="If the people of Jiru Amba hold rights, who has the responsibility to ensure those rights are realized?"
+      heroClassName="m2-final-header--duty"
+      heroVisual={(
+        <div className="m2-final-duty-hero-visual">
+          <span className="m2-final-duty-building" />
+          <span className="m2-final-duty-obligation obligation-one" />
+          <span className="m2-final-duty-obligation obligation-two" />
+          <span className="m2-final-duty-obligation obligation-three" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          Awra's team interacts with the Woreda Water Desk and the Woreda Health Desk. These officials may be overwhelmed
-          and under-resourced, but under the law they still hold specific public responsibilities to the community.
-        </p>
-        <p>
-          The State and its institutions remain the primary duty-bearers, including ministries, regional bureaus, woreda desks,
-          and kebele administrations.
-        </p>
-      </TextBlock>
-      <section className="m2-final-tabs" aria-label="Duty-bearer obligations">
+      <section className="m2-final-duty-context">
+        <span className="m2-final-duty-context__icon" aria-hidden="true" />
+        <div>
+          <p>
+            Awra's team interacts with the Woreda Water Desk and the Woreda Health Desk. These officials may be overwhelmed
+            and under-resourced, but under the law they still hold specific public responsibilities to the community.
+          </p>
+          <p>
+            The State and its institutions remain the primary duty-bearers, including ministries, regional bureaus, woreda desks,
+            and kebele administrations.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-tabs m2-final-duty-tabs" aria-label="Duty-bearer obligations">
         <div className="m2-final-tab-list" role="tablist" aria-orientation="horizontal" onKeyDown={onKeyDown}>
           {obligations.map((item) => (
             <button
@@ -684,8 +841,9 @@ function Screen22DutyBearers({ onNext }: Pick<Module2FinalRendererProps, 'onNext
               className={active === item.id ? 'is-active' : ''}
               onClick={() => select(item.id)}
             >
-              <span aria-hidden="true">{active === item.id ? '-' : '+'}</span>
+              <span className="m2-final-duty-tab__icon" aria-hidden="true">{active === item.id ? '-' : '+'}</span>
               {item.label}
+              {viewed[item.id] && <span className="m2-final-duty-tab__viewed" aria-hidden="true">Viewed</span>}
             </button>
           ))}
         </div>
@@ -693,8 +851,9 @@ function Screen22DutyBearers({ onNext }: Pick<Module2FinalRendererProps, 'onNext
           id={`m2-final-tab-${activeObligation.id}`}
           role="tabpanel"
           aria-labelledby={`m2-final-tab-button-${activeObligation.id}`}
-          className="m2-final-tab-panel"
+          className="m2-final-tab-panel m2-final-duty-panel"
         >
+          <span className="m2-final-duty-panel__icon" aria-hidden="true" />
           <h2>{activeObligation.fullTitle}</h2>
           <p><strong>What it means:</strong> {activeObligation.meaning}</p>
           <p><strong>Local example:</strong> {activeObligation.example}</p>
@@ -706,7 +865,7 @@ function Screen22DutyBearers({ onNext }: Pick<Module2FinalRendererProps, 'onNext
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: CSOs as Enablers" onClick={onNext} />
+        <ContinueButton label="Next: CSOs as Enablers" onClick={onNext} disabled={!allViewed} />
       </footer>
     </Module2FinalShell>
   );
@@ -721,6 +880,7 @@ function Screen23Enablers({
   const [rightsHolder, setRightsHolder] = useState(state.m2FinalPortfolio.actorRightsHolder || '');
   const [dutyBearer, setDutyBearer] = useState(state.m2FinalPortfolio.actorDutyBearer || '');
   const [saved, setSaved] = useState(false);
+  const canContinue = selected === 'C' && saved && rightsHolder.trim().length > 0 && dutyBearer.trim().length > 0;
   const options = [
     {
       id: 'A',
@@ -752,37 +912,51 @@ function Screen23Enablers({
       eyebrow="Screen 2.3"
       title="CSOs as Enablers"
       lead="If the community holds the rights and the state bears the duty, where does your CSO fit into the picture?"
+      heroClassName="m2-final-header--enablers"
+      heroVisual={(
+        <div className="m2-final-enabler-hero-visual">
+          <span className="m2-final-enabler-side is-community" />
+          <span className="m2-final-enabler-bridge" />
+          <span className="m2-final-enabler-side is-duty" />
+          <span className="m2-final-enabler-cso" />
+        </div>
+      )}
     >
-      <section className="m2-final-scenario-visual">
+      <section className="m2-final-scenario-visual m2-final-enabler-visual">
         <img src={module2FinalAssets.brokenWaterPumpBridge.src} alt={module2FinalAssets.brokenWaterPumpBridge.alt} />
       </section>
-      <TextBlock>
-        <h2>Story Segment: The Broken Water Pump</h2>
-        <p>
-          A vital water pump breaks in Jiru Amba. The community, fearing waterborne disease, asks Awra’s Director to quickly hire a contractor to fix it.
-          Tadesse, a project officer, knows the Woreda Water Desk has the primary maintenance responsibility, but the desk is chronically under-resourced.
-        </p>
-        <p>
-          Help Tadesse decide how Awra should handle the broken water pump. Select the most constructive, HRBA-aligned choice below.
-          After, let’s map the actors in your own work.
-        </p>
-      </TextBlock>
-      <section className="m2-final-option-list" aria-label="Broken water pump response options">
+      <section className="m2-final-enabler-story">
+        <span className="m2-final-enabler-story__icon" aria-hidden="true" />
+        <div>
+          <h2>Story Segment: The Broken Water Pump</h2>
+          <p>
+            A vital water pump breaks in Jiru Amba. The community, fearing waterborne disease, asks Awra’s Director to quickly hire a contractor to fix it.
+            Tadesse, a project officer, knows the Woreda Water Desk has the primary maintenance responsibility, but the desk is chronically under-resourced.
+          </p>
+          <p>
+            Help Tadesse decide how Awra should handle the broken water pump. Select the most constructive, HRBA-aligned choice below.
+            After, let’s map the actors in your own work.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-option-list m2-final-enabler-options" aria-label="Broken water pump response options">
         {options.map((option) => {
           const isSelected = selected === option.id;
+          const isStrong = option.id === 'C';
           return (
-            <div key={option.id} className="m2-final-option-item">
+            <div key={option.id} className={['m2-final-option-item', isStrong ? 'is-strong-option' : ''].filter(Boolean).join(' ')}>
               <button
                 type="button"
                 className={isSelected ? 'is-selected' : ''}
                 aria-pressed={isSelected}
                 onClick={() => setSelected(option.id)}
               >
+                <span className="m2-final-enabler-option__marker" aria-hidden="true" />
                 <strong>Option {option.id}</strong>
                 <span>{option.text}</span>
               </button>
               {isSelected && (
-                <p className="m2-final-option-feedback" aria-live="polite">
+                <p className={['m2-final-option-feedback', isStrong ? 'is-correct' : 'is-incorrect'].join(' ')} aria-live="polite">
                   {option.id === 'C' ? '✓ ' : '! '}
                   {option.feedback}
                 </p>
@@ -791,50 +965,53 @@ function Screen23Enablers({
           );
         })}
       </section>
-      <section className="m2-final-portfolio-block">
-        <h2>Actor Map</h2>
-        <p>
-          <strong>Task:</strong> Identify one specific rights-holder group and one specific local duty-bearer, who may be under-resourced, relevant to your daily CSO work.
-        </p>
-        <aside className="m2-final-hint-box" aria-label="Worked example">
-          <h2>Worked example</h2>
-          <ul>
-            <li><strong>Rights-holder:</strong> Young people with visual impairments.</li>
-            <li><strong>Duty-bearer:</strong> The Kebele Education Office.</li>
-          </ul>
-        </aside>
-        <div className="m2-final-field-grid">
-          <label className="m2-final-field">
-            <span>Rights-holder group</span>
-            <input
-              value={rightsHolder}
-              onChange={(event) => {
-                setRightsHolder(event.target.value);
-                setSaved(false);
-              }}
-              placeholder="Example: Visually impaired youth"
-            />
-          </label>
-          <label className="m2-final-field">
-            <span>Local duty-bearer</span>
-            <input
-              value={dutyBearer}
-              onChange={(event) => {
-                setDutyBearer(event.target.value);
-                setSaved(false);
-              }}
-              placeholder="Example: Kebele Education Office"
-            />
-          </label>
+      <section className="m2-final-portfolio-block m2-final-enabler-worksheet">
+        <span className="m2-final-enabler-worksheet__icon" aria-hidden="true" />
+        <div className="m2-final-enabler-worksheet__content">
+          <h2>Actor Map</h2>
+          <p>
+            <strong>Task:</strong> Identify one specific rights-holder group and one specific local duty-bearer, who may be under-resourced, relevant to your daily CSO work.
+          </p>
+          <aside className="m2-final-hint-box" aria-label="Worked example">
+            <h2>Worked example</h2>
+            <ul>
+              <li><strong>Rights-holder:</strong> Young people with visual impairments.</li>
+              <li><strong>Duty-bearer:</strong> The Kebele Education Office.</li>
+            </ul>
+          </aside>
+          <div className="m2-final-field-grid">
+            <label className="m2-final-field">
+              <span>Rights-holder group</span>
+              <input
+                value={rightsHolder}
+                onChange={(event) => {
+                  setRightsHolder(event.target.value);
+                  setSaved(false);
+                }}
+                placeholder="Example: Visually impaired youth"
+              />
+            </label>
+            <label className="m2-final-field">
+              <span>Local duty-bearer</span>
+              <input
+                value={dutyBearer}
+                onChange={(event) => {
+                  setDutyBearer(event.target.value);
+                  setSaved(false);
+                }}
+                placeholder="Example: Kebele Education Office"
+              />
+            </label>
+          </div>
+          <SafetyNote>
+            Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Use general titles, such as "Woreda Health Desk."
+          </SafetyNote>
+          <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
+          <SaveConfirmation show={saved} />
         </div>
-        <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Use general titles, such as "Woreda Health Desk."
-        </SafetyNote>
-        <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
-        <SaveConfirmation show={saved} />
       </section>
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: The PANEL Principles" onClick={onNext} />
+        <ContinueButton label="Next: The PANEL Principles" onClick={onNext} disabled={!canContinue} />
       </footer>
     </Module2FinalShell>
   );
@@ -843,12 +1020,13 @@ function Screen23Enablers({
 function Screen31Panel({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
   const [opened, setOpened] = useState<RevealedMap>({});
   const principles = [
-    ['P', 'Participation', 'People must have an active, free, and meaningful voice in decisions that affect their lives, not just an invitation to attend.'],
-    ['A', 'Accountability', 'There must be clear responsibilities, transparent sharing of information, and safe ways for the community to provide feedback and receive a response.'],
-    ['N', 'Non-Discrimination & Equality', 'We must actively identify and prioritize people facing the greatest barriers, ensuring no one is excluded because of gender, age, disability, displacement status, or background.'],
-    ['E', 'Empowerment & Capacity', 'CSOs must help rights-holders build confidence and skills to claim their rights, while also supporting duty-bearers to build capacity to fulfill them.'],
-    ['L', 'Legality / Recognized Rights', 'Community claims should be grounded in recognized rights and responsibilities, giving them strength rather than relying on charity.'],
+    ['P', 'Participation', 'People must have an active, free, and meaningful voice in decisions that affect their lives, not just an invitation to attend.', 'Plan participation early, remove barriers, and show how views influence decisions.'],
+    ['A', 'Accountability', 'There must be clear responsibilities, transparent sharing of information, and safe ways for the community to provide feedback and receive a response.', 'Create safe feedback routes and explain who responds, when, and how.'],
+    ['N', 'Non-Discrimination & Equality', 'We must actively identify and prioritize people facing the greatest barriers, ensuring no one is excluded because of gender, age, disability, displacement status, or background.', 'Check who is missing, what barriers they face, and what accommodations are needed.'],
+    ['E', 'Empowerment & Capacity', 'CSOs must help rights-holders build confidence and skills to claim their rights, while also supporting duty-bearers to build capacity to fulfill them.', 'Support confidence, knowledge, and practical capacity on both sides.'],
+    ['L', 'Legality / Recognized Rights', 'Community claims should be grounded in recognized rights and responsibilities, giving them strength rather than relying on charity.', 'Link issues to rights, duties, standards, and practical obligations.'],
   ] as const;
+  const panelVisualLabels = principles.map(([letter, title]) => [letter, title] as const);
   const allOpen = principles.every(([letter]) => opened[letter]);
 
   return (
@@ -856,41 +1034,74 @@ function Screen31Panel({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
       eyebrow="Screen 3.1"
       title="The PANEL Principles"
       lead="The PANEL principles are practical rules for how rights-holders and duty-bearers interact fairly and effectively."
+      heroClassName="m2-final-header--panel"
+      heroVisual={(
+        <div className="m2-final-panel-hero-strip">
+          {panelVisualLabels.map(([letter, title]) => (
+            <div key={letter} className={`m2-final-panel-hero-node m2-final-panel-tone-${letter.toLowerCase()}`}>
+              <span className="m2-final-panel-hero-letter">{letter}</span>
+              <span className="m2-final-panel-hero-icon" />
+              <span className="m2-final-panel-hero-label">{title}</span>
+            </div>
+          ))}
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          As Awra prepares the Jiru Amba Initiative, Almaz suggests checking the plan against PANEL: Participation,
-          Accountability, Non-Discrimination, Empowerment, and Legality.
-        </p>
-        <p>The principles remind us that how we work is just as important as what we do.</p>
-      </TextBlock>
-      <section className="m2-final-panel-grid" aria-label="Five interactive cards spelling out P-A-N-E-L.">
-        {principles.map(([letter, title, body]) => {
+      <section className="m2-final-panel-case-card">
+        <span className="m2-final-panel-case-card__badge" aria-hidden="true" />
+        <div>
+          <h2>Jiru Amba case connection</h2>
+          <p>
+            As Awra prepares the Jiru Amba Initiative, Almaz suggests checking the plan against PANEL: Participation,
+            Accountability, Non-Discrimination, Empowerment, and Legality.
+          </p>
+          <p>The principles remind us that how we work is just as important as what we do.</p>
+        </div>
+      </section>
+      <section className="m2-final-panel-section" aria-labelledby="m2-final-panel-section-title">
+        <div className="m2-final-panel-section__header">
+          <h2 id="m2-final-panel-section-title">The five PANEL principles</h2>
+          <p>Open each card to review the practical rule.</p>
+        </div>
+        <div className="m2-final-panel-grid" aria-label="Five interactive cards spelling out P-A-N-E-L.">
+        {principles.map(([letter, title, body, practice]) => {
           const isOpen = Boolean(opened[letter]);
           return (
-            <article key={letter} className={`m2-final-panel-card ${isOpen ? 'is-open' : ''}`}>
+            <article key={letter} className={`m2-final-panel-card m2-final-panel-tone-${letter.toLowerCase()} ${isOpen ? 'is-open' : ''}`}>
               <button
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => setOpened((prev) => ({ ...prev, [letter]: true }))}
               >
+                <span className="m2-final-panel-card__icon" aria-hidden="true" />
                 <span className="m2-final-panel-letter" aria-hidden="true">{letter}</span>
-                <span>{title}</span>
-                <span aria-hidden="true">{isOpen ? '-' : '+'}</span>
+                <span className="m2-final-panel-card__title">{title}</span>
+                <span className="m2-final-panel-card__toggle" aria-hidden="true">{isOpen ? '-' : '+'}</span>
               </button>
-              {isOpen && <p aria-live="polite">{body}</p>}
+              {isOpen && (
+                <div className="m2-final-panel-card__body" aria-live="polite">
+                  <p>{body}</p>
+                  <div className="m2-final-panel-card__practice">
+                    <strong>In practice</strong>
+                    <p>{practice}</p>
+                  </div>
+                </div>
+              )}
             </article>
           );
         })}
+        </div>
       </section>
-      <OptionalAudioBlock {...module2FinalAudio.panelPrinciples} />
-      {allOpen && (
+      <div className="m2-final-panel-audio">
+        <OptionalAudioBlock {...module2FinalAudio.panelPrinciples} />
+      </div>
+      <div className="m2-final-panel-takeaway">
         <Takeaway>
           The PANEL principles are complementary. You cannot have true empowerment without meaningful participation, and you cannot have accountability if certain groups face discrimination.
         </Takeaway>
-      )}
+      </div>
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Beyond the Roster" onClick={onNext} />
+        <ContinueButton label="Next: Beyond the Roster" onClick={onNext} disabled={!allOpen} />
       </footer>
     </Module2FinalShell>
   );
@@ -938,18 +1149,29 @@ function Screen32Roster({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
       eyebrow="Screen 3.2"
       title="Beyond the Roster"
       lead="Participation is not the same as counting how many people attended a meeting."
+      heroClassName="m2-final-header--roster"
+      heroVisual={(
+        <div className="m2-final-roster-hero-visual">
+          <span className="m2-final-roster-list" />
+          <span className="m2-final-roster-arrow" />
+          <span className="m2-final-roster-voice" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <h2>Story Segment: The Silent Committee</h2>
-        <p>
-          Awra hosts a consultation for the new JAI water project. They invite a diverse group, but the meeting is in a building
-          with steep stairs, notices are printed in one language, and weak facilitation lets a few confident voices dominate.
-        </p>
-        <p>
-          Token participation happens when people are counted as present but cannot safely understand, speak, or influence decisions.
-        </p>
-      </TextBlock>
-      <section className="m2-final-hotspot" aria-label="Silent Committee hotspot scene">
+      <section className="m2-final-roster-story">
+        <span className="m2-final-roster-story__icon" aria-hidden="true" />
+        <div>
+          <h2>Story Segment: The Silent Committee</h2>
+          <p>
+            Awra hosts a consultation for the new JAI water project. They invite a diverse group, but the meeting is in a building
+            with steep stairs, notices are printed in one language, and weak facilitation lets a few confident voices dominate.
+          </p>
+          <p>
+            Token participation happens when people are counted as present but cannot safely understand, speak, or influence decisions.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-hotspot m2-final-roster-hotspot" aria-label="Silent Committee hotspot scene">
         <div className="m2-final-hotspot__image">
           <img src={module2FinalAssets.silentCommitteeScene.src} alt={module2FinalAssets.silentCommitteeScene.alt} />
           {hotspots.map((hotspot) => (
@@ -985,7 +1207,7 @@ function Screen32Roster({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Designing for Inclusion" onClick={onNext} />
+        <ContinueButton label="Next: Designing for Inclusion" onClick={onNext} disabled={!allVisited} />
       </footer>
     </Module2FinalShell>
   );
@@ -1024,6 +1246,7 @@ function Screen33Inclusion({
   const [practicalStep, setPracticalStep] = useState(portfolio.inclusionPracticalStep || '');
   const [saved, setSaved] = useState(false);
   const allCorrect = items.every((item) => answers[item.id] === item.target);
+  const canContinue = allCorrect && saved && groupMissing.trim().length > 0 && practicalStep.trim().length > 0;
 
   const save = () => {
     const summary = [groupMissing && `Group often missing: ${groupMissing}`, practicalStep && `Practical step: ${practicalStep}`]
@@ -1042,31 +1265,59 @@ function Screen33Inclusion({
       eyebrow="Screen 3.3"
       title="Designing for Inclusion"
       lead="Recognizing barriers is the first step. The next step is actively removing them."
+      heroClassName="m2-final-header--inclusion"
+      heroVisual={(
+        <div className="m2-final-inclusion-hero-visual">
+          <div className="m2-final-inclusion-path is-token">
+            <span className="m2-final-inclusion-path__icon" />
+            <span className="m2-final-inclusion-path__line" />
+            <strong>Token Attendance</strong>
+          </div>
+          <span className="m2-final-inclusion-vs">vs.</span>
+          <div className="m2-final-inclusion-path is-meaningful">
+            <span className="m2-final-inclusion-path__icon" />
+            <span className="m2-final-inclusion-path__line" />
+            <strong>Meaningful Influence</strong>
+          </div>
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          Almaz reviews barriers from the last meeting to ensure that groups facing barriers in Jiru Amba can safely share insights
-          and influence the project's direction.
-        </p>
-        <p>
-          Help Almaz sort the following facilitation choices. Match or select each action into either the Token Attendance box,
-          meaning Needs work, or the Meaningful Influence box, meaning Strong HRBA.
-        </p>
-      </TextBlock>
-      <section className="m2-final-sorter" aria-label="Token Attendance versus Meaningful Influence sorting task">
-        <div className="m2-final-sorter-zones" aria-hidden="true">
-          <div><strong>Token Attendance</strong><span>Needs work</span></div>
-          <div><strong>Meaningful Influence</strong><span>Strong HRBA</span></div>
+      <section className="m2-final-inclusion-story">
+        <span className="m2-final-inclusion-story__badge" aria-hidden="true" />
+        <div>
+          <h2>Jiru Amba planning moment</h2>
+          <p>
+            Almaz reviews barriers from the last meeting to ensure that groups facing barriers in Jiru Amba can safely share insights
+            and influence the project's direction.
+          </p>
+          <p>
+            Help Almaz sort the following facilitation choices. Match or select each action into either the Token Attendance box,
+            meaning Needs work, or the Meaningful Influence box, meaning Strong HRBA.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-sorter m2-final-inclusion-studio" aria-labelledby="m2-final-inclusion-studio-title">
+        <div className="m2-final-inclusion-studio__header">
+          <p className="m2-final-tag">Inclusion design studio</p>
+          <h2 id="m2-final-inclusion-studio-title">Choose the path that leads to stronger inclusion.</h2>
+        </div>
+        <div className="m2-final-sorter-zones m2-final-inclusion-zones" aria-hidden="true">
+          <div className="is-token"><span className="m2-final-inclusion-zone-icon" /><strong>Token Attendance</strong><span>Needs work</span></div>
+          <div className="is-meaningful"><span className="m2-final-inclusion-zone-icon" /><strong>Meaningful Influence</strong><span>Strong HRBA</span></div>
         </div>
         {items.map((item, index) => {
           const selected = answers[item.id];
           const hasAnswer = Boolean(selected);
           const isCorrect = selected === item.target;
           return (
-            <fieldset key={item.id} className="m2-final-sorter-item">
-              <legend>{index + 1}. {item.text}</legend>
+            <fieldset key={item.id} className={`m2-final-sorter-item m2-final-inclusion-action m2-final-inclusion-action-${item.id}`}>
+              <legend><span>{index + 1}</span>{item.text}</legend>
               <div className="m2-final-radio-row">
-                <label>
+                <label className={[
+                  selected === 'token' ? 'is-selected' : '',
+                  hasAnswer && selected === 'token' && isCorrect ? 'is-correct' : '',
+                  hasAnswer && selected === 'token' && !isCorrect ? 'is-incorrect' : '',
+                ].filter(Boolean).join(' ')}>
                   <input
                     type="radio"
                     name={`m2-final-sort-${item.id}`}
@@ -1075,7 +1326,11 @@ function Screen33Inclusion({
                   />
                   Token Attendance
                 </label>
-                <label>
+                <label className={[
+                  selected === 'meaningful' ? 'is-selected' : '',
+                  hasAnswer && selected === 'meaningful' && isCorrect ? 'is-correct' : '',
+                  hasAnswer && selected === 'meaningful' && !isCorrect ? 'is-incorrect' : '',
+                ].filter(Boolean).join(' ')}>
                   <input
                     type="radio"
                     name={`m2-final-sort-${item.id}`}
@@ -1085,7 +1340,7 @@ function Screen33Inclusion({
                   Meaningful Influence
                 </label>
               </div>
-              <p className="m2-final-item-feedback" aria-live="polite">
+              <p className={['m2-final-item-feedback', hasAnswer ? (isCorrect ? 'is-correct' : 'is-incorrect') : ''].filter(Boolean).join(' ')} aria-live="polite">
                 {hasAnswer
                   ? isCorrect
                     ? '✓ Strong HRBA choice.'
@@ -1103,50 +1358,55 @@ function Screen33Inclusion({
           Strong HRBA response! Meaningful influence requires adapting our methods, like using safe spaces, accessible locations, and visual aids, so that everyone has an equal opportunity to shape the outcome.
         </Takeaway>
       )}
-      <section className="m2-final-portfolio-block">
-        <h2>Inclusion Audit</h2>
-        <p>
-          <strong>Task:</strong> Conduct a quick inclusion reflection. Who is missing from your meetings, and what is one practical step to remove their barrier?
-        </p>
-        <aside className="m2-final-hint-box" aria-label="Worked example">
-          <h2>Worked example</h2>
-          <ul>
-            <li><strong>Group missing:</strong> Rural caregivers.</li>
-            <li><strong>Practical step:</strong> Provide childcare at the venue and hold the meeting in the late afternoon.</li>
-          </ul>
-        </aside>
-        <div className="m2-final-field-grid">
-          <label className="m2-final-field">
-            <span>Group Often Missing</span>
-            <input
-              value={groupMissing}
-              onChange={(event) => {
-                setGroupMissing(event.target.value);
-                setSaved(false);
-              }}
-              placeholder="Example: Rural caregivers"
-            />
-          </label>
-          <label className="m2-final-field">
-            <span>Practical Step for Inclusion</span>
-            <input
-              value={practicalStep}
-              onChange={(event) => {
-                setPracticalStep(event.target.value);
-                setSaved(false);
-              }}
-              placeholder="Example: Provide childcare and adjust meeting time"
-            />
-          </label>
+      <section className="m2-final-portfolio-block m2-final-inclusion-audit">
+        <span className="m2-final-inclusion-audit__badge" aria-hidden="true" />
+        <div className="m2-final-inclusion-audit__content">
+          <h2>Inclusion Audit</h2>
+          <p>
+            <strong>Task:</strong> Conduct a quick inclusion reflection. Who is missing from your meetings, and what is one practical step to remove their barrier?
+          </p>
+          <div className="m2-final-inclusion-audit__grid">
+            <aside className="m2-final-hint-box" aria-label="Worked example">
+              <h2>Worked example</h2>
+              <ul>
+                <li><strong>Group missing:</strong> Rural caregivers.</li>
+                <li><strong>Practical step:</strong> Provide childcare at the venue and hold the meeting in the late afternoon.</li>
+              </ul>
+            </aside>
+            <div className="m2-final-field-grid">
+              <label className="m2-final-field">
+                <span>Group Often Missing</span>
+                <input
+                  value={groupMissing}
+                  onChange={(event) => {
+                    setGroupMissing(event.target.value);
+                    setSaved(false);
+                  }}
+                  placeholder="Example: Rural caregivers"
+                />
+              </label>
+              <label className="m2-final-field">
+                <span>Practical Step for Inclusion</span>
+                <input
+                  value={practicalStep}
+                  onChange={(event) => {
+                    setPracticalStep(event.target.value);
+                    setSaved(false);
+                  }}
+                  placeholder="Example: Provide childcare and adjust meeting time"
+                />
+              </label>
+            </div>
+          </div>
+          <SafetyNote>
+            Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your examples focused on general groups and systemic barriers.
+          </SafetyNote>
+          <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
+          <SaveConfirmation show={saved} />
         </div>
-        <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your examples focused on general groups and systemic barriers.
-        </SafetyNote>
-        <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
-        <SaveConfirmation show={saved} />
       </section>
       <footer className="m2-final-footer">
-        <ContinueButton label="Continue" onClick={onNext} />
+        <ContinueButton label="Continue" onClick={onNext} disabled={!canContinue} />
       </footer>
     </Module2FinalShell>
   );
@@ -1178,37 +1438,62 @@ function Screen41Power({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
       eyebrow="Screen 4.1"
       title="Unmasking Power"
       lead="Even when a support program is formally open to everyone, some people may still be excluded by rules, information channels, or long-standing social expectations."
+      heroClassName="m2-final-header--power"
+      heroVisual={(
+        <div className="m2-final-power-hero-visual">
+          <span className="m2-final-power-hero-layer layer-one" />
+          <span className="m2-final-power-hero-layer layer-two" />
+          <span className="m2-final-power-hero-layer layer-three" />
+          <span className="m2-final-power-hero-lens" />
+        </div>
+      )}
     >
-      <section className="m2-final-scenario-visual">
-        <img src={module2FinalAssets.powerMap.src} alt={module2FinalAssets.powerMap.alt} />
+      <section className="m2-final-power-lab" aria-labelledby="m2-final-power-lab-title">
+        <div className="m2-final-power-lab__header">
+          <span className="m2-final-power-lab__badge" aria-hidden="true" />
+          <div>
+            <h2 id="m2-final-power-lab-title">Power Map Lab</h2>
+            <p>Explore the three layers of power and how they shape access and participation.</p>
+          </div>
+        </div>
+        <div className="m2-final-power-lab__asset">
+          <img src={module2FinalAssets.powerMap.src} alt={module2FinalAssets.powerMap.alt} />
+        </div>
       </section>
-      <TextBlock>
-        <h2>Story Segment: Agricultural Subsidy Rollout</h2>
-        <p>
-          The Woreda Agriculture Desk is rolling out a new drought-resistant seed subsidy in Jiru Amba. We must map formal rules,
-          informal networks, and internalized beliefs.
-        </p>
-        <p>
-          Help Almaz analyze the power dynamics at play in the Jiru Amba agricultural subsidy rollout. Match or select each scenario card into one of three power types.
-        </p>
-      </TextBlock>
-      <aside className="m2-final-hint-box" aria-label="Worked example">
-        <h2>Hint</h2>
-        <p>Visible = Formal rules; Hidden = Informal networks/information; Invisible = Long-standing social expectations.</p>
-      </aside>
-      <section className="m2-final-sorter m2-final-power-match" aria-label="Visible, hidden, and invisible power matching">
-        <div className="m2-final-sorter-zones" aria-hidden="true">
-          <div><span className="m2-final-zone-icon">1</span><strong>Visible Power</strong><span>Formal authority and rules</span></div>
-          <div><span className="m2-final-zone-icon">2</span><strong>Hidden Power</strong><span>Agenda and access control</span></div>
-          <div><span className="m2-final-zone-icon">3</span><strong>Invisible Power</strong><span>Norms and internalized beliefs</span></div>
+      <section className="m2-final-power-story">
+        <span className="m2-final-power-story__badge" aria-hidden="true" />
+        <div>
+          <h2>Story Segment: Agricultural Subsidy Rollout</h2>
+          <p>
+            The Woreda Agriculture Desk is rolling out a new drought-resistant seed subsidy in Jiru Amba. We must map formal rules,
+            informal networks, and internalized beliefs.
+          </p>
+          <p>
+            Help Almaz analyze the power dynamics at play in the Jiru Amba agricultural subsidy rollout. Match or select each scenario card into one of three power types.
+          </p>
+          <aside className="m2-final-hint-box" aria-label="Worked example">
+            <h2>Hint</h2>
+            <p>Visible = Formal rules; Hidden = Informal networks/information; Invisible = Long-standing social expectations.</p>
+          </aside>
+        </div>
+      </section>
+      <section className="m2-final-sorter m2-final-power-match" aria-labelledby="m2-final-power-match-title">
+        <div className="m2-final-power-match__header">
+          <p className="m2-final-tag">Scenario diagnosis</p>
+          <h2 id="m2-final-power-match-title">Identify which type of power is most at play in each situation.</h2>
+        </div>
+        <div className="m2-final-sorter-zones m2-final-power-zones" aria-hidden="true">
+          <div className="is-visible-power"><span className="m2-final-zone-icon">1</span><strong>Visible Power</strong><span>Formal authority and rules</span></div>
+          <div className="is-hidden-power"><span className="m2-final-zone-icon">2</span><strong>Hidden Power</strong><span>Agenda and access control</span></div>
+          <div className="is-invisible-power"><span className="m2-final-zone-icon">3</span><strong>Invisible Power</strong><span>Norms and internalized beliefs</span></div>
         </div>
         {items.map((item, index) => {
           const selected = answers[item.id];
           const hasAnswer = Boolean(selected);
           const isCorrect = selected === item.target;
           return (
-            <fieldset key={item.id} className="m2-final-sorter-item">
-              <legend>{index + 1}. {item.text}</legend>
+            <fieldset key={item.id} className={`m2-final-sorter-item m2-final-power-diagnosis m2-final-power-diagnosis-${item.id}`}>
+              <legend><span>{index + 1}</span>{item.text}</legend>
               <div className="m2-final-radio-row m2-final-radio-row--three">
                 {['visible', 'hidden', 'invisible'].map((choice) => {
                   const isChoiceSelected = selected === choice;
@@ -1253,7 +1538,7 @@ function Screen41Power({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Overlapping Barriers" onClick={onNext} />
+        <ContinueButton label="Next: Overlapping Barriers" onClick={onNext} disabled={!allCorrect} />
       </footer>
     </Module2FinalShell>
   );
@@ -1288,33 +1573,57 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
       eyebrow="Screen 4.2"
       title="Overlapping Barriers"
       lead="When we look at power, we see that exclusion is rarely simple. People often face more than one barrier at the same time."
+      heroClassName="m2-final-header--barriers"
+      heroVisual={(
+        <div className="m2-final-barrier-hero-visual">
+          <span className="m2-final-barrier-circle circle-one" />
+          <span className="m2-final-barrier-circle circle-two" />
+          <span className="m2-final-barrier-circle circle-three" />
+        </div>
+      )}
     >
-      <section className="m2-final-scenario-visual">
-        <img src={module2FinalAssets.overlappingBarriersCards.src} alt={module2FinalAssets.overlappingBarriersCards.alt} />
+      <section className="m2-final-barrier-journey" aria-labelledby="m2-final-barrier-journey-title">
+        <div className="m2-final-barrier-journey__header">
+          <span className="m2-final-barrier-journey__badge" aria-hidden="true" />
+          <div>
+            <h2 id="m2-final-barrier-journey-title">Chaltu’s path through the registration process</h2>
+            <p>Follow the stages where different barriers combine instead of appearing one at a time.</p>
+          </div>
+        </div>
+        <div className="m2-final-barrier-journey__visual" aria-hidden="true">
+          <img src={module2FinalAssets.overlappingBarriersCards.src} alt="" />
+        </div>
       </section>
-      <TextBlock>
-        <h2>Worked Example: How Barriers Combine</h2>
-        <p>
-          Example: In Chaltu's case, her lack of formal documentation, a displacement barrier; her inability to hear megaphone announcements,
-          a communication access barrier; and being bypassed by others, a social hierarchy barrier, combine to prevent her from completing the registration process.
-          Fixing just one barrier is not enough.
-        </p>
-      </TextBlock>
-      <TextBlock>
-        <h2>Meet Chaltu</h2>
-        <p>
-          Meet Chaltu, a young woman whose family was internally displaced. Chaltu also has a hearing impairment.
-          She wants to register for the new livelihood support program.
-        </p>
-        <p>
-          Explore Chaltu’s experience below to see how overlapping barriers combine to prevent her from completing the registration process.
-        </p>
-      </TextBlock>
-      <section className="m2-final-card-grid" aria-label="Three interactive cards showing the Registration Line, Information Desk, and Waiting Area.">
+      <section className="m2-final-barrier-example">
+        <span className="m2-final-barrier-example__badge" aria-hidden="true" />
+        <div>
+          <h2>Worked Example: How Barriers Combine</h2>
+          <p>
+            Example: In Chaltu's case, her lack of formal documentation, a displacement barrier; her inability to hear megaphone announcements,
+            a communication access barrier; and being bypassed by others, a social hierarchy barrier, combine to prevent her from completing the registration process.
+            Fixing just one barrier is not enough.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-barrier-story">
+        <span className="m2-final-barrier-story__portrait" aria-hidden="true" />
+        <div>
+          <h2>Meet Chaltu</h2>
+          <p>
+            Meet Chaltu, a young woman whose family was internally displaced. Chaltu also has a hearing impairment.
+            She wants to register for the new livelihood support program.
+          </p>
+          <p>
+            Explore Chaltu’s experience below to see how overlapping barriers combine to prevent her from completing the registration process.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-card-grid m2-final-barrier-reveals" aria-label="Three interactive cards showing the Registration Line, Information Desk, and Waiting Area.">
         {cards.map((card) => {
           const isOpen = Boolean(opened[card.id]);
           return (
-            <article key={card.id} className={`m2-final-lens-card ${isOpen ? 'is-open' : ''}`}>
+            <article key={card.id} className={`m2-final-lens-card m2-final-barrier-card m2-final-barrier-card-${card.id} ${isOpen ? 'is-open' : ''}`}>
+              <span className="m2-final-barrier-card__number" aria-hidden="true" />
               <button
                 type="button"
                 aria-expanded={isOpen}
@@ -1325,6 +1634,7 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
               </button>
               {isOpen && (
                 <div className="m2-final-lens-card__body" aria-live="polite">
+                  <span>Barrier observed</span>
                   <p><strong>{card.barrier}.</strong> {card.text}</p>
                 </div>
               )}
@@ -1339,7 +1649,7 @@ function Screen42Barriers({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>)
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Navigating Customary Power" onClick={onNext} />
+        <ContinueButton label="Next: Navigating Customary Power" onClick={onNext} disabled={!allOpen} />
       </footer>
     </Module2FinalShell>
   );
@@ -1353,6 +1663,7 @@ function Screen43CustomaryPower({
   const [selected, setSelected] = useState('');
   const [draft, setDraft] = useState(state.m2FinalPortfolio.powerInsight || '');
   const [saved, setSaved] = useState(false);
+  const canContinue = selected === 'C' && saved && draft.trim().length > 0;
   const options = [
     {
       id: 'A',
@@ -1381,35 +1692,55 @@ function Screen43CustomaryPower({
       eyebrow="Screen 4.3"
       title="Navigating Customary Power"
       lead="Once we identify hidden power and overlapping barriers, we must figure out how to address them safely."
+      heroClassName="m2-final-header--customary"
+      heroVisual={(
+        <div className="m2-final-customary-hero-visual">
+          <span className="m2-final-customary-node node-left" />
+          <span className="m2-final-customary-node node-center" />
+          <span className="m2-final-customary-node node-right" />
+          <span className="m2-final-customary-bridge" />
+          <span className="m2-final-customary-hills" />
+        </div>
+      )}
     >
-      <section className="m2-final-scenario-visual">
+      <section className="m2-final-customary-visual">
         <img src={module2FinalAssets.customaryPowerDialogue.src} alt={module2FinalAssets.customaryPowerDialogue.alt} />
+        <div className="m2-final-customary-visual__chips" aria-hidden="true">
+          <span>Community influence</span>
+          <span>Trusted communication</span>
+          <span>Safe engagement</span>
+        </div>
       </section>
-      <TextBlock>
-        <p>
-          Ato Kebede wants the JAI community consultation to be inclusive. However, community leaders and informal gatekeepers are used to guiding
-          how gatherings are organized and whose voices are heard first. Bypassing them may cause disrespect and conflict.
-        </p>
-        <p>
-          Help Ato Kebede decide how to approach the community leaders. Select the most constructive, HRBA-aligned strategy below.
-        </p>
-      </TextBlock>
-      <section className="m2-final-option-list" aria-label="Customary power response options">
+      <section className="m2-final-customary-decision">
+        <span className="m2-final-customary-decision__icon" aria-hidden="true" />
+        <div>
+          <p>
+            Ato Kebede wants the JAI community consultation to be inclusive. However, community leaders and informal gatekeepers are used to guiding
+            how gatherings are organized and whose voices are heard first. Bypassing them may cause disrespect and conflict.
+          </p>
+          <p>
+            Help Ato Kebede decide how to approach the community leaders. Select the most constructive, HRBA-aligned strategy below.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-option-list m2-final-customary-options" aria-label="Customary power response options">
         {options.map((option) => {
           const isSelected = selected === option.id;
+          const isStrong = option.id === 'C';
           return (
-            <div key={option.id} className="m2-final-option-item">
+            <div key={option.id} className={['m2-final-option-item', isStrong ? 'is-strong-option' : ''].filter(Boolean).join(' ')}>
               <button
                 type="button"
                 className={isSelected ? 'is-selected' : ''}
                 aria-pressed={isSelected}
                 onClick={() => setSelected(option.id)}
               >
+                <span className="m2-final-customary-option__marker" aria-hidden="true" />
                 <strong>Option {option.id}</strong>
                 <span>{option.text}</span>
               </button>
               {isSelected && (
-                <p className="m2-final-option-feedback" aria-live="polite">
+                <p className={['m2-final-option-feedback', isStrong ? 'is-correct' : 'is-incorrect'].join(' ')} aria-live="polite">
                   {option.id === 'C' ? '✓ ' : '! '}
                   {option.feedback}
                 </p>
@@ -1419,36 +1750,41 @@ function Screen43CustomaryPower({
         })}
       </section>
       <OptionalAudioBlock {...module2FinalAudio.customaryPower} />
-      <section className="m2-final-portfolio-block">
-        <h2>Power Insight</h2>
-        <p>
-          <strong>Task:</strong> Identify one general community influence channel or trusted communication channel, and note how you might respectfully engage it while ensuring safe inclusion.
-        </p>
-        <aside className="m2-final-hint-box" aria-label="Worked example">
-          <h2>Worked example</h2>
+      <section className="m2-final-portfolio-block m2-final-customary-insight">
+        <span className="m2-final-customary-insight__icon" aria-hidden="true" />
+        <div className="m2-final-customary-insight__content">
+          <h2>Power Insight</h2>
           <p>
-            "Important community decisions are often guided by elder councils. We could respectfully engage them while also hosting a separate safe discussion option that includes female cooperative members."
+            <strong>Task:</strong> Identify one general community influence channel or trusted communication channel, and note how you might respectfully engage it while ensuring safe inclusion.
           </p>
-        </aside>
-        <label className="m2-final-field">
-          <span>Community influence channel and safe approach</span>
-          <textarea
-            value={draft}
-            onChange={(event) => {
-              setDraft(event.target.value);
-              setSaved(false);
-            }}
-            placeholder="Example: Important decisions happen in informal spaces. We could respectfully request a safer expanded gathering."
-          />
-        </label>
-        <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Describe the community influence channel in general terms.
-        </SafetyNote>
-        <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
-        <SaveConfirmation show={saved} />
+          <div className="m2-final-customary-insight__grid">
+            <aside className="m2-final-hint-box" aria-label="Worked example">
+              <h2>Worked example</h2>
+              <p>
+                "Important community decisions are often guided by elder councils. We could respectfully engage them while also hosting a separate safe discussion option that includes female cooperative members."
+              </p>
+            </aside>
+            <label className="m2-final-field">
+              <span>Community influence channel and safe approach</span>
+              <textarea
+                value={draft}
+                onChange={(event) => {
+                  setDraft(event.target.value);
+                  setSaved(false);
+                }}
+                placeholder="Example: Important decisions happen in informal spaces. We could respectfully request a safer expanded gathering."
+              />
+            </label>
+          </div>
+          <SafetyNote>
+            Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Describe the community influence channel in general terms.
+          </SafetyNote>
+          <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
+          <SaveConfirmation show={saved} />
+        </div>
       </section>
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Accountability & Safe Standards" onClick={onNext} />
+        <ContinueButton label="Next: Accountability & Safe Standards" onClick={onNext} disabled={!canContinue} />
       </footer>
     </Module2FinalShell>
   );
@@ -1483,23 +1819,44 @@ function Screen51Accountability({ onNext }: Pick<Module2FinalRendererProps, 'onN
       eyebrow="Screen 5.1"
       title="What is Accountability?"
       lead="When a project is running, how do we ensure commitments are kept? This brings us to the A in the PANEL principles: Accountability."
+      heroClassName="m2-final-header--accountability"
+      heroVisual={(
+        <div className="m2-final-accountability-loop" aria-hidden="true">
+          {['Responsibility', 'Information', 'Feedback', 'Response', 'Correction'].map((label) => (
+            <span key={label} className="m2-final-accountability-loop__node">
+              <span className="m2-final-accountability-loop__icon" />
+              <span>{label}</span>
+            </span>
+          ))}
+          <span className="m2-final-accountability-loop__center" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          Ato Kebede suggests putting a locked "Complaint Box" outside the kebele office. Almaz asks what happens after the paper drops in.
-        </p>
-        <p>
-          Evaluate the statements below. Accountability is a continuous cycle of responsibility, information, feedback, response, correction, and learning.
-        </p>
-      </TextBlock>
+      <section className="m2-final-accountability-scenario">
+        <div className="m2-final-complaint-box" aria-hidden="true">
+          <span>Complaint box</span>
+        </div>
+        <div>
+          <p>
+            Ato Kebede suggests putting a locked "Complaint Box" outside the kebele office. Almaz asks what happens after the paper drops in.
+          </p>
+          <p>
+            Evaluate the statements below. Accountability is a continuous cycle of responsibility, information, feedback, response, correction, and learning.
+          </p>
+        </div>
+      </section>
       <section className="m2-final-myth-grid" aria-label="Three true or false accountability myth cards">
         {myths.map((myth, index) => {
           const answer = answers[myth.id];
           const answered = Boolean(answer);
           const correct = answer === myth.correct;
           return (
-            <article key={myth.id} className={`m2-final-myth-card ${answered ? 'is-open' : ''}`}>
-              <h2>{index + 1}. Myth check</h2>
+            <article key={myth.id} className={`m2-final-myth-card ${answered ? 'is-open' : ''} ${answered ? (correct ? 'is-correct' : 'is-incorrect') : ''}`}>
+              <div className="m2-final-myth-card__topline">
+                <span className="m2-final-myth-card__number">{index + 1}</span>
+                <h2>Myth check</h2>
+                <span className={`m2-final-myth-card__icon m2-final-myth-card__icon--${myth.id}`} aria-hidden="true" />
+              </div>
               <p>{myth.statement}</p>
               <div className="m2-final-myth-actions">
                 {['true', 'false'].map((choice) => (
@@ -1514,11 +1871,18 @@ function Screen51Accountability({ onNext }: Pick<Module2FinalRendererProps, 'onN
                 ))}
               </div>
               <p className="m2-final-item-feedback" aria-live="polite">
-                {answered ? `${correct ? '✓ Correct.' : 'X Review.'} The statement is ${myth.correct === 'true' ? 'True' : 'False'}. ${myth.explanation}` : ''}
+                {answered ? `${correct ? '✓ Correct.' : 'X Incorrect.'} The statement is ${myth.correct === 'true' ? 'True' : 'False'}. ${myth.explanation}` : ''}
               </p>
             </article>
           );
         })}
+      </section>
+      <section className="m2-final-accountability-cycle-summary" aria-label="Accountability cycle summary">
+        <div>
+          <h2>The accountability cycle keeps commitments.</h2>
+          <p>It is not a one-time action. It is an ongoing process that builds trust and results.</p>
+        </div>
+        <img src={module2FinalAssets.accountabilityLoop.src} alt={module2FinalAssets.accountabilityLoop.alt} loading="lazy" />
       </section>
       {allAnswered && (
         <Takeaway>
@@ -1526,7 +1890,7 @@ function Screen51Accountability({ onNext }: Pick<Module2FinalRendererProps, 'onN
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Constructive Engagement" onClick={onNext} />
+        <ContinueButton label="Next: Constructive Engagement" onClick={onNext} disabled={!allAnswered} />
       </footer>
     </Module2FinalShell>
   );
@@ -1540,6 +1904,13 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
     ['response', 'Official Response', 'The health desk reviews the evidence and explains the administrative error.'],
     ['follow-up', 'Correction & Follow-up', 'Supplies are equitably redistributed in the next cycle.'],
   ] as const;
+  const heroSteps = [
+    ['identified', 'Issue identified'],
+    ['evidence', 'Safe evidence'],
+    ['dialogue', 'Constructive dialogue'],
+    ['response', 'Official response'],
+    ['follow-up', 'Correction & follow-up'],
+  ] as const;
   const [order, setOrder] = useState<Record<string, string>>({});
   const allFilled = steps.every(([id]) => order[id]);
   const allCorrect = steps.every(([id], index) => order[id] === String(index + 1));
@@ -1549,21 +1920,52 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
       eyebrow="Screen 5.2"
       title="Constructive Engagement"
       lead="When things go wrong, emotions can run high. How can a CSO help a community claim their rights without creating unsafe hostility?"
+      heroClassName="m2-final-header--engagement"
+      heroVisual={(
+        <div className="m2-final-engagement-hero-visual">
+          <div className="m2-final-engagement-hero-path">
+            {heroSteps.map(([id, label]) => (
+              <span key={id} className={`m2-final-engagement-hero-node m2-final-engagement-icon-${id}`}>
+                <span className="m2-final-engagement-hero-icon" />
+                <span>{label}</span>
+              </span>
+            ))}
+          </div>
+          <div className="m2-final-engagement-landscape">
+            <span className="m2-final-engagement-landscape__sun" />
+            <span className="m2-final-engagement-landscape__ridge ridge-one" />
+            <span className="m2-final-engagement-landscape__ridge ridge-two" />
+            <span className="m2-final-engagement-landscape__path" />
+          </div>
+        </div>
+      )}
     >
-      <TextBlock>
-        <h2>Story Segment: The Misallocated Health Supplies</h2>
-        <p>
-          Health supplies meant for youth facing barriers do not reach the intended group as planned. Awra must help.
-        </p>
-        <p>
-          Accountability is a continuous loop, not a one-time event. Help Awra build a safe accountability pathway by selecting the correct order of the accountability pathway,
-          from identifying the issue to the final correction.
-        </p>
-        <p>
-          <strong>Hint:</strong> Start with Organize Safe Evidence before engaging in Constructive Dialogue.
-        </p>
-      </TextBlock>
-      <section className="m2-final-flow" aria-label="Accountability pathway sequence builder">
+      <section className="m2-final-text-block m2-final-engagement-story">
+        <span className="m2-final-engagement-story__badge" aria-hidden="true" />
+        <div>
+          <h2>Story Segment: The Misallocated Health Supplies</h2>
+          <p>
+            Health supplies meant for youth facing barriers do not reach the intended group as planned. Awra must help.
+          </p>
+          <p>
+            Accountability is a continuous loop, not a one-time event. Help Awra build a safe accountability pathway by selecting the correct order of the accountability pathway,
+            from identifying the issue to the final correction.
+          </p>
+          <p className="m2-final-engagement-hint">
+            <strong>Hint:</strong> Start with Organize Safe Evidence before engaging in Constructive Dialogue.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-engagement-builder" aria-labelledby="m2-final-engagement-builder-title">
+        <div className="m2-final-engagement-builder__main">
+          <div className="m2-final-engagement-builder__header">
+            <div>
+              <p className="m2-final-tag">Pathway builder</p>
+              <h2 id="m2-final-engagement-builder-title">Accountability pathway sequence</h2>
+            </div>
+            <p>Select the position for each step.</p>
+          </div>
+          <div className="m2-final-flow" aria-label="Accountability pathway sequence builder">
         {steps.map(([id, title, text], index) => {
           const selected = order[id] || '';
           const correct = selected === String(index + 1);
@@ -1572,29 +1974,53 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
               key={id}
               className={[
                 'm2-final-flow-step',
+                `m2-final-engagement-icon-${id}`,
                 selected ? (correct ? 'is-correct' : 'is-incorrect') : '',
               ].filter(Boolean).join(' ')}
             >
-              <span className="m2-final-flow-step__title">{title}</span>
-              <span>{text}</span>
-              <select
-                value={selected}
-                onChange={(event) => setOrder((prev) => ({ ...prev, [id]: event.target.value }))}
-                aria-label={`Choose sequence position for ${title}`}
-              >
-                <option value="">Choose position</option>
-                {[1, 2, 3, 4, 5].map((position) => (
-                  <option key={position} value={String(position)}>Position {position}</option>
-                ))}
-              </select>
+              <span className="m2-final-flow-step__icon" aria-hidden="true" />
+              <span className="m2-final-flow-step__copy">
+                <span className="m2-final-flow-step__title">{title}</span>
+                <span>{text}</span>
+              </span>
+              <span className="m2-final-flow-step__control">
+                <select
+                  value={selected}
+                  onChange={(event) => setOrder((prev) => ({ ...prev, [id]: event.target.value }))}
+                  aria-label={`Choose sequence position for ${title}`}
+                >
+                  <option value="">Choose position</option>
+                  {[1, 2, 3, 4, 5].map((position) => (
+                    <option key={position} value={String(position)}>Position {position}</option>
+                  ))}
+                </select>
+              </span>
               <span className={['m2-final-item-feedback', selected ? (correct ? 'is-correct' : 'is-incorrect') : ''].filter(Boolean).join(' ')} aria-live="polite">
                 {selected ? (correct ? '✓ Correct position.' : 'X Needs adjustment.') : ''}
               </span>
             </label>
           );
         })}
+          </div>
+        </div>
+        <aside className="m2-final-engagement-support" aria-label="Constructive engagement support notes">
+          <article className="m2-final-engagement-support-card is-principle">
+            <span className="m2-final-engagement-support-card__icon" aria-hidden="true" />
+            <h3>Constructive engagement principle</h3>
+            <p>Evidence, dialogue, response, correction, and follow-up help duty-bearers respond and rights-holders see what changed.</p>
+          </article>
+          <article className="m2-final-engagement-support-card is-safety">
+            <span className="m2-final-engagement-support-card__icon" aria-hidden="true" />
+            <h3>Safety first</h3>
+            <p>Start with safe evidence before opening dialogue, and avoid exposing individual names.</p>
+          </article>
+          <article className="m2-final-engagement-support-card is-why">
+            <h3>Why this matters</h3>
+            <p>A clear accountability pathway reduces unsafe hostility and supports correction.</p>
+          </article>
+        </aside>
       </section>
-      <div className="m2-final-feedback" aria-live="polite">
+      <div className={['m2-final-feedback', allFilled ? 'is-visible' : '', allFilled ? (allCorrect ? 'is-correct' : 'is-incorrect') : ''].filter(Boolean).join(' ')} aria-live="polite">
         {allFilled && (
           <p>
             {allCorrect
@@ -1609,7 +2035,7 @@ function Screen52Engagement({ onNext }: Pick<Module2FinalRendererProps, 'onNext'
         </Takeaway>
       )}
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Simple-to-Understand Standards" onClick={onNext} />
+        <ContinueButton label="Next: Simple-to-Understand Standards" onClick={onNext} disabled={!allCorrect} />
       </footer>
     </Module2FinalShell>
   );
@@ -1641,6 +2067,7 @@ function Screen53Standards({
     },
   ];
   const feedback = blocks.find((block) => block.id === selected)?.feedback;
+  const canContinue = selected === 'C' && saved && draft.trim().length > 0;
 
   const save = () => {
     updateFinalPortfolio(onChangeState, { safeFeedbackMethod: draft });
@@ -1652,8 +2079,23 @@ function Screen53Standards({
       eyebrow="Screen 5.3"
       title="Simple-to-Understand Standards"
       lead="When Awra facilitated the meeting, they didn't just ask for a favor. They grounded their request in recognized standards."
+      heroClassName="m2-final-header--standards"
+      heroVisual={(
+        <div className="m2-final-standards-hero-visual">
+          <span className="m2-final-standard-page">
+            <span>Plain-language standard</span>
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="m2-final-standard-arrow" />
+          <span className="m2-final-standard-community" />
+        </div>
+      )}
     >
-      <TextBlock>
+      <section className="m2-final-standards-context">
+        <span className="m2-final-standards-context__icon" aria-hidden="true" />
+        <div>
         <p>
           Let’s look at the L in PANEL: Legality. Tadesse helps youth frame their request without needing complex legal language.
         </p>
@@ -1661,8 +2103,10 @@ function Screen53Standards({
           Let’s apply this to your everyday work. Identify one safe, low-tech way your CSO can collect feedback or evidence from the community
           in your CSO’s regular work or in a future activity, using simple-to-understand standards.
         </p>
-      </TextBlock>
-      <aside className="m2-final-hint-box" aria-label="Worked example">
+        </div>
+      </section>
+      <aside className="m2-final-hint-box m2-final-standards-example" aria-label="Worked example">
+        <span className="m2-final-standards-example__quote" aria-hidden="true">“</span>
         <h2>Worked example</h2>
         <p>
           "We can set up a secure, verbal feedback hour during our next agricultural training where a trusted facilitator takes anonymous notes."
@@ -1673,42 +2117,58 @@ function Screen53Standards({
           <button
             key={block.id}
             type="button"
-            className={selected === block.id ? 'is-selected' : ''}
+            className={[
+              selected === block.id ? 'is-selected' : '',
+              `m2-final-wording-card-${block.id.toLowerCase()}`,
+              block.id === 'C' ? 'm2-final-wording-strong' : 'm2-final-wording-weak',
+            ].filter(Boolean).join(' ')}
             aria-pressed={selected === block.id}
             onClick={() => setSelected(block.id)}
           >
+            <span className="m2-final-wording-card__icon" aria-hidden="true" />
             <strong>{block.id === 'A' ? 'Charity-based wording' : block.id === 'B' ? 'Overly technical/legalistic wording' : 'Simple-to-understand rights-based wording'}</strong>
             <span>{block.text}</span>
+            <em>{block.id === 'A' ? 'Too dependent' : block.id === 'B' ? 'Too adversarial / technical' : 'Balanced & respectful'}</em>
           </button>
         ))}
       </section>
-      <div className="m2-final-feedback" aria-live="polite">
+      <div
+        className={[
+          'm2-final-feedback',
+          feedback ? 'is-visible' : '',
+          selected === 'C' ? 'is-correct' : 'is-incorrect',
+        ].filter(Boolean).join(' ')}
+        aria-live="polite"
+      >
         {feedback && <p>{selected === 'C' ? '✓ ' : '! '}{feedback}</p>}
       </div>
-      <section className="m2-final-portfolio-block">
-        <h2>Safe Feedback Method</h2>
-        <p>
-          <strong>Task:</strong> What is one safe, low-tech method your CSO can use to gather community feedback or evidence?
-        </p>
-        <label className="m2-final-field">
-          <span>Safe feedback method</span>
-          <textarea
-            value={draft}
-            onChange={(event) => {
-              setDraft(event.target.value);
-              setSaved(false);
-            }}
-            placeholder="Example: A secure verbal feedback hour where a trusted facilitator takes anonymous notes."
-          />
-        </label>
-        <SafetyNote>
-          Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your examples focused on the methods of collecting feedback safely.
-        </SafetyNote>
-        <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
-        <SaveConfirmation show={saved} />
+      <section className="m2-final-portfolio-block m2-final-standards-worksheet">
+        <span className="m2-final-standards-worksheet__icon" aria-hidden="true" />
+        <div>
+          <h2>Safe Feedback Method</h2>
+          <p>
+            <strong>Task:</strong> What is one safe, low-tech method your CSO can use to gather community feedback or evidence?
+          </p>
+          <label className="m2-final-field">
+            <span>Safe feedback method</span>
+            <textarea
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.target.value);
+                setSaved(false);
+              }}
+              placeholder="Example: A secure verbal feedback hour where a trusted facilitator takes anonymous notes."
+            />
+          </label>
+          <SafetyNote>
+            Do not write real names, exact locations, active disputes, survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Keep your examples focused on the methods of collecting feedback safely.
+          </SafetyNote>
+          <button type="button" className="m2-final-secondary-button" onClick={save}>Save to Portfolio</button>
+          <SaveConfirmation show={saved} />
+        </div>
       </section>
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: The Everyday Rights Lens" onClick={onNext} />
+        <ContinueButton label="Next: The Everyday Rights Lens" onClick={onNext} disabled={!canContinue} />
       </footer>
     </Module2FinalShell>
   );
@@ -1730,18 +2190,30 @@ function Screen61Lens({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
       eyebrow="Screen 6.1"
       title="The Everyday Rights Lens"
       lead="Bring the main foundations together into a practical mental framework before project design begins."
+      heroClassName="m2-final-header--lens"
+      heroVisual={(
+        <div className="m2-final-lens-hero-visual">
+          <span className="m2-final-lens-hero-ring" />
+          <span className="m2-final-lens-hero-card card-one" />
+          <span className="m2-final-lens-hero-card card-two" />
+          <span className="m2-final-lens-hero-card card-three" />
+        </div>
+      )}
     >
-      <section className="m2-final-scenario-visual">
+      <section className="m2-final-scenario-visual m2-final-lens-bridge">
         <img src={module2FinalAssets.everydayRightsLensBridge.src} alt={module2FinalAssets.everydayRightsLensBridge.alt} />
       </section>
-      <TextBlock>
-        <p>
-          Awra's team pauses before formal planning and agrees to ask a core set of questions. The Everyday Rights Lens is a mindset shift:
-          before designing an activity, analyze actors, principles, power, and accountability.
-        </p>
-      </TextBlock>
-      <section className="m2-final-checklist" aria-label="Everyday Rights Lens checklist">
-        {items.map(([id, title, text]) => {
+      <section className="m2-final-lens-context">
+        <span className="m2-final-lens-context__icon" aria-hidden="true" />
+        <div>
+          <p>
+            Awra's team pauses before formal planning and agrees to ask a core set of questions. The Everyday Rights Lens is a mindset shift:
+            before designing an activity, analyze actors, principles, power, and accountability.
+          </p>
+        </div>
+      </section>
+      <section className="m2-final-checklist m2-final-lens-checklist" aria-label="Everyday Rights Lens checklist">
+        {items.map(([id, title, text], index) => {
           const isChecked = Boolean(checked[id]);
           return (
             <label key={id} className={`m2-final-check-item ${isChecked ? 'is-checked' : ''}`}>
@@ -1750,7 +2222,7 @@ function Screen61Lens({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
                 checked={isChecked}
                 onChange={(event) => setChecked((prev) => ({ ...prev, [id]: event.target.checked }))}
               />
-              <span className="m2-final-check-box" aria-hidden="true">{isChecked ? '✓' : ''}</span>
+              <span className="m2-final-check-box" aria-hidden="true">{isChecked ? '✓' : index + 1}</span>
               <span>
                 <strong>{title}</strong>
                 <span>{text}</span>
@@ -1879,38 +2351,58 @@ function PortfolioSnapshotScreen({ state, onNext }: Pick<Module2FinalRendererPro
       eyebrow="Screen 6.2"
       title="Your Portfolio Snapshot"
       lead="Throughout this module, you have reflected on how HRBA concepts apply to your own organization. Let’s review the insights you’ve gathered."
+      heroClassName="m2-final-header--portfolio"
+      heroVisual={(
+        <div className="m2-final-portfolio-hero-visual">
+          <span className="m2-final-portfolio-clipboard">
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="m2-final-portfolio-check" />
+        </div>
+      )}
     >
-      <TextBlock>
-        <p>
-          Below is your Everyday Rights Lens Summary. It captures your reflections on shifting mindsets, mapping actors, and navigating power.
-        </p>
-        <p>
-          Review your snapshot below. If a saved section is blank, you may leave it blank or return to the earlier screen to complete it.
-        </p>
-      </TextBlock>
+      <section className="m2-final-portfolio-info">
+        <span className="m2-final-portfolio-info__icon" aria-hidden="true" />
+        <div>
+          <p>
+            Below is your Everyday Rights Lens Summary. It captures your reflections on shifting mindsets, mapping actors, and navigating power.
+          </p>
+          <p>
+            Review your snapshot below. If a saved section is blank, you may leave it blank or return to the earlier screen to complete it.
+          </p>
+        </div>
+      </section>
       <section className="m2-final-snapshot-document" aria-label="Everyday Rights Lens Summary">
         <header className="m2-final-snapshot-document__header">
+          <span className="m2-final-snapshot-document__icon" aria-hidden="true" />
           <span className="m2-final-tag">Learner artifact</span>
           <h2>Everyday Rights Lens Summary</h2>
           <p>A safe, general summary of your Module 2 reflections for use in Module 3.</p>
         </header>
-        {entries.map((entry) => (
+        {entries.map((entry, index) => (
           <article key={entry.title} className={['m2-final-snapshot-card', entry.value === blank ? 'is-empty' : ''].filter(Boolean).join(' ')}>
+            <span className={`m2-final-snapshot-card__icon m2-final-snapshot-card__icon-${index + 1}`} aria-hidden="true" />
             <h2>{entry.title}</h2>
             <p>{entry.value}</p>
           </article>
         ))}
       </section>
-      <TextBlock>
-        <h2>Print/Save fallback</h2>
-        <p>
-          <strong>Task:</strong> Review your compiled notes and use the Print/Save button to keep a safe copy of your reflections for your records.
-        </p>
-        <p>
-          If the button does not work on your device, use your browser print function, copy the summary into a private offline document,
-          or download the blank checklist below.
-        </p>
-      </TextBlock>
+      <section className="m2-final-print-fallback">
+        <span className="m2-final-print-fallback__icon" aria-hidden="true" />
+        <div>
+          <h2>Print/Save fallback</h2>
+          <p>
+            <strong>Task:</strong> Review your compiled notes and use the Print/Save button to keep a safe copy of your reflections for your records.
+          </p>
+          <p>
+            If the button does not work on your device, use your browser print function, copy the summary into a private offline document,
+            or download the blank checklist below.
+          </p>
+        </div>
+      </section>
       <SafetyNote>
         Please review your summary before saving or printing. Ensure you have not included real names, exact locations, active disputes,
         survivor stories, identifiable complaints, politically sensitive details, or sensitive service information. Your output should summarize
@@ -1918,6 +2410,7 @@ function PortfolioSnapshotScreen({ state, onNext }: Pick<Module2FinalRendererPro
       </SafetyNote>
       <section className="m2-final-offline-card">
         <div>
+          <span className="m2-final-offline-card__icon" aria-hidden="true" />
           <span className="m2-final-tag">Printable field reminder</span>
           <h2>Everyday Rights Lens Offline Card</h2>
           <p>
@@ -1999,8 +2492,19 @@ function KnowledgeCheckScreen({
       eyebrow="M2-KC"
       title="Module 2 Knowledge Check"
       lead="Check your understanding of the Everyday Rights Lens before completing Module 2."
+      heroClassName="m2-final-header--assessment"
+      heroVisual={(
+        <div className="m2-final-assessment-hero-visual">
+          <span className="m2-final-assessment-sheet">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="m2-final-assessment-score" />
+        </div>
+      )}
     >
-      <section className="m2-final-kc-summary" aria-live="polite">
+      <section className="m2-final-kc-summary m2-final-assessment-summary" aria-live="polite">
         <div>
           <span className="m2-final-kc-summary__icon" aria-hidden="true">1</span>
           <span className="m2-final-tag">Progress</span>
@@ -2012,7 +2516,7 @@ function KnowledgeCheckScreen({
           <strong>{isCompleted ? `${score}/${total} (${percent}%)` : 'Submit to see score'}</strong>
         </div>
       </section>
-      <section className="m2-final-kc-list" aria-label="Module 2 knowledge check questions">
+      <section className="m2-final-kc-list m2-final-assessment-list" aria-label="Module 2 knowledge check questions">
         {module2FinalKnowledgeCheckQuestions.map((question, index) => (
           <fieldset key={question.id} className="m2-final-kc-question">
             <legend>
@@ -2111,6 +2615,14 @@ function CloseScreen({
       eyebrow="M2-Close"
       title="Next Steps: Module 3"
       lead="Congratulations on completing Module 2. You have built the Everyday Rights Lens that Module 3 will use for project design."
+      heroClassName="m2-final-header--close"
+      heroVisual={(
+        <div className="m2-final-close-hero-visual">
+          <span className="m2-final-close-module module-two" />
+          <span className="m2-final-close-path" />
+          <span className="m2-final-close-module module-three" />
+        </div>
+      )}
     >
       <section className="m2-final-close-hero">
         <img src={module2FinalAssets.everydayRightsLensBridge.src} alt="An illustration of a bridge connecting HRBA Foundations to Project Design." />
@@ -2166,7 +2678,7 @@ export default function Module2FinalRenderer(props: Module2FinalRendererProps) {
     );
   }
 
-  if (screen.kind === 'cover') return <CoverScreen onNext={props.onNext} />;
+  if (screen.kind === 'cover') return <CoverScreen onChangeState={props.onChangeState} onNext={props.onNext} />;
   if (screen.kind === 'intro') return <IntroScreen onNext={props.onNext} />;
   if (screen.kind === 'objectives') return <ObjectivesScreen onNext={props.onNext} />;
   if (screen.id === '1.1') return <Screen11Welcome onNext={props.onNext} />;

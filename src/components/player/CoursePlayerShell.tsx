@@ -40,6 +40,23 @@ const menuDrawerFocusableSelector = [
 
 const module2ScreenRoutes: Record<string, string> = module2FinalScreenRoutes;
 const module3ScreenRoutes: Record<string, string> = module3RevisedScreenRoutes;
+const module4ScreenRoutes: Record<string, string> = {
+  'M4-PLAYER-00': '/module-4/cover',
+  'M4-S1-01': '/module-4/screen-4-1',
+  'M4-S1-02': '/module-4/screen-4-2',
+  'M4-S1-03': '/module-4/screen-4-3',
+  'M4-S1-04': '/module-4/screen-4-4',
+  'M4-S1-05': '/module-4/screen-4-5',
+  'M4-S1-06': '/module-4/screen-4-6',
+  'M4-S1-07': '/module-4/screen-4-7',
+  'M4-S1-08': '/module-4/screen-4-8',
+  'M4-S1-09': '/module-4/screen-4-9',
+  'M4-S1-10': '/module-4/screen-4-10',
+  'M4-S1-11': '/module-4/screen-4-11',
+  'M4-S1-12': '/module-4/screen-4-12',
+  'M4-S1-13': '/module-4/screen-4-13',
+  'M4-S1-14': '/module-4/screen-4-14',
+};
 const finalAssessmentRoutes: Record<string, string> = finalAssessmentScreenRoutes;
 const module5ScreenRoutes: Record<string, string> = {
   'M5-PLAYER-00': '/module-5/cover',
@@ -78,6 +95,8 @@ function syncRouteToScreen(moduleId: string | null | undefined, screenId: string
     ? module2ScreenRoutes[screenId]
     : moduleId === 'module_03_project_design'
       ? module3ScreenRoutes[screenId]
+      : moduleId === 'module_04_implementation'
+        ? module4ScreenRoutes[screenId]
       : moduleId === 'module_05_hrba_meal'
         ? module5ScreenRoutes[screenId]
         : moduleId === 'final_assessment'
@@ -104,6 +123,7 @@ export default function CoursePlayerShell({
   const mainContentRef = useRef<HTMLElement>(null);
   const focusMainContentAfterMenuSelectionRef = useRef(false);
   const previousScreenIdRef = useRef<string | null>(null);
+  const [hiddenModule3RedirectQa, setHiddenModule3RedirectQa] = useState<string | null>(null);
   const [accessibilityPreferences, setAccessibilityPreferences] = useState<AccessibilityPreferences>({
     highContrast: false,
     textSize: 'standard',
@@ -133,7 +153,9 @@ export default function CoursePlayerShell({
     ? module1ActiveScreenIds
       .map((screenId) => module1ScreenById.get(screenId))
       .filter((item): item is (typeof allPlayerScreens)[number] => Boolean(item))
-    : allPlayerScreens;
+    : state.currentModuleId === 'module_03_project_design'
+      ? allPlayerScreens.filter((item) => item.HiddenFromLearnerSequence !== true)
+      : allPlayerScreens;
 
   // totalScreens is derived dynamically from filtered playerScreens — not hardcoded
   const totalScreens = playerScreens.length;
@@ -164,6 +186,37 @@ export default function CoursePlayerShell({
     : playerIndex + 1;
   const displayedTotalScreens = isModule3RevisedFlow ? module3InstructionalScreens.length : totalScreens;
   const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-PLAYER-COMPLETE';
+
+  useEffect(() => {
+    if (state.currentModuleId !== 'module_03_project_design') {
+      return;
+    }
+
+    if (!state.currentScreenId) {
+      return;
+    }
+
+    const hiddenRouteTargets = ['M3-R15', 'M3-R16', 'M3-R18', 'M3-R19'];
+    if (!hiddenRouteTargets.includes(state.currentScreenId)) {
+      return;
+    }
+
+    const module3Progress = state.screenProgress.module_03_project_design || [];
+    const screen14Complete = module3Progress.includes('M3-R14');
+    const screen17Complete = module3Progress.includes('M3-R17');
+    const isDesignRepairHiddenRoute = state.currentScreenId === 'M3-R15' || state.currentScreenId === 'M3-R16';
+    const targetScreenId = isDesignRepairHiddenRoute
+      ? screen14Complete ? 'M3-R17' : 'M3-R14'
+      : screen17Complete ? 'M3-R20' : 'M3-R17';
+    const redirectQa = `m3-s${state.currentScreenId.slice(-2)}-hidden-redirect`;
+    const markerTimeout = window.setTimeout(() => setHiddenModule3RedirectQa(redirectQa), 0);
+    syncRouteToScreen(state.currentModuleId, targetScreenId);
+    onChangeState((prev) => ({
+      ...prev,
+      currentScreenId: targetScreenId,
+    }));
+    return () => window.clearTimeout(markerTimeout);
+  }, [onChangeState, state.currentModuleId, state.currentScreenId, state.screenProgress.module_03_project_design]);
 
   // Handle Navigation — operates entirely on playerScreens array bounds
   const handlePrev = () => {
@@ -757,6 +810,14 @@ export default function CoursePlayerShell({
       data-a11y-reduce-motion={accessibilityPreferences.reduceMotion ? 'true' : 'false'}
     >
       <ProgressStrip percentage={progressPercent} />
+      {isModule3RevisedFlow && hiddenModule3RedirectQa && (
+        <span
+          data-qa={hiddenModule3RedirectQa}
+          style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clipPath: 'inset(50%)' }}
+        >
+          Hidden Module 3 route redirected.
+        </span>
+      )}
 
       {portalModeActive && (
         <p

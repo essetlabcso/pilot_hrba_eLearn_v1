@@ -1,6 +1,19 @@
 export const MODULE2_FINAL_ASSET_BASE = '/assets/images/module-2/final';
 export const MODULE2_FINAL_AUDIO_BASE = '/assets/audio/module-2/final';
 export const MODULE2_FINAL_RESOURCE_BASE = '/assets/resources/module-2/final';
+export const MODULE2_PUBLIC_RESOURCE_BASE = '/assets/hrba/module2/resources';
+export const HRBA_SHARED_ICON_BASE = '/assets/hrba/shared/icons';
+
+export const hrbaSharedIcons = {
+  takeaway: {
+    src: `${HRBA_SHARED_ICON_BASE}/shared-key-takeaway.svg`,
+    alt: '',
+  },
+  listen: {
+    src: `${HRBA_SHARED_ICON_BASE}/shared-listen.svg`,
+    alt: '',
+  },
+};
 
 export const module2FinalVideoPlaceholder = {
   title: 'The Jiru Amba Initiative: A New Perspective',
@@ -188,6 +201,12 @@ export const module2FinalResources = {
     fileType: 'PDF',
     href: `${MODULE2_FINAL_RESOURCE_BASE}/m2-overlapping-barriers-reflection-card.pdf`,
     description: 'A simple, safe prompt card for thinking about how barriers combine.',
+  },
+  referenceDeck: {
+    title: 'Module 2 HRBA Foundations and Everyday Rights Lens Reference Deck',
+    fileType: 'PDF',
+    href: `${MODULE2_PUBLIC_RESOURCE_BASE}/m2-hrba-foundations-everyday-rights-lens-reference-deck.pdf`,
+    description: 'Download the Module 2 reference deck summarizing HRBA foundations, PANEL principles, power and participation concepts, accountability, plain-language standards, and the Everyday Rights Lens checklist.',
   },
 };
 
