@@ -356,7 +356,7 @@ function Module1WelcomeCourseScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-welcome-course-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-welcome-course" aria-labelledby="m1-welcome-course-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', minWidth: 0 }}>
           <div className="m1-next-kicker">MODULE 1 | INTRO VIDEO</div>
@@ -534,7 +534,7 @@ function Module1AboutCourseScreen({
   };
   const cardGridStyle: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
     gap: '1rem',
     marginTop: '1rem'
   };
@@ -570,7 +570,7 @@ function Module1AboutCourseScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-about-course-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-about-course" aria-labelledby="m1-about-course-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={aboutShellStyle}>
       <header className="m1-b2-compact-header" style={{ marginBottom: '1rem' }}>
         <div className="m1-b2-eyebrow">Module 1</div>
@@ -720,7 +720,7 @@ function Module1HrbaPracticalLensScreen({
   };
   const gridStyle: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     gap: '1rem',
     alignItems: 'start'
   };
@@ -746,7 +746,7 @@ function Module1HrbaPracticalLensScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-hrba-lens-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-hrba-lens" aria-labelledby="m1-hrba-lens-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <header>
           <div className="m1-next-kicker">HRBA IN ONE PRACTICAL LENS</div>
@@ -974,7 +974,7 @@ function Module1CourseJourneyScreen({
   };
   const cardGridStyle: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
     gap: '0.9rem'
   };
 
@@ -1009,7 +1009,7 @@ function Module1CourseJourneyScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-course-journey-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-course-journey" aria-labelledby="m1-course-journey-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <header>
           <div className="m1-next-kicker">YOUR LEARNING JOURNEY</div>
@@ -1208,7 +1208,7 @@ function Module1LearningMethodologyScreen({
   };
   const cardGridStyle: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     gap: '0.85rem'
   };
 
@@ -1243,7 +1243,7 @@ function Module1LearningMethodologyScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-learning-methodology-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-learning-methodology" aria-labelledby="m1-learning-methodology-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <header>
           <div className="m1-next-kicker">HOW YOU WILL LEARN</div>
@@ -1253,7 +1253,7 @@ function Module1LearningMethodologyScreen({
           </p>
         </header>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '1rem', alignItems: 'start' }}>
           <section aria-labelledby="m1-learning-intro-heading" style={{ ...panelStyle, padding: '1rem' }}>
             <h2 id="m1-learning-intro-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
               Practical learning methodology
@@ -1422,7 +1422,10 @@ function Module1SafePortfolioScreen({
     : [];
   const note = String(state.practiceCheckState.module1FirstSafePortfolioNote || '');
   const trimmedNote = note.trim();
-  const isComplete = selectedFocus.length > 0 || trimmedNote.length > 0;
+  const hasValidFocusSelection = selectedFocus.length >= 1 && selectedFocus.length <= 4;
+  const hasSafeNote = trimmedNote.length > 0;
+  const isComplete = hasValidFocusSelection || hasSafeNote;
+  const hasMaximumFocusSelections = selectedFocus.length >= 4;
   const shellStyle: CSSProperties = {
     display: 'grid',
     gap: '1.1rem',
@@ -1448,7 +1451,7 @@ function Module1SafePortfolioScreen({
   };
   const twoColumnStyle: CSSProperties = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     gap: '1rem',
     alignItems: 'start'
   };
@@ -1460,6 +1463,8 @@ function Module1SafePortfolioScreen({
         : [];
       const nextFocus = previousFocus.includes(option)
         ? previousFocus.filter((item) => item !== option)
+        : previousFocus.length >= 4
+          ? previousFocus
         : [...previousFocus, option];
       return {
         ...prev,
@@ -1503,7 +1508,7 @@ function Module1SafePortfolioScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-safe-portfolio-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-safe-portfolio" aria-labelledby="m1-safe-portfolio-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <header>
           <div className="m1-next-kicker">YOUR PORTFOLIO AND SAFE PEER LEARNING</div>
@@ -1575,34 +1580,37 @@ function Module1SafePortfolioScreen({
           </div>
         </section>
 
-        <section aria-labelledby="m1-first-note-heading" style={panelStyle}>
-          <h2 id="m1-first-note-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.6rem' }}>
-            Write one safe private note:
-          </h2>
-          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+        <section aria-labelledby="m1-first-note-question" style={panelStyle}>
+          <h2 id="m1-first-note-question" style={{ color: '#0b2a55', fontSize: '1.45rem', lineHeight: 1.25, margin: '0 0 0.6rem' }}>
             Which area of your CSO work do you most want to connect with HRBA during this course?
+          </h2>
+          <p id="m1-focus-selection-help" style={{ color: '#26394f', lineHeight: 1.55, margin: '0 0 0.85rem' }}>
+            Choose the areas where HRBA feels most useful for your current learning. Your selections help set a safe starting point for reflection and peer discussion.
           </p>
 
-          <fieldset style={{ border: '1px solid rgba(16, 92, 91, 0.18)', borderRadius: '8px', padding: '0.9rem', margin: '0 0 1rem' }}>
-            <legend style={{ color: '#0b2a55', fontWeight: 900, padding: '0 0.35rem' }}>Guide options</legend>
+          <fieldset aria-describedby="m1-focus-selection-help m1-focus-selection-status" style={{ border: '1px solid rgba(16, 92, 91, 0.18)', borderRadius: '8px', padding: '0.9rem', margin: '0 0 1rem' }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
               {focusOptions.map((option) => {
                 const selected = selectedFocus.includes(option);
+                const disabled = !selected && hasMaximumFocusSelections;
                 return (
                   <button
                     key={option}
                     type="button"
                     onClick={() => toggleFocus(option)}
                     aria-pressed={selected}
+                    aria-disabled={disabled}
+                    disabled={disabled}
                     style={{
                       minHeight: '44px',
                       border: selected ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.24)',
                       borderRadius: '999px',
                       background: selected ? '#e7f5f1' : '#ffffff',
-                      color: '#10233f',
-                      cursor: 'pointer',
+                      color: disabled ? '#64748b' : '#10233f',
+                      cursor: disabled ? 'not-allowed' : 'pointer',
                       font: 'inherit',
                       fontWeight: 800,
+                      opacity: disabled ? 0.62 : 1,
                       padding: '0.55rem 0.8rem'
                     }}
                   >
@@ -1612,15 +1620,14 @@ function Module1SafePortfolioScreen({
               })}
             </div>
           </fieldset>
-
           <label htmlFor="m1-first-safe-note" style={{ color: '#0b2a55', display: 'block', fontWeight: 900, marginBottom: '0.45rem' }}>
-            Safe private note
+            Or take your short note here
           </label>
           <textarea
             id="m1-first-safe-note"
             value={note}
             onChange={(event) => updateNote(event.target.value)}
-            rows={5}
+            rows={4}
             placeholder="Write a general, safe note. Avoid names, exact locations, sensitive complaints, and identifying details."
             style={{
               width: '100%',
@@ -1633,14 +1640,18 @@ function Module1SafePortfolioScreen({
               resize: 'vertical'
             }}
           />
-          <p aria-live="polite" style={{ color: isComplete ? '#0f766e' : '#42566d', fontWeight: 800, margin: '0.65rem 0 0' }}>
-            {isComplete ? 'Portfolio starting point saved. Continue when ready.' : 'Select at least one guide option or write a short safe note to continue.'}
+          <p id="m1-focus-selection-status" aria-live="polite" style={{ color: isComplete ? '#0f766e' : '#42566d', fontWeight: 800, margin: '0.65rem 0 0' }}>
+            {isComplete
+              ? hasValidFocusSelection
+                ? `${selectedFocus.length} of 4 selected. Portfolio starting point saved. Continue when ready.`
+                : 'Short safe note saved. Continue when ready.'
+              : 'Select 1 to 4 areas or write a short safe note to continue.'}
           </p>
         </section>
 
         <footer className="m1-b2-footer" style={{ marginTop: 0 }}>
           <p aria-live="polite" style={{ margin: 0 }}>
-            {isComplete ? 'Safe portfolio note ready.' : 'Complete the portfolio prompt before continuing.'}
+            {isComplete ? 'Safe portfolio starting point ready.' : 'Select 1 to 4 portfolio focus areas or write a short safe note before continuing.'}
           </p>
           <button className="m1-b2-primary" type="button" onClick={handleContinue} disabled={!isComplete}>
             Continue
@@ -1764,7 +1775,7 @@ function Module1StartingPointSelfAssessmentScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-starting-confidence-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-starting-confidence" aria-labelledby="m1-starting-confidence-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <header>
           <div className="m1-next-kicker">STARTING POINT SELF-ASSESSMENT</div>
@@ -1986,7 +1997,7 @@ function Module1FirstLearningCommitmentScreen({
   };
 
   return (
-    <section className="m1-b2-screen" aria-labelledby="m1-first-commitment-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-first-commitment" aria-labelledby="m1-first-commitment-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
       <div style={shellStyle}>
         <header>
           <div className="m1-next-kicker">YOUR FIRST LEARNING COMMITMENT</div>

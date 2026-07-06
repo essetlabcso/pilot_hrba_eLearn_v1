@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 import {
@@ -10515,8 +10515,8 @@ function ResponsibilityMapScreen({
     if (selections.length === 0) return <p className="m3-responsibility-map-lane-empty">{emptyText}</p>;
     return (
       <ul>
-        {selections.map((selection) => (
-          <li key={`${selection.actorId}-${selection.category}`}>
+        {selections.map((selection, index) => (
+          <li key={`${selection.actorId}-${selection.category}-${index}`}>
             <strong>{selection.actorLabel}</strong>
             {selection.actionIds.length > 0 && <span>{selection.actionIds.join(', ')}</span>}
           </li>
@@ -10572,15 +10572,15 @@ function ResponsibilityMapScreen({
           <section className="m3-responsibility-map-understand-card" aria-labelledby={`${screen.id}-purpose`}>
             <p className="m3-responsibility-map-kicker">Responsibility before action</p>
             <h2 id={`${screen.id}-purpose`}>Actor responsibility analysis clarifies who should act, support, and follow up</h2>
-            {responsibilityMapIntroParagraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+            {responsibilityMapIntroParagraphs.map((paragraph, index) => (
+              <p key={`${paragraph}-${index}`}>{paragraph}</p>
             ))}
             <p className="m3-responsibility-map-key-message">{responsibilityMapKeyIdea}</p>
           </section>
 
           <section className="m3-responsibility-map-explain-grid" aria-label="Screen purpose and output">
-            {responsibilityMapExplainCards.map((card) => (
-              <article key={card.title} className={`m3-responsibility-map-explain-card is-${card.tone}`}>
+            {responsibilityMapExplainCards.map((card, index) => (
+              <article key={`${card.title}-${index}`} className={`m3-responsibility-map-explain-card is-${card.tone}`}>
                 <h2>{card.title}</h2>
                 <p>{card.text}</p>
               </article>
@@ -10592,7 +10592,7 @@ function ResponsibilityMapScreen({
             <p>Use this flow to connect rights-holder barriers to actor roles and practical design actions.</p>
             <div className="m3-responsibility-map-model-flow" aria-label="Responsibility map model">
               {responsibilityMapModelCards.map((card, index) => (
-                <article key={card.title}>
+                <article key={`${card.title}-${index}`}>
                   <span aria-hidden="true">{index + 1}</span>
                   <h3>{card.title}</h3>
                   <p>{card.text}</p>
@@ -10613,8 +10613,8 @@ function ResponsibilityMapScreen({
                 ['Realistic CSO role', 'Awra can facilitate accessibility checks, support inclusive consultation, document non-sensitive barriers, and help connect rights-holders with responsible actors.'],
                 ['Capacity gap to check', 'Actors may lack accessibility knowledge, budget, clear standards, coordination, or a feedback procedure.'],
                 ['Next question for Screen 9', 'Which actor has enough influence and capacity to respond, and who may resist or delay change?'],
-              ].map(([label, text]) => (
-                <div key={label}>
+              ].map(([label, text], index) => (
+                <div key={`${label}-${index}`}>
                   <span>{label}</span>
                   <p>{text}</p>
                 </div>
@@ -10658,12 +10658,12 @@ function ResponsibilityMapScreen({
               <h3 id={`${screen.id}-barriers`}>Step 1: Choose priority barriers to map first.</h3>
               <p>Select barriers that most affect participation, access, benefit, safety, information, or follow-up.</p>
               <div className="m3-responsibility-map-option-grid" role="group" aria-labelledby={`${screen.id}-barriers`}>
-                {barrierOptions.map((barrier) => {
+                {barrierOptions.map((barrier, index) => {
                   const selected = selectedBarrierIds.includes(barrier.id);
                   const disabled = !selected && selectedBarrierIds.length >= 2;
                   return (
                     <button
-                      key={barrier.id}
+                      key={`${barrier.id}-${index}`}
                       type="button"
                       className={`m3-responsibility-map-option ${selected ? 'is-selected' : ''}`}
                       aria-pressed={selected}
@@ -10688,8 +10688,8 @@ function ResponsibilityMapScreen({
                 <h2 id={`${screen.id}-live-responsibility-select`}>Responsibility map so far</h2>
                 <p aria-live="polite">{selectedCountLabel}</p>
                 <div className="m3-guided-chip-list" aria-label="Selected barriers">
-                  {selectedBarrierSummaries.length > 0 ? selectedBarrierSummaries.map((barrier) => (
-                    <span key={barrier.id} className="m3-guided-selected-chip">✓ {barrier.label}</span>
+                  {selectedBarrierSummaries.length > 0 ? selectedBarrierSummaries.map((barrier, index) => (
+                    <span key={`${barrier.id}-${index}`} className="m3-guided-selected-chip">✓ {barrier.label}</span>
                   )) : <span className="m3-guided-muted">Select one or two priority barriers.</span>}
                 </div>
                 <p className="m3-guided-helper">
@@ -10733,14 +10733,14 @@ function ResponsibilityMapScreen({
             ) : (
               <>
                 <section className="m3-responsibility-map-panel m3-responsibility-map-mapping-panel" aria-label="Actor mapping cards">
-                  {selectedBarrierIds.map((barrierId) => {
+                  {selectedBarrierIds.map((barrierId, barrierIndex) => {
                     const mapping = getScreen8Mapping(mappings, barrierId);
                     const customActorsForLane = customActors;
                     return (
-                      <article key={barrierId} className="m3-responsibility-map-mapping-card">
+                      <article key={`${barrierId}-${barrierIndex}`} className="m3-responsibility-map-mapping-card">
                         <h3>Map responsibility for: {getBarrierLabel(barrierId)}</h3>
                         <p>For each barrier, identify public or service responsibility, influence actors, Awra’s realistic role, and one capacity gap.</p>
-                        {screen8ActorCategories.map((category) => {
+                        {screen8ActorCategories.map((category, categoryIndex) => {
                           const actorsForLane =
                             category.lane === 'public'
                               ? [...screen8ActorsByLane.public, ...customActorsForLane.filter((actor) => actor.category === 'primary_public_responsibility')]
@@ -10755,18 +10755,22 @@ function ResponsibilityMapScreen({
                                       : category.lane === 'careful'
                                         ? [...screen8CarefulActors, ...customActorsForLane.filter((actor) => actor.category === 'careful_engagement_actor')]
                                         : [...screen8ActorsByLane.cso, ...customActorsForLane.filter((actor) => actor.category === 'cso_role')];
-                          return renderActorLane(barrierId, category.title, `${category.meaning} Examples: ${category.examples}`, category.lane, actorsForLane, category.prompt);
+                          return (
+                            <Fragment key={`${barrierId}-${category.lane}-${categoryIndex}`}>
+                              {renderActorLane(barrierId, category.title, `${category.meaning} Examples: ${category.examples}`, category.lane, actorsForLane, category.prompt)}
+                            </Fragment>
+                          );
                         })}
                         <section className="m3-responsibility-map-lane" aria-labelledby={`${screen.id}-${barrierId}-capacity`}>
                           <h4 id={`${screen.id}-${barrierId}-capacity`}>Capacity gap</h4>
                           <p>What may prevent the responsible actor from responding well?</p>
                           <p className="m3-responsibility-map-lane-prompt">Choose one likely capacity gap to carry forward.</p>
                           <div className="m3-responsibility-map-chip-grid">
-                            {screen8CapacityGapHints.map((hint) => {
+                            {screen8CapacityGapHints.map((hint, hintIndex) => {
                               const selected = mapping.capacityGapHintIds.includes(hint.id);
                               return (
                                 <button
-                                  key={hint.id}
+                                  key={`${hint.id}-${hintIndex}`}
                                   type="button"
                                   className={`m3-responsibility-map-action-chip ${selected ? 'is-selected' : ''}`}
                                   aria-pressed={selected}
@@ -10823,10 +10827,10 @@ function ResponsibilityMapScreen({
 
                 <aside className="m3-responsibility-map-panel m3-responsibility-map-preview m3-guided-live-panel" aria-labelledby={`${screen.id}-preview`}>
                   <h3 id={`${screen.id}-preview`}>Responsibility map so far</h3>
-                  {selectedBarrierIds.map((barrierId) => {
+                  {selectedBarrierIds.map((barrierId, barrierIndex) => {
                     const mapping = getScreen8Mapping(mappings, barrierId);
                     return (
-                      <article key={barrierId} className="m3-responsibility-map-preview-card">
+                      <article key={`${barrierId}-${barrierIndex}`} className="m3-responsibility-map-preview-card">
                         <h4>Barrier: {getBarrierLabel(barrierId)}</h4>
                         <p><strong>Public responsibility:</strong> {mapping.publicActorIds.length ? mapping.publicActorIds.map((id) => getActorLabel(id, allActors)).join(', ') : 'No public responsibility actor yet'}</p>
                         <p><strong>Service or influence actors:</strong> {[...mapping.serviceActorIds, ...mapping.communityActorIds, ...mapping.participationActorIds, ...mapping.voiceActorIds, ...mapping.supportActorIds, ...mapping.carefulActorIds].length ? [...mapping.serviceActorIds, ...mapping.communityActorIds, ...mapping.participationActorIds, ...mapping.voiceActorIds, ...mapping.supportActorIds, ...mapping.carefulActorIds].map((id) => getActorLabel(id, allActors)).join(', ') : 'No service or influence actor yet'}</p>
@@ -10871,13 +10875,13 @@ function ResponsibilityMapScreen({
                 ['Capacity-gap hint', 'capacity'],
                 ['Design action', 'action'],
                 ['Next question', 'question'],
-              ].map(([label, tone]) => (
-                <span key={label} className={`m3-responsibility-map-legend-chip m3-responsibility-map-legend-chip--${tone}`}>{label}</span>
+              ].map(([label, tone], index) => (
+                <span key={`${label}-${index}`} className={`m3-responsibility-map-legend-chip m3-responsibility-map-legend-chip--${tone}`}>{label}</span>
               ))}
             </div>
             <div className="m3-responsibility-map-swimlane" aria-label="Draft responsibility swimlane map">
-              {generatedRows.map((row) => (
-                <article key={row.barrierId} className="m3-responsibility-map-swimlane-card" data-testid="m3-s08-generated-map-row">
+              {generatedRows.map((row, index) => (
+                <article key={`${row.barrierId}-${index}`} className="m3-responsibility-map-swimlane-card" data-testid="m3-s08-generated-map-row">
                   <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--barrier">
                     <span className="m3-responsibility-map-lane-badge">Barrier selected</span>
                     <h3>{row.barrierLabel}</h3>
@@ -10948,8 +10952,8 @@ function ResponsibilityMapScreen({
               <section className="m3-responsibility-map-warning-section">
                 <h3>What to check next</h3>
                 <div className="m3-responsibility-map-warning-grid">
-                  {submittedOutput.warnings.map((warning) => (
-                    <p key={warning} className="m3-responsibility-map-warning"><span aria-hidden="true">!</span>{warning}</p>
+                  {submittedOutput.warnings.map((warning, index) => (
+                    <p key={`${warning}-${index}`} className="m3-responsibility-map-warning"><span aria-hidden="true">!</span>{warning}</p>
                   ))}
                 </div>
               </section>
@@ -11034,8 +11038,8 @@ function ResponsibilityMapScreen({
               ['realisticCsoRole', 'Realistic CSO role', 'What can your CSO do without replacing the responsible actor?'],
               ['capacityGap', 'Capacity gap', 'What may prevent the actor from responding well?'],
               ['safeEngagementQuestion', 'Safe engagement question', 'What question can your CSO ask safely and constructively?'],
-            ].map(([field, label, placeholder]) => (
-              <label key={field}>
+            ].map(([field, label, placeholder], index) => (
+              <label key={`${field}-${index}`}>
                 <span>{label}</span>
                 <textarea
                   value={ownCsoDraft[field as keyof Screen8OwnCsoOutput]}
@@ -11062,8 +11066,8 @@ function ResponsibilityMapScreen({
                 ['Realistic CSO role', ownCsoOutput.realisticCsoRole],
                 ['Capacity gap', ownCsoOutput.capacityGap],
                 ['Safe engagement question', ownCsoOutput.safeEngagementQuestion],
-              ].map(([label, value]) => (
-                <p key={label}><strong>{label}:</strong> {value}</p>
+              ].map(([label, value], index) => (
+                <p key={`${label}-${index}`}><strong>{label}:</strong> {value}</p>
               ))}
             </section>
           )}

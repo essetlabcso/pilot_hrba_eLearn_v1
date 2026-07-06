@@ -91,6 +91,21 @@ function syncRouteToScreen(moduleId: string | null | undefined, screenId: string
     return;
   }
 
+  if (moduleId === 'module_01_hrba_foundations') {
+    const params = new URLSearchParams({
+      moduleId,
+      screenId
+    });
+    const route = `/?${params.toString()}`;
+    const currentRoute = `${window.location.pathname}${window.location.search}`;
+
+    if (currentRoute !== route) {
+      window.history.pushState(null, '', route);
+    }
+
+    return;
+  }
+
   const route = moduleId === 'module_02_everyday_cso_work'
     ? module2ScreenRoutes[screenId]
     : moduleId === 'module_03_project_design'
@@ -184,8 +199,26 @@ export default function CoursePlayerShell({
       ? 0
       : Math.max(1, module3InstructionalIndex + 1)
     : playerIndex + 1;
-  const displayedTotalScreens = isModule3RevisedFlow ? module3InstructionalScreens.length : totalScreens;
+  const displayedTotalScreens = isModule3RevisedFlow
+    ? module3InstructionalScreens.length
+    : totalScreens;
   const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-PLAYER-COMPLETE';
+
+  useEffect(() => {
+    if (state.currentModuleId !== 'module_01_hrba_foundations' || !state.currentScreenId) {
+      return;
+    }
+
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
+  }, [state.currentModuleId, state.currentScreenId]);
+
+  useEffect(() => {
+    if (state.currentModuleId !== 'module_02_everyday_cso_work' || !state.currentScreenId) {
+      return;
+    }
+
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
+  }, [state.currentModuleId, state.currentScreenId]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_03_project_design') {
@@ -217,6 +250,22 @@ export default function CoursePlayerShell({
     }));
     return () => window.clearTimeout(markerTimeout);
   }, [onChangeState, state.currentModuleId, state.currentScreenId, state.screenProgress.module_03_project_design]);
+
+  useEffect(() => {
+    if (state.currentModuleId !== 'module_04_implementation' || !state.currentScreenId) {
+      return;
+    }
+
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
+  }, [state.currentModuleId, state.currentScreenId]);
+
+  useEffect(() => {
+    if (state.currentModuleId !== 'module_05_hrba_meal' || !state.currentScreenId) {
+      return;
+    }
+
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
+  }, [state.currentModuleId, state.currentScreenId]);
 
   // Handle Navigation — operates entirely on playerScreens array bounds
   const handlePrev = () => {
@@ -655,7 +704,11 @@ export default function CoursePlayerShell({
   const isNextDisabled = () => {
     if (state.currentModuleId === 'module_02_everyday_cso_work') {
       if ((module2FinalScreenIds as readonly string[]).includes(screenId)) {
-        return screenId === 'M2-KC' && !state.m2FinalKnowledgeCheckCompleted;
+        if (screenId === 'M2-KC') {
+          return !state.m2FinalKnowledgeCheckCompleted;
+        }
+
+        return !(state.screenProgress.module_02_everyday_cso_work || []).includes(screenId);
       }
 
       if (
@@ -737,8 +790,8 @@ export default function CoursePlayerShell({
       if (screenId === 'M1-S1-05' && learningCycleViewed.length < 6) {
         return true; // all six learning-cycle steps must be viewed
       }
-      if (screenId === 'M1-S1-06' && portfolioFocus.length === 0 && !portfolioNote) {
-        return true; // safe portfolio focus or note required
+      if (screenId === 'M1-S1-06' && ((portfolioFocus.length < 1 || portfolioFocus.length > 4) && !portfolioNote)) {
+        return true; // 1-4 safe portfolio focus areas or a short safe note required
       }
       if (screenId === 'M1-S1-06A' && !startingConfidence.submitted) {
         return true; // self-assessment must be submitted
@@ -925,8 +978,63 @@ export default function CoursePlayerShell({
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               {playerScreens.map((screen, idx) => {
+                if (isModule3RevisedFlow && screen.HiddenFromLearnerSequence === true) {
+                  return null;
+                }
+
                 const active = idx === playerIndex;
                 const menuScreenId = String(screen['Screen/State ID']);
+                const module1MenuScreenIds = playerScreens
+                  .map((item) => String(item['Screen/State ID']))
+                  .filter((itemScreenId) => itemScreenId === 'M1-PLAYER-00' || itemScreenId.startsWith('M1-S1-') || itemScreenId === 'M1-PLAYER-COMPLETE');
+                const module1MenuIndex = module1MenuScreenIds.indexOf(menuScreenId);
+                const module1Progress = state.screenProgress.module_01_hrba_foundations || [];
+                const module1MenuTargetDisabled =
+                  state.currentModuleId === 'module_01_hrba_foundations' &&
+                  (menuScreenId.startsWith('M1-S1-') || menuScreenId === 'M1-PLAYER-COMPLETE') &&
+                  module1MenuIndex > 0 &&
+                  !module1MenuScreenIds.slice(0, module1MenuIndex).every((screenId) => module1Progress.includes(screenId));
+                const module2MenuScreenIds = playerScreens
+                  .map((item) => String(item['Screen/State ID']))
+                  .filter((itemScreenId) => (module2FinalScreenIds as readonly string[]).includes(itemScreenId));
+                const module2MenuIndex = module2MenuScreenIds.indexOf(menuScreenId);
+                const module2Progress = state.screenProgress.module_02_everyday_cso_work || [];
+                const module2MenuTargetDisabled =
+                  state.currentModuleId === 'module_02_everyday_cso_work' &&
+                  (module2FinalScreenIds as readonly string[]).includes(menuScreenId) &&
+                  module2MenuIndex > 0 &&
+                  !module2MenuScreenIds.slice(0, module2MenuIndex).every((screenId) => module2Progress.includes(screenId));
+                const module3MenuScreenIds = module3InstructionalScreens
+                  .filter((item) => item.HiddenFromLearnerSequence !== true)
+                  .map((item) => String(item['Screen/State ID']));
+                const module3MenuIndex = module3MenuScreenIds.indexOf(menuScreenId);
+                const module3Progress = state.screenProgress.module_03_project_design || [];
+                const module3MenuTargetDisabled =
+                  isModule3RevisedFlow &&
+                  menuScreenId.startsWith('M3-R') &&
+                  module3MenuIndex > 0 &&
+                  !module3MenuScreenIds.slice(0, module3MenuIndex).every((screenId) => module3Progress.includes(screenId));
+                const module4MenuScreenIds = playerScreens
+                  .map((item) => String(item['Screen/State ID']))
+                  .filter((itemScreenId) => itemScreenId.startsWith('M4-S1-'));
+                const module4MenuIndex = module4MenuScreenIds.indexOf(menuScreenId);
+                const module4Progress = state.screenProgress.module_04_implementation || [];
+                const module4MenuTargetDisabled =
+                  state.currentModuleId === 'module_04_implementation' &&
+                  menuScreenId.startsWith('M4-S1-') &&
+                  module4MenuIndex > 0 &&
+                  !module4MenuScreenIds.slice(0, module4MenuIndex).every((screenId) => module4Progress.includes(screenId));
+                const module5MenuScreenIds = playerScreens
+                  .map((item) => String(item['Screen/State ID']))
+                  .filter((itemScreenId) => itemScreenId.startsWith('M5-R') || itemScreenId === 'M5-PLAYER-COMPLETE');
+                const module5MenuIndex = module5MenuScreenIds.indexOf(menuScreenId);
+                const module5Progress = state.screenProgress.module_05_hrba_meal || [];
+                const module5MenuTargetDisabled =
+                  state.currentModuleId === 'module_05_hrba_meal' &&
+                  (menuScreenId.startsWith('M5-R') || menuScreenId === 'M5-PLAYER-COMPLETE') &&
+                  module5MenuIndex > 0 &&
+                  !module5MenuScreenIds.slice(0, module5MenuIndex).every((screenId) => module5Progress.includes(screenId));
+                const menuTargetDisabled = module1MenuTargetDisabled || module2MenuTargetDisabled || module3MenuTargetDisabled || module4MenuTargetDisabled || module5MenuTargetDisabled;
                 const menuNumber = isModule3RevisedFlow
                   ? menuScreenId === 'M3-PLAYER-00'
                     ? '0'
@@ -936,7 +1044,10 @@ export default function CoursePlayerShell({
                 return (
                   <button
                     key={screen['Screen/State ID']}
+                    disabled={menuTargetDisabled}
+                    aria-disabled={menuTargetDisabled}
                     onClick={() => {
+                      if (menuTargetDisabled) return;
                       syncRouteToScreen(state.currentModuleId, menuScreenId);
                       focusMainContentAfterMenuSelectionRef.current = true;
                       onChangeState(prev => ({ ...prev, currentScreenId: screen['Screen/State ID'] }));
@@ -947,10 +1058,11 @@ export default function CoursePlayerShell({
                       borderRadius: '4px',
                       border: active ? '1px solid var(--color-primary)' : '1px solid transparent',
                       backgroundColor: active ? 'rgba(59, 153, 212, 0.15)' : 'transparent',
-                      color: active ? '#fff' : '#cbd5e1',
+                      color: menuTargetDisabled ? '#64748b' : active ? '#fff' : '#cbd5e1',
                       textAlign: 'left',
                       fontSize: '0.8rem',
-                      cursor: 'pointer',
+                      cursor: menuTargetDisabled ? 'not-allowed' : 'pointer',
+                      opacity: menuTargetDisabled ? 0.65 : 1,
                       textOverflow: 'ellipsis',
                       overflow: 'hidden',
                       whiteSpace: 'nowrap'

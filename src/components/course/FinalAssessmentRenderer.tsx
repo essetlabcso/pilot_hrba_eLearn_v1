@@ -210,7 +210,7 @@ export default function FinalAssessmentRenderer({
       <div className="final-assessment-shell">
         <div className="final-assessment-card">
           <p className="final-assessment-eyebrow">Final assessment</p>
-          <h1 id="final-assessment-questions-title">Practical HRBA Judgment Check</h1>
+          <h1 id="final-assessment-questions-title">Final Assessment</h1>
           <p>
             Answer every question, then submit for scoring. You need {FINAL_ASSESSMENT_PASS_THRESHOLD}% or higher
             to mark the final assessment complete locally.
@@ -225,7 +225,7 @@ export default function FinalAssessmentRenderer({
           <fieldset className="final-assessment-question" key={question.id}>
             <legend>
               <span className="final-assessment-tag">Question {index + 1}</span>
-              {question.prompt}
+              <span className="final-assessment-question__prompt">{question.prompt}</span>
             </legend>
             <div className="final-assessment-options">
               {question.options.map((option) => {
@@ -247,7 +247,7 @@ export default function FinalAssessmentRenderer({
                       onChange={() => updateAnswer(question.id, option.id)}
                     />
                     <span className="final-assessment-option__marker">{option.id.toUpperCase()}</span>
-                    <span>{option.text}</span>
+                    <span className="final-assessment-option__text">{option.text}</span>
                   </label>
                 );
               })}

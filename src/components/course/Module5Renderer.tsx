@@ -2916,6 +2916,7 @@ function Module5LearningObjectivesScreen({ onChangeState }: Module5RendererProps
                 { reviewedObjectives: flippedCards },
               )
             }
+            disabled={reviewedCount < module5ObjectiveCards.length}
           >
             Continue to Diagnosing Evidence Gaps in a MEAL Report
           </PrimaryButton>
@@ -3140,13 +3141,11 @@ function Module5HrbaMealLensCycleScreen({ state, onChangeState }: Module5Rendere
 
   const toggleCard = (id: string) => {
     setPrompt('');
-    setOpenedIds((prev) => {
-      const next = prev.includes(id)
-        ? prev.filter((openedId) => openedId !== id)
-        : [...prev, id];
-      persist({ openedIds: next, status: next.length === m5R04LensQuestions.length ? 'reviewed' : 'in_progress' });
-      return next;
-    });
+    const next = openedIds.includes(id)
+      ? openedIds.filter((openedId) => openedId !== id)
+      : [...openedIds, id];
+    setOpenedIds(next);
+    persist({ openedIds: next, status: next.length === m5R04LensQuestions.length ? 'reviewed' : 'in_progress' });
   };
 
   const continueToEvidenceLadder = () => {
@@ -3268,7 +3267,7 @@ function Module5HrbaMealLensCycleScreen({ state, onChangeState }: Module5Rendere
 
           {prompt && <p className="m5-lens-review-prompt" role="status">{prompt}</p>}
           <div className="m5-lens-actions">
-            <PrimaryButton onClick={continueToEvidenceLadder}>
+            <PrimaryButton onClick={continueToEvidenceLadder} disabled={!allReviewed}>
               {allReviewed ? 'Continue to From Outputs to Outcomes: Reading the Evidence Ladder' : 'Review each HRBA MEAL lens question'}
             </PrimaryButton>
           </div>
@@ -3869,36 +3868,32 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
   const openReveal = (id: string) => {
-    setOpenedIds((previousIds) => {
-      const next = previousIds.includes(id) ? previousIds : [...previousIds, id];
-      onChangeState((prev) => ({
-        ...prev,
-        practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }),
-      }));
-      return next;
-    });
+    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
+    setOpenedIds(next);
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }),
+    }));
   };
 
   const updateAnswer = (itemId: string, field: 'indicator' | 'reveal', value: string) => {
     setSubmitted(false);
-    setAnswers((previousAnswers) => {
-      const next = {
-        ...previousAnswers,
-        [itemId]: {
-          ...(previousAnswers[itemId] || {}),
-          [field]: value,
-        },
+    const next = {
+      ...answers,
+      [itemId]: {
+        ...(answers[itemId] || {}),
+        [field]: value,
+      },
+    };
+    setAnswers(next);
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.delete('M5-R05');
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
       };
-      onChangeState((prev) => {
-        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-        progress.delete('M5-R05');
-        return {
-          ...prev,
-          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
-        };
-      });
-      return next;
     });
   };
 
@@ -4230,18 +4225,16 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
 
   const choose = (id: string, value: string) => {
     setSubmitted(false);
-    setAnswers((previousAnswers) => {
-      const next = { ...previousAnswers, [id]: value };
-      onChangeState((prev) => {
-        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-        progress.delete('M5-R07');
-        return {
-          ...prev,
-          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
-        };
-      });
-      return next;
+    const next = { ...answers, [id]: value };
+    setAnswers(next);
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.delete('M5-R07');
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+      };
     });
   };
   const allAnswered = safeDataDecisionItems.every((item) => answers[item.id]);
@@ -4430,20 +4423,18 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
 
   const toggle = (id: string) => {
     setSubmitted(false);
-    setSelectedIds((previousIds) => {
-      const next = previousIds.includes(id)
-        ? previousIds.filter((item) => item !== id)
-        : [...previousIds, id];
-      onChangeState((prev) => {
-        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-        progress.delete('M5-R08');
-        return {
-          ...prev,
-          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-          practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }),
-        };
-      });
-      return next;
+    const next = selectedIds.includes(id)
+      ? selectedIds.filter((item) => item !== id)
+      : [...selectedIds, id];
+    setSelectedIds(next);
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.delete('M5-R08');
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }),
+      };
     });
   };
 
@@ -4634,18 +4625,16 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
 
   const choose = (id: string, value: string) => {
     setSubmitted(false);
-    setAnswers((previousAnswers) => {
-      const next = { ...previousAnswers, [id]: value };
-      onChangeState((prev) => {
-        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-        progress.delete('M5-R09');
-        return {
-          ...prev,
-          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
-        };
-      });
-      return next;
+    const next = { ...answers, [id]: value };
+    setAnswers(next);
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.delete('M5-R09');
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+      };
     });
   };
 
@@ -4852,18 +4841,16 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
 
   const choose = (id: string, value: string) => {
     setSubmitted(false);
-    setAnswers((previousAnswers) => {
-      const next = { ...previousAnswers, [id]: value };
-      onChangeState((prev) => {
-        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-        progress.delete('M5-R10');
-        return {
-          ...prev,
-          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
-        };
-      });
-      return next;
+    const next = { ...answers, [id]: value };
+    setAnswers(next);
+    onChangeState((prev) => {
+      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+      progress.delete('M5-R10');
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+      };
     });
   };
 

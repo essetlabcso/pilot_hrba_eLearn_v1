@@ -24090,6 +24090,19 @@ h1, h2, h3, h4, h5, h6 {
   color: #ffffff;
 }
 
+.m1-b2-screen.m1-b2-welcome-course,
+.m1-b2-screen.m1-b2-about-course,
+.m1-b2-screen.m1-b2-hrba-lens,
+.m1-b2-screen.m1-b2-course-journey,
+.m1-b2-screen.m1-b2-learning-methodology,
+.m1-b2-screen.m1-b2-safe-portfolio,
+.m1-b2-screen.m1-b2-starting-confidence,
+.m1-b2-screen.m1-b2-first-commitment {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+}
+
 .m1-b2-opening {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
@@ -27964,6 +27977,18 @@ body:has(.course-shell) {
   .main-screen-canvas__content:has(.m1-s14-screen) {
     padding: 0.65rem;
     overflow: hidden;
+  }
+
+  .main-screen-canvas__content:has(.m1-b2-welcome-course),
+  .main-screen-canvas__content:has(.m1-b2-about-course),
+  .main-screen-canvas__content:has(.m1-b2-hrba-lens),
+  .main-screen-canvas__content:has(.m1-b2-course-journey),
+  .main-screen-canvas__content:has(.m1-b2-learning-methodology),
+  .main-screen-canvas__content:has(.m1-b2-safe-portfolio),
+  .main-screen-canvas__content:has(.m1-b2-starting-confidence),
+  .main-screen-canvas__content:has(.m1-b2-first-commitment) {
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .main-screen-canvas__content:has(.m1-b2-screen) > div,

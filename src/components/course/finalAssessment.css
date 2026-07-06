@@ -2,7 +2,13 @@
 .final-assessment-cover {
   width: min(1120px, 100%);
   margin: 0 auto;
-  color: var(--text-main);
+  color: #10233f;
+}
+
+.final-assessment-screen {
+  min-height: calc(100vh - 150px);
+  border-radius: 8px;
+  background: #f4f8fb;
 }
 
 .final-assessment-cover {
@@ -19,10 +25,11 @@
 .final-assessment-question,
 .final-assessment-score-card,
 .final-assessment-review {
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid rgba(15, 23, 42, 0.14);
   border-radius: 8px;
-  background: var(--player-card-bg);
+  background: #ffffff;
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  color: #10233f;
 }
 
 .final-assessment-cover__copy,
@@ -49,7 +56,7 @@
 .final-assessment-eyebrow,
 .final-assessment-tag {
   margin: 0;
-  color: var(--color-primary);
+  color: #0f766e;
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -59,7 +66,7 @@
 .final-assessment-cover h1,
 .final-assessment-screen h1 {
   margin: 0;
-  color: var(--text-main);
+  color: #0b2a55;
   font-family: var(--font-family-headings);
   line-height: 1.1;
 }
@@ -76,15 +83,15 @@
 .final-assessment-screen p,
 .final-assessment-review li {
   margin: 0;
-  color: var(--text-muted);
+  color: #26394f;
   line-height: 1.55;
 }
 
 .final-assessment-cover__visual {
   overflow: hidden;
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid rgba(15, 23, 42, 0.14);
   border-radius: 8px;
-  background: var(--player-card-bg);
+  background: #ffffff;
 }
 
 .final-assessment-cover__visual img {
@@ -102,25 +109,43 @@
 .final-assessment-meta div {
   display: grid;
   gap: 0.25rem;
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid rgba(15, 23, 42, 0.14);
   border-radius: 8px;
   padding: 0.85rem;
-  background: var(--player-stage-soft);
+  background: #f8fbfb;
 }
 
 .final-assessment-meta strong {
-  color: var(--text-main);
+  color: #10233f;
 }
 
 .final-assessment-question {
   margin: 0;
-  border-top: 5px solid var(--color-primary);
+  border-top: 5px solid #0f766e;
+  background: #ffffff;
+  color: #10233f;
 }
 
 .final-assessment-question legend {
-  color: var(--text-main);
+  display: grid;
+  gap: 0.55rem;
+  width: 100%;
+  color: #10233f;
+  background: #ffffff;
+  font-size: 1.08rem;
   font-weight: 800;
-  line-height: 1.4;
+  line-height: 1.45;
+  padding: 0.2rem 0.2rem 0.85rem;
+}
+
+.final-assessment-question__prompt {
+  display: block;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #10233f;
+  padding: 0.85rem;
+  box-shadow: inset 5px 0 0 rgba(15, 118, 110, 0.28);
 }
 
 .final-assessment-options {
@@ -135,13 +160,22 @@
   gap: 0.75rem;
   align-items: start;
   min-height: 44px;
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 6px;
   padding: 0.75rem;
-  background: var(--player-stage-soft);
-  color: var(--text-muted);
+  background: #f8fbfb;
+  color: #10233f;
   cursor: pointer;
+  font-size: 1rem;
   line-height: 1.45;
+}
+
+.final-assessment-option__text {
+  display: block;
+  border-radius: 4px;
+  background: #f8fbfb;
+  color: #10233f;
+  padding: 0.1rem 0;
 }
 
 .final-assessment-option input {
@@ -154,23 +188,28 @@
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 2px solid var(--color-border-dark);
+  border: 2px solid rgba(15, 23, 42, 0.2);
   border-radius: 999px;
-  background: #fff;
-  color: var(--color-primary);
+  background: #ffffff;
+  color: #0f766e;
   font-weight: 900;
 }
 
 .final-assessment-option.is-selected {
   border-width: 2px;
   background: #eef8f6;
-  box-shadow: inset 5px 0 0 var(--color-primary);
+  box-shadow: inset 5px 0 0 #0f766e;
+  color: #10233f;
+}
+
+.final-assessment-option.is-selected .final-assessment-option__text {
+  background: #eef8f6;
 }
 
 .final-assessment-option.is-selected .final-assessment-option__marker {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: #fff;
+  border-color: #0f766e;
+  background: #0f766e;
+  color: #ffffff;
 }
 
 .final-assessment-option:focus-within,
@@ -210,14 +249,14 @@
 }
 
 .final-assessment-secondary {
-  border: 1px solid var(--color-border-dark);
-  background: var(--player-stage-soft);
-  color: var(--text-main);
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  background: #f8fbfb;
+  color: #10233f;
 }
 
 .final-assessment-status {
   min-height: 1.5rem;
-  color: var(--text-muted);
+  color: #26394f;
   font-weight: 700;
 }
 
@@ -226,17 +265,17 @@
   grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
   gap: 1rem;
   align-items: center;
-  border-top: 6px solid var(--color-primary);
+  border-top: 6px solid #0f766e;
 }
 
 .final-assessment-score-card.is-passed {
   border-top-color: var(--color-success);
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 55%);
+  background: #ffffff linear-gradient(135deg, #f0fdf4 0%, #ffffff 55%);
 }
 
 .final-assessment-score-card.is-failed {
   border-top-color: var(--color-warning);
-  background: linear-gradient(135deg, #fff7ed 0%, #ffffff 55%);
+  background: #ffffff linear-gradient(135deg, #fff7ed 0%, #ffffff 55%);
 }
 
 .final-assessment-score {
@@ -245,11 +284,11 @@
   min-height: 150px;
   border-radius: 8px;
   background: #fff;
-  border: 1px solid var(--color-border-dark);
+  border: 1px solid rgba(15, 23, 42, 0.14);
 }
 
 .final-assessment-score strong {
-  color: var(--text-main);
+  color: #10233f;
   font-size: clamp(2.3rem, 5vw, 4rem);
   line-height: 1;
 }
@@ -275,5 +314,15 @@
   .final-assessment-primary,
   .final-assessment-secondary {
     width: 100%;
+  }
+
+  .final-assessment-option {
+    grid-template-columns: 36px minmax(0, 1fr);
+    padding: 0.7rem;
+  }
+
+  .final-assessment-option__marker {
+    width: 32px;
+    height: 32px;
   }
 }

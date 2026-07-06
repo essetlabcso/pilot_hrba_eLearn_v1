@@ -47,6 +47,66 @@ function getScreenProgressSignature(screenProgress: Record<string, string[]>) {
     .join(';');
 }
 
+function getAllowedModule1ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
+  const requestedIndex = screenIds.indexOf(requestedScreenId);
+  if (requestedIndex <= 0) return requestedScreenId;
+
+  const completed = new Set(completedScreenIds);
+  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
+  if (previousScreensComplete) return requestedScreenId;
+
+  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
+  return screenIds[Math.max(0, firstIncompleteIndex)];
+}
+
+function getAllowedModule2ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
+  const requestedIndex = screenIds.indexOf(requestedScreenId);
+  if (requestedIndex <= 0) return requestedScreenId;
+
+  const completed = new Set(completedScreenIds);
+  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
+  if (previousScreensComplete) return requestedScreenId;
+
+  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
+  return screenIds[Math.max(0, firstIncompleteIndex)];
+}
+
+function getAllowedModule3ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
+  const requestedIndex = screenIds.indexOf(requestedScreenId);
+  if (requestedIndex <= 0) return requestedScreenId;
+
+  const completed = new Set(completedScreenIds);
+  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
+  if (previousScreensComplete) return requestedScreenId;
+
+  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
+  return screenIds[Math.max(0, firstIncompleteIndex)];
+}
+
+function getAllowedModule4ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
+  const requestedIndex = screenIds.indexOf(requestedScreenId);
+  if (requestedIndex <= 0) return requestedScreenId;
+
+  const completed = new Set(completedScreenIds);
+  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
+  if (previousScreensComplete) return requestedScreenId;
+
+  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
+  return screenIds[Math.max(0, firstIncompleteIndex)];
+}
+
+function getAllowedModule5ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
+  const requestedIndex = screenIds.indexOf(requestedScreenId);
+  if (requestedIndex <= 0) return requestedScreenId;
+
+  const completed = new Set(completedScreenIds);
+  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
+  if (previousScreensComplete) return requestedScreenId;
+
+  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
+  return screenIds[Math.max(0, firstIncompleteIndex)];
+}
+
 export default function App() {
   const reportedFinalAssessmentAttemptsRef = useRef<Set<string>>(new Set());
   const [state, setState] = useState<LearningState>(() => {
@@ -61,7 +121,7 @@ export default function App() {
       window.location.hostname === ''
     );
     const completedParam = allowQaProgressOverride ? params.get('completed') : null;
-    const module2RouteTargets: Record<string, { moduleId: string; screenId: string }> = {
+    const routeTargets: Record<string, { moduleId: string; screenId: string }> = {
       '/module-1': { moduleId: 'module_01_hrba_foundations', screenId: 'M1-PLAYER-00' },
       '/module-1/cover': { moduleId: 'module_01_hrba_foundations', screenId: 'M1-PLAYER-00' },
       '/module-2': { moduleId: 'module_02_everyday_cso_work', screenId: 'M2-S01' },
@@ -154,7 +214,7 @@ export default function App() {
           moduleId: 'module_02_everyday_cso_work',
           screenId: 'M2-00',
         }
-      : module2RouteTargets[pathname] || null;
+      : routeTargets[pathname] || null;
 
     const canOpenModule = (moduleId: string, completedModules: string[]) => {
       const moduleDefinition = getHRBAModuleById(moduleId);
@@ -184,9 +244,75 @@ export default function App() {
       if (routeTarget || screenIdParam) {
         const targetModuleId = routeTarget?.moduleId || moduleIdParam || 'module_02_everyday_cso_work';
         if (canOpenModule(targetModuleId, nextState.completedModules)) {
+          const requestedScreenId = routeTarget?.screenId || screenIdParam;
+          const module1ScreenIds = [
+            'M1-PLAYER-00',
+            'M1-S1-01',
+            'M1-S1-02',
+            'M1-S1-03',
+            'M1-S1-04',
+            'M1-S1-05',
+            'M1-S1-06',
+            'M1-S1-06A',
+            'M1-S1-06B',
+            'M1-PLAYER-COMPLETE',
+          ];
+          const module2ScreenIds = module2FinalSequence.map((screen) => screen['Screen/State ID']);
+          const module3ScreenIds = module3PlayerSequence
+            .filter((screen) => (
+              String(screen['Screen/State ID']).startsWith('M3-R') &&
+              (screen as { HiddenFromLearnerSequence?: boolean }).HiddenFromLearnerSequence !== true
+            ))
+            .map((screen) => screen['Screen/State ID']);
+          const module4ScreenIds = [
+            'M4-S1-01',
+            'M4-S1-02',
+            'M4-S1-03',
+            'M4-S1-04',
+            'M4-S1-05',
+            'M4-S1-06',
+            'M4-S1-07',
+            'M4-S1-08',
+            'M4-S1-09',
+            'M4-S1-10',
+            'M4-S1-11',
+            'M4-S1-12',
+            'M4-S1-13',
+            'M4-S1-14',
+          ];
+          const module5ScreenIds = [
+            'M5-R01',
+            'M5-R02',
+            'M5-R03',
+            'M5-R04',
+            'M5-R05',
+            'M5-R06',
+            'M5-R07',
+            'M5-R08',
+            'M5-R09',
+            'M5-R10',
+            'M5-R11',
+            'M5-R12',
+            'M5-R13',
+            'M5-R14',
+            'M5-PLAYER-COMPLETE',
+          ];
+          const targetScreenId =
+            targetModuleId === 'module_01_hrba_foundations' && requestedScreenId
+              ? getAllowedModule1ScreenId(requestedScreenId, module1ScreenIds, nextState.screenProgress[targetModuleId] || [])
+              : targetModuleId === 'module_02_everyday_cso_work' && requestedScreenId
+              ? getAllowedModule2ScreenId(requestedScreenId, module2ScreenIds, nextState.screenProgress[targetModuleId] || [])
+              : targetModuleId === 'module_03_project_design' && requestedScreenId
+                ? getAllowedModule3ScreenId(requestedScreenId, module3ScreenIds, nextState.screenProgress[targetModuleId] || [])
+              : targetModuleId === 'module_04_implementation' && requestedScreenId
+                ? getAllowedModule4ScreenId(requestedScreenId, module4ScreenIds, nextState.screenProgress[targetModuleId] || [])
+              : targetModuleId === 'module_05_hrba_meal' && requestedScreenId
+                ? getAllowedModule5ScreenId(requestedScreenId, module5ScreenIds, nextState.screenProgress[targetModuleId] || [])
+              : requestedScreenId;
+
           nextState.currentLayer = 'player';
           nextState.currentModuleId = targetModuleId;
-          nextState.currentScreenId = routeTarget?.screenId || screenIdParam;
+          nextState.currentScreenId = targetScreenId;
         } else {
           nextState.currentLayer = 'platform';
           nextState.currentModuleId = null;

@@ -2239,7 +2239,7 @@ function Screen61Lens({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
       )}
       <OptionalReferenceToolkit />
       <footer className="m2-final-footer">
-        <ContinueButton label="Next: Your Portfolio Snapshot" onClick={onNext} />
+        <ContinueButton label="Next: Your Portfolio Snapshot" onClick={onNext} disabled={!allChecked} />
       </footer>
     </Module2FinalShell>
   );
