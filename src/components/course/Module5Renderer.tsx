@@ -62,13 +62,26 @@ const module5IndicatorRepairSrc = '/assets/hrba/modules/module-5-redesign/m5-ind
 const module5SafeDataTreeSrc = '/assets/hrba/modules/module-5-redesign/m5-safe-inclusive-data-tree.png';
 const module5FeedbackLoopSrc = '/assets/hrba/modules/module-5-redesign/m5-feedback-complaints-loop.png';
 const module5DonorStoryInboxSrc = '/assets/hrba/modules/module-5-redesign/m5-donor-story-request-inbox.png';
-const module5ParticipatoryReviewSrc = '/assets/hrba/modules/module-5-redesign/m5-participatory-review-scene.png';
 const module5AdaptationDecisionTreeSrc = '/assets/hrba/modules/module-5-redesign/m5-adaptation-decision-tree.png';
 const module5ReportRepairCardsSrc = '/assets/hrba/modules/module-5-redesign/m5-report-repair-cards.png';
 const module5CapstoneSimulatorSrc = '/assets/hrba/modules/module-5-redesign/m5-capstone-evidence-simulator-board.png';
 const module5RepairNoteWorksheetSrc = '/assets/hrba/modules/module-5-redesign/m5-repair-note-worksheet.png';
 const module5ActionJourneySrc = '/assets/hrba/modules/module-5-redesign/m5-90day-action-journey.png';
-const module5IntroVideoTitle = 'Module 5 intro video: The Numbers Look Good, But Who Is Missing?';
+const module5IntroVideoTitle = 'The Numbers Look Good, But Who Is Missing?';
+const module5IntroBridgeCards = [
+  {
+    title: 'What the numbers show',
+    body: 'Activities completed, people reached, meetings held, forms collected, reports prepared.',
+  },
+  {
+    title: 'What the numbers may hide',
+    body: 'Unequal access, quiet voices, missing groups, unsafe feedback, unanswered concerns, or weak change.',
+  },
+  {
+    title: 'What HRBA MEAL adds',
+    body: 'Evidence is used to improve inclusion, response, adaptation, truthful reporting, and account-back.',
+  },
+];
 const module5IntroTranscript = `At first, the report looked strong.
 
 Activities were completed. People were reached. Meetings were held. Feedback was collected. The report was almost ready.
@@ -251,38 +264,38 @@ function PrimaryButton({
 const module5ObjectiveCards = [
   {
     number: '01',
-    title: 'Look beyond good numbers',
-    text: 'Ask who benefited, who was missed, and what changed for different people when project reports show strong outputs.',
+    title: 'Diagnose evidence gaps in a MEAL report',
+    text: 'Look beyond activities completed, people reached, and meetings held to ask who may be missing, what evidence is incomplete, and what accountability questions remain.',
     accent: 'blue',
   },
   {
     number: '02',
-    title: 'Strengthen indicators and evidence',
-    text: 'Improve indicators so they capture access, inclusion, participation, accountability, and meaningful change — not only activities completed.',
+    title: 'Repair indicators and logframe evidence',
+    text: 'Improve weak activity-count indicators so they can show access, participation, feedback response, safety, accountability, and change.',
     accent: 'green',
   },
   {
     number: '03',
-    title: 'Use data safely',
-    text: 'Apply minimum necessary data, anonymization, and safer disaggregation choices so evidence helps inclusion without exposing people, small groups, or sensitive information.',
+    title: 'Choose safe and inclusive evidence',
+    text: 'Use enough evidence to see barriers and exclusion, but avoid unnecessary names, exact locations, sensitive details, or small-cell information that could identify people.',
     accent: 'gold',
   },
   {
     number: '04',
-    title: 'Treat feedback as evidence',
-    text: 'Use community feedback, concerns, and qualitative signals as learning evidence when they show barriers, exclusion, weak participation, or accountability gaps.',
+    title: 'Strengthen feedback and response mechanisms',
+    text: 'Treat feedback as accountability evidence only when it is safely received, reviewed, responded to or referred, used for adaptation, and explained back.',
     accent: 'blue',
   },
   {
     number: '05',
-    title: 'Learn and adapt from MEAL findings',
-    text: 'Use monitoring evidence to identify what needs to change and choose practical adaptations that strengthen rights-based implementation.',
+    title: 'Interpret evidence and adapt action',
+    text: 'Use monitoring data, feedback, and qualitative evidence to decide what should continue, change, be discussed safely, be referred, or be reported with limits.',
     accent: 'green',
   },
   {
     number: '06',
-    title: 'Report responsibly',
-    text: 'Communicate progress, limitations, risks, and learning honestly without overstating results or using stories and data in ways that could harm people.',
+    title: 'Report truthfully and build a repair note',
+    text: 'Avoid overclaiming. Report progress, limits, barriers, adaptations, and next steps, then create a practical HRBA MEAL repair note for future CSO practice.',
     accent: 'gold',
   },
 ];
@@ -345,6 +358,131 @@ const reportGapOptions: ChoiceOption[] = [
     label: 'Whether the project team adapted based on evidence',
     body: 'The report does not show whether the team changed anything after noticing barriers, feedback, exclusion, risk, or weak participation.',
     correct: true,
+  },
+];
+
+const m5R03EvidenceGapOptions = [
+  {
+    id: 'missing-groups',
+    label: 'Which Jiru Amba groups were reached and which may still be missing',
+    meaning: 'Attendance is useful, but the team still needs to know whether some groups were not reached or not able to participate.',
+    correct: true,
+  },
+  {
+    id: 'different-barriers',
+    label: 'Whether different groups faced different barriers',
+    meaning: 'The report should check barriers for women vendors, persons with disabilities, women water users, youth, remote kebeles, older people, or low-income households.',
+    correct: true,
+  },
+  {
+    id: 'participation-influence',
+    label: 'Whether participation influenced decisions',
+    meaning: 'Attendance is not the same as voice, agency, or influence over priorities, timing, service issues, or follow-up decisions.',
+    correct: true,
+  },
+  {
+    id: 'feedback-answered',
+    label: 'Whether feedback was reviewed and answered',
+    meaning: 'A feedback box is not accountability unless feedback is safely reviewed, responded to, referred, used for adaptation, and explained back.',
+    correct: true,
+  },
+  {
+    id: 'safe-evidence',
+    label: 'Whether evidence was collected and reported safely',
+    meaning: 'Stories, complaint themes, disability-related information, and small-group details may expose people if handled carelessly.',
+    correct: true,
+  },
+  {
+    id: 'changed-beyond-attendance',
+    label: 'Whether anything changed beyond attendance',
+    meaning: 'The report should show changes in access, service response, participation quality, confidence, practice, or accountability.',
+    correct: true,
+  },
+  {
+    id: 'account-back',
+    label: 'Whether communities heard what happened next',
+    meaning: 'Account-back should explain what was heard, what changed, what did not change, why, and next steps.',
+    correct: true,
+  },
+  {
+    id: 'positive-stories',
+    label: 'Whether the report has enough positive stories',
+    meaning: 'More positive stories do not make the report more rights-based and can create pressure for unsafe evidence.',
+    correct: false,
+    unsafe: true,
+  },
+  {
+    id: 'bigger-attendance',
+    label: 'Whether the attendance number can be made bigger',
+    meaning: 'Bigger numbers alone do not show inclusion, influence, safety, response, or change.',
+    correct: false,
+    unsafe: true,
+  },
+  {
+    id: 'donor-polish',
+    label: 'Whether the report sounds successful enough for the donor',
+    meaning: 'HRBA reporting should be truthful, safe, and useful for learning and accountability, not only polished.',
+    correct: false,
+    unsafe: true,
+  },
+];
+
+const m5R04LensQuestions = [
+  {
+    id: 'rights-holders',
+    label: 'Rights-holders',
+    question: 'Who is affected, and who may still be missing?',
+    check: 'Whether MEAL evidence identifies specific groups, not only “the community.”',
+    awra: 'Awra should not only report “240 people attended.” It should check which groups were reached and which may still be missing, such as informal women vendors, persons with disabilities, women water users, youth, remote kebele residents, older people, or low-income households.',
+  },
+  {
+    id: 'barriers',
+    label: 'Barriers',
+    question: 'What barriers affect access, voice, safety, or benefit?',
+    check: 'Whether evidence explains why some groups participate less or benefit differently.',
+    awra: 'Awra should look for timing, venue, mobility, language, cost, information, safety, stigma, and local power barriers that may shape who attends and who benefits.',
+  },
+  {
+    id: 'participation',
+    label: 'Participation',
+    question: 'Did participation influence decisions?',
+    check: 'Whether participation means agency and influence, not only attendance.',
+    awra: 'Awra should ask whether women water users, youth, remote kebele residents, persons with disabilities, and other rights-holders influenced priorities, timing, service issues, or follow-up decisions.',
+  },
+  {
+    id: 'feedback',
+    label: 'Feedback',
+    question: 'Was feedback reviewed, answered, referred, or used?',
+    check: 'Whether feedback becomes accountability evidence, not just a box or count.',
+    awra: 'Awra should check whether feedback was safely reviewed, whether concerns were answered or referred, and whether feedback changed facilitation, access, service engagement, or account-back.',
+  },
+  {
+    id: 'safety',
+    label: 'Safety',
+    question: 'Can this evidence be used without exposing people?',
+    check: 'Whether data, stories, complaints, and small-group details are handled safely.',
+    awra: 'Awra should avoid names, exact locations, complaint details, identifiable stories, disability diagnoses, or small-cell details that could expose people or create pressure to share positive stories.',
+  },
+  {
+    id: 'change',
+    label: 'Change',
+    question: 'What changed beyond activities completed?',
+    check: 'Whether evidence shows access, quality, confidence, response, inclusion, or accountability change.',
+    awra: 'Awra should look beyond meetings completed and attendance to ask what changed in access, confidence, participation quality, service response, accountability, or team practice.',
+  },
+  {
+    id: 'responsible-actors',
+    label: 'Responsible actors',
+    question: 'Who needs to respond, adapt, or follow up?',
+    check: 'Whether the report connects evidence to CSO action, partner action, referral, or duty-bearer responsibility.',
+    awra: 'Awra can improve evidence, facilitation, feedback response, safe reporting, referral, adaptation, and constructive engagement with relevant actors, while not replacing duty-bearer obligations.',
+  },
+  {
+    id: 'account-back',
+    label: 'Account-back',
+    question: 'What should be explained back to rights-holders and communities?',
+    check: 'Whether the team communicates what was heard, what changed, what did not, why, and next steps.',
+    awra: 'Awra should explain what the team heard, what changed, what could not be changed yet, why, and what will happen next in a safe, accessible way.',
   },
 ];
 
@@ -618,281 +756,271 @@ const module5RevisedScreens: Record<string, Module5ScreenConfig> = {
   }),
   'M5-R06': baseConfig({
     id: 'M5-R06',
-    title: 'Safe and Inclusive Evidence',
-    phase: 'Practice clinic · Safe evidence',
-    lead: 'Choose evidence that helps the team see inclusion and barriers without exposing people to harm.',
-    visualSrc: module5SafeDataTreeSrc,
-    visualAlt: 'Safe and inclusive data decision tree showing when to collect, aggregate, anonymize, suppress, or avoid data.',
-    block: 'Safe Evidence Decisions',
-    storyTitle: 'Useful evidence must also be safe',
+    title: 'Strengthening Indicators and Logframe Evidence',
+    phase: 'Practice screen · Indicators and logframe evidence',
+    lead: 'Indicators help a CSO decide what evidence to collect and how progress will be judged. But some indicators only count activities. HRBA-informed indicators also help the team see whether people can access services or activities, participate meaningfully, give feedback safely, receive a response, and experience change.',
+    visualSrc: module5IndicatorRepairSrc,
+    visualAlt: 'Visual showing weak activity indicators being improved into stronger HRBA-informed indicators linked to inclusion, participation, accountability, safety, and dignity.',
+    block: 'Indicator Improvement',
+    storyTitle: 'From evidence gaps to stronger indicators',
     story: [
-      'The CSO wants to understand who is participating and who is still excluded. The team considers gender, disability, age, location, feedback themes, and access barriers.',
-      'Some evidence is useful, but some details could identify people or expose them to risk. More detailed data is not always better.',
-      'Useful evidence is not always more detailed evidence. HRBA MEAL uses the minimum information needed to understand access, barriers, safety, participation, change, and accountability.',
+      'Awra’s Jiru Amba report counted meetings, attendance, feedback boxes, and stories. Those numbers are useful, but they do not tell the full MEAL story.',
+      'Stronger indicators should help Awra see who was included, what barriers remained, whether feedback was answered, and what changed.',
     ],
-    revealTitle: 'Safe evidence decisions',
+    revealTitle: 'Indicator improvement rule',
     revealItems: [
-      ['Useful', 'Collect data only if it will support a clear decision or accountability action.'],
-      ['Minimum necessary', 'Do not collect names, exact locations, diagnoses, or sensitive details if a safer category or theme is enough.'],
-      ['Aggregate when groups are small', 'If a small group could be identified, combine categories or suppress details.'],
-      ['Protect dignity and consent', 'Consent matters, but consent alone is not enough if the evidence could expose someone.'],
-      ['Use barriers, not labels only', 'Inclusion evidence should show access barriers and adjustments, not just list groups.'],
-      ['Small-cell risk', 'A person or small group can be recognized when details are combined, such as disability, age, location, role, quote, photo, complaint theme, or timing.'],
-      ['Disability data is not diagnosis', 'Do not collect diagnosis-based details for reporting. Use functional access, communication, support, and participation barriers when useful and protected.'],
-      ['Purpose limitation', 'Collect evidence only when the team knows why it is needed, how it will be protected, who will use it, and what action it can support.'],
+      ['What are we counting?', 'Activity, reach, access, participation, response, safety, or change?'],
+      ['Who should we be able to see safely?', 'Which groups may experience the activity differently, and what can be shown without identifying people?'],
+      ['What evidence source is realistic?', 'Attendance record, feedback theme, observation note, short survey, review meeting, referral log, or account-back record?'],
+      ['What decision will this evidence guide?', 'Continue, adapt, refer, engage responsible actors, improve access, or report limits honestly?'],
     ],
-    activityTitle: 'Choose the safest useful evidence decision',
-    activityPrompt: 'Select how the team should handle each fictional evidence example.',
-    options: makeOptions(['Use safe, useful, proportionate evidence decisions.', 'Collect as much detail as possible.']),
-    insight: ['The safest evidence choice is the one that is useful for action and least likely to identify, label, or expose people.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Improve the weak indicators',
+    activityPrompt: 'For each weak indicator, choose the improved HRBA-informed indicator and what it helps the team understand.',
+    options: makeOptions(['Improve weak activity indicators into useful, safe, decision-oriented HRBA MEAL indicators.', 'Keep activity counts as the only evidence.']),
+    insight: ['A stronger HRBA MEAL indicator is useful because it connects to a decision. It helps the team know whether to continue, adapt timing or access, improve participation, respond to feedback, protect people’s information, or explain limits back to communities.'],
+    cta: 'Continue to Designing Safe Data Collection and Disaggregation',
     nextId: 'M5-R07',
   }),
   'M5-R07': baseConfig({
     id: 'M5-R07',
-    title: 'Feedback, Complaints, and Trust',
-    phase: 'Practice clinic · Feedback loop',
-    lead: 'Repair a weak feedback channel so feedback becomes safe evidence for response, referral, adaptation, and account-back.',
-    visualSrc: module5FeedbackLoopSrc,
-    visualAlt: 'Feedback and complaints loop visual showing receive, record safely, review, respond or refer, adapt, and report back.',
-    block: 'Feedback Loop Repair',
-    storyTitle: 'A box is not the same as accountability',
+    title: 'Designing Safe Data Collection and Disaggregation',
+    phase: 'Practice screen · Safe data collection and disaggregation',
+    lead: 'Good MEAL evidence helps a CSO see who is reached, who may be missing, and what barriers remain. But more detail is not always better. HRBA-informed data collection should reveal exclusion without exposing people to risk.',
+    visualSrc: module5SafeDataTreeSrc,
+    visualAlt: 'Decision tree showing how a CSO can choose whether to collect, aggregate, anonymize, suppress, refer, or avoid collecting data so evidence reveals exclusion without exposing people.',
+    block: 'Safe Data Decisions',
+    storyTitle: 'From stronger indicators to safer evidence',
     story: [
-      'A CSO report says a feedback box was installed and community meetings were held.',
-      'The team still does not know whether people trusted the channel, whether different groups could use it, whether feedback was reviewed, whether concerns were answered or referred, or whether the community heard what changed.',
-      'Feedback collection is not accountability unless feedback is safely received, reviewed by the right role, responded to or referred, used for adaptation where appropriate, and explained back to communities.',
+      'Awra improved its indicators so they can show access, participation, feedback response, safety, accountability, and change.',
+      'Now the team must decide what evidence is safe and useful enough to collect. Some evidence can guide action. Some evidence should be grouped. Some details should be removed. Some sensitive information should not be collected by the project team at all.',
     ],
-    revealTitle: 'Accountability loop checks',
+    revealTitle: 'The safe evidence rule',
     revealItems: [
-      ['Access', 'Can women, people with disabilities, young people, caregivers, and marginalized groups use the channel safely?'],
-      ['Trust', 'Do people know what happens after feedback is shared, and do they believe it will be handled respectfully?'],
-      ['Safe recording', 'Record only what is necessary. Avoid names and identifying details unless required by a safe protocol.'],
-      ['Response and referral', 'Some concerns require referral or safeguarding pathways. CSO staff should not investigate sensitive complaints without mandate and training.'],
-      ['Adaptation', 'Feedback should inform changes to timing, access, communication, targeting, referral information, or service quality.'],
-      ['Account-back', 'Communities should hear what was received, what changed, what could not be solved, why, and what happens next.'],
-      ['Know the concern type', 'Routine feedback may guide adaptation. Complaints may need response or referral. Sensitive protection, safeguarding, GBV, child-protection, fraud, or abuse concerns must follow the agreed safe pathway.'],
-      ['Start practical', 'A local CSO can begin with clear channels, safe recording, defined roles, referral boundaries, response timelines, and account-back.'],
+      ['Is it useful?', 'Will this evidence help Awra understand inclusion, barriers, feedback, response, or change?'],
+      ['Is it necessary?', 'Is this level of detail needed for a decision, or is a broader theme enough?'],
+      ['Can it be protected?', 'Could names, exact locations, photos, rare details, or small groups identify someone?'],
+      ['Can it guide action safely?', 'Can Awra use the evidence to adapt, refer, engage responsible actors, or account back without exposing people?'],
     ],
-    activityTitle: 'Repair the feedback pathway',
-    activityPrompt: 'Select the steps that make feedback safe, useful, and accountable.',
-    options: makeOptions(['Build a safe response, referral, adaptation, and account-back pathway.', 'Only count complaints received.']),
-    insight: ['Feedback becomes accountability evidence when it is safely received, reviewed, responded to or referred, used for adaptation where appropriate, and explained back.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Choose the safest data decision',
+    activityPrompt: 'For each Jiru Amba evidence example, choose the safest decision.',
+    options: makeOptions(['Collect the minimum useful evidence needed for safe action.', 'Collect more personal detail whenever a report asks for it.']),
+    insight: ['Evidence should reveal exclusion without exposing people. Safe HRBA MEAL evidence is useful, necessary, protected, explainable, and linked to a decision.'],
+    cta: 'Continue to Planning Feedback and Response Mechanisms',
     nextId: 'M5-R08',
   }),
   'M5-R08': baseConfig({
     id: 'M5-R08',
-    title: 'Ethical Stories and Responsible Data',
-    phase: 'Practice clinic · Ethical reporting',
-    lead: 'Choose a safe response when a report request asks for names, photos, quotes, complaint details, or raw data.',
-    visualSrc: module5DonorStoryInboxSrc,
-    visualAlt: 'Request inbox and safe response checklist visual for story, photo, quote, and report requests.',
-    block: 'Ethical Story Response',
-    storyTitle: 'A strong report request can still create risk',
+    title: 'Planning Feedback and Response Mechanisms',
+    phase: 'Practice screen · Feedback, response, and accountability',
+    lead: 'A feedback box can collect comments, but it does not automatically create accountability. HRBA-informed MEAL asks whether people know how to give feedback, can do so safely, trust the process, receive a response or referral, and hear what changed or what still needs follow-up.',
+    visualSrc: module5FeedbackLoopSrc,
+    visualAlt: 'Feedback response loop showing that feedback should be received safely, recorded with minimum detail, reviewed, responded to or referred, used for adaptation, and explained back to communities.',
+    block: 'Feedback Response Mechanism',
+    storyTitle: 'From safer evidence to accountable feedback',
     story: [
-      'A donor or project team asks for a strong story, photos, direct quotes, names, and raw feedback examples to make the report more convincing.',
-      'The CSO must report truthfully without exposing people or turning rights-holders into promotional evidence.',
-      'A strong report should never turn people into proof material. Stories, quotes, photos, and complaint examples require consent, dignity, purpose limitation, identity protection, and the right to refuse.',
+      'In the previous screen, Awra decided how to collect useful evidence without exposing people. Feedback needs the same care.',
+      'Some feedback can guide practical adaptation. Some concerns require referral. Some issues should be discussed with responsible actors. All feedback systems need a way to account back.',
     ],
-    revealTitle: 'Safe story checks',
+    revealTitle: 'What makes a feedback mechanism accountable?',
     revealItems: [
-      ['Consent is necessary, not enough', 'Even with consent, the CSO should avoid harm, pressure, stigma, or unwanted visibility.'],
-      ['Minimum detail', 'Use only details needed for learning and accountability.'],
-      ['Identity protection', 'Avoid names, exact locations, faces, documents, and details that make a person recognizable.'],
-      ['Respect refusal', 'Participation in a project must never depend on agreeing to be photographed, quoted, or profiled.'],
-      ['Use safer alternatives', 'Use anonymized themes, aggregate data, non-identifying visuals, composite learning examples clearly labeled as composite, or staff reflection on adaptations.'],
-      ['Tell the truth without overclaiming', 'Report what changed, what did not change, what is still uncertain, and what the CSO will do next.'],
-      ['Refuse and offer safer alternatives', 'When a request is unsafe, refuse the unsafe detail and offer anonymized themes, aggregate patterns, consent-based non-identifying examples, adaptation evidence, or an honest limitation statement.'],
-      ['Responsible reporting is truthful', 'Do not fabricate stories, erase negative feedback, overclaim success, or hide evidence limits.'],
+      ['Inform people', 'People know what the channel is for, what can be reported, and what happens next.'],
+      ['Make it accessible', 'Different groups can use the channel safely, including people with low literacy, limited mobility, care responsibilities, or distance barriers.'],
+      ['Receive safely', 'Feedback can be shared without exposing people or creating retaliation risk.'],
+      ['Record minimum necessary information', 'The team records themes and action needs, not unnecessary names or sensitive details.'],
+      ['Review by the right role', 'Feedback is reviewed by people with the responsibility and skills to handle it.'],
+      ['Respond or refer', 'Feedback receives an answer, action, referral, or escalation through an agreed pathway.'],
+      ['Adapt practice', 'The team uses feedback themes to improve timing, access, communication, facilitation, quality, or follow-up.'],
+      ['Account back', 'Communities hear what was heard, what changed, what did not change, why, and next steps.'],
     ],
-    activityTitle: 'Choose safe responses to report requests',
-    activityPrompt: 'Select the safer response for each fictional request.',
-    options: makeOptions(['Protect dignity and still report useful evidence.', 'Prioritize the most dramatic report material.']),
-    insight: ['Responsible reporting protects people and still tells the truth: it can refuse unsafe detail while offering safe themes, adaptation evidence, and honest limits.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Build the feedback and response pathway',
+    activityPrompt: 'Select the actions that should be part of Awra’s safe and accountable feedback mechanism.',
+    options: makeOptions(['Build a safe response, referral, adaptation, and account-back pathway.', 'Only count feedback comments received.']),
+    insight: ['Feedback is not accountability unless something happens next. A channel becomes accountable only when people can use it safely, the team reviews it responsibly, action or referral follows, and communities hear what happened next.'],
+    cta: 'Continue to Using Qualitative Evidence Ethically',
     nextId: 'M5-R09',
   }),
   'M5-R09': baseConfig({
     id: 'M5-R09',
-    title: 'Interpreting Evidence with Rights-Holders',
-    phase: 'Synthesis clinic · Interpret evidence safely',
-    lead: 'Practice a safe participatory review routine that interprets evidence with rights-holders without exposing names, complaint details, or sensitive information.',
-    visualSrc: module5ParticipatoryReviewSrc,
-    visualAlt: 'Participatory review scene with a diverse community group discussing evidence, what was learned, what is working, and what to do next.',
-    block: 'Participatory Evidence Interpretation',
-    storyTitle: 'The team has evidence, but not the meaning yet',
+    title: 'Using Qualitative Evidence Ethically',
+    phase: 'Practice screen · Ethical qualitative evidence',
+    lead: 'Stories, quotes, photos, and case examples can help a CSO understand what changed and why. But qualitative evidence can also expose people, create pressure, or make rights-holders look like proof material. HRBA-informed MEAL uses qualitative evidence with dignity, consent, anonymity, accuracy, and care.',
+    visualSrc: module5DonorStoryInboxSrc,
+    visualAlt: 'Visual showing report evidence requests being checked against a safe response checklist for consent, identity protection, minimum detail, safer alternatives, and respect for refusal.',
+    block: 'Ethical Qualitative Evidence',
+    storyTitle: 'From feedback response to ethical evidence use',
     story: [
-      'A fictional CSO has numbers, feedback themes, access-barrier notes, and facilitator reflections. The team could write a report immediately, but the evidence still needs interpretation with rights-holders.',
-      'The review should protect people. It should discuss themes, barriers, and actions, not names, exact locations, complaint details, or private stories.',
-      'A small CSO can start with a simple safe review routine: prepare themes, invite diverse voices safely, check what may be missing, agree next steps, and account back.',
+      'Awra has strengthened its feedback pathway. Now the team wants to use what it learned in reports and communication.',
+      'Some evidence can be shared safely as themes or non-identifying examples. Some evidence should be protected, summarized, referred, or not shared at all.',
     ],
-    revealTitle: 'Safe participatory interpretation checks',
+    revealTitle: 'Five checks before using a story, quote, photo, or case example',
     revealItems: [
-      ['Prepare safe themes, not raw data', 'Discuss safe evidence themes and patterns. Do not share raw complaint logs, names, exact locations, photos, or rare details.'],
-      ['Ask who is still missing', 'Look for groups and barriers that the numbers may hide, including timing, language, disability access, safety, care responsibilities, cost, distance, or trust.'],
-      ['Use accessible ways for less powerful voices', 'Use accessible, inclusive, and safer ways for people to contribute. One public meeting does not prove full participation.'],
-      ['Separate sensitive complaints from public discussion', 'Sensitive protection, safeguarding, GBV, child-protection, fraud, abuse, or retaliation concerns require agreed safe pathways.'],
-      ['Agree action, limits, referral, adaptation, and account-back messages', 'Record themes, decisions, adaptations, referrals, limits, and what will be explained back to communities.'],
+      ['Purpose', 'Why is this evidence needed? What decision, learning, reporting, or account-back purpose does it serve?'],
+      ['Consent and refusal', 'Did the person understand the use and freely agree? Can they refuse without losing support, access, or respect?'],
+      ['Identity protection', 'Could names, faces, exact locations, rare details, or combinations of details identify someone?'],
+      ['Dignity and accuracy', 'Does the evidence respect the person’s agency and avoid pity, sensationalism, or unsupported claims?'],
+      ['Safer alternative', 'Can the same learning be shared through anonymized themes, aggregate findings, composite examples, or non-identifying evidence?'],
     ],
-    activityTitle: 'Build the safe review routine',
-    activityPrompt: 'Select the steps that make interpretation participatory, safe, and useful for action.',
-    options: makeOptions(['Interpret safe evidence themes with rights-holders and agree next steps.', 'Share raw complaint details so everyone can judge the case.']),
-    feedbackStrong: 'Strong review routine. You protected identity, asked who was missing, made space for less powerful voices, separated complaints from public review, and recorded next steps.',
-    feedbackSupport: 'The routine still needs repair. Look for steps that interpret themes with rights-holders while protecting identities and routing sensitive concerns safely.',
-    insight: ['Participatory interpretation is not a public investigation. It is a safe way to understand themes, barriers, meaning, action, and account-back with rights-holders.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Choose the safer evidence response',
+    activityPrompt: 'For each request, choose the safest professional response Awra should give.',
+    options: makeOptions(['Use the safest evidence that still tells the truth.', 'Use powerful stories as the default proof of impact.']),
+    feedbackStrong: 'Strong evidence judgment. The report can be truthful and safe.',
+    feedbackSupport: 'Review any request involving names, faces, direct quotes, raw logs, complaint details, children, disability-related details, or strong transformation claims.',
+    insight: ['Qualitative evidence can make learning visible, but it must never expose people, pressure them, or turn rights-holders into proof material.'],
+    cta: 'Continue to Interpreting MEAL Evidence and Deciding Adaptations',
     nextId: 'M5-R10',
   }),
   'M5-R10': baseConfig({
     id: 'M5-R10',
-    title: 'Reading the Signals: When the Plan Should Change',
-    phase: 'Synthesis clinic · Choose the response',
-    lead: 'Match evidence signals to responsible next actions: continue, adapt, consult, refer, engage responsible actors, pause risky claims, or account back.',
+    title: 'Interpreting MEAL Evidence and Deciding Adaptations',
+    phase: 'Analysis and use screen · Evidence interpretation and adaptation',
+    lead: 'MEAL evidence becomes useful when the team asks what it means and what should happen next. HRBA-informed interpretation looks beyond numbers to ask who may still be missing, what barriers remain, whether feedback needs response, what can be adapted, what needs referral, and what should be explained back.',
     visualSrc: module5AdaptationDecisionTreeSrc,
-    visualAlt: 'Adaptation decision tree showing evidence signals leading to continue, adapt, consult, refer, engage duty-bearer, or account back actions.',
-    block: 'Evidence-to-Action Decision Tree',
-    storyTitle: 'The evidence is asking for different responses',
+    visualAlt: 'Decision-tree visual showing how different MEAL evidence signals can lead to different actions: continue, adapt, consult safely, refer, engage responsible actors, narrow claims, or account back.',
+    block: 'Evidence-to-Action Interpretation',
+    storyTitle: 'From ethical evidence to responsible action',
     story: [
-      'Some evidence confirms that an approach is working. Other evidence shows barriers, weak participation, unanswered feedback, safety concerns, access problems, or claims that are not yet supported.',
-      'The team does not need one response for every signal. HRBA-informed MEAL asks what the evidence requires and who is responsible to act safely.',
-      'The CSO should act within its mandate: adapt its own practice, share safe evidence, refer safely, engage responsible actors constructively, and explain limits.',
+      'Awra has improved how it uses stories, quotes, feedback themes, and access evidence.',
+      'Now the team needs to interpret what the evidence is saying. Some signals show the project can continue. Some show a need to adapt. Some require safe consultation, referral, responsible-actor engagement, or more cautious reporting.',
     ],
-    revealTitle: 'Evidence response options',
+    revealTitle: 'From evidence signal to next action',
     revealItems: [
-      ['Continue and monitor', 'If safe evidence shows the approach is working and no new barrier is visible, keep going and keep listening.'],
-      ['Adapt the activity', 'If access, timing, language, disability, care, cost, safety, or trust barriers appear, adjust the approach.'],
-      ['Consult safely', 'If the meaning is unclear, consult affected groups safely and use non-identifying themes.'],
-      ['Refer or escalate safely', 'If a concern is sensitive or outside the team mandate, use the agreed safe pathway instead of investigating it informally.'],
-      ['Engage responsible actors', 'If the barrier sits with another responsible actor, share safe evidence and ask for action without exposing people.'],
-      ['Narrow or repair the claim', 'If evidence only supports attendance, outputs, or partial reach, do not report broad change or full inclusion.'],
-      ['Account back', 'Explain what was heard, what changed, what remains unresolved, and what happens next.'],
+      ['What does the evidence show?', 'Is it about reach, access, participation, feedback, safety, quality, response, or change?'],
+      ['Who may still be missing?', 'Are any groups absent, under-represented, or only counted broadly?'],
+      ['What can Awra improve directly?', 'Can the team adapt timing, venue, communication, facilitation, data collection, or feedback response?'],
+      ['What needs a safe pathway?', 'Does the evidence involve protection, safeguarding, complaint, referral, or confidentiality concerns?'],
+      ['Who else has responsibility?', 'Does the issue require a service provider, committee, woreda office, or other responsible actor?'],
+      ['What should be explained back?', 'What was heard, what changed, what did not, why, and what happens next?'],
     ],
-    activityTitle: 'Choose the responsible action',
-    activityPrompt: 'For each fictional evidence signal, select the safest action that evidence requires.',
+    activityTitle: 'Choose the responsible next action',
+    activityPrompt: 'For each Jiru Amba evidence signal, choose what Awra should do next.',
     options: makeOptions(['Let the evidence guide a specific, safe next action.', 'Collect more names before taking any action.']),
-    feedbackStrong: 'Strong decisions. You matched signals to proportionate action instead of defaulting to more data, public blame, or informal investigation.',
-    feedbackSupport: 'Review the signal again. The safest action may be adaptation, consultation, referral, duty-bearer engagement, pausing a weak claim, or account-back.',
-    insight: ['Evidence should change something. The responsible action depends on the signal, the risk, the team mandate, and what rights-holders need to hear back.'],
-    cta: 'Continue to Screen 5.3',
+    feedbackStrong: 'Strong interpretation: evidence is guiding action.',
+    feedbackSupport: 'Good start: review what each signal requires.',
+    insight: ['Evidence should lead to a responsible decision, not only a report paragraph.'],
+    cta: 'Continue to Reporting Results, Limits, and Accountability',
     nextId: 'M5-R11',
   }),
   'M5-R11': baseConfig({
     id: 'M5-R11',
-    title: 'Reporting Without Losing the Rights Lens',
-    phase: 'Synthesis clinic · Repair the report',
-    lead: 'Repair risky report claims so they stay truthful, evidence-based, dignity-preserving, and accountable to communities.',
+    title: 'Reporting Results, Limits, and Accountability',
+    phase: 'Reporting screen · MEAL reporting and communication',
+    lead: 'A report can sound strong and still be misleading. HRBA-informed MEAL reporting should tell the truth about progress, evidence limits, barriers, feedback response, adaptations, unresolved issues, and next steps-without exposing people or claiming more than the evidence can support.',
     visualSrc: module5ReportRepairCardsSrc,
-    visualAlt: 'Report repair cards showing risky claims transformed into safer rights-based claims with truthful reporting, dignity, consent, safe evidence, and account-back.',
-    block: 'Rights-Based Report Repair',
-    storyTitle: 'The report needs truth, not polish',
+    visualAlt: 'Visual showing risky report claims being improved into safer rights-based claims that report progress, limits, evidence, adaptation, and account-back.',
+    block: 'Reporting Results, Limits, and Accountability',
+    storyTitle: 'From evidence interpretation to responsible reporting',
     story: [
-      'The team has to report progress. Pressure to sound successful can lead to unsupported claims, identifying stories, erased barriers, or feedback that is described as positive when it was mixed.',
-      'Rights-based reporting does not weaken the report. It makes the report more credible by showing what changed, what did not, what evidence is limited, and what action follows.',
-      'If a report request asks for names, photos, direct quotes, raw logs, or a stronger success claim than the evidence supports, offer a safer alternative.',
+      'In the previous screen, Awra interpreted evidence signals and decided what should continue, what should adapt, what needs referral, what requires responsible-actor engagement, and what should be explained back.',
+      'Now the team needs to report those decisions honestly and safely.',
     ],
-    revealTitle: 'Safer reporting checks',
+    revealTitle: 'What makes reporting rights-based?',
     revealItems: [
-      ['Do not overclaim reach', 'Avoid saying everyone was reached if some groups faced barriers or were not represented in the evidence.'],
-      ['Report feedback honestly', 'Do not flatten mixed or critical feedback into a positive story. Show themes and response actions.'],
-      ['Protect identity and dignity', 'Avoid names, faces, exact locations, rare details, and story material that could identify or pressure people.'],
-      ['Name limits and learning', 'Say what evidence can and cannot show, and what the team learned from the gaps.'],
-      ['Connect evidence to adaptation', 'A strong report explains what changed in practice, what remains unresolved, and what will be accounted back.'],
-      ['Report back to rights-holders too', 'Reporting upward to donors is not enough. Communities should hear what was heard, what changed, what did not, and what happens next.'],
+      ['Report what is known', 'Use evidence, not assumptions or polished wording.'],
+      ['Name limits safely', 'Say what the evidence does not show yet, without exposing people.'],
+      ['Avoid overclaiming', 'Do not say "everyone," "all," or "fully achieved" unless the evidence supports it.'],
+      ['Protect people', 'Do not include names, faces, raw complaints, exact locations, child data, diagnoses, or identifying stories.'],
+      ['Show adaptation', 'Explain what changed because of evidence or feedback.'],
+      ['Include unresolved issues', 'Say what has not changed yet and what follow-up is planned.'],
+      ['Account back', 'Explain what communities should hear: what was heard, what changed, what did not, why, and next steps.'],
     ],
-    activityTitle: 'Repair the risky claims',
-    activityPrompt: 'Choose the safer rights-based claim for each risky report sentence.',
-    options: makeOptions(['Repair each claim using safe, truthful, evidence-based language.', 'Make the report sound successful even when evidence is thin.']),
-    feedbackStrong: 'Strong report repair. The safer claims protect dignity, avoid overclaiming, name evidence limits, and show adaptation or account-back.',
-    feedbackSupport: 'Some claims still need repair. Look for truthful language that avoids identifying people, unsupported reach claims, and erased limitations.',
-    insight: ['Responsible reporting protects people and strengthens credibility. It tells the truth about progress, barriers, limits, adaptation, and account-back.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Improve the risky report claims',
+    activityPrompt: 'For each risky Jiru Amba report claim, choose the safer HRBA-informed reporting statement.',
+    options: makeOptions(['Improve claims with truthful, safe, evidence-based language.', 'Make the report sound successful even when evidence is thin.']),
+    feedbackStrong: 'Strong reporting: truthful, safe, and accountable.',
+    feedbackSupport: 'Good start: strengthen the reporting judgment.',
+    insight: ['Truthful limits make a report more credible, not weaker.'],
+    cta: 'Continue to Module Knowledge Check: Evidence-to-Action Decisions',
     nextId: 'M5-R12',
   }),
   'M5-R12': baseConfig({
     id: 'M5-R12',
-    title: 'Capstone: Evidence-to-Action Simulator',
-    phase: 'Synthesis clinic · Full HRBA MEAL cycle',
-    lead: 'Work through a guided seven-step simulator that turns fictional evidence into safer action, truthful reporting, and community account-back.',
+    title: 'Module Knowledge Check: Evidence-to-Action Decisions',
+    phase: 'Knowledge check · Integrated knowledge check',
+    lead: 'You have practiced using MEAL evidence to look beyond activity counts. This knowledge check brings the full pathway together: improving indicators, choosing safe evidence, responding to feedback, using qualitative evidence ethically, deciding adaptations, reporting truthfully, and accounting back.',
     visualSrc: module5CapstoneSimulatorSrc,
-    visualAlt: 'Capstone evidence-to-action simulator board with steps for report numbers, who was missed, feedback themes, safe data choice, adaptation decision, and account-back.',
-    block: 'Evidence-to-Action Simulator',
-    storyTitle: 'One fictional review, seven decisions',
+    visualAlt: 'Knowledge check visual showing MEAL evidence moving through indicator improvement, safe evidence, feedback response, adaptation, reporting, and account-back.',
+    block: 'Module Knowledge Check',
+    storyTitle: 'Jiru Amba case: Final MEAL review before reporting back',
     story: [
-      'A fictional project report shows outputs, attendance, feedback themes, and access-barrier notes. The team has to decide what the evidence shows, who may be missing, what is unsafe to share, what action should change, and how to report back.',
-      'The simulator uses only generic examples. Do not add real names, exact locations, complaint details, survivor information, child data, diagnoses, officials, organizations, or confidential documents.',
-      'The next screen turns this simulator into your structured HRBA MEAL repair note, so keep one weak indicator, one evidence gap, one safe-data choice, one adaptation, one reporting repair, and one account-back action in mind.',
+      'Awra has completed a monthly MEAL review for its Jiru Amba work. The team has activity numbers, attendance records, feedback themes, access-barrier notes, safe qualitative evidence, and some adaptation decisions.',
+      'Before finalizing the report and account-back message, Awra needs to check whether the evidence supports safe, rights-based action.',
+      'Answer six applied questions. Each question checks one part of the evidence-to-action pathway.',
     ],
-    revealTitle: 'Simulator stages',
+    revealTitle: 'Knowledge check pathway',
     revealItems: [
-      ['Read outputs, but ask what they hide', 'Start with outputs and reach, then ask what is still missing.'],
-      ['Identify who may be missing', 'Look for barriers and groups whose experience is hidden by aggregate numbers.'],
-      ['Choose the safest evidence use', 'Remove identifying, sensitive, rare, or unnecessary details.'],
-      ['Use feedback for response, referral, adaptation, and account-back', 'Review, respond, refer, adapt, and explain back.'],
-      ['Choose responsible action based on the signal', 'Change timing, access, communication, referral information, or responsible actor engagement based on the signal.'],
-      ['Repair the report claim', 'Use truthful language with limits, safe evidence, and no overclaiming.'],
-      ['Account back safely', 'Explain what was heard, what changed, what is not solved, and next steps.'],
+      ['Indicators', 'Check meaningful participation, not only activity completion.'],
+      ['Safe evidence', 'Use useful data while protecting people from identification risk.'],
+      ['Feedback response', 'Turn feedback themes into review, adaptation, and account-back.'],
+      ['Qualitative evidence', 'Use stories and photos ethically, safely, and truthfully.'],
+      ['Adaptation', 'Use partial progress evidence to decide what should continue and what still needs attention.'],
+      ['Reporting and account-back', 'Report progress, limits, adaptation, and next steps without overclaiming.'],
     ],
-    activityTitle: 'Complete the simulator',
-    activityPrompt: 'Choose the safest action for each step in the fictional evidence-to-action pathway.',
-    options: makeOptions(['Turn safe evidence into adaptation, truthful reporting, and account-back.', 'Use the strongest story and skip account-back.']),
-    feedbackStrong: 'Strong capstone pathway. You moved from evidence to safe action, truthful reporting, and account-back without collecting sensitive free text.',
-    feedbackSupport: 'Review the pathway. Each step should protect people, avoid overclaiming, use feedback responsibly, adapt where needed, and account back.',
-    insight: ['The capstone brings the Module 5 practice together: evidence is useful when it is safe, interpreted with rights-holders, acted on, reported truthfully, and explained back.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Answer the evidence-to-action decisions',
+    activityPrompt: 'Read Awra’s Jiru Amba scenario. For each question, choose the answer that best fits the HRBA-MEAL purpose named in the question.',
+    options: makeOptions(['Use evidence safely and choose the action that supports accountability.', 'Choose the option that makes the report sound strongest.']),
+    feedbackStrong: 'You are ready to build your improvement note.',
+    feedbackSupport: 'Good progress. Review the decisions that carried risk.',
+    insight: ['HRBA-informed MEAL protects people, explains limits, responds to feedback, adapts practice, and accounts back.'],
+    cta: 'Continue to My HRBA MEAL, Accountability, and Learning Improvement Note',
     nextId: 'M5-R13',
   }),
   'M5-R13': baseConfig({
     id: 'M5-R13',
-    title: 'My HRBA MEAL, Accountability, and Learning Repair Note',
-    lead: 'Create a safe, structured repair note from choices only: one practical improvement, one honest limit, and one account-back action.',
+    title: 'Portfolio: My HRBA MEAL, Accountability, and Learning Note',
+    phase: 'Portfolio screen · Portfolio note',
+    lead: 'You have practiced using MEAL evidence to move beyond activity counts. Now create a short portfolio note that captures one practical improvement: what evidence you will strengthen, how you will protect people, what action should follow, and how the team will account back.',
     visualSrc: module5RepairNoteWorksheetSrc,
-    visualAlt: 'Structured HRBA MEAL repair note worksheet with sections for practice improvement, rights-based question, who may be missed, safe data choice, feedback repair, adaptation trigger, account-back action, and 90-day next step.',
-    block: 'Structured Repair Note',
-    storyTitle: 'A repair note should be useful without collecting sensitive details',
+    visualAlt: 'Structured HRBA MEAL portfolio note worksheet with sections for practice focus, HRBA MEAL question, safe evidence, safety boundary, action, and account-back.',
+    block: 'Portfolio Note',
+    storyTitle: 'Jiru Amba case: From learning to a practical MEAL note',
     story: [
-      'After the capstone, the learner chooses one realistic repair that a local CSO team could test safely. The note should guide practice, not collect private stories or complaint details.',
-      'The repair note uses structured choices only. It connects evidence to inclusion, safe data, feedback, adaptation, responsible reporting, and account-back.',
+      'Awra has reviewed its Jiru Amba evidence. The team has activity numbers, feedback themes, access-barrier notes, safe qualitative evidence, and decisions about adaptation and reporting.',
+      'The portfolio note helps Awra turn that learning into one safe, practical MEAL improvement that can guide the next review cycle.',
+      'Choose one focus area, one HRBA-MEAL question, one safe evidence source, one safety boundary, one adaptation action, and one account-back step.',
     ],
-    revealTitle: 'Safe repair note checks',
+    revealTitle: 'Portfolio note sections',
     revealItems: [
-      ['Choose one focused repair', 'A practical note improves one weak MEAL, feedback, reporting, or account-back practice instead of promising a full system redesign.'],
-      ['Use safe evidence', 'Use themes, aggregate patterns, and non-identifying barriers. Do not add names, exact locations, complaint details, diagnoses, or confidential records.'],
-      ['Name who should be involved safely', 'Involve the right colleagues and rights-holders through safe, accessible, and non-coercive methods.'],
-      ['State limits honestly', 'A strong note says what is not known, what cannot be promised yet, and what risk must be managed.'],
-      ['Close with account-back', 'The repair should end with how the team will explain what was heard, what changed, what did not, and next steps.'],
+      ['Practice focus', 'Choose the MEAL practice the team will improve.'],
+      ['Guiding question', 'Choose the HRBA-MEAL question that should guide review.'],
+      ['Safe evidence', 'Choose evidence that is useful, necessary, non-identifying, and protected.'],
+      ['Safety boundary', 'Choose the boundary that protects rights-holders.'],
+      ['Action', 'Choose one practical action linked to the evidence.'],
+      ['Account-back', 'Choose how the team will explain back safely.'],
     ],
-    activityTitle: 'Build a safe repair note',
-    activityPrompt: 'Choose one structured option for each part of the repair note.',
-    options: makeOptions(['Generate a safe repair note from structured choices.', 'Write sensitive examples into a free-text reflection.']),
-    feedbackStrong: 'The repair note is useful because it is practical, safe, honest about limits, and connected to account-back.',
-    feedbackSupport: 'Complete each structured choice so the repair note is practical, safe, honest, and accountable.',
-    insight: ['A good repair note helps a team improve one or two realistic practices without collecting sensitive details or overpromising change.'],
-    cta: 'Continue to Screen 5.3',
+    activityTitle: 'Build your portfolio note',
+    activityPrompt: 'Use structured choices only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, or identifiable examples.',
+    options: makeOptions(['Generate a safe portfolio note from structured choices.', 'Write real project details into a free-text note.']),
+    feedbackStrong: 'Your portfolio note is ready.',
+    feedbackSupport: 'Complete each structured choice and confirm the note is safe to save.',
+    insight: ['A useful portfolio note connects evidence, action, protection, and account-back without collecting sensitive details.'],
+    cta: 'Continue to 90-Day MEAL Learning and Account-Back Plan',
     nextId: 'M5-R14',
   }),
   'M5-R14': baseConfig({
     id: 'M5-R14',
-    title: '90-Day Practice Bridge and Account-Back Commitment',
-    lead: 'Turn the repair note into a realistic 30/60/90-day practice bridge and finish Module 5 with an account-back commitment.',
+    title: '90-Day MEAL Learning and Account-Back Plan',
+    phase: 'MODULE 5 · HRBA IN MEAL',
+    lead: 'You have created your HRBA MEAL improvement note. Now turn it into a simple 90-day practice bridge: one step to prepare, one step to test, and one step to learn and account back.',
     visualSrc: module5ActionJourneySrc,
-    visualAlt: '90-day action journey visual showing start small, choose one repair by 30 days, test with team by 60 days, review and account back by 90 days, and keep improving HRBA MEAL practice.',
-    block: '90-Day Practice Bridge',
-    storyTitle: 'From course learning to team practice',
+    visualAlt: '90-day action journey visual showing a team preparing one improvement, testing one change, learning, and accounting back safely.',
+    block: 'MEAL step: Practice bridge and account-back',
+    storyTitle: 'Jiru Amba case: From improvement note to practice',
     story: [
-      'The final screen turns the repair note into a short 90-day practice bridge. It asks the learner to choose one safe review action, one repair to test, and one account-back step.',
-      'The goal is not perfect data. The goal is to use evidence safely, learn with rights-holders, adapt practice, engage responsible actors where needed, and report truthfully.',
+      'Awra has identified one MEAL improvement from the Jiru Amba review. The team does not need to redesign its whole MEAL system at once.',
+      'It can start with one realistic action, test it safely, review what changed, and explain back what was learned.',
+      'Create a simple 30/60/90-day plan that connects evidence, action, learning, and account-back.',
     ],
-    revealTitle: '30/60/90-day bridge',
+    revealTitle: '90-day practice bridge',
     revealItems: [
-      ['First 30 days: review safely', 'Review indicators, feedback themes, evidence gaps, missing groups, sensitive details, and safe roles or pathways.'],
-      ['By 60 days: test one repair', 'Repair one indicator, feedback step, access barrier, communication approach, referral pathway, or responsible actor engagement.'],
-      ['By 90 days: report and account back', 'Report what is known and not known, explain adaptations and limits, account back to communities, and document learning for the next cycle.'],
+      ['Prepare', 'Choose one realistic improvement and define the evidence, pathway, or safety boundary the team will prepare.'],
+      ['Test', 'Try one small change in normal MEAL practice without collecting unnecessary or identifying details.'],
+      ['Learn and account back', 'Review what changed, explain limits truthfully, and share back what was heard and what happens next.'],
     ],
-    activityTitle: 'Choose the practice bridge',
-    activityPrompt: 'Select at least one safe action for each stage of the 90-day bridge.',
+    activityTitle: 'Build your 90-day plan',
+    activityPrompt: 'Choose practical actions for the next 30, 60, and 90 days. Keep the plan realistic, safe, and focused on one improvement your team could test in normal MEAL practice.',
     options: makeOptions(['Choose one realistic action for 30, 60, and 90 days.', 'Collect more personal data before acting.']),
-    feedbackStrong: 'You have completed Module 5 by moving from evidence to safer action, truthful reporting, adaptation, and account-back.',
-    feedbackSupport: 'Choose at least one action for each stage so the bridge is realistic, safe, and accountable.',
+    feedbackStrong: 'Your 90-day practice bridge is ready.',
+    feedbackSupport: 'Complete each section and confirm the plan is safe to save.',
     insight: ['HRBA-informed MEAL is not only about better reports. It is about using evidence safely, adapting practice, engaging responsible actors, and accounting back.'],
     cta: 'Complete Module 5',
     nextId: 'M5-PLAYER-COMPLETE',
@@ -905,6 +1033,16 @@ Object.values(module5RevisedScreens).forEach((screen) => {
     screen.ctaButton = `Continue to Screen 5.${Number(nextMatch[1])}`;
   }
 });
+
+module5RevisedScreens['M5-R05'].ctaButton = 'Continue to Strengthening Indicators and Logframe Evidence';
+module5RevisedScreens['M5-R06'].ctaButton = 'Continue to Designing Safe Data Collection and Disaggregation';
+module5RevisedScreens['M5-R07'].ctaButton = 'Continue to Planning Feedback and Response Mechanisms';
+module5RevisedScreens['M5-R08'].ctaButton = 'Continue to Using Qualitative Evidence Ethically';
+module5RevisedScreens['M5-R09'].ctaButton = 'Continue to Interpreting MEAL Evidence and Deciding Adaptations';
+module5RevisedScreens['M5-R10'].ctaButton = 'Continue to Reporting Results, Limits, and Accountability';
+module5RevisedScreens['M5-R11'].ctaButton = 'Continue to Module Knowledge Check: Evidence-to-Action Decisions';
+module5RevisedScreens['M5-R12'].ctaButton = 'Continue to My HRBA MEAL, Accountability, and Learning Improvement Note';
+module5RevisedScreens['M5-R13'].ctaButton = 'Continue to 90-Day MEAL Learning and Account-Back Plan';
 
 const module5Screens: Record<string, Module5ScreenConfig> = {
   ...module5RevisedScreens,
@@ -1740,11 +1878,11 @@ const indicatorRepairItems = [
     id: 'meetings',
     weak: 'Number of people attending consultation meetings.',
     strongLabel: 'Influence indicator',
-    strong: 'Number of meeting changes made after participants raised access, safety, timing, or priority concerns.',
+    strong: 'Number of meeting decisions or follow-up actions changed after participants raised access, safety, timing, or priority concerns.',
     reveal: 'participation',
     counts: 'Attendance: people present in meetings.',
     why: 'whether participation influenced decisions, not only whether people attended',
-    trigger: 'Change facilitation, meeting design, follow-up actions, or decision records.',
+    trigger: 'Change facilitation, meeting design, decision records, or follow-up actions.',
     distractorLabel: 'Report-photo count',
     distractor: 'Number of meeting photos added to the report.',
   },
@@ -1786,111 +1924,213 @@ const indicatorRepairItems = [
   },
 ];
 
-const safeEvidenceOptions = [
-  { id: 'collect', label: 'Collect safely', summary: 'Collect only useful, non-identifying evidence.' },
-  { id: 'aggregate', label: 'Aggregate', summary: 'Combine categories to show patterns instead of people.' },
-  { id: 'anonymize', label: 'Anonymize', summary: 'Remove or mask identifying details.' },
-  { id: 'suppress', label: 'Suppress', summary: 'Hide details when small cells could identify someone.' },
-  { id: 'do-not-collect', label: 'Do not collect', summary: 'Avoid collecting data that is not necessary or safe.' },
-  { id: 'refer', label: 'Refer through safe pathway', summary: 'Handle sensitive concerns through agreed protection or safeguarding pathways.' },
-];
-
-const safeEvidenceItems = [
+const m5R06LogframeEvidence = [
   {
-    id: 'broad-attendance',
-    text: 'Attendance by broad age group and gender for a large training group.',
-    answers: ['collect', 'aggregate'],
-    explanation: 'Broad, non-identifying categories can be useful for inclusion monitoring when the group is large enough.',
+    element: 'Outcome or result',
+    explanation: 'What change the project is trying to support',
+    example: 'More inclusive and accountable participation in local service decisions',
   },
   {
-    id: 'small-cell',
-    text: 'A table showing two women with disabilities from one small village and their exact access concern.',
-    answers: ['aggregate', 'suppress', 'anonymize'],
-    explanation: 'This is small-cell information. Combine categories, suppress detail, or anonymize so people cannot be identified.',
+    element: 'Indicator',
+    explanation: 'What evidence will show progress',
+    example: 'Feedback themes reviewed, answered, referred, or acted on within an agreed timeframe',
+  },
+  {
+    element: 'Baseline',
+    explanation: 'What the starting point is',
+    example: 'How often feedback was reviewed and answered before the improvement',
+  },
+  {
+    element: 'Target',
+    explanation: 'What realistic improvement is expected',
+    example: 'A defined share of feedback themes reviewed and answered within the agreed timeframe',
+  },
+  {
+    element: 'Disaggregation',
+    explanation: 'Which differences should be visible safely',
+    example: 'By broad group or barrier type where useful and non-identifying',
+  },
+  {
+    element: 'Data source',
+    explanation: 'Where the evidence comes from',
+    example: 'Feedback theme log, response tracker, account-back record',
+  },
+  {
+    element: 'Use',
+    explanation: 'What decision the evidence should guide',
+    example: 'Adapt action, refer safely, and report back to communities',
+  },
+];
+
+const safeDataDecisionOptions = [
+  { id: 'collect', label: 'Collect safely', summary: 'Use when evidence is useful, necessary, non-identifying, and can guide action.' },
+  { id: 'aggregate', label: 'Aggregate', summary: 'Use when patterns matter more than individual detail.' },
+  { id: 'anonymize', label: 'Anonymize', summary: 'Remove names, faces, exact locations, and identifying details before use.' },
+  { id: 'suppress-combine', label: 'Suppress or combine', summary: 'Use when a small number or rare combination could identify a person or very small group.' },
+  { id: 'refer', label: 'Refer through safe pathway', summary: 'Use when the issue needs a protection, safeguarding, complaint, or referral process.' },
+  { id: 'do-not-collect', label: 'Do not collect', summary: 'Use when information is unnecessary, unsafe, outside Awra\'s role, or likely to expose people.' },
+];
+
+const safeDataDecisionItems = [
+  {
+    id: 'broad-attendance',
+    title: 'Broad attendance pattern',
+    example: 'Attendance by broad age group and gender for a large community meeting.',
+    answer: 'collect',
+    meaning: 'Collect only useful, non-identifying categories.',
+    feedback: 'Safe and useful. Broad categories can help Awra see participation patterns when the group is large enough and the data will guide inclusion decisions.',
+    unsafeChoices: [],
+  },
+  {
+    id: 'small-cell-disability',
+    title: 'Small-cell disability access detail',
+    example: 'A table showing two women with disabilities from one small village and their exact access concerns.',
+    answer: 'suppress-combine',
+    meaning: 'Combine categories or remove detail to prevent identification.',
+    feedback: 'This is small-cell information. Even without names, the combination of disability, gender, location, and specific concern may identify people. Combine categories, remove exact location, or report the access barrier as a broader theme.',
+    unsafeChoices: ['collect'],
   },
   {
     id: 'children-names',
-    text: 'A donor asks for the names of children with disabilities who missed school support activities.',
-    answers: ['do-not-collect'],
-    explanation: 'Do not collect or share names. Use safe aggregate access-barrier evidence if a decision requires it.',
+    title: 'Request for children\'s names',
+    example: 'A donor asks for the names of children with disabilities who missed school support activities.',
+    answer: 'do-not-collect',
+    meaning: 'Avoid collecting data that is not necessary or safe.',
+    feedback: 'Do not collect or share names. Awra can use safe aggregate evidence on access barriers, support needs, or missed participation without identifying children.',
+    unsafeChoices: ['collect', 'anonymize'],
   },
   {
-    id: 'caregiver-theme',
-    text: 'Participants report that meeting times exclude caregivers and market-day workers.',
-    answers: ['collect'],
-    explanation: 'Collect safely as a theme and use it to adapt timing. Names and exact locations are not needed.',
+    id: 'timing-barrier',
+    title: 'Meeting timing barrier',
+    example: 'Participants report that meeting times exclude caregivers and market-day workers.',
+    answer: 'collect',
+    meaning: 'Collect this as a non-identifying access-barrier theme.',
+    feedback: 'Safe and useful. Awra can collect this as a theme and use it to adapt timing, communication, or outreach. Names and exact household details are not needed.',
+    unsafeChoices: [],
   },
   {
     id: 'protection-concern',
-    text: 'One person reports a sensitive protection concern through a feedback channel.',
-    answers: ['refer'],
-    explanation: 'Handle through the agreed safe pathway. Do not publish details or investigate without mandate and training.',
+    title: 'Sensitive protection concern',
+    example: 'One person reports a sensitive protection concern through a feedback channel.',
+    answer: 'refer',
+    meaning: 'Handle sensitive concerns through agreed protection, safeguarding, or complaint pathways.',
+    feedback: 'Do not discuss this publicly or use it as a report example. Record only minimum necessary information according to the agreed pathway and refer safely where appropriate.',
+    unsafeChoices: ['collect', 'aggregate', 'anonymize'],
   },
   {
-    id: 'accessibility-indicator',
-    text: 'A disability inclusion indicator asks whether the venue, communication, and support arrangements were accessible.',
-    answers: ['collect'],
-    explanation: 'This can be collected safely when it is non-identifying, useful, and focused on barriers and adjustments.',
+    id: 'accessible-venue',
+    title: 'Accessible venue evidence',
+    example: 'A disability inclusion indicator asks whether the venue, communication, and support arrangements were accessible.',
+    answer: 'collect',
+    meaning: 'Collect non-identifying evidence on access conditions and support arrangements.',
+    feedback: 'Safe and useful when collected respectfully. Focus on accessibility barriers and support arrangements, not diagnoses or labels that are not needed for action.',
+    unsafeChoices: [],
   },
 ];
 
-const feedbackLoopChoices = [
-  { id: 'accessible', label: 'Accessible channels', body: 'Offer channels different groups can use safely.', correct: true },
-  { id: 'safe-recording', label: 'Safe recording', body: 'Record only minimum necessary information and protect identity.', correct: true },
-  { id: 'responsible-review', label: 'Review by responsible role', body: 'Route feedback to the right role or mechanism.', correct: true },
-  { id: 'response-referral', label: 'Response or referral', body: 'Respond, refer, or escalate through an agreed safe pathway.', correct: true },
-  { id: 'adaptation', label: 'Adaptation decision', body: 'Use feedback themes to improve timing, access, communication, targeting, or quality.', correct: true },
-  { id: 'account-back', label: 'Account-back to community', body: 'Explain what was heard, what changed, what was not solved, and next steps.', correct: true },
-  { id: 'more-names', label: 'Collect more names so follow-up is easier.', body: 'This can create identification and safety risk.', correct: false },
-  { id: 'publish-examples', label: 'Publish complaint examples to prove transparency.', body: 'Complaint details can expose people and should not be used as proof material.', correct: false },
-  { id: 'count-only', label: 'Only report the number of complaints received.', body: 'Counting feedback does not show response, referral, adaptation, or account-back.', correct: false },
-  { id: 'staff-investigate', label: 'Ask facilitators to investigate all sensitive complaints themselves.', body: 'Sensitive concerns require agreed safe pathways, mandate, and training.', correct: false },
-];
-
-const storyResponseItems = [
+const feedbackPathwayChoices = [
   {
-    id: 'names-photos',
-    request: 'Please send names and photos of the most vulnerable participants for the report.',
-    answer: 'decline-identifying',
-    explanation: 'Decline names and faces. Offer consent-based, non-identifying themes or visuals instead.',
+    id: 'inform-clearly',
+    label: 'Inform people clearly',
+    body: 'Explain the feedback channel, what can be shared, and what happens next.',
+    why: 'People cannot use a channel they do not understand or trust.',
+    correct: true,
   },
   {
-    id: 'negative-quote',
-    request: 'Add a direct quote from a person who gave negative feedback so the report feels real.',
-    answer: 'anonymized-theme',
-    explanation: 'Use an anonymized feedback theme and explain response or adaptation. Do not expose the person.',
+    id: 'accessible-options',
+    label: 'Offer accessible options',
+    body: 'Use more than one channel where possible: meeting explanation, trusted focal point, phone/SMS/WhatsApp, feedback desk, or community representative route.',
+    why: 'One box at one venue may exclude people.',
+    correct: true,
   },
   {
-    id: 'raw-log',
-    request: 'Send the raw feedback log so we can see all complaints.',
-    answer: 'summary-review',
-    explanation: 'Do not share raw logs. Provide a reviewed aggregate summary with sensitive details removed.',
+    id: 'receive-safely',
+    label: 'Receive feedback safely',
+    body: 'Allow feedback without public exposure or unnecessary personal detail.',
+    why: 'Feedback can create risk if identity is exposed.',
+    correct: true,
   },
   {
-    id: 'strong-story',
-    request: 'Give one strong story showing the project changed someone’s life.',
-    answer: 'truthful-consent',
-    explanation: 'Use consent-based, non-identifying evidence, explain limits honestly, and avoid overclaiming.',
+    id: 'minimum-recording',
+    label: 'Record only what is needed',
+    body: 'Record themes, urgency, referral need, and follow-up action; avoid unnecessary names or sensitive details.',
+    why: 'Minimum necessary recording protects people.',
+    correct: true,
   },
   {
-    id: 'adaptation-evidence',
-    request: 'Include evidence that barriers were found and activities were adapted.',
-    answer: 'safe-adaptation',
-    explanation: 'Share safe barrier themes, adaptation decisions, and account-back actions without identifying people.',
+    id: 'responsible-review',
+    label: 'Review by responsible role',
+    body: 'Route feedback to the person or mechanism able to review it safely.',
+    why: 'Not every staff member should handle every concern.',
+    correct: true,
   },
-];
-
-const storyResponseOptions = [
-  { id: 'decline-identifying', label: 'Decline identifying details', summary: 'Decline names and faces; offer non-identifying themes or visuals.' },
-  { id: 'anonymized-theme', label: 'Use anonymized theme', summary: 'Use an anonymized feedback theme and describe the response or adaptation.' },
-  { id: 'summary-review', label: 'Share reviewed summary', summary: 'Provide a reviewed aggregate summary, not raw complaint data.' },
-  { id: 'truthful-consent', label: 'Use consent-based evidence', summary: 'Use consent-based, non-identifying evidence and explain limits honestly.' },
-  { id: 'safe-adaptation', label: 'Report safe adaptation evidence', summary: 'Report safe barrier themes, adaptations, and account-back actions.' },
-  { id: 'blur-keep-details', label: 'Blur faces only', summary: 'Weak choice: blurred faces still leave names and village details exposed.' },
-  { id: 'support-means-consent', label: 'Assume support means consent', summary: 'Weak choice: receiving support is not consent to be profiled.' },
-  { id: 'private-raw-log', label: 'Send raw log privately', summary: 'Weak choice: raw complaint data should not be sent without review.' },
-  { id: 'rare-details', label: 'Keep rare details', summary: 'Weak choice: exact role, location, and rare details can still identify someone.' },
-  { id: 'invent-story', label: 'Invent stronger story', summary: 'Unsafe choice: do not fabricate evidence.' },
+  {
+    id: 'respond-refer',
+    label: 'Respond or refer',
+    body: 'Provide an answer, take action, refer, or escalate through the agreed pathway.',
+    why: 'Feedback must lead to a response, not just storage.',
+    correct: true,
+  },
+  {
+    id: 'adapt-feedback',
+    label: 'Adapt based on feedback',
+    body: 'Use feedback themes to improve timing, venue, communication, facilitation, targeting, or service linkage.',
+    why: 'Feedback becomes learning when it changes practice.',
+    correct: true,
+  },
+  {
+    id: 'account-back',
+    label: 'Account back to communities',
+    body: 'Explain what was heard, what changed, what did not, why, and next steps.',
+    why: 'Account-back closes the loop and builds trust.',
+    correct: true,
+  },
+  {
+    id: 'count-only',
+    label: 'Only count the number of feedback comments received',
+    body: 'Counts do not show whether feedback was reviewed, answered, referred, or used.',
+    why: 'Counting feedback is not the same as accountability.',
+    correct: false,
+  },
+  {
+    id: 'publish-complaints',
+    label: 'Publish complaint examples to prove transparency',
+    body: 'Complaint details may identify people or create retaliation risk.',
+    why: 'Transparency should not expose people.',
+    correct: false,
+    unsafe: true,
+  },
+  {
+    id: 'facilitators-investigate',
+    label: 'Ask facilitators to investigate all sensitive complaints themselves',
+    body: 'Sensitive concerns require agreed roles, mandate, training, and referral pathways.',
+    why: 'Untrained investigation can make harm worse.',
+    correct: false,
+    unsafe: true,
+  },
+  {
+    id: 'collect-all-names',
+    label: 'Collect names for every feedback item so follow-up is easier',
+    body: 'Names are not always necessary and may expose people.',
+    why: 'Minimum necessary information is safer.',
+    correct: false,
+    unsafe: true,
+  },
+  {
+    id: 'silence-satisfaction',
+    label: 'Assume no feedback means everyone is satisfied',
+    body: 'Silence may reflect fear, lack of trust, low access, or unclear information.',
+    why: 'No feedback is not proof of trust or satisfaction.',
+    correct: false,
+  },
+  {
+    id: 'public-discussion',
+    label: 'Discuss all complaints publicly in a community meeting',
+    body: 'Public discussion can expose people and make unsafe concerns worse.',
+    why: 'Sensitive feedback needs a safe pathway.',
+    correct: false,
+    unsafe: true,
+  },
 ];
 
 const clinicPracticeNotes = {
@@ -1903,24 +2143,24 @@ const clinicPracticeNotes = {
     carry: 'Carry forward: the safest evidence choice is the one that is useful for action and least likely to identify or expose people.',
   },
   'M5-R07': {
-    why: 'A complaint box or meeting is not accountability unless something safe and visible happens after feedback is received.',
-    carry: 'Carry forward: later, your repair note should name one practical feedback-loop repair, not a real complaint or identifying detail.',
+    why: 'Collect the minimum useful evidence needed for safe action. More detail is not always better evidence.',
+    carry: 'Next, you will use the same safety logic to strengthen how feedback and complaints are received, reviewed, responded to, referred, adapted from, and explained back.',
   },
   'M5-R08': {
-    why: 'A strong report can protect people and still tell the truth through safe themes, adaptation evidence, and honest limits.',
-    carry: 'Carry forward: your repair note should show how to report safely, truthfully, and without exposing people.',
+    why: 'A feedback channel becomes accountability only when people can use it safely, the team reviews it responsibly, action or referral follows, and communities hear what happened next.',
+    carry: 'Next, you will use the same safety and accountability logic to handle stories, quotes, photos, and qualitative evidence ethically.',
   },
   'M5-R09': {
-    why: 'Numbers and feedback themes do not explain themselves. A safe review with rights-holders can help the team understand what the evidence means, who may still be missing, what barriers remain, and what action should follow.',
-    carry: 'Carry forward: your repair note should include one safe way to interpret evidence with rights-holders without exposing people.',
+    why: 'Use the safest evidence that still tells the truth. Qualitative evidence should support learning and accountability without exposing people, creating pressure, or overclaiming results.',
+    carry: 'Next, you will interpret the evidence Awra has and decide what should continue, what should adapt, what needs referral, and what should be explained back.',
   },
   'M5-R10': {
-    why: 'An HRBA MEAL signal should lead to a responsible next step. The answer is not always more data; sometimes it is adaptation, safe consultation, referral, responsible actor engagement, honest reporting, or account-back.',
-    carry: 'Carry forward: your repair note should show one evidence signal and the safest next action it requires.',
+    why: 'MEAL evidence should guide action. Different evidence signals call for different decisions: continue, adapt, consult safely, refer, engage responsible actors, pause a claim, or account back.',
+    carry: 'Next, you will use this interpretation to improve report claims so they are truthful, safe, accountable, and useful for learning.',
   },
   'M5-R11': {
     why: 'Rights-based reporting is stronger because it tells the truth about who was reached, who may be missing, what changed, what did not change, what evidence can show, and what the team will do next.',
-    carry: 'Carry forward: your repair note should include one truthful reporting repair that protects people, avoids overclaiming, and names what happens next.',
+    carry: 'Next, you will complete a module knowledge check that brings together indicator improvement, safe evidence, feedback response, ethical qualitative evidence, adaptation, reporting, and account-back.',
   },
   'M5-R12': {
     why: 'A strong HRBA MEAL cycle protects people, learns from evidence, changes practice when needed, and explains back what happened.',
@@ -1928,272 +2168,366 @@ const clinicPracticeNotes = {
   },
 };
 
-const participatoryReviewChoices = [
-  { id: 'safe-themes', label: 'Prepare safe themes, not raw data', body: 'Use non-identifying evidence themes, patterns, and access barriers.', correct: true },
-  { id: 'missing-barriers', label: 'Ask who may still be missing', body: 'Look for groups, barriers, and voices hidden by attendance numbers.', correct: true },
-  { id: 'inclusive-space', label: 'Use accessible ways for less powerful voices', body: 'Use accessible formats and safer spaces for less powerful groups to contribute.', correct: true },
-  { id: 'separate-complaints', label: 'Separate sensitive complaints from public discussion', body: 'Route sensitive concerns through agreed safe pathways instead of discussing details publicly.', correct: true },
-  { id: 'next-steps', label: 'Agree action, limits, referral, adaptation, and account-back', body: 'Document themes, adaptations, referral actions, limits, and account-back messages.', correct: true },
-  { id: 'raw-complaints', label: 'Share raw complaint details so the group can judge', body: 'Unsafe: complaint details can identify people or create retaliation risk.', correct: false },
-  { id: 'one-meeting', label: 'Use one public meeting as proof of full participation', body: 'Weak: public attendance does not show influence, safety, or inclusion.', correct: false },
-  { id: 'collect-names', label: 'Ask who gave negative feedback', body: 'Unsafe: interpretation usually needs themes, not identifiable personal records.', correct: false },
-  { id: 'untrained-investigation', label: 'Let untrained staff investigate all sensitive concerns', body: 'Unsafe: sensitive concerns require agreed pathways, mandate, and trained roles.', correct: false },
+const ethicalEvidenceResponseOptions = [
+  { id: 'decline-identifying', label: 'Decline names/faces and offer anonymized themes', summary: 'Protect identity and offer non-identifying evidence instead.' },
+  { id: 'non-identifying-example', label: 'Use a consent-based, non-identifying example', summary: 'Use only non-identifying evidence with informed and voluntary consent.' },
+  { id: 'aggregate-summary', label: 'Share a reviewed aggregate summary', summary: 'Share themes and actions, not raw complaint details.' },
+  { id: 'protect-complaint', label: 'Refer or protect sensitive complaint details', summary: 'Sensitive complaint evidence should not be used as public proof.' },
+  { id: 'explain-limits', label: 'Explain evidence limits honestly', summary: 'Avoid overclaiming and report what the evidence can support.' },
+  { id: 'do-not-share', label: 'Do not share or collect this evidence', summary: 'Avoid identifiable child or disability-related evidence unless there is a clear, safe, necessary, consent-based, and approved purpose.' },
+];
+
+const ethicalEvidenceItems = [
+  {
+    id: 'names-photos',
+    title: 'Names and photos request',
+    request: 'Please send names and photos of people facing the biggest barriers so the report feels real.',
+    answer: 'decline-identifying',
+    feedback: 'Safer response. Awra should not share names or faces to make the report more powerful. It can share anonymized themes about barriers and explain what action it took.',
+    unsafeChoices: ['non-identifying-example', 'aggregate-summary', 'explain-limits'],
+  },
+  {
+    id: 'negative-quote',
+    title: 'Direct quote from negative feedback',
+    request: 'Add a direct quote from someone who gave negative feedback so the problem is clear.',
+    answer: 'non-identifying-example',
+    feedback: 'Safer response. A direct quote can identify a person through wording, location, role, or context. Awra can paraphrase the theme, remove identifying detail, or use a consent-based non-identifying quote where safe.',
+    unsafeChoices: ['decline-identifying'],
+  },
+  {
+    id: 'raw-log',
+    title: 'Raw feedback log request',
+    request: 'Send the raw feedback log so the donor can see all complaints.',
+    answer: 'aggregate-summary',
+    feedback: 'Safer response. Raw feedback logs may contain names, contact details, sensitive concerns, or identifying combinations. Awra should provide a reviewed summary of themes, response actions, referrals, and unresolved issues.',
+    unsafeChoices: ['non-identifying-example', 'explain-limits'],
+  },
+  {
+    id: 'success-story',
+    title: 'Strong success story request',
+    request: 'Give one strong story showing the project changed someone’s life.',
+    answer: 'explain-limits',
+    feedback: 'Safer response. A single story can be useful, but it should not overstate causality or turn a person into proof material. Awra can provide a non-identifying example and state what the evidence shows and what remains uncertain.',
+    unsafeChoices: ['non-identifying-example'],
+  },
+  {
+    id: 'complaint-example',
+    title: 'Sensitive complaint example',
+    request: 'Include one complaint example to prove Awra is transparent.',
+    answer: 'protect-complaint',
+    feedback: 'Safer response. Transparency does not mean exposing people. Complaint details should be protected, reviewed through the right pathway, summarized safely, and reported only as non-identifying themes and response actions.',
+    unsafeChoices: ['non-identifying-example', 'aggregate-summary', 'explain-limits'],
+  },
+  {
+    id: 'child-disability-story',
+    title: 'Child or disability-related story',
+    request: 'Can we include a story about a child with a disability who missed the activity, with enough details to show the barrier?',
+    answer: 'do-not-share',
+    feedback: 'Safer response. Children’s data and disability-related details need extra care. Awra can report the access barrier as an anonymized theme and explain the adaptation, without identifying the child or household.',
+    unsafeChoices: ['decline-identifying', 'non-identifying-example', 'aggregate-summary', 'explain-limits'],
+  },
 ];
 
 const signalActionOptions = [
   { id: 'continue-monitor', label: 'Continue and monitor', summary: 'Keep the approach while continuing to listen for barriers or unintended harm.' },
-  { id: 'adapt-access', label: 'Adapt access or delivery', summary: 'Change timing, venue, communication, format, support, or outreach to remove a barrier.' },
-  { id: 'consult-safely', label: 'Consult safely', summary: 'Ask affected groups about the pattern using safe, non-identifying methods.' },
+  { id: 'adapt-access', label: 'Adapt Awra’s practice', summary: 'Change timing, access, communication, facilitation, feedback response, or follow-up based on the evidence.' },
+  { id: 'consult-safely', label: 'Consult safely with affected groups', summary: 'Understand a barrier or missing voice without exposing people.' },
   { id: 'refer-safe-pathway', label: 'Refer through safe pathway', summary: 'Use the agreed protection, safeguarding, or complaint pathway instead of informal investigation.' },
-  { id: 'engage-responsible-actor', label: 'Engage responsible actor', summary: 'Share safe evidence with the actor responsible to remove the barrier or improve response.' },
-  { id: 'pause-public-claim', label: 'Pause or narrow public claim', summary: 'Do not report a broad claim until evidence is safer and strong enough.' },
-  { id: 'account-back', label: 'Account back', summary: 'Explain what was heard, what changed, what remains unresolved, and next steps.' },
+  { id: 'engage-responsible-actor', label: 'Engage responsible actors constructively', summary: 'Share safe evidence with the actor responsible for helping remove the barrier or improve response.' },
+  { id: 'pause-public-claim', label: 'Pause or narrow the claim', summary: 'Do not report a broad claim until evidence is safer and strong enough.' },
+  { id: 'account-back', label: 'Account back to communities', summary: 'Explain what was heard, what changed, what remains unresolved, and next steps.' },
 ];
 
 const signalDecisionItems = [
   {
-    id: 'timing-barrier',
-    signal: 'Attendance is high, but women with care responsibilities are rarely present.',
-    answers: ['adapt-access', 'consult-safely'],
-    explanation: 'This is an access signal. Adapt timing, venue, childcare or support arrangements, outreach, or consult safely on what would work better.',
+    id: 'missing-groups',
+    signal: 'Attendance was high, but informal women vendors and people from remote kebeles were rarely present.',
+    answers: ['consult-safely'],
+    explanation: 'Responsible action. High attendance does not prove inclusive reach. Awra should consult safely, review information routes, timing, location, and participation barriers, and avoid blaming people for not attending.',
+  },
+  {
+    id: 'meeting-time',
+    signal: 'Several participants said the meeting time excluded caregivers and market-day workers.',
+    answers: ['adapt-access'],
+    explanation: 'Responsible action. This is a practical barrier Awra can improve. The team can adjust meeting times, offer alternative information routes, and account back on what changed.',
   },
   {
     id: 'sensitive-concern',
-    signal: 'A small group reports a sensitive protection concern through the feedback channel.',
+    signal: 'A feedback theme suggests a sensitive protection concern that the project team is not trained to investigate.',
     answers: ['refer-safe-pathway'],
-    explanation: 'Sensitive concerns require a safe referral or safeguarding pathway, not informal staff investigation.',
+    explanation: 'Responsible action. Sensitive concerns require confidentiality, minimum necessary recording, and the right role or referral pathway. They should not be discussed in public meetings or used as report examples.',
   },
   {
-    id: 'low-trust',
-    signal: 'People say they do not know what happened after they gave feedback.',
-    answers: ['account-back'],
-    explanation: 'Trust requires account-back: explain what was heard, what changed, what remains unresolved, and what happens next.',
-  },
-  {
-    id: 'disability-access',
-    signal: 'The team cannot explain why persons with disabilities are underrepresented.',
-    answers: ['consult-safely', 'adapt-access'],
-    explanation: 'Consult safely and review access barriers before adding more personal detail or making assumptions.',
-  },
-  {
-    id: 'external-barrier',
-    signal: 'The barrier is linked to a public service or responsible institution outside the CSO mandate.',
+    id: 'service-access',
+    signal: 'Transport cost is blocking participation, and the barrier depends partly on a local service provider and a kebele committee.',
     answers: ['engage-responsible-actor'],
-    explanation: 'Use safe, non-identifying evidence to engage responsible actors while explaining what the CSO can and cannot do.',
+    explanation: 'Responsible action. Awra can adapt what it controls, but some barriers need constructive engagement with responsible actors. Use safe, non-identifying evidence and avoid public accusation without risk review.',
   },
   {
-    id: 'thin-evidence',
-    signal: 'The report claim says the project changed community attitudes, but evidence only shows attendance.',
-    answers: ['pause-public-claim'],
-    explanation: 'Do not overclaim. Narrow or repair the claim so it matches what the evidence can actually show.',
+    id: 'feedback-trust',
+    signal: 'Few people use the feedback channel because they do not know what happens after they submit concerns.',
+    answers: ['account-back'],
+    explanation: 'Responsible action. Trust requires account-back. Awra should explain the feedback process clearly, protect confidentiality, and show how feedback is reviewed and used.',
   },
-];
-
-const reportRepairOptions = [
-  { id: 'barriers-remained', label: 'Reached some groups; barriers need follow-up', summary: 'Truthful reach claim that names timing, access, or communication barriers without identifying people.' },
-  { id: 'feedback-access-concerns', label: 'Feedback reviewed; response and referral continue', summary: 'Uses feedback themes as evidence and names response, referral, follow-up, and account-back.' },
-  { id: 'consent-anonymized-story', label: 'Consent-based non-identifying example', summary: 'Protects identity while using evidence respectfully.' },
-  { id: 'limits-and-next-steps', label: 'Progress with unresolved gaps and next safe review', summary: 'Reports what is known, what is uncertain, and what the team will do next.' },
-  { id: 'cso-mandate-action', label: 'CSO adapted and shared safe evidence', summary: 'Shows what the CSO changed and where responsible actors need safe evidence.' },
-  { id: 'reached-everyone', label: 'Project reached everyone', summary: 'Risky: overclaims reach when evidence is incomplete.' },
-  { id: 'all-positive', label: 'All feedback was positive', summary: 'Risky: erases concerns and mixed feedback.' },
-  { id: 'named-photo-proof', label: 'Name and photo prove success', summary: 'Risky: exposes identity and turns people into proof material.' },
-  { id: 'activities-completed', label: 'Activities completed', summary: 'Incomplete: counts outputs without explaining inclusion, change, or accountability.' },
-  { id: 'cso-solved-gap', label: 'CSO solved the service gap', summary: 'Risky: overclaims what the CSO can control when action also sits with responsible actors.' },
+  {
+    id: 'broad-claim',
+    signal: 'The team wants to report that everyone was reached, but the evidence does not include people who missed sessions.',
+    answers: ['pause-public-claim'],
+    explanation: 'Responsible action. Do not overclaim. Report what is known, name evidence limits safely, and explain what the team will check next.',
+  },
 ];
 
 const reportRepairItems = [
   {
-    id: 'full-participation',
-    risky: 'All women and persons with disabilities fully participated.',
-    answer: 'barriers-remained',
-    explanation: 'If some groups were missed or evidence is incomplete, report the barrier honestly instead of claiming full participation.',
+    id: 'reach-claim',
+    title: 'Reach claim',
+    risky: 'The project reached everyone in Jiru Amba.',
+    answer: 'reach-with-limits',
+    selectedMeaning: 'Report reach honestly and name the evidence limit.',
+    explanation: 'Safer claim. HRBA-informed reporting does not turn attendance into universal reach. It reports what is known and checks who may still be missing.',
+    options: [
+      { id: 'reach-with-limits', label: 'The project reached 240 participants, but the evidence does not yet show whether some groups were missed.', summary: 'Report reach honestly and name the evidence limit.' },
+      { id: 'whole-community', label: 'The project reached the whole community because attendance was high.', summary: 'Risky: high attendance does not prove universal reach.' },
+      { id: 'hide-missing-groups', label: 'Do not mention missing groups because it may make the report look weak.', summary: 'Risky: hiding limits weakens accountability and learning.', unsafe: true },
+    ],
   },
   {
-    id: 'complaint-box',
-    risky: 'The complaint box proves communities are satisfied.',
-    answer: 'feedback-access-concerns',
-    explanation: 'A feedback mechanism is not proof of satisfaction. Report reviewed themes, response, referral, follow-up, and account-back.',
+    id: 'feedback-claim',
+    title: 'Feedback claim',
+    risky: 'All feedback was positive.',
+    answer: 'mixed-feedback-actions',
+    selectedMeaning: 'Report mixed evidence and show response.',
+    explanation: 'Safer claim. Feedback should not be flattened into "positive" if it includes concerns. A stronger report shows themes, response, adaptation, and follow-up.',
+    options: [
+      { id: 'mixed-feedback-actions', label: 'Feedback included useful positive comments and access concerns; the team reviewed themes and identified actions.', summary: 'Report mixed evidence and show response.' },
+      { id: 'positive-only', label: 'Only report the positive feedback because the project is still ongoing.', summary: 'Risky: this hides concerns and weakens accountability.', unsafe: true },
+      { id: 'detailed-negative-quote', label: 'Add a negative quote with details so the donor sees the issue clearly.', summary: 'Risky: direct detailed quotes can expose people.', unsafe: true },
+    ],
   },
   {
-    id: 'named-participant',
-    risky: 'A named participant said the project changed her life.',
-    answer: 'consent-anonymized-story',
-    explanation: 'Use consent-based, non-identifying evidence and avoid details that could expose people.',
+    id: 'success-story-claim',
+    title: 'Success story claim',
+    risky: 'A named success story with a photo proves the project changed lives.',
+    answer: 'non-identifying-story-limits',
+    selectedMeaning: 'Use qualitative evidence safely and state limits.',
+    explanation: 'Safer claim. A story can support learning, but it should not expose a person or prove more than the evidence can support.',
+    options: [
+      { id: 'non-identifying-story-limits', label: 'A consent-based, non-identifying example and feedback themes suggest useful changes, but the report avoids identifying people or overclaiming impact.', summary: 'Use qualitative evidence safely and state limits.' },
+      { id: 'name-photo-consent', label: 'Use the name and photo because consent was given.', summary: 'Risky: consent alone does not remove identification or pressure risks.', unsafe: true },
+      { id: 'emotional-detail', label: 'Add more emotional detail so the story is stronger.', summary: 'Risky: emotional detail can identify or pressure people.', unsafe: true },
+    ],
   },
   {
-    id: 'no-barriers',
-    risky: 'No barriers remain.',
-    answer: 'limits-and-next-steps',
-    explanation: 'If the evidence did not reach some groups, say what is known, what is not known, and how the team will check safely.',
+    id: 'activity-completion-claim',
+    title: 'Activity completion claim',
+    risky: 'Activities were completed successfully.',
+    answer: 'completion-with-adaptation',
+    selectedMeaning: 'Move from completion to learning and adaptation.',
+    explanation: 'Safer claim. Reporting completion is useful, but HRBA MEAL also reports what the team learned and what changed because of evidence.',
+    options: [
+      { id: 'completion-with-adaptation', label: 'Activities were completed, and evidence led to adaptations in meeting timing, communication, and feedback follow-up.', summary: 'Move from completion to learning and adaptation.' },
+      { id: 'no-analysis-needed', label: 'Activities were completed, so no further MEAL analysis is needed.', summary: 'Weak: completion alone does not show inclusion, response, or change.' },
+      { id: 'meetings-main-success', label: 'Success should be measured mainly by the number of meetings held.', summary: 'Weak: meeting counts are not enough evidence of accountable change.' },
+    ],
   },
   {
-    id: 'service-gap',
-    risky: 'The CSO solved the service gap.',
-    answer: 'cso-mandate-action',
-    explanation: 'Report what the CSO adapted and where safe evidence was shared with responsible actors for action beyond the CSO mandate.',
+    id: 'inclusion-claim',
+    title: 'Inclusion claim',
+    risky: 'No major inclusion gaps were found.',
+    answer: 'limits-check-barriers',
+    selectedMeaning: 'Avoid claiming absence of gaps when evidence is incomplete.',
+    explanation: 'Safer claim. If the evidence did not reach some groups, the report should not say gaps were absent. It should state what is known, what remains uncertain, and what the team will check next.',
+    options: [
+      { id: 'limits-check-barriers', label: 'No major gaps were confirmed yet, but the evidence has limits and the team will check participation barriers safely.', summary: 'Avoid claiming absence of gaps when evidence is incomplete.' },
+      { id: 'no-complaints-no-problems', label: 'No complaints means there were no inclusion problems.', summary: 'Risky: silence or low feedback use does not prove inclusion.' },
+      { id: 'hide-uncertainty', label: 'Do not mention uncertainty because it may reduce confidence in the project.', summary: 'Risky: hiding uncertainty undermines credible reporting.', unsafe: true },
+    ],
+  },
+  {
+    id: 'community-communication-claim',
+    title: 'Community communication claim',
+    risky: 'Communities were informed about the project.',
+    answer: 'account-back-next-steps',
+    selectedMeaning: 'Move from information sharing to account-back.',
+    explanation: 'Safer claim. Information sharing is important, but accountability also requires explaining decisions, changes, unresolved issues, and next steps.',
+    options: [
+      { id: 'account-back-next-steps', label: 'Communities received information, and Awra will account back on what was heard, what changed, what did not change, and next steps.', summary: 'Move from information sharing to account-back.' },
+      { id: 'one-information-sharing', label: 'Providing information once is enough for accountability.', summary: 'Weak: accountability requires response and account-back, not one-way information.' },
+      { id: 'donor-only-account-back', label: 'Only report account-back to the donor, not to communities.', summary: 'Risky: communities also need to hear what happened next.', unsafe: true },
+    ],
   },
 ];
 
 const capstoneSteps = [
   {
-    id: 'shows',
-    title: '1. Read outputs, but ask what they hide',
-    prompt: 'Outputs and attendance are strong, but participation evidence is uneven.',
-    answer: 'outputs-plus-gaps',
+    id: 'meaningful-participation',
+    title: 'Which indicator best checks meaningful participation?',
+    scenario: 'Awra wants to know whether participation meetings were useful for HRBA-informed MEAL, not only whether meetings happened.',
+    prompt: 'Which indicator best checks whether people could participate meaningfully?',
+    answer: 'A',
     options: [
-      { id: 'outputs-plus-gaps', label: 'Outputs are useful, but gaps remain', summary: 'Start with outputs and reach, then ask what is missing.' },
-      { id: 'outputs-only', label: 'Outputs prove full success', summary: 'Weak: outputs do not prove inclusion, safety, or change.' },
-      { id: 'ignore-numbers', label: 'Ignore the numbers entirely', summary: 'Weak: numbers are useful when interpreted with other evidence.' },
+      { id: 'A', label: 'Percentage of participants from groups facing access barriers who report that meeting timing, location, communication, and support arrangements allowed meaningful participation.', summary: 'Correct. This indicator checks participation quality and access conditions, not only the number of meetings held.' },
+      { id: 'B', label: 'Number of consultation meetings held.', summary: 'Not quite. This counts activity completion. It does not show whether different groups could participate meaningfully.' },
+      { id: 'C', label: 'Number of photos showing community participation.', summary: 'Not quite. Photos may support communication, but they do not show access, influence, inclusion, or safe participation.', unsafe: true },
     ],
-    explanation: 'HRBA MEAL keeps the numbers but asks what they do not show.',
+    takeaway: 'Meaningful participation requires evidence about access, support, timing, communication, and influence.',
   },
   {
-    id: 'missing',
-    title: '2. Identify who may be missing',
-    prompt: 'Attendance is lower among caregivers, people facing access barriers, and people who work on market days.',
-    answer: 'barriers-groups',
+    id: 'small-cell-data',
+    title: 'How should Awra handle small-cell data safely?',
+    scenario: 'Awra’s monitoring form shows that two women with disabilities from one small village raised the same access concern.',
+    prompt: 'What should Awra do with this evidence?',
+    answer: 'A',
     options: [
-      { id: 'barriers-groups', label: 'Identify groups and access barriers', summary: 'Use broad, non-identifying barriers to guide adaptation.' },
-      { id: 'individual-list', label: 'Make a list of names', summary: 'Unsafe: names are usually unnecessary and can create risk.' },
-      { id: 'ignore-small-numbers', label: 'Ignore the smaller groups', summary: 'Weak: smaller groups may reveal exclusion.' },
+      { id: 'A', label: 'Combine or suppress the identifying details and report the access concern as a broader non-identifying theme.', summary: 'Correct. The access concern is useful, but the small number and specific details could identify people. A broader theme can still guide action safely.' },
+      { id: 'B', label: 'Report the village and exact concern because names are removed.', summary: 'Not quite. Removing names is not always enough. A small number, exact location, and specific access concern can still identify people.', unsafe: true },
+      { id: 'C', label: 'Delete all disability-related evidence because it is always unsafe.', summary: 'Not quite. Disability-related evidence can be useful when it is collected safely and focused on access barriers, not on identifying people or diagnoses.' },
     ],
-    explanation: 'Look for barriers and missing voices without collecting unnecessary personal data.',
+    takeaway: 'Safe disaggregation uses the minimum detail needed to see barriers without identifying people.',
   },
   {
-    id: 'unsafe',
-    title: '3. Choose the safest evidence use',
-    prompt: 'The team has quotes, exact locations, photos, and one sensitive complaint detail.',
-    answer: 'remove-identifiers',
+    id: 'feedback-accountability',
+    title: 'What should Awra do after receiving feedback?',
+    scenario: 'Several feedback themes show that women vendors did not receive meeting information early enough to influence local service priorities.',
+    prompt: 'Which response best turns feedback into accountability?',
+    answer: 'A',
     options: [
-      { id: 'remove-identifiers', label: 'Remove identifiers and sensitive details', summary: 'Use anonymized themes, aggregate patterns, and safe referral notes.' },
-      { id: 'share-privately', label: 'Share privately with the donor', summary: 'Unsafe: private sharing can still expose people.' },
-      { id: 'ask-community-to-judge', label: 'Discuss details in a public meeting', summary: 'Unsafe: complaint details should not be public review material.' },
+      { id: 'A', label: 'Review the feedback themes, adapt the information route and timing, and account back on what changed.', summary: 'Correct. Feedback becomes accountability evidence when it is reviewed, acted on where possible, and explained back to communities.' },
+      { id: 'B', label: 'Count the feedback comments and include the total in the donor report.', summary: 'Not quite. Counting feedback is useful, but not enough. The report should also show response, adaptation, and account-back.' },
+      { id: 'C', label: 'Ask women vendors to submit names so Awra can verify who complained.', summary: 'Not quite. Names are not needed to act on a non-identifying feedback theme. Asking for names may create exposure or reduce trust.', unsafe: true },
     ],
-    explanation: 'Safe evidence protects dignity and uses minimum necessary detail.',
+    takeaway: 'Feedback becomes accountability when it is reviewed, acted on, and explained back.',
   },
   {
-    id: 'feedback',
-    title: '4. Use feedback for response, referral, adaptation, and account-back',
-    prompt: 'Feedback themes include timing barriers, access concerns, and one sensitive protection concern.',
-    answer: 'review-respond-refer',
+    id: 'story-photo-pressure',
+    title: 'How should Awra respond to story and photo pressure?',
+    scenario: 'A communications colleague asks for a named story and photo to show that the project changed someone’s life.',
+    prompt: 'What is the safest professional response?',
+    answer: 'A',
     options: [
-      { id: 'review-respond-refer', label: 'Review, respond, refer, and account back', summary: 'Use themes for adaptation and refer sensitive concerns safely.' },
-      { id: 'count-complaints', label: 'Only count how many comments arrived', summary: 'Weak: counting feedback does not close the loop.' },
-      { id: 'staff-investigate', label: 'Ask facilitators to investigate everything', summary: 'Unsafe: sensitive issues require mandate, training, and safe pathways.' },
+      { id: 'A', label: 'Offer an anonymized theme or consent-based non-identifying example, and explain what the evidence can and cannot claim.', summary: 'Correct. This protects identity and dignity while still allowing Awra to report useful learning and avoid overclaiming.' },
+      { id: 'B', label: 'Use the name and photo if the person agreed once during the activity.', summary: 'Not quite. Consent must be informed, voluntary, specific, and safe. Consent alone does not remove all risk.', unsafe: true },
+      { id: 'C', label: 'Avoid all qualitative evidence because stories are always too risky.', summary: 'Not quite. Qualitative evidence can be useful. The issue is to use it ethically, safely, and truthfully.' },
     ],
-    explanation: 'Feedback becomes accountability evidence only when it is safely reviewed and acted on.',
+    takeaway: 'Qualitative evidence can support learning when it protects identity, dignity, and evidence limits.',
   },
   {
-    id: 'adapt',
-    title: '5. Choose responsible action based on the signal',
-    prompt: 'The evidence points to timing, access, communication, and referral-information barriers.',
-    answer: 'adapt-practice',
+    id: 'partial-progress',
+    title: 'What should Awra do when evidence shows partial progress?',
+    scenario: 'Attendance improved after Awra changed the meeting time, but remote kebele residents are still under-represented.',
+    prompt: 'Which action best uses the evidence for adaptation?',
+    answer: 'A',
     options: [
-      { id: 'adapt-practice', label: 'Adapt timing, access, communication, and referral information', summary: 'Choose practical changes connected to the evidence.' },
-      { id: 'wait-report', label: 'Wait until the next donor report', summary: 'Weak: learning evidence should guide action during implementation.' },
-      { id: 'collect-more-detail', label: 'Collect more personal detail first', summary: 'Unsafe: adaptation can often use broad themes.' },
+      { id: 'A', label: 'Continue the improved timing and consult safely with remote kebele residents about remaining access barriers.', summary: 'Correct. The evidence shows that one change helped, but also that another group may still be missing. Awra should keep what works and safely investigate the remaining barrier.' },
+      { id: 'B', label: 'Report that the participation problem is solved because attendance improved.', summary: 'Not quite. Improved attendance is positive, but it does not prove that all groups were reached or that all barriers are solved.' },
+      { id: 'C', label: 'Collect exact household locations of remote residents who missed the meeting.', summary: 'Not quite. Exact household locations are usually unnecessary and may create risk. Broader access-barrier evidence is safer.', unsafe: true },
     ],
-    explanation: 'Evidence should guide realistic adaptation and responsible actor engagement.',
+    takeaway: 'Partial progress should guide continued adaptation and safe consultation, not overclaiming.',
   },
   {
-    id: 'report',
-    title: '6. Repair the report claim',
-    prompt: 'Draft claim: The project reached everyone and feedback was positive.',
-    answer: 'truthful-limits',
+    id: 'report-account-back',
+    title: 'What should the report and account-back say?',
+    scenario: 'Awra needs to report progress and explain back to communities what happened after the MEAL review.',
+    prompt: 'Which statement best reports progress and limits truthfully?',
+    answer: 'A',
     options: [
-      { id: 'truthful-limits', label: 'Report progress, barriers, limits, and adaptation', summary: 'Tell the truth without identifying people or overclaiming.' },
-      { id: 'keep-success', label: 'Keep the success claim unchanged', summary: 'Weak: unsupported claims reduce credibility and accountability.' },
-      { id: 'add-photo', label: 'Add a strong photo to prove impact', summary: 'Unsafe: photos can expose people and do not prove change.' },
+      { id: 'A', label: 'Awra reached many participants, identified access and feedback barriers, adapted timing and information routes, still needs to check remote participation, and will explain what changed and what remains unresolved.', summary: 'Correct. This statement reports progress, names limits, shows adaptation, avoids overclaiming, and includes account-back.' },
+      { id: 'B', label: 'Awra reached the whole community and all feedback was positive.', summary: 'Not quite. This overclaims. The evidence shows progress, but also barriers, mixed feedback, and groups that may still be missing.', unsafe: true },
+      { id: 'C', label: 'Awra should report the positive numbers and keep unresolved issues internal.', summary: 'Not quite. A rights-based report should not hide limits. It should state limits safely and explain next steps.', unsafe: true },
     ],
-    explanation: 'Responsible reporting is evidence-based, modest, safe, and honest about limits.',
-  },
-  {
-    id: 'account-back',
-    title: '7. Account back safely',
-    prompt: 'The team has agreed adaptations and knows some concerns remain unresolved.',
-    answer: 'heard-changed-next',
-    options: [
-      { id: 'heard-changed-next', label: 'What was heard, what changed, what is unresolved, and next steps', summary: 'Close the loop with a safe account-back message.' },
-      { id: 'donor-only', label: 'Only report upward to the donor', summary: 'Weak: accountability also runs back to rights-holders.' },
-      { id: 'full-complaint-detail', label: 'Share full complaint details for transparency', summary: 'Unsafe: transparency does not mean exposing sensitive details.' },
-    ],
-    explanation: 'Account-back builds trust when it is honest, safe, and specific about action and limits.',
+    takeaway: 'Responsible reporting names progress, limits, adaptation, unresolved issues, and account-back.',
   },
 ];
 
 const repairNoteSteps = [
   {
     id: 'area',
-    title: '1. MEAL area to repair',
-    prompt: 'Choose the practice area that most needs a realistic improvement.',
+    title: 'What MEAL practice will you improve?',
+    outputLabel: 'Practice focus',
+    sentenceLabel: 'I will improve',
+    prompt: 'Choose one area where the team can improve its MEAL practice.',
     options: [
-      { id: 'weak-indicator', label: 'Weak indicator', summary: 'Repair an activity count so it can show access, safety, response, or change.' },
-      { id: 'unsafe-data', label: 'Unsafe data detail', summary: 'Reduce identifying or sensitive data and use safer aggregate evidence.' },
-      { id: 'missing-group', label: 'Missing group or access barrier', summary: 'Look for who may be missed and what barrier needs practical adjustment.' },
-      { id: 'weak-feedback', label: 'Weak feedback loop', summary: 'Improve how feedback is received, reviewed, answered, referred, and reported back.' },
-      { id: 'no-adaptation', label: 'No adaptation from evidence', summary: 'Use monitoring evidence to change timing, venue, communication, outreach, or referral information.' },
-      { id: 'overclaimed-report', label: 'Overclaimed report', summary: 'Repair reporting language so it is truthful about limits, barriers, and evidence strength.' },
-      { id: 'unclear-account-back', label: 'Unclear account-back', summary: 'Clarify how rights-holders will hear what was learned, changed, not solved, and next.' },
+      { id: 'improve-indicator', label: 'Improve an indicator', summary: 'Use an indicator that shows access, participation, feedback response, safety, or change.' },
+      { id: 'improve-safe-data', label: 'Improve safe data collection', summary: 'Collect only useful, necessary, protected, and explainable evidence.' },
+      { id: 'improve-feedback', label: 'Improve feedback response', summary: 'Move from receiving feedback to reviewing, responding, referring, adapting, and accounting back.' },
+      { id: 'improve-qualitative', label: 'Improve qualitative evidence use', summary: 'Use stories, quotes, examples, and feedback themes ethically and safely.' },
+      { id: 'improve-interpretation', label: 'Improve evidence interpretation', summary: 'Use MEAL evidence to decide what should continue, adapt, be referred, or be followed up.' },
+      { id: 'improve-reporting', label: 'Improve reporting and account-back', summary: 'Report progress, limits, adaptations, unresolved issues, and next steps truthfully.' },
     ],
   },
   {
     id: 'gap',
-    title: '2. Evidence gap or safety risk',
-    prompt: 'Choose the gap or risk the team noticed.',
+    title: 'Which HRBA-MEAL question will guide the improvement?',
+    outputLabel: 'Guiding HRBA-MEAL question',
+    sentenceLabel: 'I will keep asking',
+    prompt: 'Choose the question the team should keep asking during MEAL review.',
     options: [
-      { id: 'who-missed', label: 'The evidence does not show who was missed', summary: 'The team needs safe barrier themes, not names.' },
-      { id: 'raw-detail', label: 'The evidence includes too much raw detail', summary: 'The team should remove identifiers and use minimum necessary information.' },
-      { id: 'feedback-unanswered', label: 'Feedback was collected but not answered', summary: 'The team needs response, referral, adaptation, and account-back steps.' },
-      { id: 'claim-too-broad', label: 'The report claim is broader than the evidence', summary: 'The team should name limits and avoid saying everyone benefited.' },
-      { id: 'no-change-link', label: 'The report does not show what changed', summary: 'The team needs evidence of access, response, adaptation, or learning.' },
+      { id: 'who-missing', label: 'Who may still be missing?', summary: 'Check whether activity numbers hide groups who were not reached or heard.' },
+      { id: 'barriers', label: 'What barriers affected access or participation?', summary: 'Look for timing, distance, disability access, information, language, trust, cost, or safety barriers.' },
+      { id: 'feedback-response', label: 'Did feedback receive a response?', summary: 'Check whether feedback was reviewed, answered, referred, or used for adaptation.' },
+      { id: 'what-changed', label: 'What changed because of the evidence?', summary: 'Look for adaptation, improved access, better information, safer participation, or follow-up.' },
+      { id: 'safe-evidence-question', label: 'What evidence is safe enough to use?', summary: 'Check whether the evidence is useful, necessary, non-identifying, and protected.' },
+      { id: 'explain-back', label: 'What should be explained back?', summary: 'Tell communities what was heard, what changed, what did not change, why, and what happens next.' },
     ],
   },
   {
     id: 'repair',
-    title: '3. Practical repair action',
-    prompt: 'Choose one repair action the team could test safely.',
+    title: 'What evidence will you use safely?',
+    outputLabel: 'Safe evidence to use',
+    sentenceLabel: 'I will use',
+    prompt: 'Choose the safest evidence source for the improvement.',
     options: [
-      { id: 'repair-indicator', label: 'Improve one indicator', summary: 'Revise it to show access, safety, response, influence, or change.' },
-      { id: 'aggregate-evidence', label: 'Use safe aggregate evidence', summary: 'Replace names, raw logs, or rare details with safe patterns and themes.' },
-      { id: 'consult-safely', label: 'Consult safely with groups who may be missing', summary: 'Use accessible, non-coercive, non-identifying methods.' },
-      { id: 'route-concerns', label: 'Route sensitive concerns through agreed pathways', summary: 'Do not investigate sensitive complaints informally.' },
-      { id: 'adapt-delivery', label: 'Adapt timing, communication, venue, outreach, or referral information', summary: 'Connect the change to the evidence signal.' },
-      { id: 'repair-report', label: 'Report limits honestly', summary: 'Say what is known, what is not known, and what action follows.' },
-      { id: 'account-back', label: 'Account back on what changed and what did not', summary: 'Close the loop with rights-holders using safe, clear messages.' },
+      { id: 'broad-patterns', label: 'Broad participation patterns', summary: 'Use non-identifying attendance or participation patterns by broad groups where safe.' },
+      { id: 'barrier-themes', label: 'Access-barrier themes', summary: 'Use non-identifying themes about timing, distance, disability access, information, language, trust, cost, or safety.' },
+      { id: 'feedback-themes', label: 'Feedback themes and response actions', summary: 'Use summarized feedback themes, what was reviewed, what was answered, what was referred, and what changed.' },
+      { id: 'qualitative-themes', label: 'Safe qualitative themes', summary: 'Use anonymized themes or consent-based non-identifying examples, without names, faces, or exact locations.' },
+      { id: 'adaptation-records', label: 'Adaptation records', summary: 'Use notes showing what the team changed because of evidence or feedback.' },
+      { id: 'account-back-records', label: 'Account-back records', summary: 'Use evidence that communities were told what was heard, what changed, what did not, and next steps.' },
     ],
   },
   {
     id: 'involve',
-    title: '4. Who should be involved safely',
-    prompt: 'Choose the safest involvement pattern.',
+    title: 'What safety boundary will you keep?',
+    outputLabel: 'Safety boundary',
+    sentenceLabel: 'I will protect people by applying this boundary',
+    prompt: 'Choose the safety boundary that protects rights-holders.',
     options: [
-      { id: 'meal-focal-team', label: 'MEAL focal point and implementation team', summary: 'Use internal roles to review indicators, feedback themes, and adaptation decisions.' },
-      { id: 'community-reps', label: 'Rights-holder representatives through safe channels', summary: 'Invite participation through accessible, non-identifying, and voluntary methods.' },
-      { id: 'feedback-role', label: 'Responsible feedback or safeguarding role', summary: 'Use trained roles and agreed pathways for sensitive concerns.' },
-      { id: 'responsible-actors', label: 'Relevant responsible actors with safe evidence only', summary: 'Engage duty-bearers or service actors without exposing people.' },
+      { id: 'no-names-faces', label: 'No names or faces', summary: 'Do not use names, photos, or identifying images.' },
+      { id: 'no-exact-rare', label: 'No exact locations or rare details', summary: 'Avoid details that could identify a person, household, or small group.' },
+      { id: 'no-raw-logs', label: 'No raw complaint logs', summary: 'Use reviewed themes and response actions instead of raw feedback or complaint records.' },
+      { id: 'no-child-disability-identifying', label: 'No child or disability-identifying details', summary: 'Use safe access-barrier themes instead of identifiable child or disability-related information.' },
+      { id: 'no-overclaims', label: 'No unsupported success claims', summary: 'Avoid claiming impact or full reach when the evidence does not support it.' },
+      { id: 'referral-pathways', label: 'Use referral pathways for sensitive concerns', summary: 'Handle sensitive feedback through agreed safeguarding, protection, complaint, or referral pathways.' },
     ],
   },
   {
     id: 'limit',
-    title: '5. Limit or risk to state honestly',
-    prompt: 'Choose the limitation the note should name.',
+    title: 'What action should follow?',
+    outputLabel: 'Action to take',
+    sentenceLabel: 'The next practical action is',
+    prompt: 'Choose one practical action linked to the evidence.',
     options: [
-      { id: 'not-everyone-heard', label: 'Not everyone has been heard yet', summary: 'Avoid claiming full participation until missing voices are checked safely.' },
-      { id: 'small-cell-risk', label: 'Some detail could identify people or small groups', summary: 'Use aggregation, anonymization, or suppression where needed.' },
-      { id: 'feedback-not-fully-resolved', label: 'Some feedback is not fully resolved', summary: 'Explain what was referred, pending, outside mandate, or still being addressed.' },
-      { id: 'change-not-proven', label: 'Change is not fully proven yet', summary: 'Report the evidence available and what will be checked next.' },
+      { id: 'adjust-access', label: 'Adjust timing, venue, or communication', summary: 'Change how activities are organized so more people can access and participate.' },
+      { id: 'improve-one-indicator', label: 'Improve one indicator', summary: 'Revise an indicator so it shows access, participation, response, safety, or change.' },
+      { id: 'strengthen-feedback', label: 'Strengthen the feedback pathway', summary: 'Clarify how feedback is received, reviewed, responded to, referred, adapted from, and explained back.' },
+      { id: 'consult-affected', label: 'Consult safely with affected groups', summary: 'Use accessible, voluntary, non-identifying methods to understand remaining barriers.' },
+      { id: 'engage-actors', label: 'Engage responsible actors constructively', summary: 'Share safe evidence with the actor responsible for helping remove a barrier or improve response.' },
+      { id: 'revise-report-claim', label: 'Revise a report claim', summary: 'Report progress and limits honestly, without exposing people or overclaiming.' },
     ],
   },
   {
     id: 'accountBack',
-    title: '6. Account-back action',
-    prompt: 'Choose how the team will account back.',
+    title: 'How will the team account back?',
+    outputLabel: 'Account-back step',
+    sentenceLabel: 'The team should account back by',
+    prompt: 'Choose how the team will explain back safely.',
     options: [
-      { id: 'share-themes-actions', label: 'Share safe themes, actions, limits, and next steps', summary: 'Tell communities what was heard, what changed, what did not, and what happens next.' },
-      { id: 'team-review-message', label: 'Prepare a clear account-back message with the team', summary: 'Use plain, safe language that does not identify people or complaints.' },
-      { id: 'accessible-channel', label: 'Use an accessible channel for different groups', summary: 'Choose timing, language, format, and channel based on who may be missed.' },
-      { id: 'follow-up-cycle', label: 'Document learning for the next MEAL cycle', summary: 'Carry unresolved limits and adaptations into the next review.' },
+      { id: 'heard-and-changed', label: 'Share what was heard and what changed', summary: 'Explain the main feedback or evidence themes and the changes made.' },
+      { id: 'not-changed-why', label: 'Share what did not change and why', summary: 'Explain unresolved issues, limits, or decisions the project could not make.' },
+      { id: 'next-steps', label: 'Share next steps', summary: 'Tell communities what the team will check, adapt, refer, or follow up next.' },
+      { id: 'accessible-routes', label: 'Use accessible communication routes', summary: 'Use formats and channels that different groups can access safely.' },
+      { id: 'protect-identities', label: 'Protect identities while sharing themes', summary: 'Report non-identifying themes instead of names, quotes, complaint details, or photos.' },
+      { id: 'next-meal-cycle', label: 'Link account-back to the next MEAL review', summary: 'Use community account-back as part of the next monitoring and learning cycle.' },
     ],
   },
 ];
@@ -2201,36 +2535,72 @@ const repairNoteSteps = [
 const bridgeActionGroups = [
   {
     id: 'day30',
-    title: 'First 30 days - Review safely',
-    prompt: 'Choose at least one safe review action.',
+    outputLabel: 'First 30 days: prepare',
+    title: 'In the first 30 days: prepare one improvement',
+    prompt: 'Choose one preparation action.',
     options: [
-      { id: 'review-indicators', label: 'Review current indicators and evidence gaps', summary: 'Check whether indicators show inclusion, response, safety, and change.' },
-      { id: 'identify-missing', label: 'Identify who may be missing', summary: 'Use broad barrier themes and avoid collecting names.' },
-      { id: 'check-sensitive', label: 'Check for sensitive or identifying data', summary: 'Remove or aggregate details that could expose people.' },
-      { id: 'agree-pathways', label: 'Agree safe roles and pathways', summary: 'Clarify who handles feedback, referrals, and safeguarding concerns.' },
+      { id: 'review-indicator', label: 'Review one indicator', summary: 'Check whether one indicator shows access, participation, feedback response, safety, or change.' },
+      { id: 'review-data-source', label: 'Review one data source', summary: 'Check whether one form, list, log, or report collects only useful and safe evidence.' },
+      { id: 'map-feedback-pathway', label: 'Map one feedback pathway', summary: 'Clarify who receives feedback, who reviews it, who responds or refers, and how account-back happens.' },
+      { id: 'identify-missing-group', label: 'Identify one group that may be missing', summary: 'Use safe, non-identifying evidence to check whether one group is under-represented.' },
+      { id: 'agree-safety-boundary', label: 'Agree one safety boundary', summary: 'Decide what the team will not collect or report, such as names, exact locations, raw complaints, photos, or identifying stories.' },
+      { id: 'prepare-account-back-message', label: 'Prepare one account-back message', summary: 'Draft a simple message explaining what was heard, what changed, what did not change, and next steps.' },
     ],
   },
   {
     id: 'day60',
-    title: 'By 60 days - Test one repair',
-    prompt: 'Choose at least one repair to test.',
+    outputLabel: 'Next 60 days: test',
+    title: 'In the next 60 days: test one change',
+    prompt: 'Choose one action to test.',
     options: [
-      { id: 'repair-indicator', label: 'Repair one indicator', summary: 'Make it show access, safety, response, influence, or change.' },
-      { id: 'improve-feedback', label: 'Improve one feedback/accountability step', summary: 'Strengthen review, response, referral, adaptation, or account-back.' },
-      { id: 'adapt-access', label: 'Adapt timing, venue, communication, referral, or outreach', summary: 'Make a practical change based on evidence.' },
-      { id: 'consult-safely', label: 'Consult safely with affected groups', summary: 'Use accessible, voluntary, non-identifying methods.' },
-      { id: 'engage-actors', label: 'Engage responsible actors constructively', summary: 'Share safe evidence and ask for action where relevant.' },
+      { id: 'use-improved-indicator', label: 'Use an improved indicator', summary: 'Test one indicator that shows access, participation, feedback response, safety, or change.' },
+      { id: 'use-safer-categories', label: 'Use safer evidence categories', summary: 'Use broad, non-identifying categories to review who participated and who may still be missing.' },
+      { id: 'test-feedback-response', label: 'Test a feedback response step', summary: 'Track whether feedback was reviewed, answered, referred, or used for adaptation.' },
+      { id: 'adjust-access', label: 'Adjust timing, venue, or communication', summary: 'Change one practical barrier that affects participation or access.' },
+      { id: 'use-safer-qualitative', label: 'Use safer qualitative evidence', summary: 'Replace names, photos, raw quotes, or complaint details with anonymized themes or non-identifying examples.' },
+      { id: 'consult-safely', label: 'Consult safely with affected groups', summary: 'Use accessible, voluntary, non-identifying methods to understand remaining barriers.' },
     ],
   },
   {
     id: 'day90',
-    title: 'By 90 days - Report and account back',
-    prompt: 'Choose at least one account-back and reporting action.',
+    outputLabel: 'By 90 days: learn and account back',
+    title: 'By 90 days: learn and account back',
+    prompt: 'Choose one learning and account-back action.',
     options: [
-      { id: 'report-limits', label: 'Report what is known and not known', summary: 'Avoid overclaiming and name evidence limits honestly.' },
-      { id: 'explain-adaptations', label: 'Explain adaptations and unresolved limits', summary: 'Show what changed and what still needs follow-up.' },
-      { id: 'account-back-community', label: 'Account back to communities', summary: 'Share what was heard, what changed, what did not, and next steps.' },
-      { id: 'document-learning', label: 'Document learning for the next cycle', summary: 'Carry safe evidence and unresolved issues into the next MEAL review.' },
+      { id: 'review-change', label: 'Review what changed and what did not', summary: 'Compare the evidence before and after the improvement.' },
+      { id: 'summarize-feedback', label: 'Summarize feedback themes and responses', summary: 'Show what was heard, what was answered, what was referred, and what still needs follow-up.' },
+      { id: 'improve-report-claim', label: 'Improve one report claim', summary: 'Report progress and limits truthfully, without overclaiming or exposing people.' },
+      { id: 'share-account-back', label: 'Share an account-back message', summary: 'Explain what was heard, what changed, what did not change, why, and next steps.' },
+      { id: 'engage-actors-safe-evidence', label: 'Engage responsible actors with safe evidence', summary: 'Use non-identifying evidence to discuss follow-up with a service actor, committee, partner, or public duty-bearer.' },
+      { id: 'choose-next-improvement', label: 'Choose the next MEAL improvement', summary: 'Use the learning review to decide what the team should improve next.' },
+    ],
+  },
+  {
+    id: 'accountBackRoute',
+    outputLabel: 'Account-back route',
+    title: 'How will the team account back safely?',
+    prompt: 'Choose one account-back route.',
+    options: [
+      { id: 'community-update', label: 'Short community update', summary: 'Share a simple non-sensitive update during the next community meeting or activity.' },
+      { id: 'partner-briefing', label: 'Partner or representative briefing', summary: 'Share a safe summary through trusted partners or community representatives.' },
+      { id: 'accessible-message', label: 'Accessible notice or audio message', summary: 'Use a format that people with different literacy, language, mobility, or access needs can understand.' },
+      { id: 'feedback-channel-update', label: 'Feedback-channel update', summary: 'Use the feedback channel to explain what was heard and what happened next.' },
+      { id: 'next-activity-message', label: 'Next activity opening message', summary: 'Begin the next activity by explaining what changed because of previous feedback or evidence.' },
+      { id: 'small-group-discussion', label: 'Small-group safe discussion', summary: 'Use a small, voluntary, non-identifying discussion where a public update could expose people.' },
+    ],
+  },
+  {
+    id: 'safetyRule',
+    outputLabel: 'Safety rule',
+    title: 'What safety rule will guide the plan?',
+    prompt: 'Choose one rule the team will keep throughout the 90 days.',
+    options: [
+      { id: 'minimum-evidence', label: 'Use minimum necessary evidence', summary: 'Collect only what is needed to guide a safe and useful decision.' },
+      { id: 'protect-identities', label: 'Protect identities', summary: 'Do not use names, faces, exact locations, rare details, or identifying combinations.' },
+      { id: 'themes-not-details', label: 'Use themes instead of raw details', summary: 'Report feedback, complaints, and stories as non-identifying themes.' },
+      { id: 'avoid-unsupported-claims', label: 'Avoid unsupported claims', summary: 'Do not claim "everyone was reached" or "all feedback was positive" unless evidence supports it.' },
+      { id: 'safe-referrals', label: 'Use safe referral pathways', summary: 'Do not handle sensitive concerns informally or publicly.' },
+      { id: 'account-back-without-exposure', label: 'Account back without exposing people', summary: 'Explain themes, actions, limits, and next steps without sharing identifying details.' },
     ],
   },
 ];
@@ -2336,38 +2706,42 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
       <section className="m5-video-shell">
         <div className="m5-video-copy">
           <ModuleContextLabel>MODULE 5 · APPLYING HRBA IN MEAL</ModuleContextLabel>
-          <ProgressChip>See the problem</ProgressChip>
+          <ProgressChip>MEAL step: Monitoring and reporting problem</ProgressChip>
           <ScreenTitle
             id="m5-intro-video-title"
-            lead="The report looks strong at first. This opening asks what the numbers do not show, and how evidence can support accountability and learning."
+            lead="A project report can look strong when activities are completed, people are reached, meetings are held, and feedback is collected. These numbers are useful, but they do not always show whether the project is becoming more inclusive, accountable, safe, and responsive."
           >
-            The Numbers Look Good, But Who Is Missing?
+            Why HRBA MEAL Goes Beyond Activity Counts
           </ScreenTitle>
-          <article className="m5-video-note" aria-label="Module 5 focus">
-            <span aria-hidden="true">MEAL</span>
+          <article className="m5-video-note m5-video-note--watch" aria-label="Watch instruction">
             <p>
-              Good numbers are useful, but incomplete on their own. HRBA MEAL asks who was
-              missed, whether feedback was answered, whether evidence was safe, what changed,
-              and what the CSO should account back.
+              Watch the short story. As you watch, ask: <strong>What do the numbers show - and what do they still hide?</strong>
             </p>
           </article>
           <article className="m5-video-note m5-video-note--bridge" aria-label="Concept bridge">
-            <span aria-hidden="true">Lens</span>
             <div>
+              <h2>The first HRBA MEAL question</h2>
               <p>
-                HRBA-informed MEAL uses evidence to ask what numbers show, what they hide,
-                who was missed, what changed, and what must be explained back to rights-holders.
-              </p>
-              <p>
-                Next, you will see what this module helps you practice and what you will build by the end.
+                Activity counts help a CSO know what was done. HRBA MEAL asks the next questions: <strong>Who was reached? Who was missed? What barriers affected participation? Was feedback answered? What changed? What should the team adapt or explain back?</strong>
               </p>
             </div>
           </article>
+          <div className="m5-bridge-card-grid" aria-label="What HRBA MEAL asks around the numbers">
+            {module5IntroBridgeCards.map((card) => (
+              <article className="m5-bridge-card" key={card.title}>
+                <h3>{card.title}</h3>
+                <p>{card.body}</p>
+              </article>
+            ))}
+          </div>
+          <p className="m5-carry-forward-note">
+            In the next screen, you will see the full Module 5 roadmap and the practical MEAL decisions you will practice.
+          </p>
         </div>
 
         <section className="m5-video-card" aria-labelledby="m5-video-placeholder-label">
           <div className="m5-video-card__header">
-            <p className="m5-card-kicker" id="m5-video-placeholder-label">Intro video</p>
+            <p className="m5-card-kicker" id="m5-video-placeholder-label">Intro video: The Numbers Look Good, But Who Is Missing?</p>
             <span>No autoplay</span>
           </div>
           <div className="m5-video-frame">
@@ -2383,12 +2757,11 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
               <div className="m5-video-placeholder">
                 <img
                   src={module5IntroPosterSrc}
-                  alt="Illustrated Module 5 poster showing a project team reviewing numbers, feedback, access barriers, notes, and adaptation decisions."
+                  alt="Illustration of a CSO team reviewing a strong-looking report and asking what the activity numbers do not show."
                 />
                 <span aria-hidden="true">Video</span>
                 <p>
-                  Before reviewing numbers, ask whether the evidence shows inclusion, feedback, safety,
-                  change, and adaptation for the people the project is meant to serve.
+                  Use the transcript below. The same learning point is available even if the video cannot load.
                 </p>
               </div>
             )}
@@ -2396,10 +2769,10 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
           <figure className="m5-video-poster-fallback">
             <img
               src={module5IntroPosterSrc}
-              alt="Illustrated Module 5 poster showing a project team reviewing numbers, feedback, access barriers, notes, and adaptation decisions."
+              alt="Illustration of a CSO team reviewing a strong-looking report and asking what the activity numbers do not show."
             />
             <figcaption>
-              Poster fallback: the same opening idea is available through this visual and the transcript below.
+              Use the transcript below. The same learning point is available even if the video cannot load.
             </figcaption>
           </figure>
           <details className="m5-transcript-placeholder">
@@ -2423,7 +2796,7 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
               )
             }
           >
-            Continue to Screen 5.2
+            Continue to Learning Objectives and MEAL Roadmap
           </PrimaryButton>
         </footer>
       </section>
@@ -2433,6 +2806,7 @@ function Module5IntroVideoScreen({ onChangeState }: Module5RendererProps) {
 
 function Module5LearningObjectivesScreen({ onChangeState }: Module5RendererProps) {
   const [flippedCards, setFlippedCards] = useState<string[]>([]);
+  const reviewedCount = flippedCards.length;
 
   const toggleCard = (number: string) => {
     setFlippedCards((prev) =>
@@ -2444,70 +2818,461 @@ function Module5LearningObjectivesScreen({ onChangeState }: Module5RendererProps
     <main className="m5-screen m5-objectives-screen" aria-labelledby="m5-objectives-title">
       <section className="m5-objectives-shell">
         <section className="m5-objectives-copy">
-          <ModuleContextLabel>MODULE 5 · APPLYING HRBA IN MEAL</ModuleContextLabel>
+          <ModuleContextLabel>MODULE 5 · HRBA IN MEAL</ModuleContextLabel>
+          <ProgressChip>MEAL step: Roadmap and learning objectives</ProgressChip>
           <div className="m5-objectives-title">
-            <h1 id="m5-objectives-title">Learning Objectives</h1>
-            <p>What you will be able to do</p>
+            <h1 id="m5-objectives-title">Learning Objectives and MEAL Roadmap</h1>
           </div>
           <p className="m5-objectives-orientation">
-            In this module, you will practice how to use MEAL to see whether rights-based practice is actually happening. Each objective connects to a practical evidence check: who benefited, who may be missing, what changed, what feedback shows, and how evidence can guide safer adaptation and reporting.
+            In this module, you will practice using MEAL as a rights-based learning and accountability process. You will move from activity counts and polished reports to evidence that helps a CSO see who may be missing, what barriers remain, what feedback requires response, what should change, and what must be explained back to rights-holders.
           </p>
           <article className="m5-objectives-lens" aria-label="Module 5 visual accent">
-            <span aria-hidden="true">↗</span>
+            <span aria-hidden="true">MEAL</span>
             <div>
-              <h2>Evidence for learning</h2>
-              <p>Use indicators, feedback, data, stories, and reports to support safer decisions and show what should change next.</p>
+              <h2>Standard MEAL plus HRBA</h2>
+              <p>
+                Standard MEAL helps a CSO plan indicators, collect and analyze data, use evidence, report results, and learn. HRBA adds sharper questions: <strong>whose rights are affected, who is excluded, who has responsibility, whether participation is meaningful, whether evidence is safe, and whether feedback leads to response or adaptation.</strong>
+              </p>
             </div>
           </article>
-          <article className="m5-objectives-closing">
+        </section>
+
+        <section className="m5-objectives-lower" aria-label="Module 5 objectives and final output preview">
+          <div className="m5-section-heading">
+            <p className="m5-card-kicker">Learning objectives</p>
+            <h2>By the end of this module, you will be able to...</h2>
+            <p>{reviewedCount} of 6 objectives reviewed. Review each objective, then continue when ready.</p>
+          </div>
+          <section className="m5-objective-grid" aria-label="Module 5 learning objectives">
+            {module5ObjectiveCards.map((objective) => (
+              <button
+                key={objective.number}
+                type="button"
+                className={`m5-objective-card m5-objective-card--${objective.accent} ${flippedCards.includes(objective.number) ? 'is-flipped' : ''}`}
+                onClick={() => toggleCard(objective.number)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggleCard(objective.number);
+                  }
+                }}
+                aria-pressed={flippedCards.includes(objective.number)}
+                aria-label={`${objective.title}. ${flippedCards.includes(objective.number) ? 'Showing details. Activate to return to the headline.' : 'Activate to show details.'}`}
+              >
+                <div className="m5-objective-card__inner">
+                  <div className="m5-objective-card__face m5-objective-card__front">
+                    <span>{objective.number}</span>
+                    <h3>{objective.title}</h3>
+                    <small>{flippedCards.includes(objective.number) ? 'Reviewed' : 'Activate to reveal'}</small>
+                  </div>
+                  <div className="m5-objective-card__face m5-objective-card__back">
+                    <span>{objective.number}</span>
+                    <p>{objective.text}</p>
+                    <small>Activate to return</small>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </section>
+          <div className="m5-output-note-grid">
+            <article className="m5-output-preview" aria-labelledby="m5-final-output-title">
+              <p className="m5-card-kicker">Your final output</p>
+              <h2 id="m5-final-output-title">Portfolio: My HRBA MEAL, Accountability, and Learning Repair Note</h2>
+              <p>By the end of the module, you will create a short repair note that includes:</p>
+              <ul>
+                <li>one MEAL area to improve;</li>
+                <li>one repaired indicator or evidence question;</li>
+                <li>one evidence gap or safety risk;</li>
+                <li>one feedback or accountability improvement;</li>
+                <li>one adaptation or learning action;</li>
+                <li>one account-back action.</li>
+              </ul>
+              <p className="m5-output-preview__footer">
+                This portfolio output is not a donor report. It is a practical learning note that helps a CSO improve how it uses evidence safely, inclusively, and accountably.
+              </p>
+            </article>
+            <article className="m5-safe-practice-note" aria-labelledby="m5-safe-practice-title">
+              <p className="m5-card-kicker">Safe practice note</p>
+              <h2 id="m5-safe-practice-title">Safe practice note</h2>
+              <p>
+                Use fictional, generalized, or non-sensitive examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, or official names in any practice task.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <footer className="m5-objectives-actions">
+          <p className="m5-carry-forward-note">
+            Next, you will practice diagnosing a MEAL report that looks strong but still hides important evidence gaps.
+          </p>
+          <PrimaryButton
+            onClick={() =>
+              completeSimpleScreen(
+                'M5-R02',
+                'M5-R03',
+                module5Routes['M5-R03'],
+                onChangeState,
+                'module5LearningObjectives',
+                { reviewedObjectives: flippedCards },
+              )
+            }
+          >
+            Continue to Diagnosing Evidence Gaps in a MEAL Report
+          </PrimaryButton>
+        </footer>
+      </section>
+    </main>
+  );
+}
+
+function Module5EvidenceGapDiagnosticScreen({ state, onChangeState }: Module5RendererProps) {
+  const key = practiceKey('M5-R03');
+  const stored = state.practiceCheckState[key] || {};
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R03');
+  const [selectedIds, setSelectedIds] = useState<string[]>(stored.selectedIds || []);
+  const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
+  const correctSelected = selectedIds.filter((id) => m5R03EvidenceGapOptions.find((option) => option.id === id)?.correct).length;
+  const unsafeSelected = selectedIds.some((id) => m5R03EvidenceGapOptions.find((option) => option.id === id)?.unsafe);
+  const weakSelected = selectedIds.filter((id) => !m5R03EvidenceGapOptions.find((option) => option.id === id)?.correct).length;
+  const diagnosisLevel = correctSelected >= 6 && weakSelected === 0
+    ? 'strong'
+    : correctSelected >= 3 && (correctSelected <= 5 || weakSelected <= 1)
+      ? 'partial'
+      : 'weak';
+  const feedback = diagnosisLevel === 'strong'
+    ? {
+        heading: 'Strong diagnosis: the report needs more than activity evidence.',
+        text: 'You noticed that Awra\'s report should show who may still be missing, what barriers remain, whether participation influenced decisions, whether feedback was answered, whether evidence is safe, what changed, and what should be explained back. This is the move from activity reporting to HRBA-informed MEAL.',
+      }
+    : diagnosisLevel === 'partial'
+      ? {
+          heading: 'Good start: widen the evidence lens.',
+          text: 'You identified some important gaps. Now check whether the report also shows missing groups, barriers, influence, feedback response, safe evidence, change, and account-back. A strong HRBA MEAL report does not only show what happened; it shows what the team learned and what needs to change.',
+        }
+      : {
+          heading: 'Try again: the report is still too output-focused.',
+          text: 'The activity numbers are useful, but they do not yet show enough about inclusion, barriers, participation quality, feedback response, safe evidence, change, or account-back. Review the Jiru Amba report excerpt again and select the gaps that would help Awra make a better MEAL judgment.',
+        };
+
+  const persist = (value: Record<string, unknown>) => {
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: updatePracticeState(prev, key, value),
+    }));
+  };
+
+  const toggleOption = (id: string) => {
+    const next = selectedIds.includes(id)
+      ? selectedIds.filter((selectedId) => selectedId !== id)
+      : [...selectedIds, id];
+    setSelectedIds(next);
+    setSubmitted(false);
+    persist({ selectedIds: next, submitted: false });
+  };
+
+  const checkGaps = () => {
+    setSubmitted(true);
+    persist({ selectedIds, submitted: true, correctSelected, weakSelected, unsafeSelected, diagnosisLevel });
+  };
+
+  const continueToLens = () => {
+    completeSimpleScreen(
+      'M5-R03',
+      'M5-R04',
+      module5Routes['M5-R04'],
+      onChangeState,
+      key,
+      { selectedIds, submitted: true, correctSelected, weakSelected, unsafeSelected, diagnosisLevel },
+    );
+  };
+
+  return (
+    <main className="m5-screen m5-diagnostic-screen" aria-labelledby="m5-r03-title">
+      <section className="m5-diagnostic-shell">
+        <section className="m5-diagnostic-case">
+          <ModuleContextLabel>MODULE 5 · HRBA IN MEAL</ModuleContextLabel>
+          <ProgressChip>MEAL step: Report diagnosis and evidence completeness</ProgressChip>
+          <ScreenTitle
+            id="m5-r03-title"
+            lead="A MEAL report can look complete because activities were delivered, attendance was high, feedback was collected, and the report was submitted on time. HRBA-informed MEAL asks one more question: does the evidence show who may be missing, what barriers remain, whether feedback was answered, what changed, and what should be explained back?"
+          >
+            Diagnosing Evidence Gaps in a MEAL Report
+          </ScreenTitle>
+          <p className="m5-diagnostic-instruction">
+            Review Awra's Jiru Amba report excerpt. Then select the evidence gaps the team should check before treating the report as complete.
+          </p>
+
+          <article className="m5-report-excerpt-card" aria-labelledby="m5-r03-case-title">
+            <p className="m5-card-kicker">Jiru Amba case</p>
+            <h2 id="m5-r03-case-title">Jiru Amba case: A strong-looking MEAL report</h2>
+            <p className="m5-report-subtitle">Awra's fictional monthly MEAL update</p>
+            <p className="m5-case-note">
+              This is a fictional learning case. Use it to practice report diagnosis; do not enter or imagine real names, exact locations, or real complaints.
+            </p>
+            <p>Awra supported community dialogue sessions in Jiru Amba on local service access and participation. The monthly report says:</p>
+            <ul>
+              <li>6 community dialogue meetings were completed.</li>
+              <li>240 people attended across town and rural kebele sessions.</li>
+              <li>54% of participants were women.</li>
+              <li>Youth representatives attended three meetings.</li>
+              <li>A feedback box was placed at the meeting venue.</li>
+              <li>Facilitators collected several positive stories.</li>
+              <li>The team submitted the monthly report on time.</li>
+            </ul>
+            <blockquote>
+              “The activity reached the community and improved participation in local service decisions.”
+            </blockquote>
+            <p className="m5-report-prompt">
+              Before Awra treats this as a complete HRBA MEAL report, what does the evidence still need to show?
+            </p>
+          </article>
+
+          <article className="m5-worked-example-card" aria-labelledby="m5-r03-example-title">
+            <p className="m5-card-kicker">Worked example</p>
+            <h2 id="m5-r03-example-title">Example: why one number is not enough</h2>
             <p>
-              HRBA in MEAL means asking what the evidence really shows: who was reached, who was missed, what changed, what risks appeared, and what the CSO should learn or adjust, while using minimum necessary data and protecting privacy.
+              “240 people attended” is useful reach evidence. But it does not show whether informal women vendors received information on time, whether persons with disabilities could access the venue, whether women water users or remote kebele residents could attend, whether youth had real influence, whether feedback was answered, or whether anything changed in the way decisions were made.
             </p>
           </article>
         </section>
 
-        <section className="m5-objective-grid" aria-label="Module 5 learning objectives">
-          {module5ObjectiveCards.map((objective) => (
-            <button
-              key={objective.number}
-              type="button"
-              className={`m5-objective-card m5-objective-card--${objective.accent} ${flippedCards.includes(objective.number) ? 'is-flipped' : ''}`}
-              onClick={() => toggleCard(objective.number)}
-              aria-pressed={flippedCards.includes(objective.number)}
-              aria-label={`${objective.title}. ${flippedCards.includes(objective.number) ? 'Showing details. Activate to return to the headline.' : 'Activate to show details.'}`}
-            >
-              <div className="m5-objective-card__inner">
-                <div className="m5-objective-card__face m5-objective-card__front">
-                  <span>{objective.number}</span>
-                  <h2>{objective.title}</h2>
-                  <small>Click to reveal</small>
-                </div>
-                <div className="m5-objective-card__face m5-objective-card__back">
-                  <span>{objective.number}</span>
-                  <p>{objective.text}</p>
-                  <small>Click to return</small>
-                </div>
-              </div>
-            </button>
-          ))}
+        <section className="m5-diagnostic-task" aria-labelledby="m5-r03-task-title">
+          <div className="m5-section-heading">
+            <p className="m5-card-kicker">Diagnostic checklist</p>
+            <h2 id="m5-r03-task-title">Select the evidence gaps Awra should check</h2>
+            <p>Select all gaps that are still important for an HRBA-informed MEAL report.</p>
+          </div>
+
+          <fieldset className="m5-evidence-checklist">
+            <legend className="sr-only">Evidence gaps Awra should check</legend>
+            {m5R03EvidenceGapOptions.map((option) => {
+              const selected = selectedIds.includes(option.id);
+              return (
+                <label key={option.id} className={`m5-evidence-option ${selected ? 'is-selected' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={selected}
+                    onChange={() => toggleOption(option.id)}
+                  />
+                  <span className="m5-evidence-option__mark" aria-hidden="true">{selected ? '✓' : ''}</span>
+                  <span>
+                    <strong>{option.label}</strong>
+                    <small>{option.meaning}</small>
+                  </span>
+                </label>
+              );
+            })}
+          </fieldset>
+
+          <div className="m5-diagnostic-actions">
+            <PrimaryButton onClick={checkGaps} disabled={selectedIds.length === 0}>
+              Check evidence gaps
+            </PrimaryButton>
+          </div>
+
+          {submitted && (
+            <article className={`m5-diagnostic-feedback is-${diagnosisLevel}`} aria-live="polite">
+              <p className="m5-card-kicker">{diagnosisLevel === 'strong' ? 'Strong diagnosis' : diagnosisLevel === 'partial' ? 'Partial diagnosis' : 'Output-focused diagnosis'}</p>
+              <h3>{feedback.heading}</h3>
+              <p>{feedback.text}</p>
+              {unsafeSelected && (
+                <p className="m5-unsafe-caution">
+                  <strong>Caution:</strong> Making a report sound stronger is not the same as making it more credible. HRBA-informed reporting should be truthful, safe, and useful for learning, adaptation, and accountability.
+                </p>
+              )}
+            </article>
+          )}
+
+          {submitted && (
+            <article className="m5-evidence-summary" aria-labelledby="m5-r03-summary-title">
+              <p className="m5-card-kicker">Carry forward</p>
+              <h3 id="m5-r03-summary-title">Evidence gap diagnosis</h3>
+              <p>A stronger Jiru Amba HRBA MEAL report should add evidence on:</p>
+              <ul>
+                <li>who was reached and who may still be missing;</li>
+                <li>barriers affecting access and participation;</li>
+                <li>whether participation influenced decisions;</li>
+                <li>whether feedback was reviewed, answered, referred, or used for adaptation;</li>
+                <li>whether evidence was collected and reported safely;</li>
+                <li>what changed and what did not;</li>
+                <li>what should be explained back to rights-holders and communities.</li>
+              </ul>
+              <p className="m5-carry-forward-note">
+                You will use this diagnosis in the next screens to apply the HRBA MEAL lens, repair indicators, choose safer evidence, and strengthen feedback response.
+              </p>
+            </article>
+          )}
+
+          <article className="m5-safe-practice-note m5-safe-practice-note--compact" aria-labelledby="m5-r03-safe-title">
+            <p className="m5-card-kicker">Safe practice note</p>
+            <h3 id="m5-r03-safe-title">Safe practice note</h3>
+            <p>
+              Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, or official names in any practice task.
+            </p>
+          </article>
+
+          <div className="m5-diagnostic-continue">
+            <PrimaryButton onClick={submitted ? continueToLens : checkGaps} disabled={!submitted && selectedIds.length === 0}>
+              {submitted ? 'Continue to Applying the HRBA Lens to the MEAL Cycle' : 'Review the report and check evidence gaps'}
+            </PrimaryButton>
+          </div>
+        </section>
+      </section>
+    </main>
+  );
+}
+
+function Module5HrbaMealLensCycleScreen({ state, onChangeState }: Module5RendererProps) {
+  const key = practiceKey('M5-R04');
+  const stored = state.practiceCheckState[key] || {};
+  const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R04');
+  const [openedIds, setOpenedIds] = useState<string[]>(completed ? m5R04LensQuestions.map((item) => item.id) : stored.openedIds || []);
+  const [prompt, setPrompt] = useState('');
+  const openedCount = openedIds.length;
+  const allReviewed = openedCount === m5R04LensQuestions.length;
+
+  const persist = (value: Record<string, unknown>) => {
+    onChangeState((prev) => ({
+      ...prev,
+      practiceCheckState: updatePracticeState(prev, key, value),
+    }));
+  };
+
+  const toggleCard = (id: string) => {
+    setPrompt('');
+    setOpenedIds((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((openedId) => openedId !== id)
+        : [...prev, id];
+      persist({ openedIds: next, status: next.length === m5R04LensQuestions.length ? 'reviewed' : 'in_progress' });
+      return next;
+    });
+  };
+
+  const continueToEvidenceLadder = () => {
+    if (!allReviewed) {
+      setPrompt('Review each lens question before continuing.');
+      return;
+    }
+
+    completeSimpleScreen(
+      'M5-R04',
+      'M5-R05',
+      module5Routes['M5-R05'],
+      onChangeState,
+      key,
+      { openedIds, reviewedAll: true },
+    );
+  };
+
+  return (
+    <main className="m5-screen m5-lens-cycle-screen" aria-labelledby="m5-r04-title">
+      <section className="m5-lens-cycle-shell">
+        <section className="m5-lens-cycle-tool">
+          <ModuleContextLabel>MODULE 5 · HRBA IN MEAL</ModuleContextLabel>
+          <ProgressChip>MEAL step: HRBA lens for the MEAL cycle</ProgressChip>
+          <ScreenTitle
+            id="m5-r04-title"
+            lead="Standard MEAL helps a CSO plan indicators, collect data, analyze evidence, report results, and learn. The HRBA lens adds sharper questions: whose rights are affected, who may be excluded, what barriers remain, who has responsibility, whether participation is meaningful, whether evidence is safe, what changed, and what must be explained back."
+          >
+            Applying the HRBA Lens to the MEAL Cycle
+          </ScreenTitle>
+          <p className="m5-lens-instruction">
+            Explore the eight HRBA MEAL questions. Then connect them back to Awra's Jiru Amba report diagnosis.
+          </p>
+          <article className="m5-lens-bridge" aria-labelledby="m5-r04-bridge-title">
+            <p className="m5-card-kicker">Bridge from the report diagnosis</p>
+            <h2 id="m5-r04-bridge-title">From evidence gaps to better MEAL questions</h2>
+            <p>
+              In the previous screen, Awra's report looked strong because activities were completed and people attended. The HRBA MEAL lens helps the team ask what the report still needs to show before making claims, adapting action, or reporting back to communities.
+            </p>
+          </article>
+
+          <section className="m5-lens-card-section" aria-labelledby="m5-r04-tool-title">
+            <div className="m5-section-heading">
+              <p className="m5-card-kicker">Reusable tool</p>
+              <h2 id="m5-r04-tool-title">Eight questions to keep MEAL rights-based</h2>
+              <p>{openedCount} of 8 lens questions reviewed.</p>
+            </div>
+            <div className="m5-lens-card-grid">
+              {m5R04LensQuestions.map((item, index) => {
+                const opened = openedIds.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`m5-lens-card ${opened ? 'is-opened' : ''}`}
+                    onClick={() => toggleCard(item.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        toggleCard(item.id);
+                      }
+                    }}
+                    aria-pressed={opened}
+                    aria-label={`${item.label}. ${item.question}. ${opened ? 'Showing Awra application. Activate to collapse.' : 'Activate to reveal Awra application.'}`}
+                  >
+                    <span className="m5-lens-card__number">{index + 1}</span>
+                    <span className="m5-lens-card__body">
+                      <strong>{item.label}</strong>
+                      <span>{item.question}</span>
+                      <small>{item.check}</small>
+                      {opened && <em>{item.awra}</em>}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </section>
 
-        <footer className="m5-objectives-actions">
-          <PrimaryButton
-            onClick={() =>
-              completeSimpleScreen(
-                'M5-S1-02',
-                'M5-S1-03',
-                module5Routes['M5-S1-03'],
-                onChangeState,
-                'module5LearningObjectives',
-                { reviewed: true },
-              )
-            }
-          >
-            Continue
-          </PrimaryButton>
-        </footer>
+        <aside className="m5-lens-cycle-application" aria-label="Jiru Amba application and safety notes">
+          <figure className="m5-lens-visual-card">
+            <img
+              src={module5MealLensMapSrc}
+              alt="Concept visual showing an HRBA MEAL lens connected to inclusion, participation, feedback, safety, change, response, and account-back."
+            />
+            <figcaption>
+              Supportive visual only. Use the live-text cards for the full eight-question lens.
+            </figcaption>
+          </figure>
+
+          {allReviewed && (
+            <article className="m5-lens-application-panel" aria-labelledby="m5-r04-application-title">
+              <p className="m5-card-kicker">Jiru Amba application</p>
+              <h2 id="m5-r04-application-title">Apply the lens to Awra's report</h2>
+              <p>Using the HRBA MEAL lens, Awra's report should not stop at activities, attendance, and positive stories. A stronger report would also check:</p>
+              <ul>
+                <li>which Jiru Amba groups were reached and which may still be missing;</li>
+                <li>what barriers affected access, voice, safety, or benefit;</li>
+                <li>whether participation influenced local service decisions;</li>
+                <li>whether feedback was reviewed, answered, referred, or used;</li>
+                <li>whether evidence was safe and non-identifying;</li>
+                <li>what changed beyond attendance;</li>
+                <li>who needs to respond or follow up;</li>
+                <li>what Awra should explain back to communities.</li>
+              </ul>
+              <p className="m5-carry-forward-note">
+                Next, you will use this lens to move from activity counts toward stronger evidence about reach, quality, change, learning, and accountability.
+              </p>
+            </article>
+          )}
+
+          <article className="m5-safe-practice-note m5-safe-practice-note--compact" aria-labelledby="m5-r04-safe-title">
+            <p className="m5-card-kicker">Safe practice note</p>
+            <h2 id="m5-r04-safe-title">Safe practice note</h2>
+            <p>
+              When using the HRBA MEAL lens, do not collect more detail than needed. Use fictional or generalized examples in this course. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, or official names.
+            </p>
+          </article>
+
+          {prompt && <p className="m5-lens-review-prompt" role="status">{prompt}</p>}
+          <div className="m5-lens-actions">
+            <PrimaryButton onClick={continueToEvidenceLadder}>
+              {allReviewed ? 'Continue to From Outputs to Outcomes: Reading the Evidence Ladder' : 'Review each HRBA MEAL lens question'}
+            </PrimaryButton>
+          </div>
+        </aside>
       </section>
     </main>
   );
@@ -2853,7 +3618,7 @@ function Module5CanvasScreen({
   );
 }
 
-function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererProps) {
+export function Module5EvidenceLadderScreen({ state, onChangeState }: Module5RendererProps) {
   const config = module5Screens['M5-R04'];
   const key = practiceKey('M5-R04');
   const stored = state.practiceCheckState[key] || {};
@@ -3104,32 +3869,36 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
   const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({
-      ...prev,
-      practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }),
-    }));
+    setOpenedIds((previousIds) => {
+      const next = previousIds.includes(id) ? previousIds : [...previousIds, id];
+      onChangeState((prev) => ({
+        ...prev,
+        practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }),
+      }));
+      return next;
+    });
   };
 
   const updateAnswer = (itemId: string, field: 'indicator' | 'reveal', value: string) => {
-    const next = {
-      ...answers,
-      [itemId]: {
-        ...(answers[itemId] || {}),
-        [field]: value,
-      },
-    };
-    setAnswers(next);
     setSubmitted(false);
-    onChangeState((prev) => {
-      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R05');
-      return {
-        ...prev,
-        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-        practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+    setAnswers((previousAnswers) => {
+      const next = {
+        ...previousAnswers,
+        [itemId]: {
+          ...(previousAnswers[itemId] || {}),
+          [field]: value,
+        },
       };
+      onChangeState((prev) => {
+        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+        progress.delete('M5-R05');
+        return {
+          ...prev,
+          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+        };
+      });
+      return next;
     });
   };
 
@@ -3154,7 +3923,7 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R05-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen m5-indicator-repair-screen" aria-labelledby="M5-R05-title">
       <Module5ClinicHero config={config} />
       <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r05-practice">
         <article className="m5-practice-point">
@@ -3165,7 +3934,7 @@ function Module5IndicatorRepairScreen({ state, onChangeState }: Module5RendererP
           <div>
             <p className="m5-card-kicker">Indicator repair clinic</p>
             <h2 id="m5-r05-practice">Repair weak indicators</h2>
-            <p>Review all five repair checks, then choose the stronger indicator and what it reveals.</p>
+            <p>Review all seven repair checks, then choose the stronger indicator and what it reveals.</p>
           </div>
           <ProgressChip>{openedIds.length} of {allRevealIds.length} checks reviewed</ProgressChip>
         </div>
@@ -3237,30 +4006,35 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
   const key = practiceKey('M5-R06');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R06');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
-  const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
+  const [answers, setAnswers] = useState<Record<string, { indicator?: string; reveal?: string }>>(
+    (stored.answers as Record<string, { indicator?: string; reveal?: string }>) || {},
+  );
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
-  const choose = (id: string, value: string) => {
-    const next = { ...answers, [id]: value };
+  const updateAnswer = (itemId: string, field: 'indicator' | 'reveal', value: string) => {
+    const next = {
+      ...answers,
+      [itemId]: {
+        ...(answers[itemId] || {}),
+        [field]: value,
+      },
+    };
     setAnswers(next);
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.delete('M5-R06');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+      };
     });
   };
-  const allAnswered = safeEvidenceItems.every((item) => answers[item.id]);
-  const allReviewed = openedIds.length === allRevealIds.length;
-  const correctCount = safeEvidenceItems.filter((item) => item.answers.includes(answers[item.id])).length;
-  const canSubmit = allAnswered && allReviewed;
+  const allAnswered = indicatorRepairItems.every((item) => answers[item.id]?.indicator && answers[item.id]?.reveal);
+  const correctCount = indicatorRepairItems.filter((item) => answers[item.id]?.indicator === 'strong' && answers[item.id]?.reveal === item.reveal).length;
+  const hasUnsafeChoice = indicatorRepairItems.some((item) => ['stories', 'disability'].includes(item.id) && answers[item.id]?.indicator === 'distractor');
+  const canSubmit = allAnswered;
   const canContinue = completed || submitted;
   const submit = () => {
     if (!canSubmit) return;
@@ -3268,73 +4042,179 @@ function Module5SafeEvidenceScreen({ state, onChangeState }: Module5RendererProp
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R06');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, submitted: true, correctCount, hasUnsafeChoice, status: 'completed' }),
+      };
     });
   };
+  const feedback = correctCount === indicatorRepairItems.length
+    ? {
+        className: 'is-strong',
+        heading: 'Strong improvement: the indicators now support HRBA MEAL.',
+        body: 'You strengthened the indicators so they can show access, participation, feedback response, safety, accountability, and change. These indicators can guide decisions, not only fill a report.',
+      }
+    : correctCount > 0
+      ? {
+          className: 'is-partial',
+          heading: 'Good start: some indicators still count activities only.',
+          body: 'You improved part of the MEAL logic. Review any indicator that still counts tools, meetings, forms, photos, or stories without showing whether people could participate, feedback was answered, or anything changed.',
+        }
+      : {
+          className: 'is-weak',
+          heading: 'Try again: the indicators still do not show HRBA change.',
+          body: 'The weak options count activities or create unsafe evidence pressure. A stronger HRBA MEAL indicator should help Awra see inclusion, barriers, participation quality, feedback response, safe evidence, adaptation, or change.',
+        };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R06-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r06-practice">
-        <div className="m5-safety-warning">
-          <strong>Use fictional or generalized examples only.</strong>
-          <span>Do not enter real names, exact locations, complaint details, survivor information, disability diagnoses, or confidential data.</span>
+    <main className="m5-screen m5-screen--asset-visual m5-indicator-improvement-screen" aria-labelledby="M5-R06-title">
+      <section className="m5-hero-panel m5-indicator-improvement-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Indicators and logframe evidence</ProgressChip>
+          <ScreenTitle id="M5-R06-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r06-instruction">
+            Improve weak activity indicators from Awra's Jiru Amba case. For each one, choose the improved indicator and what it helps the team understand.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Jiru Amba case bridge</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
         </div>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-indicator-improvement-canvas" aria-labelledby="m5-r06-practice">
         <article className="m5-practice-point">
-          <p className="m5-card-kicker">Safe evidence rule</p>
-          <p>{clinicPracticeNotes['M5-R06'].why}</p>
+          <p className="m5-card-kicker">What makes an indicator stronger?</p>
+          <p>{config.insight[0]}</p>
         </article>
+        <div className="m5-r06-rule-grid" aria-label="Four-part indicator improvement rule">
+          {config.revealItems.map((item) => (
+            <article key={item.id} className="m5-r06-rule-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Safe data clinic</p>
-            <h2 id="m5-r06-practice">Choose the safest useful decision</h2>
-            <p>Review all five safety checks, then decide how to handle each fictional evidence example.</p>
+            <p className="m5-card-kicker">Indicator improvement activity</p>
+            <h2 id="m5-r06-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} checks reviewed</ProgressChip>
+          <ProgressChip>{Object.values(answers).filter((answer) => answer.indicator && answer.reveal).length} of {indicatorRepairItems.length} tasks complete</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-decision-grid">
-          {safeEvidenceItems.map((item) => {
-            const selected = answers[item.id] || '';
-            const correct = submitted && item.answers.includes(selected);
-            const incorrect = submitted && selected && !correct;
+        <div className="m5-r06-improvement-grid">
+          {indicatorRepairItems.map((item, index) => {
+            const answer = answers[item.id] || {};
+            const correct = submitted && answer.indicator === 'strong' && answer.reveal === item.reveal;
+            const incorrect = submitted && !correct;
             return (
-              <article key={item.id} className={`m5-classification-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+              <article key={item.id} className={`m5-r06-improvement-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+                <p className="m5-card-kicker">Task {index + 1}</p>
+                <h3>{item.weak}</h3>
+                <p><strong>What it currently counts:</strong> {item.counts}</p>
                 <label>
-                  <span>{item.text}</span>
-                  <select value={selected} onChange={(event) => choose(item.id, event.target.value)}>
-                    <option value="">Choose a decision</option>
-                    {safeEvidenceOptions.map((option) => (
+                  <span>Choose the improved indicator</span>
+                  <select value={answer.indicator || ''} onChange={(event) => updateAnswer(item.id, 'indicator', event.target.value)}>
+                    <option value="">Select one</option>
+                    <option value="strong">{item.strong}</option>
+                    <option value="distractor">{item.distractor}</option>
+                  </select>
+                </label>
+                {answer.indicator && (
+                  <p className="m5-selected-summary">
+                    <strong>Selected meaning:</strong> {getIndicatorChoiceSummary(item, answer.indicator)}
+                  </p>
+                )}
+                <label>
+                  <span>What does it reveal?</span>
+                  <select value={answer.reveal || ''} onChange={(event) => updateAnswer(item.id, 'reveal', event.target.value)}>
+                    <option value="">Select one</option>
+                    {indicatorRevealOptions.map((option) => (
                       <option key={option.id} value={option.id}>{option.label}</option>
                     ))}
                   </select>
                 </label>
-                {selected && (
-                  <p className="m5-selected-summary">
-                    <strong>Selected meaning:</strong> {getOptionSummary(safeEvidenceOptions, selected)}
-                  </p>
-                )}
                 {submitted && (
-                  <p className="m5-classification-feedback">
-                    <strong>{correct ? 'Safe and useful.' : `Better decision: ${item.answers.map((answer) => safeEvidenceOptions.find((option) => option.id === answer)?.label).join(' or ')}.`}</strong>{' '}
-                    {item.explanation}
+                  <p className="m5-r06-card-feedback">
+                    <strong>{correct ? 'Strong improvement.' : 'Choose the improved indicator and matching meaning.'}</strong>{' '}
+                    A stronger indicator does not only count {item.counts.toLowerCase()} It helps the team understand {item.why} and can guide this decision: {item.trigger}
                   </p>
                 )}
               </article>
             );
           })}
         </div>
-        <footer className="m5-ladder-actions">
+        <footer className="m5-ladder-actions m5-r06-actions">
           <div>
-            <h3>{submitted ? `${correctCount} of ${safeEvidenceItems.length} safe decisions matched` : 'Complete all safe-data decisions to continue'}</h3>
-            <p>{submitted ? 'The reasoning is visible before you continue. Revise any choice that collected too much detail or suppressed a useful safe theme.' : 'Use minimum necessary, protected, explainable evidence.'}</p>
-            <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R06'].carry}</p>
+            <h3>{submitted ? `${correctCount} of ${indicatorRepairItems.length} indicator improvements matched` : 'Complete the indicator improvements'}</h3>
+            <p>{submitted ? 'The reasoning is visible before you continue. Revise any choice that still only counts activities or creates unsafe evidence pressure.' : 'No real project data is needed. Use only the fictional Awra examples on this screen.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check safe-data decisions' : 'Review all checks and decide each example'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R06', 'M5-R07', module5Routes['M5-R07'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check indicator improvements' : 'Complete the indicator improvements'}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R06', 'M5-R07', module5Routes['M5-R07'], onChangeState, key, { answers, correctCount, submitted: true, hasUnsafeChoice })} disabled={!canContinue}>
+              {submitted ? config.ctaButton : 'Complete the indicator improvements'}
+            </PrimaryButton>
           </div>
         </footer>
+        {submitted && (
+          <section className={`m5-r06-feedback ${feedback.className}`} aria-live="polite" tabIndex={-1}>
+            <h2>{feedback.heading}</h2>
+            <p>{feedback.body}</p>
+            {hasUnsafeChoice && (
+              <p>
+                <strong>Caution:</strong> Avoid indicators that push teams to collect identifying stories, photos, diagnoses, complaint details, or other sensitive information unless there is a clear, safe, necessary, and consent-based reason.
+              </p>
+            )}
+          </section>
+        )}
+        {submitted && (
+          <section className="m5-r06-logframe-strip" aria-labelledby="m5-r06-logframe-heading">
+            <h2 id="m5-r06-logframe-heading">How an improved indicator fits into a logframe</h2>
+            <div className="m5-r06-logframe-grid">
+              {m5R06LogframeEvidence.map((item) => (
+                <article key={item.element} className="m5-r06-logframe-card">
+                  <h3>{item.element}</h3>
+                  <p>{item.explanation}</p>
+                  <strong>{item.example}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+        {submitted && (
+          <section className="m5-r06-summary-panel" aria-labelledby="m5-r06-summary-heading">
+            <h2 id="m5-r06-summary-heading">Indicator improvement summary</h2>
+            <p>Awra's improved indicators should help the team see:</p>
+            <ul>
+              <li>whether people facing access barriers could participate meaningfully;</li>
+              <li>whether participation influenced decisions or follow-up actions;</li>
+              <li>whether feedback was reviewed, answered, referred, or acted on;</li>
+              <li>whether learning evidence was safe and consent-based;</li>
+              <li>whether accessibility and support arrangements allowed meaningful participation.</li>
+            </ul>
+            <p className="m5-carry-forward-note">
+              Next, you will decide what evidence can be collected safely and what should be aggregated, anonymized, suppressed, referred, or not collected.
+            </p>
+          </section>
+        )}
+        <article className="m5-r06-portfolio-bridge">
+          <p>
+            Later, you will choose one indicator improvement to include in your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. For now, focus on what makes an indicator useful, safe, and decision-oriented.
+          </p>
+        </article>
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Do not create indicators that require names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, or identifiable photos. Use the minimum evidence needed to guide a safe and useful decision.</span>
+        </article>
       </section>
     </main>
   );
@@ -3345,32 +4225,46 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
   const key = practiceKey('M5-R07');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R07');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
-  const [selectedIds, setSelectedIds] = useState<string[]>((stored.selectedIds as string[]) || []);
+  const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
-  const toggle = (id: string) => {
-    const next = selectedIds.includes(id) ? selectedIds.filter((item) => item !== id) : [...selectedIds, id];
-    setSelectedIds(next);
+  const choose = (id: string, value: string) => {
     setSubmitted(false);
-    onChangeState((prev) => {
-      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R07');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }) };
+    setAnswers((previousAnswers) => {
+      const next = { ...previousAnswers, [id]: value };
+      onChangeState((prev) => {
+        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+        progress.delete('M5-R07');
+        return {
+          ...prev,
+          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+        };
+      });
+      return next;
     });
   };
-  const correctIds = feedbackLoopChoices.filter((choice) => choice.correct).map((choice) => choice.id);
-  const selectedCorrect = selectedIds.filter((id) => correctIds.includes(id)).length;
-  const hasUnsafe = selectedIds.some((id) => !correctIds.includes(id));
-  const strong = selectedCorrect === correctIds.length && !hasUnsafe;
-  const partial = selectedCorrect > 0 && !strong;
-  const canSubmit = openedIds.length === allRevealIds.length && selectedIds.length > 0;
+  const allAnswered = safeDataDecisionItems.every((item) => answers[item.id]);
+  const correctCount = safeDataDecisionItems.filter((item) => answers[item.id] === item.answer).length;
+  const hasUnsafe = safeDataDecisionItems.some((item) => item.unsafeChoices.includes(answers[item.id] || ''));
+  const feedback = correctCount >= 5
+    ? {
+        className: 'is-strong',
+        heading: 'Strong safe-data decisions.',
+        body: 'You chose evidence that can reveal barriers without exposing people. This is the HRBA MEAL balance: collect enough to see exclusion and guide action, but avoid names, diagnoses, exact locations, raw complaints, or small-cell details that could identify people.',
+      }
+    : correctCount >= 3
+      ? {
+          className: 'is-partial',
+          heading: 'Good start: review the riskier evidence choices.',
+          body: 'Some choices protect people and still support learning. Review any example where individual detail, small groups, children, disability information, complaint details, or exact locations could expose someone.',
+        }
+      : {
+          className: 'is-weak',
+          heading: 'Try again: more detail is not always better evidence.',
+          body: 'HRBA MEAL evidence should be useful, necessary, protected, and linked to safe action. Avoid collecting details that Awra does not need or cannot protect.',
+        };
+  const canSubmit = allAnswered;
   const canContinue = completed || submitted;
   const submit = () => {
     if (!canSubmit) return;
@@ -3378,55 +4272,146 @@ function Module5FeedbackLoopScreen({ state, onChangeState }: Module5RendererProp
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R07');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, selectedIds, submitted: true, strong, status: 'completed' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, submitted: true, correctCount, hasUnsafe, status: 'completed' }),
+      };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R07-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r07-practice">
+    <main className="m5-screen m5-screen--asset-visual m5-safe-data-screen" aria-labelledby="M5-R07-title">
+      <section className="m5-hero-panel m5-safe-data-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Safe data collection and disaggregation</ProgressChip>
+          <ScreenTitle id="M5-R07-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r07-instruction">
+            Use Awra's Jiru Amba case to decide how different types of evidence should be handled: collect safely, aggregate, anonymize, suppress or combine, refer through a safe pathway, or avoid collecting.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Jiru Amba case bridge</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
+        </div>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-safe-data-canvas" aria-labelledby="m5-r07-practice">
         <article className="m5-practice-point">
-          <p className="m5-card-kicker">Accountability point</p>
+          <p className="m5-card-kicker">The safe evidence rule</p>
           <p>{clinicPracticeNotes['M5-R07'].why}</p>
+          <p><strong>Collect the minimum useful evidence needed for safe action.</strong></p>
         </article>
+        <div className="m5-r07-rule-grid" aria-label="Safe evidence questions">
+          {config.revealItems.map((item) => (
+            <article key={item.id} className="m5-r07-rule-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Feedback loop repair</p>
-            <h2 id="m5-r07-practice">Repair the weak pathway</h2>
-            <p>Weak path: feedback box installed → complaints collected → report says feedback received.</p>
+            <p className="m5-card-kicker">Safe data decision activity</p>
+            <h2 id="m5-r07-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} loop checks reviewed</ProgressChip>
+          <ProgressChip>{Object.values(answers).filter(Boolean).length} of {safeDataDecisionItems.length} decisions complete</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-choice-grid">
-          {feedbackLoopChoices.map((choice) => {
-            const selected = selectedIds.includes(choice.id);
+        <div className="m5-r07-decision-options" aria-label="Safe data decision choices">
+          {safeDataDecisionOptions.map((option) => (
+            <article key={option.id}>
+              <h3>{option.label}</h3>
+              <p>{option.summary}</p>
+            </article>
+          ))}
+        </div>
+        <div className="m5-r07-decision-grid">
+          {safeDataDecisionItems.map((item, index) => {
+            const selected = answers[item.id] || '';
+            const correct = submitted && selected === item.answer;
+            const incorrect = submitted && selected && selected !== item.answer;
             return (
-              <label key={choice.id} className={`m5-choice-card ${selected ? 'is-selected' : ''}`}>
-                <input type="checkbox" checked={selected} onChange={() => toggle(choice.id)} />
-                <span className="m5-choice-card__mark" aria-hidden="true">{selected ? '✓' : '•'}</span>
-                <span><strong>{choice.label}</strong><small>{choice.body}</small></span>
-              </label>
+              <article key={item.id} className={`m5-r07-decision-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+                <p className="m5-card-kicker">Task {index + 1}: {item.title}</p>
+                <h3>Evidence example</h3>
+                <p>{item.example}</p>
+                <label>
+                  <span>Choose the safest decision</span>
+                  <select value={selected} onChange={(event) => choose(item.id, event.target.value)} aria-label={`Safest data decision for ${item.title}`}>
+                    <option value="">Select one</option>
+                    {safeDataDecisionOptions.map((option) => (
+                      <option key={option.id} value={option.id}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+                {selected && (
+                  <p className="m5-selected-summary">
+                    <strong>Selected meaning:</strong> {getOptionSummary(safeDataDecisionOptions, selected)}
+                  </p>
+                )}
+                {submitted && (
+                  <p className="m5-r07-card-feedback">
+                    <strong>{correct ? 'Safe decision.' : `Safer decision: ${safeDataDecisionOptions.find((option) => option.id === item.answer)?.label}.`}</strong>{' '}
+                    {item.feedback}
+                  </p>
+                )}
+              </article>
             );
           })}
         </div>
         {submitted && (
-          <article className={`m5-feedback-card ${strong ? 'is-strong' : 'is-support'}`} aria-live="polite">
-            <p className="m5-card-kicker">{strong ? 'Strong feedback pathway' : partial ? 'Partial pathway' : 'Weak pathway'}</p>
-            <h3>{strong ? 'Feedback became accountability evidence.' : 'The loop still needs repair.'}</h3>
-            <p>{strong ? 'You included accessible channels, safe recording, responsible review, response or referral, adaptation, and account-back.' : 'Look for the full safe pathway. Avoid collecting more names, publishing complaint examples, counting only complaints, or asking untrained staff to investigate sensitive complaints.'}</p>
+          <article className={`m5-r07-feedback ${feedback.className}`} aria-live="polite" tabIndex={-1}>
+            <h2>{feedback.heading}</h2>
+            <p>{feedback.body}</p>
+            {hasUnsafe && (
+              <p>
+                <strong>Caution:</strong> Do not collect or report identifiable or sensitive data just to make evidence look stronger. Use safe themes, aggregation, anonymization, suppression, or referral instead.
+              </p>
+            )}
           </article>
         )}
-        <footer className="m5-ladder-actions">
-          <div>
-            <h3>{submitted ? `${selectedCorrect} of ${correctIds.length} strong pathway steps selected` : 'Select the repaired pathway steps'}</h3>
-            <p>Use respond, refer, escalate through agreed safe pathway, protect identity, and record only minimum necessary information.</p>
+        {submitted && (
+          <section className="m5-r07-summary-panel" aria-labelledby="m5-r07-summary-heading">
+            <h2 id="m5-r07-summary-heading">Safe data collection summary</h2>
+            <p>Awra's safer data approach should:</p>
+            <ul>
+              <li>collect only evidence that is useful for inclusion, feedback, response, or change;</li>
+              <li>use broad categories when detailed data is not necessary;</li>
+              <li>anonymize names, faces, exact locations, and identifying combinations;</li>
+              <li>suppress or combine small-cell data that could identify people;</li>
+              <li>refer sensitive concerns through agreed safe pathways;</li>
+              <li>avoid collecting names, diagnoses, raw complaints, or identifiable stories when they are not necessary.</li>
+            </ul>
             <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R07'].carry}</p>
+          </section>
+        )}
+        <article className="m5-r07-portfolio-bridge">
+          <p>
+            Later, you will choose one safe evidence decision to include in your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. For now, focus on how to collect enough evidence for action without exposing people.
+          </p>
+        </article>
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, or official names. In real MEAL work, follow your organization&apos;s data protection, safeguarding, referral, and consent procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r07-actions">
+          <div>
+            <h3>{submitted ? `${correctCount} of ${safeDataDecisionItems.length} safe decisions matched` : 'Complete the safe-data decisions'}</h3>
+            <p>{submitted ? 'Review the feedback before continuing. Any risky choice can be changed and checked again.' : 'No real project data is needed. Use only the fictional Jiru Amba examples on this screen.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check pathway' : 'Review all checks and select steps'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R07', 'M5-R08', module5Routes['M5-R08'], onChangeState, key, { selectedIds, strong, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check safe-data decisions' : 'Complete the safe-data decisions'}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R07', 'M5-R08', module5Routes['M5-R08'], onChangeState, key, { answers, correctCount, hasUnsafe, submitted: true })} disabled={!canContinue}>
+              {submitted ? config.ctaButton : 'Complete the safe-data decisions'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3439,29 +4424,52 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
   const key = practiceKey('M5-R08');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R08');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
-  const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
+  const correctIds = feedbackPathwayChoices.filter((choice) => choice.correct).map((choice) => choice.id);
+  const [selectedIds, setSelectedIds] = useState<string[]>((stored.selectedIds as string[]) || []);
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
-  const choose = (id: string, value: string) => {
-    const next = { ...answers, [id]: value };
-    setAnswers(next);
+  const toggle = (id: string) => {
     setSubmitted(false);
-    onChangeState((prev) => {
-      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R08');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
+    setSelectedIds((previousIds) => {
+      const next = previousIds.includes(id)
+        ? previousIds.filter((item) => item !== id)
+        : [...previousIds, id];
+      onChangeState((prev) => {
+        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+        progress.delete('M5-R08');
+        return {
+          ...prev,
+          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+          practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }),
+        };
+      });
+      return next;
     });
   };
-  const allAnswered = storyResponseItems.every((item) => answers[item.id]);
-  const correctCount = storyResponseItems.filter((item) => answers[item.id] === item.answer).length;
-  const canSubmit = allAnswered && openedIds.length === allRevealIds.length;
+
+  const selectedCorrect = selectedIds.filter((id) => correctIds.includes(id)).length;
+  const hasWeak = selectedIds.some((id) => !feedbackPathwayChoices.find((choice) => choice.id === id)?.correct);
+  const hasUnsafe = selectedIds.some((id) => feedbackPathwayChoices.find((choice) => choice.id === id)?.unsafe);
+  const strong = selectedCorrect >= 7 && !hasWeak;
+  const partial = selectedCorrect >= 3 && !strong;
+  const feedback = strong
+    ? {
+        className: 'is-strong',
+        heading: 'Strong pathway: feedback can become accountability evidence.',
+        body: 'You included clear information, accessible channels, safe recording, responsible review, response or referral, adaptation, and account-back. This turns feedback from a box or count into a MEAL pathway for learning, response, and accountability.',
+      }
+    : partial
+      ? {
+          className: 'is-partial',
+          heading: 'Good start: the pathway still needs a stronger response loop.',
+          body: 'You selected some useful steps. Now check whether the mechanism also informs people, protects identity, records only what is needed, routes feedback to the right role, responds or refers, adapts practice, and explains back what happened.',
+        }
+      : {
+          className: 'is-weak',
+          heading: 'Try again: collecting feedback is not enough.',
+          body: 'A feedback channel is not accountable if it only collects comments, counts complaints, or stores forms. Review the pathway and choose steps that help Awra receive feedback safely, respond responsibly, adapt action, and account back.',
+        };
+  const canSubmit = selectedIds.length > 0;
   const canContinue = completed || submitted;
   const submit = () => {
     if (!canSubmit) return;
@@ -3469,72 +4477,145 @@ function Module5EthicalStoriesScreen({ state, onChangeState }: Module5RendererPr
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R08');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { selectedIds, submitted: true, selectedCorrect, hasUnsafe, strong, status: 'completed' }),
+      };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R08-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r08-practice">
-        <div className="m5-safety-warning">
-          <strong>Protect dignity and truth.</strong>
-          <span>Do not use real names, faces, complaint details, child data, survivor information, raw logs, or rare identifying details.</span>
+    <main className="m5-screen m5-screen--asset-visual m5-feedback-pathway-screen" aria-labelledby="M5-R08-title">
+      <section className="m5-hero-panel m5-feedback-pathway-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Feedback, response, and accountability</ProgressChip>
+          <ScreenTitle id="M5-R08-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r08-instruction">
+            Use Awra's Jiru Amba case to strengthen a weak feedback channel into a safer response pathway.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Case bridge</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
+        </div>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-feedback-pathway-canvas" aria-labelledby="m5-r08-practice">
+        <article className="m5-r08-case-card">
+          <p className="m5-card-kicker">Jiru Amba case: A feedback box is not enough</p>
+          <h2>Awra's weak feedback channel</h2>
+          <blockquote>"A feedback box was placed at the meeting venue."</blockquote>
+          <p>
+            This is useful, but incomplete. The report does not show whether women vendors, persons with disabilities, youth, women water users, remote kebele residents, or older people knew about the box, trusted it, could use it safely, or received any response.
+          </p>
+          <p><strong>What should Awra add so the feedback channel becomes a safe and accountable response pathway?</strong></p>
+        </article>
+        <div className="m5-r08-example-grid">
+          <article>
+            <p className="m5-card-kicker">Example: when feedback leads to adaptation</p>
+            <h3>Adapt the activity, not only the report</h3>
+            <p>If several people say the meeting time excludes caregivers and market-day workers, Awra should not only count the comments. The team should review the feedback, adapt the meeting time or information route where possible, and explain back what changed and why.</p>
+          </article>
+          <article>
+            <p className="m5-card-kicker">Example: when feedback needs a safe pathway</p>
+            <h3>Refer sensitive concerns safely</h3>
+            <p>If one person reports a sensitive protection or safeguarding concern, Awra should not discuss it in a community meeting or publish it as evidence. The team should follow the agreed safe pathway, record only the minimum necessary information, and refer or escalate through the right role.</p>
+          </article>
         </div>
         <article className="m5-practice-point">
-          <p className="m5-card-kicker">Responsible reporting point</p>
+          <p className="m5-card-kicker">What makes a feedback mechanism accountable?</p>
           <p>{clinicPracticeNotes['M5-R08'].why}</p>
+          <p><strong>Feedback is not accountability unless something happens next.</strong></p>
         </article>
+        <div className="m5-r08-pathway-grid" aria-label="Feedback mechanism pathway steps">
+          {config.revealItems.map((item) => (
+            <article key={item.id} className="m5-r08-pathway-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Request inbox</p>
-            <h2 id="m5-r08-practice">Choose safe responses</h2>
-            <p>Review all six story checks, then choose a safer response to each fictional report request.</p>
+            <p className="m5-card-kicker">Feedback pathway activity</p>
+            <h2 id="m5-r08-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} story checks reviewed</ProgressChip>
+          <ProgressChip>{selectedCorrect} of {correctIds.length} strong actions selected</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-decision-grid">
-          {storyResponseItems.map((item) => {
-            const selected = answers[item.id] || '';
-            const correct = submitted && selected === item.answer;
-            const incorrect = submitted && selected && !correct;
-            const correctLabel = storyResponseOptions.find((option) => option.id === item.answer)?.label;
+        <div className="m5-r08-choice-grid">
+          {feedbackPathwayChoices.map((choice) => {
+            const selected = selectedIds.includes(choice.id);
+            const correct = submitted && selected && choice.correct;
+            const incorrect = submitted && selected && !choice.correct;
             return (
-              <article key={item.id} className={`m5-classification-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
-                <label>
-                  <span>{item.request}</span>
-                  <select value={selected} onChange={(event) => choose(item.id, event.target.value)}>
-                    <option value="">Choose a response</option>
-                    {storyResponseOptions.map((option) => (
-                      <option key={option.id} value={option.id}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
-                {selected && (
-                  <p className="m5-selected-summary">
-                    <strong>Selected meaning:</strong> {getOptionSummary(storyResponseOptions, selected)}
-                  </p>
-                )}
-                {submitted && (
-                  <p className="m5-classification-feedback">
-                    <strong>{correct ? 'Safer response.' : `Better response: ${correctLabel}.`}</strong>{' '}
-                    {item.explanation}
-                  </p>
-                )}
-              </article>
+              <label key={choice.id} className={`m5-r08-choice-card ${selected ? 'is-selected' : ''} ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+                <input type="checkbox" checked={selected} onChange={() => toggle(choice.id)} />
+                <span className="m5-choice-card__mark" aria-hidden="true">{selected ? '✓' : '•'}</span>
+                <span>
+                  <strong>{choice.label}</strong>
+                  <small>{choice.body}</small>
+                  <em>{choice.why}</em>
+                </span>
+              </label>
             );
           })}
         </div>
-        <footer className="m5-ladder-actions">
-          <div>
-            <h3>{submitted ? `${correctCount} of ${storyResponseItems.length} safer responses selected` : 'Respond safely to every request'}</h3>
-            <p>{submitted ? 'Useful evidence can still protect consent, refusal, identity, dignity, truth, and minimum necessary detail.' : 'Composite examples must be clearly labeled as composite and based on safe, non-identifying themes.'}</p>
+        {submitted && (
+          <article className={`m5-r08-feedback ${feedback.className}`} aria-live="polite" tabIndex={-1}>
+            <h2>{feedback.heading}</h2>
+            <p>{feedback.body}</p>
+            {hasUnsafe && (
+              <p>
+                <strong>Caution:</strong> Do not expose people to prove transparency. Sensitive feedback should be handled through agreed safe pathways, with minimum necessary information and the right responsible role.
+              </p>
+            )}
+          </article>
+        )}
+        {submitted && (
+          <section className="m5-r08-summary-panel" aria-labelledby="m5-r08-summary-heading">
+            <h2 id="m5-r08-summary-heading">Feedback and response pathway summary</h2>
+            <p>Awra's stronger feedback mechanism should:</p>
+            <ul>
+              <li>explain the channel clearly before and during activities;</li>
+              <li>make feedback options accessible to different groups;</li>
+              <li>receive feedback safely and protect identity;</li>
+              <li>record only minimum necessary information;</li>
+              <li>review feedback through the right role or mechanism;</li>
+              <li>respond, refer, or escalate where needed;</li>
+              <li>adapt activities when feedback shows barriers;</li>
+              <li>account back to communities on what was heard, what changed, what did not, why, and next steps.</li>
+            </ul>
             <p className="m5-carry-forward-note">{clinicPracticeNotes['M5-R08'].carry}</p>
+          </section>
+        )}
+        <article className="m5-r08-portfolio-bridge">
+          <p>
+            Later, you will choose one feedback or accountability improvement to include in your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. For now, focus on how feedback moves from collection to safe response, adaptation, and account-back.
+          </p>
+        </article>
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, or official names. In real work, sensitive concerns should follow your organization&apos;s safeguarding, protection, complaint, referral, and data-protection procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r08-actions">
+          <div>
+            <h3>{submitted ? `${selectedCorrect} of ${correctIds.length} strong pathway actions selected` : 'Complete the feedback pathway'}</h3>
+            <p>{submitted ? 'Review the response loop before continuing. Any weak or unsafe option can be changed and checked again.' : 'Select the actions that make the feedback mechanism safe, useful, and accountable.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check responses' : 'Review all checks and answer each request'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R08', 'M5-R09', module5Routes['M5-R09'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check feedback pathway' : 'Complete the feedback pathway'}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R08', 'M5-R09', module5Routes['M5-R09'], onChangeState, key, { selectedIds, selectedCorrect, hasUnsafe, strong, submitted: true })} disabled={!canContinue}>
+              {submitted ? config.ctaButton : 'Complete the feedback pathway'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3548,33 +4629,47 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
   const key = practiceKey('M5-R09');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R09');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
-  const [selectedIds, setSelectedIds] = useState<string[]>((stored.selectedIds as string[]) || []);
+  const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
-  const toggle = (id: string) => {
-    const next = selectedIds.includes(id) ? selectedIds.filter((item) => item !== id) : [...selectedIds, id];
-    setSelectedIds(next);
+  const choose = (id: string, value: string) => {
     setSubmitted(false);
-    onChangeState((prev) => {
-      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R09');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selectedIds: next, submitted: false, status: 'in_progress' }) };
+    setAnswers((previousAnswers) => {
+      const next = { ...previousAnswers, [id]: value };
+      onChangeState((prev) => {
+        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+        progress.delete('M5-R09');
+        return {
+          ...prev,
+          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+        };
+      });
+      return next;
     });
   };
 
-  const correctIds = participatoryReviewChoices.filter((choice) => choice.correct).map((choice) => choice.id);
-  const selectedCorrect = selectedIds.filter((id) => correctIds.includes(id)).length;
-  const hasUnsafe = selectedIds.some((id) => !correctIds.includes(id));
-  const strong = selectedCorrect === correctIds.length && !hasUnsafe;
-  const partial = selectedCorrect > 0 && !strong;
-  const canSubmit = openedIds.length === allRevealIds.length && selectedIds.length > 0;
+  const allAnswered = ethicalEvidenceItems.every((item) => answers[item.id]);
+  const correctCount = ethicalEvidenceItems.filter((item) => answers[item.id] === item.answer).length;
+  const hasUnsafe = ethicalEvidenceItems.some((item) => item.unsafeChoices.includes(answers[item.id] || ''));
+  const feedback = correctCount >= 5 && !hasUnsafe
+    ? {
+        className: 'is-strong',
+        heading: 'Strong evidence judgment: the report can be truthful and safe.',
+        body: 'You protected identity, avoided overclaiming, respected consent and refusal, and offered safer alternatives. This is ethical HRBA MEAL: qualitative evidence can support learning and accountability without exposing people.',
+      }
+    : correctCount >= 3
+      ? {
+          className: 'is-partial',
+          heading: 'Good start: strengthen the protection choices.',
+          body: 'Some responses are safe and useful. Review any request involving names, faces, direct quotes, raw logs, complaint details, children, disability-related details, or strong transformation claims. Ask whether the same learning can be shared through safer themes or non-identifying evidence.',
+        }
+      : {
+          className: 'is-weak',
+          heading: 'Try again: the evidence request could expose people.',
+          body: 'Qualitative evidence should not create pressure, expose identity, or make unsupported claims. Choose responses that protect dignity, use minimum necessary detail, and offer safer alternatives.',
+        };
+  const canSubmit = allAnswered;
   const canContinue = completed || submitted;
 
   const submit = () => {
@@ -3583,59 +4678,162 @@ function Module5ParticipatoryReviewScreen({ state, onChangeState }: Module5Rende
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R09');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, selectedIds, submitted: true, strong, status: 'completed' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, submitted: true, correctCount, hasUnsafe, status: 'completed' }),
+      };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R09-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r10-practice">
-        <div className="m5-safety-warning">
-          <strong>Interpret themes, not identities.</strong>
-          <span>Do not use names, exact locations, complaint details, photos, survivor information, child data, diagnoses, or raw feedback logs.</span>
+    <main className="m5-screen m5-screen--asset-visual m5-ethical-evidence-screen" aria-labelledby="M5-R09-title">
+      <section className="m5-hero-panel m5-ethical-evidence-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Ethical qualitative evidence</ProgressChip>
+          <ScreenTitle id="M5-R09-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r09-instruction">
+            Use Awra's Jiru Amba case to choose safer responses to requests for names, photos, quotes, stories, or raw feedback data.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Case bridge</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
         </div>
-        <article className="m5-practice-point" aria-label="Why this decision matters">
-          <p className="m5-card-kicker">Why this matters</p>
-          <p>{practiceNote.why}</p>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-ethical-evidence-canvas" aria-labelledby="m5-r09-practice">
+        <article className="m5-r09-case-card">
+          <p className="m5-card-kicker">Jiru Amba case: A strong report request can still create risk</p>
+          <h2>Awra is asked for more "human" evidence</h2>
+          <p>Awra's report now includes activity numbers, feedback themes, and access-barrier evidence. A donor or communications colleague asks for stronger human evidence: names, photos, direct quotes, success stories, complaint examples, and raw feedback notes.</p>
+          <p>Awra wants to report truthfully and show learning. But it must not expose people, exaggerate change, or use rights-holders as promotional evidence.</p>
+          <p><strong>How should Awra respond to these evidence requests safely and professionally?</strong></p>
         </article>
+        <article className="m5-r09-worked-example">
+          <p className="m5-card-kicker">Example: a safer alternative to an identifying story</p>
+          <h3>Risky request</h3>
+          <p>"Please send a named story with a photo showing how the project changed someone's life."</p>
+          <h3>Safer response</h3>
+          <p>"We cannot share names, faces, or identifying details. We can provide anonymized themes from feedback, a consent-based non-identifying example, and a clear statement about what the evidence shows and what it does not show."</p>
+          <p>This response protects dignity and privacy while still giving useful evidence. It also avoids overclaiming that the project alone caused a person's full life change.</p>
+        </article>
+        <article className="m5-practice-point" aria-label="Why this decision matters">
+          <p className="m5-card-kicker">Five checks before using a story, quote, photo, or case example</p>
+          <p>{practiceNote.why}</p>
+          <p><strong>Use the safest evidence that still tells the truth.</strong></p>
+        </article>
+        <div className="m5-r09-check-grid" aria-label="Ethical qualitative evidence checks">
+          {config.revealItems.map((item) => (
+            <article key={item.id} className="m5-r09-check-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Participatory interpretation</p>
-            <h2 id="m5-r10-practice">Build the safe review routine</h2>
-            <p>Review all five checks, then select the steps that make interpretation safe, inclusive, and action-oriented.</p>
+            <p className="m5-card-kicker">Ethical evidence response activity</p>
+            <h2 id="m5-r09-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} checks reviewed</ProgressChip>
+          <ProgressChip>{Object.values(answers).filter(Boolean).length} of {ethicalEvidenceItems.length} responses complete</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-choice-grid">
-          {participatoryReviewChoices.map((choice) => {
-            const selected = selectedIds.includes(choice.id);
+        <div className="m5-r09-response-options" aria-label="Safer evidence response choices">
+          {ethicalEvidenceResponseOptions.map((option) => (
+            <article key={option.id}>
+              <h3>{option.label}</h3>
+              <p>{option.summary}</p>
+            </article>
+          ))}
+        </div>
+        <div className="m5-r09-decision-grid">
+          {ethicalEvidenceItems.map((item, index) => {
+            const selected = answers[item.id] || '';
+            const correct = submitted && selected === item.answer;
+            const incorrect = submitted && selected && selected !== item.answer;
             return (
-              <label key={choice.id} className={`m5-choice-card ${selected ? 'is-selected' : ''}`}>
-                <input type="checkbox" checked={selected} onChange={() => toggle(choice.id)} />
-                <span className="m5-choice-card__mark" aria-hidden="true">{selected ? '✓' : '•'}</span>
-                <span><strong>{choice.label}</strong><small>{choice.body}</small></span>
-              </label>
+              <article key={item.id} className={`m5-r09-decision-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+                <p className="m5-card-kicker">Task {index + 1}: {item.title}</p>
+                <h3>Request</h3>
+                <p>{item.request}</p>
+                <label>
+                  <span>Choose the safer evidence response</span>
+                  <select value={selected} onChange={(event) => choose(item.id, event.target.value)} aria-label={`Safer evidence response for ${item.title}`}>
+                    <option value="">Select one</option>
+                    {ethicalEvidenceResponseOptions.map((option) => (
+                      <option key={option.id} value={option.id}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+                {selected && (
+                  <p className="m5-selected-summary">
+                    <strong>Selected meaning:</strong> {getOptionSummary(ethicalEvidenceResponseOptions, selected)}
+                  </p>
+                )}
+                {submitted && (
+                  <p className="m5-r09-card-feedback">
+                    <strong>{correct ? 'Safer response.' : `Safer response: ${ethicalEvidenceResponseOptions.find((option) => option.id === item.answer)?.label}.`}</strong>{' '}
+                    {item.feedback}
+                  </p>
+                )}
+              </article>
             );
           })}
         </div>
         {submitted && (
-          <article className={`m5-feedback-card ${strong ? 'is-strong' : 'is-support'}`} aria-live="polite">
-            <p className="m5-card-kicker">{strong ? 'Safe interpretation routine' : partial ? 'Partial routine' : 'Routine needs repair'}</p>
-            <h3>{strong ? 'The review protects people and still guides action.' : 'Some unsafe or incomplete steps remain.'}</h3>
-            <p>{strong ? config.feedbackStrong : config.feedbackSupport}</p>
+          <article className={`m5-r09-feedback ${feedback.className}`} aria-live="polite" tabIndex={-1}>
+            <h2>{feedback.heading}</h2>
+            <p>{feedback.body}</p>
+            {hasUnsafe && (
+              <p>
+                <strong>Caution:</strong> Do not share names, faces, raw complaint logs, exact locations, child data, disability diagnoses, or identifiable stories to make a report stronger. Strong reporting protects people and tells the truth.
+              </p>
+            )}
           </article>
         )}
-        <footer className="m5-ladder-actions">
-          <div>
-            <h3>{submitted ? `${selectedCorrect} of ${correctIds.length} safe routine steps selected` : 'Select the safe routine steps'}</h3>
-            <p>Keep community interpretation separate from complaint investigation and record themes, decisions, adaptations, referrals, limits, and account-back messages.</p>
+        {submitted && (
+          <section className="m5-r09-summary-panel" aria-labelledby="m5-r09-summary-heading">
+            <h2 id="m5-r09-summary-heading">Ethical qualitative evidence summary</h2>
+            <p>Awra's safer approach should:</p>
+            <ul>
+              <li>use stories, quotes, photos, and case examples only for a clear purpose;</li>
+              <li>confirm informed, voluntary, specific consent where evidence is used;</li>
+              <li>respect refusal without pressure or loss of support;</li>
+              <li>remove names, faces, exact locations, rare details, and identifying combinations;</li>
+              <li>avoid raw complaint logs and sensitive case details;</li>
+              <li>use anonymized themes, aggregate summaries, composite examples, or non-identifying examples where possible;</li>
+              <li>report evidence limits honestly and avoid exaggerated success claims.</li>
+            </ul>
             <p className="m5-carry-forward-note">{practiceNote.carry}</p>
+          </section>
+        )}
+        <article className="m5-r09-portfolio-bridge">
+          <p>
+            Later, you will choose one ethical evidence decision to include in your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. For now, focus on how to use qualitative evidence without exposing people or overclaiming results.
+          </p>
+        </article>
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos. In real work, follow your organization&apos;s consent, safeguarding, referral, communications, and data-protection procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r09-actions">
+          <div>
+            <h3>{submitted ? `${correctCount} of ${ethicalEvidenceItems.length} safer responses selected` : 'Complete the safer evidence responses'}</h3>
+            <p>{submitted ? 'Review the response feedback before continuing. Any risky response can be changed and checked again.' : 'No real stories or project examples are needed. Use only the fictional requests on this screen.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check review routine' : 'Review all checks and choose steps'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R09', 'M5-R10', module5Routes['M5-R10'], onChangeState, key, { selectedIds, strong, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check safer evidence responses' : 'Complete the safer evidence responses'}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R09', 'M5-R10', module5Routes['M5-R10'], onChangeState, key, { answers, correctCount, hasUnsafe, submitted: true })} disabled={!canContinue}>
+              {submitted ? config.ctaButton : 'Complete the safer evidence responses'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3649,30 +4847,49 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
   const key = practiceKey('M5-R10');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R10');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
   const choose = (id: string, value: string) => {
-    const next = { ...answers, [id]: value };
-    setAnswers(next);
     setSubmitted(false);
-    onChangeState((prev) => {
-      const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.delete('M5-R10');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
+    setAnswers((previousAnswers) => {
+      const next = { ...previousAnswers, [id]: value };
+      onChangeState((prev) => {
+        const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+        progress.delete('M5-R10');
+        return {
+          ...prev,
+          screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+          practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }),
+        };
+      });
+      return next;
     });
   };
 
   const allAnswered = signalDecisionItems.every((item) => answers[item.id]);
   const correctCount = signalDecisionItems.filter((item) => item.answers.includes(answers[item.id])).length;
-  const canSubmit = openedIds.length === allRevealIds.length && allAnswered;
+  const hasUnsafe = answers['sensitive-concern'] === 'pause-public-claim'
+    || answers['sensitive-concern'] === 'engage-responsible-actor'
+    || answers['sensitive-concern'] === 'adapt-access';
+  const feedback = correctCount >= 5
+    ? {
+        className: 'is-strong',
+        heading: 'Strong interpretation: evidence is guiding action.',
+        body: 'You matched the evidence signals to responsible next actions. You adapted what Awra can change, protected sensitive concerns, consulted safely where voices may be missing, engaged responsible actors where needed, avoided overclaiming, and included account-back.',
+      }
+    : correctCount >= 3
+      ? {
+          className: 'is-partial',
+          heading: 'Good start: review what each signal requires.',
+          body: 'Some decisions are strong. Now check whether any signal needs a safer pathway, a responsible actor, a narrower claim, or account-back. HRBA-informed MEAL asks not only what the evidence shows, but what should happen next.',
+        }
+      : {
+          className: 'is-weak',
+          heading: 'Try again: different evidence signals need different responses.',
+          body: 'Not every signal should lead to the same action. Some evidence calls for adaptation, some for safe consultation, some for referral, some for responsible-actor engagement, and some for more cautious reporting.',
+        };
+  const canSubmit = allAnswered;
   const canContinue = completed || submitted;
   const submit = () => {
     if (!canSubmit) return;
@@ -3680,41 +4897,107 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R10');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, submitted: true, correctCount, hasUnsafe, status: 'completed' }),
+      };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R10-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r11-practice">
-        <div className="m5-safety-warning">
-          <strong>Do not default to more personal data.</strong>
-          <span>Signals can require adaptation, safe consultation, referral, responsible actor engagement, account-back, or a narrower claim.</span>
+    <main className="m5-screen m5-screen--asset-visual m5-evidence-action-screen" aria-labelledby="M5-R10-title">
+      <section className="m5-hero-panel m5-evidence-action-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Evidence interpretation and adaptation</ProgressChip>
+          <ScreenTitle id="M5-R10-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r10-instruction">
+            Use Awra's Jiru Amba evidence signals to choose the most responsible next action.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Case bridge</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
+        </div>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-evidence-action-canvas" aria-labelledby="m5-r10-practice">
+        <article className="m5-r10-case-card">
+          <p className="m5-card-kicker">Jiru Amba case: The evidence is asking for different responses</p>
+          <h2>Awra's monthly MEAL review</h2>
+          <p>Awra reviews its Jiru Amba evidence board. The team sees useful activity numbers, feedback themes, attendance patterns, access-barrier notes, and safe qualitative evidence. But the signals do not all point to the same action.</p>
+          <p>Some can be addressed by Awra. Some require safe referral. Some require discussion with responsible actors such as a kebele committee, service provider, or woreda office. Some claims should be narrowed until the evidence is stronger.</p>
+          <p><strong>What should Awra do next for each evidence signal?</strong></p>
+        </article>
+        <div className="m5-r10-example-grid">
+          <article>
+            <p className="m5-card-kicker">Example: one signal, one responsible next action</p>
+            <h3>Signal</h3>
+            <p>Several participants say meeting times exclude caregivers and market-day workers.</p>
+            <h3>Better interpretation</h3>
+            <p>This is not only a participation count issue. It shows an access and timing barrier.</p>
+            <h3>Responsible next action</h3>
+            <p>Awra can adapt meeting times, adjust information routes, and explain back what changed.</p>
+          </article>
+          <article>
+            <p className="m5-card-kicker">Example: when adaptation is not enough</p>
+            <h3>Signal</h3>
+            <p>One person reports a sensitive protection or safeguarding concern through a feedback channel.</p>
+            <h3>Better interpretation</h3>
+            <p>This is not a normal program-improvement comment and should not be discussed publicly.</p>
+            <h3>Responsible next action</h3>
+            <p>Awra should follow the agreed safe pathway, record only minimum necessary information, and refer or escalate through the right role.</p>
+          </article>
         </div>
         <article className="m5-practice-point" aria-label="Why this decision matters">
-          <p className="m5-card-kicker">Why this matters</p>
+          <p className="m5-card-kicker">From evidence signal to next action</p>
           <p>{practiceNote.why}</p>
+          <p><strong>Evidence should lead to a responsible decision, not only a report paragraph.</strong></p>
         </article>
+        <div className="m5-r10-concept-grid" aria-label="Evidence interpretation questions">
+          {config.revealItems.map((item) => (
+            <article key={item.id} className="m5-r10-concept-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
+        <div className="m5-r10-action-options" aria-label="Responsible next action options">
+          {signalActionOptions.map((option) => (
+            <article key={option.id}>
+              <h3>{option.label}</h3>
+              <p>{option.summary}</p>
+            </article>
+          ))}
+        </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Evidence response tree</p>
-            <h2 id="m5-r11-practice">Read each signal and choose a responsible action</h2>
-            <p>Review all response options, then match each fictional signal to the safest action.</p>
+            <p className="m5-card-kicker">Evidence signal decision activity</p>
+            <h2 id="m5-r10-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} options reviewed</ProgressChip>
+          <ProgressChip>{Object.values(answers).filter(Boolean).length} of {signalDecisionItems.length} decisions complete</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-decision-grid">
-          {signalDecisionItems.map((item) => {
+        <div className="m5-r10-decision-grid">
+          {signalDecisionItems.map((item, index) => {
             const selected = answers[item.id] || '';
             const correct = submitted && item.answers.includes(selected);
             const incorrect = submitted && selected && !correct;
             const correctLabels = item.answers.map((answer) => signalActionOptions.find((option) => option.id === answer)?.label).join(' or ');
             return (
-              <article key={item.id} className={`m5-classification-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+              <article key={item.id} className={`m5-r10-decision-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+                <p className="m5-card-kicker">Task {index + 1}</p>
+                <h3>Evidence signal</h3>
+                <p>{item.signal}</p>
                 <label>
-                  <span>{item.signal}</span>
+                  <span>Choose the responsible next action</span>
                   <select value={selected} onChange={(event) => choose(item.id, event.target.value)}>
                     <option value="">Choose an action</option>
                     {signalActionOptions.map((option) => (
@@ -3728,7 +5011,7 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
                   </p>
                 )}
                 {submitted && (
-                  <p className="m5-classification-feedback">
+                  <p className="m5-r10-card-feedback">
                     <strong>{correct ? 'Responsible action.' : `Better action: ${correctLabels}.`}</strong>{' '}
                     {item.explanation}
                   </p>
@@ -3737,15 +5020,52 @@ function Module5SignalDecisionScreen({ state, onChangeState }: Module5RendererPr
             );
           })}
         </div>
-        <footer className="m5-ladder-actions">
-          <div>
-            <h3>{submitted ? `${correctCount} of ${signalDecisionItems.length} signals matched` : 'Choose an action for every signal'}</h3>
-            <p>{submitted ? 'The feedback shows why each signal calls for a specific response.' : 'Avoid public accusations, untrained investigations, and unnecessary identifying details.'}</p>
+        {submitted && (
+          <article className={`m5-r10-feedback ${feedback.className}`} aria-live="polite" tabIndex={-1}>
+            <h2>{feedback.heading}</h2>
+            <p>{feedback.body}</p>
+            {hasUnsafe && (
+              <p>
+                <strong>Caution:</strong> Do not turn sensitive evidence into public proof or informal investigation. First protect rights-holders, use the agreed pathway, and document follow-up safely.
+              </p>
+            )}
+          </article>
+        )}
+        {submitted && (
+          <section className="m5-r10-summary-panel" aria-labelledby="m5-r10-summary-heading">
+            <h2 id="m5-r10-summary-heading">Evidence-to-action summary</h2>
+            <p>Awra's MEAL interpretation should:</p>
+            <ul>
+              <li>check whether high numbers still hide missing groups;</li>
+              <li>adapt timing, venue, communication, facilitation, or feedback processes where the team can act;</li>
+              <li>consult safely when evidence suggests missing voices or unclear barriers;</li>
+              <li>refer sensitive concerns through agreed safe pathways;</li>
+              <li>engage responsible actors constructively when the issue is beyond Awra's direct control;</li>
+              <li>pause or narrow claims when evidence is incomplete;</li>
+              <li>account back to communities on what was heard, what changed, what did not, why, and next steps.</li>
+            </ul>
             <p className="m5-carry-forward-note">{practiceNote.carry}</p>
+          </section>
+        )}
+        <article className="m5-r10-portfolio-bridge">
+          <p>
+            Later, you will choose one evidence-to-action decision to include in your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. For now, focus on how evidence should guide responsible adaptation and follow-up.
+          </p>
+        </article>
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifying evidence. In real work, discuss sensitive evidence only through agreed safeguarding, protection, complaint, referral, and data-protection procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r10-actions">
+          <div>
+            <h3>{submitted ? `${correctCount} of ${signalDecisionItems.length} signal decisions matched` : 'Complete the evidence-to-action decisions'}</h3>
+            <p>{submitted ? 'Review why each signal calls for a specific response before continuing.' : 'Avoid public accusations, untrained investigations, and unnecessary identifying details.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check signal decisions' : 'Review all options and answer each signal'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R10', 'M5-R11', module5Routes['M5-R11'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check signal decisions' : 'Complete the evidence-to-action decisions'}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R10', 'M5-R11', module5Routes['M5-R11'], onChangeState, key, { answers, correctCount, hasUnsafe, submitted: true })} disabled={!canContinue}>
+              {submitted ? config.ctaButton : 'Complete the evidence-to-action decisions'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3759,16 +5079,9 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
   const key = practiceKey('M5-R11');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R11');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
 
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
   const choose = (id: string, value: string) => {
     const next = { ...answers, [id]: value };
     setAnswers(next);
@@ -3782,7 +5095,28 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
 
   const allAnswered = reportRepairItems.every((item) => answers[item.id]);
   const correctCount = reportRepairItems.filter((item) => answers[item.id] === item.answer).length;
-  const canSubmit = openedIds.length === allRevealIds.length && allAnswered;
+  const hasUnsafe = reportRepairItems.some((item) => {
+    const selected = answers[item.id];
+    return item.options.some((option) => option.id === selected && option.unsafe);
+  });
+  const feedback = correctCount >= 5 && !hasUnsafe
+    ? {
+        className: 'is-strong',
+        heading: 'Strong reporting: truthful, safe, and accountable.',
+        body: 'You improved the report claims by reporting progress, naming evidence limits, protecting people, showing adaptation, and including account-back. This makes the report more credible and more useful for learning.',
+      }
+    : correctCount >= 3
+      ? {
+          className: 'is-partial',
+          heading: 'Good start: strengthen the reporting judgment.',
+          body: 'Some claims are safer now. Review any statement that says "everyone," hides mixed feedback, uses identifying stories, treats activities as success by themselves, or avoids naming evidence limits.',
+        }
+      : {
+          className: 'is-weak',
+          heading: 'Try again: the report still sounds stronger than the evidence.',
+          body: 'HRBA-informed reporting should not polish away barriers, uncertainty, or feedback concerns. Choose claims that tell the truth, protect people, explain what changed, and show what still needs follow-up.',
+        };
+  const canSubmit = allAnswered;
   const canContinue = completed || submitted;
   const submit = () => {
     if (!canSubmit) return;
@@ -3790,55 +5124,109 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R11');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
+      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers, submitted: true, correctCount, hasUnsafe, status: 'completed' }) };
     });
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R11-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r12-practice">
-        <div className="m5-safety-warning">
-          <strong>Repair claims without exposing people.</strong>
-          <span>Use truthful, non-identifying language. Do not add names, photos, raw quotes, exact locations, or unsupported success claims.</span>
+    <main className="m5-screen m5-screen--asset-visual m5-reporting-screen" aria-labelledby="M5-R11-title">
+      <section className="m5-hero-panel m5-reporting-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Reporting, limits, and account-back</ProgressChip>
+          <ScreenTitle id="M5-R11-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r11-instruction">
+            Use Awra's Jiru Amba case to improve risky report claims so they are truthful, safe, and accountable.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Case bridge</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
         </div>
-        <article className="m5-practice-point" aria-label="Why this decision matters">
-          <p className="m5-card-kicker">Why this matters</p>
-          <p>{practiceNote.why}</p>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-reporting-canvas" aria-labelledby="m5-r11-practice">
+        <article className="m5-r11-case-card">
+          <p className="m5-card-kicker">Jiru Amba case: The report needs truth, not polish</p>
+          <h2>Awra prepares a monthly MEAL report</h2>
+          <p>Awra has useful evidence: attendance numbers, feedback themes, access-barrier notes, safe qualitative evidence, and adaptation decisions. The team wants the report to show progress. But pressure to sound successful could lead to broad claims, hidden limits, identifying stories, or feedback described as positive when it was mixed.</p>
+          <p><strong>How should Awra improve each risky claim so the report is evidence-based, safe, and accountable?</strong></p>
         </article>
+        <div className="m5-r11-example-grid">
+          <article>
+            <p className="m5-card-kicker">Example: improving an overclaim</p>
+            <h3>Risky claim</h3>
+            <p>"Awra reached the whole community."</p>
+            <h3>Safer report claim</h3>
+            <p>"Awra reached 240 participants through six meetings. The evidence does not yet show whether informal women vendors, remote kebele residents, persons with disabilities, and women water users were reached equally, so the team will check barriers and adjust outreach."</p>
+            <h3>Why this is stronger</h3>
+            <p>The safer claim still reports progress. It also names the evidence limit, avoids pretending everyone was reached, and points to a next MEAL action.</p>
+          </article>
+          <article>
+            <p className="m5-card-kicker">Example: reporting feedback without exposing people</p>
+            <h3>Risky claim</h3>
+            <p>"The report includes complaint examples to prove transparency."</p>
+            <h3>Safer report claim</h3>
+            <p>"Feedback themes were reviewed. Some concerns were addressed through timing changes, some require referral or follow-up, and no identifiable complaint details are shared."</p>
+            <h3>Why this is safer</h3>
+            <p>Transparency does not require exposing people. A safer report can explain themes, actions, limits, and next steps without publishing complaint details.</p>
+          </article>
+        </div>
+        <article className="m5-practice-point" aria-label="What makes reporting rights-based">
+          <p className="m5-card-kicker">What makes reporting rights-based?</p>
+          <p>Before finalizing a MEAL report, check what is known, what limits should be named safely, who must be protected, what changed because of evidence, what remains unresolved, and what should be explained back.</p>
+          <p><strong>Truthful limits make a report more credible, not weaker.</strong></p>
+        </article>
+        <div className="m5-r11-check-grid" aria-label="Rights-based reporting checks">
+          {config.revealItems.map((item) => (
+            <article key={item.id} className="m5-r11-check-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Report repair lab</p>
-            <h2 id="m5-r12-practice">Turn risky claims into rights-based claims</h2>
-            <p>Review all reporting checks, then choose the safer claim for each risky sentence.</p>
+            <p className="m5-card-kicker">Reporting claim activity</p>
+            <h2 id="m5-r11-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} checks reviewed</ProgressChip>
+          <ProgressChip>{Object.values(answers).filter(Boolean).length} of {reportRepairItems.length} claims complete</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-decision-grid">
-          {reportRepairItems.map((item) => {
+        <div className="m5-r11-decision-grid">
+          {reportRepairItems.map((item, index) => {
             const selected = answers[item.id] || '';
             const correct = submitted && selected === item.answer;
             const incorrect = submitted && selected && !correct;
-            const correctLabel = reportRepairOptions.find((option) => option.id === item.answer)?.label;
+            const selectedOption = item.options.find((option) => option.id === selected);
+            const correctLabel = item.options.find((option) => option.id === item.answer)?.label;
             return (
-              <article key={item.id} className={`m5-classification-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+              <article key={item.id} className={`m5-r11-decision-card ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
+                <p className="m5-card-kicker">Task {index + 1}: {item.title}</p>
+                <h3>Risky claim</h3>
+                <p>{item.risky}</p>
                 <label>
-                  <span>{item.risky}</span>
+                  <span>Choose the safer HRBA-informed reporting statement</span>
                   <select value={selected} onChange={(event) => choose(item.id, event.target.value)}>
-                    <option value="">Choose a safer claim</option>
-                    {reportRepairOptions.map((option) => (
+                    <option value="">Choose an improved claim</option>
+                    {item.options.map((option) => (
                       <option key={option.id} value={option.id}>{option.label}</option>
                     ))}
                   </select>
                 </label>
                 {selected && (
                   <p className="m5-selected-summary">
-                    <strong>Selected meaning:</strong> {getOptionSummary(reportRepairOptions, selected)}
+                    <strong>Selected meaning:</strong> {selectedOption?.summary || item.selectedMeaning}
                   </p>
                 )}
                 {submitted && (
-                  <p className="m5-classification-feedback">
+                  <p className="m5-r11-card-feedback">
                     <strong>{correct ? 'Safer claim.' : `Better claim: ${correctLabel}.`}</strong>{' '}
                     {item.explanation}
                   </p>
@@ -3847,15 +5235,53 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
             );
           })}
         </div>
-        <footer className="m5-ladder-actions">
-          <div>
-            <h3>{submitted ? `${correctCount} of ${reportRepairItems.length} claims repaired` : 'Repair every risky claim to continue'}</h3>
-            <p>{submitted ? 'Rights-based reporting is stronger when it is truthful about progress, limits, barriers, adaptation, and account-back.' : 'The repaired claim should be safe, modest, evidence-based, and accountable.'}</p>
+        {submitted && (
+          <article className={`m5-r11-feedback ${feedback.className}`} aria-live="polite" tabIndex={-1}>
+            <h2>{feedback.heading}</h2>
+            <p>{feedback.body}</p>
+            {hasUnsafe && (
+              <p>
+                <strong>Caution:</strong> Do not expose people or hide evidence limits to make a report look stronger. Safe reporting protects dignity, explains uncertainty, and tells communities what happened next.
+              </p>
+            )}
+          </article>
+        )}
+        {submitted && (
+          <section className="m5-r11-summary-panel" aria-labelledby="m5-r11-summary-heading">
+            <h2 id="m5-r11-summary-heading">Responsible reporting summary</h2>
+            <p>Awra's HRBA MEAL report should:</p>
+            <ul>
+              <li>report what the evidence actually shows;</li>
+              <li>avoid claiming that everyone was reached unless evidence supports it;</li>
+              <li>name evidence gaps and limits safely;</li>
+              <li>protect identities, complaint details, child data, disability-related details, and exact locations;</li>
+              <li>report feedback themes, response, referral, adaptation, and unresolved issues;</li>
+              <li>show what changed because of evidence;</li>
+              <li>explain what communities should hear back;</li>
+              <li>distinguish Awra's own actions from issues requiring responsible-actor follow-up.</li>
+            </ul>
             <p className="m5-carry-forward-note">{practiceNote.carry}</p>
+          </section>
+        )}
+        <article className="m5-r11-portfolio-bridge">
+          <p>
+            Later, you will include one improved reporting or account-back statement in your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. For now, focus on how truthful reporting can show progress and limits at the same time.
+          </p>
+        </article>
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos. In real work, follow your organization&apos;s reporting, communications, safeguarding, referral, consent, and data-protection procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r11-actions">
+          <div>
+            <h3>{submitted ? `${correctCount} of ${reportRepairItems.length} improved claims selected` : 'Complete the improved report claims'}</h3>
+            <p>{submitted ? 'Review the claim feedback before continuing. Any risky statement can be changed and checked again.' : 'Choose the claim that reports evidence, limits, adaptation, and account-back without exposing people.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check repaired claims' : 'Review all checks and repair each claim'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R11', 'M5-R12', module5Routes['M5-R12'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check improved report claims' : 'Complete the improved report claims'}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R11', 'M5-R12', module5Routes['M5-R12'], onChangeState, key, { answers, correctCount, hasUnsafe, submitted: true })} disabled={!canContinue}>
+              {submitted ? config.ctaButton : 'Complete the improved report claims'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -3865,126 +5291,214 @@ function Module5ReportRepairScreen({ state, onChangeState }: Module5RendererProp
 
 function Module5CapstoneSimulatorScreen({ state, onChangeState }: Module5RendererProps) {
   const config = module5Screens['M5-R12'];
-  const practiceNote = clinicPracticeNotes['M5-R12'];
   const key = practiceKey('M5-R12');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R12');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
+  const [checkedQuestions, setCheckedQuestions] = useState<Record<string, boolean>>((stored.checkedQuestions as Record<string, boolean>) || {});
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState(typeof stored.activeQuestionIndex === 'number' ? stored.activeQuestionIndex : 0);
+  const [summaryViewed, setSummaryViewed] = useState(Boolean(stored.summaryViewed || completed));
   const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
-
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
-  const choose = (id: string, value: string) => {
-    const next = { ...answers, [id]: value };
-    setAnswers(next);
+  const activeQuestion = capstoneSteps[activeQuestionIndex] || capstoneSteps[0];
+  const selectedAnswer = answers[activeQuestion.id] || '';
+  const selectedOption = activeQuestion.options.find((option) => option.id === selectedAnswer);
+  const isChecked = checkedQuestions[activeQuestion.id] === true;
+  const answeredCount = capstoneSteps.filter((step) => answers[step.id]).length;
+  const checkedCount = capstoneSteps.filter((step) => checkedQuestions[step.id]).length;
+  const correctCount = capstoneSteps.filter((step) => checkedQuestions[step.id] && answers[step.id] === step.answer).length;
+  const hasUnsafe = capstoneSteps.some((step) => {
+    const selected = answers[step.id];
+    return step.options.some((option) => option.id === selected && option.unsafe);
+  });
+  const allAnswered = answeredCount === capstoneSteps.length;
+  const allChecked = checkedCount === capstoneSteps.length;
+  const result = correctCount >= 5
+    ? {
+        heading: 'You are ready to build your improvement note.',
+        body: 'You applied the HRBA-MEAL pathway well. Your answers used evidence to improve indicators, protect people, respond to feedback, adapt action, report truthfully, and account back.',
+      }
+    : correctCount >= 3
+      ? {
+          heading: 'Good progress. Review the decisions that carried risk.',
+          body: 'You made several useful MEAL decisions. Review any answer that only counts activities, collects unnecessary detail, treats feedback as a number, shares identifying evidence, overclaims results, or hides limits.',
+        }
+      : {
+          heading: 'Review the pathway before continuing.',
+          body: 'Look again for the option that uses evidence safely and leads to action. HRBA-informed MEAL protects people, explains limits, responds to feedback, adapts practice, and accounts back.',
+        };
+  const persist = (patch: Record<string, unknown>) => {
     setSubmitted(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.delete('M5-R12');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, checkedQuestions, activeQuestionIndex, summaryViewed, submitted: false, status: 'in_progress', ...patch }),
+      };
     });
   };
-
-  const allAnswered = capstoneSteps.every((step) => answers[step.id]);
-  const correctCount = capstoneSteps.filter((step) => answers[step.id] === step.answer).length;
-  const canSubmit = openedIds.length === allRevealIds.length && allAnswered;
-  const canContinue = completed || submitted;
-  const submit = () => {
-    if (!canSubmit) return;
+  const choose = (id: string, value: string) => {
+    const nextAnswers = { ...answers, [id]: value };
+    const nextChecked = { ...checkedQuestions, [id]: false };
+    setAnswers(nextAnswers);
+    setCheckedQuestions(nextChecked);
+    setSummaryViewed(false);
+    persist({ answers: nextAnswers, checkedQuestions: nextChecked, summaryViewed: false });
+  };
+  const checkAnswer = () => {
+    if (!selectedAnswer) return;
+    const nextChecked = { ...checkedQuestions, [activeQuestion.id]: true };
+    setCheckedQuestions(nextChecked);
+    persist({ checkedQuestions: nextChecked });
+  };
+  const moveQuestion = (nextIndex: number) => {
+    const bounded = Math.max(0, Math.min(capstoneSteps.length - 1, nextIndex));
+    setActiveQuestionIndex(bounded);
+    persist({ activeQuestionIndex: bounded });
+  };
+  const viewSummary = () => {
+    if (!allChecked) return;
+    setSummaryViewed(true);
     setSubmitted(true);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R12');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, correctCount, status: 'completed' }) };
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, checkedQuestions, activeQuestionIndex, summaryViewed: true, submitted: true, correctCount, hasUnsafe, status: 'completed' }),
+      };
     });
   };
+  const canContinue = completed || (submitted && summaryViewed);
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R12-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r13-practice">
-        <div className="m5-safety-warning">
-          <strong>Capstone uses safe fictional evidence only.</strong>
-          <span>All choices are structured. Do not enter or upload real names, exact locations, complaint details, child data, diagnoses, officials, organizations, or confidential documents.</span>
-        </div>
-        <article className="m5-practice-point" aria-label="Why this decision matters">
-          <p className="m5-card-kicker">Why this matters</p>
-          <p>{practiceNote.why}</p>
-        </article>
-        <div className="m5-canvas__header">
-          <div>
-            <p className="m5-card-kicker">Evidence-to-action simulator</p>
-            <h2 id="m5-r13-practice">Complete all seven decisions</h2>
-            <p>Review all simulator stages, then choose the safest pathway for each step.</p>
+    <main className="m2-s22-kc-screen m5-knowledge-check-screen" aria-labelledby="M5-R12-title">
+      <section className="m2-s22-kc-shell m5-knowledge-check-shell">
+        <header className="m2-s22-kc-header">
+          <div className="m2-s22-kc-title">
+            <p className="m2-s22-kc-kicker">MODULE 5 · HRBA IN MEAL</p>
+            <ProgressChip>MEAL step: Integrated knowledge check</ProgressChip>
+            <h1 id="M5-R12-title">{config.title}</h1>
+            <p>{config.lead}</p>
+            <p>Read Awra’s Jiru Amba scenario. For each question, choose the answer that best fits the HRBA-MEAL purpose named in the question.</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} stages reviewed</ProgressChip>
-        </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-capstone-steps">
-          {capstoneSteps.map((step) => {
-            const selected = answers[step.id] || '';
-            const selectedOption = step.options.find((option) => option.id === selected);
-            const correct = submitted && selected === step.answer;
-            const incorrect = submitted && selected && !correct;
-            const correctLabel = step.options.find((option) => option.id === step.answer)?.label;
-            return (
-              <article key={step.id} className={`m5-classification-card m5-capstone-step ${correct ? 'is-correct' : ''} ${incorrect ? 'is-incorrect' : ''}`}>
-                <label>
-                  <span>{step.title}</span>
-                  <small>{step.prompt}</small>
-                  <select value={selected} onChange={(event) => choose(step.id, event.target.value)}>
-                    <option value="">Choose a pathway</option>
-                    {step.options.map((option) => (
-                      <option key={option.id} value={option.id}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
-                {selectedOption && (
-                  <p className="m5-selected-summary">
-                    <strong>Selected meaning:</strong> {selectedOption.summary}
-                  </p>
-                )}
-                {submitted && (
-                  <p className="m5-classification-feedback">
-                    <strong>{correct ? 'Strong step.' : `Better step: ${correctLabel}.`}</strong>{' '}
-                    {step.explanation}
-                  </p>
-                )}
+          <aside className="m2-s22-kc-note m5-kc-scenario-card">
+            <strong>{config.storyTitle}</strong>
+            {config.story.map((paragraph) => (
+              <span key={paragraph}>{paragraph}</span>
+            ))}
+          </aside>
+        </header>
+
+        {summaryViewed ? (
+          <section className="m2-s22-kc-complete m5-kc-complete" aria-live="polite">
+            <p className="m2-s22-kc-kicker">Final result summary</p>
+            <h2>{result.heading}</h2>
+            <p>{result.body}</p>
+            <div>
+              <strong>{correctCount} of {capstoneSteps.length}</strong>
+              <span>evidence-to-action decisions correct</span>
+            </div>
+            {hasUnsafe && (
+              <article className="m5-kc-caution">
+                <h3>Check the safety risk.</h3>
+                <p>Do not make evidence look stronger by exposing people or hiding uncertainty. Avoid names, exact locations, raw logs, identifying stories, unnecessary personal detail, and unsupported claims.</p>
               </article>
-            );
-          })}
-        </div>
-        {submitted && (
-          <article className="m5-feedback-card is-strong" aria-live="polite">
-            <p className="m5-card-kicker">Capstone summary</p>
-            <h3>{correctCount} of {capstoneSteps.length} decisions matched the safer pathway</h3>
-            <p>You have practiced the full HRBA MEAL cycle: repair weak indicators, use the minimum necessary data, protect identities, interpret themes safely, respond to feedback, adapt based on evidence, report truthfully, and account back.</p>
-            <ol className="m5-capstone-summary">
-              <li>Keep useful numbers, then ask what they hide.</li>
-              <li>Identify missing groups and barriers without collecting names.</li>
-              <li>Remove identifiers, sensitive details, and unsafe story material.</li>
-              <li>Use feedback for response, referral, adaptation, and account-back.</li>
-              <li>Adapt practice based on evidence signals.</li>
-              <li>Repair report claims so they are truthful and safe.</li>
-              <li>Account back to communities about what changed and what remains unresolved.</li>
-            </ol>
-          </article>
+            )}
+            <article className="m5-kc-carry-forward">
+              <h3>What this prepares you to do next</h3>
+              <p>Next, you will create your <strong>HRBA MEAL, Accountability, and Learning Improvement Note</strong>. The note will help you capture one practical MEAL improvement, one safer evidence decision, one feedback or accountability improvement, one adaptation action, and one account-back step.</p>
+            </article>
+            <article className="m5-safety-warning">
+              <strong>Safe practice note</strong>
+              <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos. In real work, follow your organization&apos;s consent, safeguarding, referral, reporting, and data-protection procedures.</span>
+            </article>
+          </section>
+        ) : (
+          <section className="m2-s22-kc-board">
+            <aside className="m2-s22-kc-progress">
+              <span>Question {activeQuestionIndex + 1} of {capstoneSteps.length}</span>
+              <strong>{checkedCount} of {capstoneSteps.length} checked</strong>
+              <div>
+                {capstoneSteps.map((question, index) => (
+                  <button
+                    key={question.id}
+                    type="button"
+                    className={`${index === activeQuestionIndex ? 'is-active' : ''} ${checkedQuestions[question.id] ? 'is-checked' : ''}`}
+                    aria-label={`Go to question ${index + 1}: ${question.title}`}
+                    onClick={() => moveQuestion(index)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+            </aside>
+
+            <article className="m2-s22-kc-question">
+              <p className="m2-s22-kc-kicker">Question {activeQuestionIndex + 1} of {capstoneSteps.length}</p>
+              <h2>{activeQuestion.title}</h2>
+              <p>{activeQuestion.scenario}</p>
+              <p><strong>{activeQuestion.prompt}</strong></p>
+              <fieldset className="m2-s22-kc-options">
+                <legend className="sr-only">{activeQuestion.prompt}</legend>
+                {activeQuestion.options.map((option) => {
+                  const selected = selectedAnswer === option.id;
+                  const checked = isChecked && selected;
+                  return (
+                    <label key={option.id} className={`${selected ? 'is-selected' : ''} ${checked && option.id === activeQuestion.answer ? 'is-correct' : ''} ${checked && option.id !== activeQuestion.answer ? 'is-incorrect' : ''}`}>
+                      <input
+                        type="radio"
+                        name={activeQuestion.id}
+                        checked={selected}
+                        onChange={() => choose(activeQuestion.id, option.id)}
+                      />
+                      <span>{option.id}</span>
+                      <strong>{option.label}</strong>
+                    </label>
+                  );
+                })}
+              </fieldset>
+            </article>
+
+            <aside className={`m2-s22-kc-feedback ${isChecked ? 'is-visible' : ''}`} aria-live="polite">
+              <p className="m2-s22-kc-kicker">Feedback</p>
+              {isChecked && selectedOption ? (
+                <>
+                  <h2>{selectedAnswer === activeQuestion.answer ? 'Correct.' : 'Not quite.'}</h2>
+                  <p>{selectedOption.summary}</p>
+                  <div>
+                    <strong>Pathway reminder</strong>
+                    <span>{activeQuestion.takeaway}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2>Choose the best HRBA-MEAL decision.</h2>
+                  <p>Some options may sound practical, but only one best fits the evidence-to-action purpose in this question.</p>
+                </>
+              )}
+            </aside>
+          </section>
         )}
-        <footer className="m5-ladder-actions">
-          <div>
-            <h3>{submitted ? 'Simulator completed' : 'Complete all seven capstone steps'}</h3>
-            <p>{submitted ? 'The next screen turns this cycle into your structured HRBA MEAL repair note.' : 'The simulator has no free-text fields and uses only fictional evidence choices.'}</p>
-            <p className="m5-carry-forward-note">{practiceNote.carry}</p>
-          </div>
-          <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check simulator pathway' : 'Review stages and answer all steps'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R12', 'M5-R13', module5Routes['M5-R13'], onChangeState, key, { answers, correctCount, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
-          </div>
+
+        <footer className="m2-s22-kc-footer">
+          {summaryViewed ? (
+            <button type="button" onClick={() => completeSimpleScreen('M5-R12', 'M5-R13', module5Routes['M5-R13'], onChangeState, key, { answers, checkedQuestions, activeQuestionIndex, summaryViewed: true, correctCount, hasUnsafe, submitted: true })} disabled={!canContinue}>
+              {config.ctaButton}
+            </button>
+          ) : allChecked ? (
+            <button type="button" onClick={viewSummary}>View final result summary</button>
+          ) : (
+            <>
+              <button type="button" className="m2-s22-kc-secondary" disabled={activeQuestionIndex === 0} onClick={() => moveQuestion(activeQuestionIndex - 1)}>Previous</button>
+              <button type="button" disabled={!selectedAnswer || isChecked} onClick={checkAnswer}>
+                {allAnswered ? 'Check my evidence-to-action decisions' : 'Answer all six decisions to continue'}
+              </button>
+              <button type="button" className="m2-s22-kc-secondary" disabled={!isChecked || activeQuestionIndex === capstoneSteps.length - 1} onClick={() => moveQuestion(activeQuestionIndex + 1)}>Next question</button>
+            </>
+          )}
         </footer>
       </section>
     </main>
@@ -3996,53 +5510,53 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
   const key = practiceKey('M5-R13');
   const stored = state.practiceCheckState[key] || {};
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R13');
-  const allRevealIds = config.revealItems.map((item) => item.id);
-  const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
   const [answers, setAnswers] = useState<Record<string, string>>((stored.answers as Record<string, string>) || {});
-  const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
+  const [confirmedSafe, setConfirmedSafe] = useState(Boolean(stored.confirmedSafe || completed));
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
-
-  const openReveal = (id: string) => {
-    const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
-    setOpenedIds(next);
-    onChangeState((prev) => ({ ...prev, practiceCheckState: updatePracticeState(prev, key, { openedIds: next, status: 'in_progress' }) }));
-  };
 
   const choose = (id: string, value: string) => {
     const next = { ...answers, [id]: value };
     setAnswers(next);
-    setSubmitted(false);
+    setConfirmedSafe(false);
     setCopyStatus('idle');
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.delete('M5-R13');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, submitted: false, status: 'in_progress' }) };
+      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { answers: next, confirmedSafe: false, submitted: false, status: 'in_progress' }) };
     });
   };
 
   const allAnswered = repairNoteSteps.every((step) => answers[step.id]);
-  const allReviewed = openedIds.length === allRevealIds.length;
-  const canSubmit = allAnswered && allReviewed;
-  const canContinue = completed || submitted;
+  const canContinue = completed || (allAnswered && confirmedSafe);
   const selectedSummaries = repairNoteSteps.map((step) => ({
-    title: step.title.replace(/^\d+\.\s*/, ''),
+    id: step.id,
+    title: step.outputLabel,
+    sentenceLabel: step.sentenceLabel,
     label: step.options.find((option) => option.id === answers[step.id])?.label || '',
     summary: step.options.find((option) => option.id === answers[step.id])?.summary || '',
   }));
+  const selectedById = Object.fromEntries(selectedSummaries.map((item) => [item.id, item.label]));
   const repairNoteText = [
-    'Safe HRBA MEAL repair note',
-    ...selectedSummaries.map((item) => `${item.title}: ${item.label}. ${item.summary}`),
-    'Safeguard: This note uses only structured, non-identifying choices. It does not include names, exact locations, complaint details, survivor information, child data, diagnoses, official names, organization names, or confidential records.',
+    'My HRBA MEAL, Accountability, and Learning Note',
+    'This note captures one safe and practical MEAL improvement from Module 5.',
+    ...selectedSummaries.map((item) => `${item.title}: ${item.sentenceLabel}: ${item.label}`),
+    `My improvement note: In the next MEAL review, the team will improve ${selectedById.area || '[practice focus]'} by using ${selectedById.repair || '[safe evidence]'} to answer ${selectedById.gap || '[guiding HRBA-MEAL question]'}. The team will protect rights-holders by applying ${selectedById.involve || '[safety boundary]'}. Based on the evidence, the team will ${selectedById.limit || '[action to take]'} and will account back by ${selectedById.accountBack || '[account-back step]'}.`,
   ].join('\n');
 
-  const submit = () => {
-    if (!canSubmit) return;
-    setSubmitted(true);
-    setCopyStatus('idle');
+  const setSafetyConfirmation = (checked: boolean) => {
+    setConfirmedSafe(checked);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R13');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, answers, submitted: true, repairNoteText, status: 'completed' }) };
+      if (checked && allAnswered) {
+        progress.add('M5-R13');
+      } else {
+        progress.delete('M5-R13');
+      }
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { answers, confirmedSafe: checked, repairNoteText, submitted: checked && allAnswered, status: checked && allAnswered ? 'completed' : 'in_progress' }),
+      };
     });
   };
 
@@ -4086,27 +5600,42 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R13-title">
-      <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r13-practice">
-        <div className="m5-safety-warning">
-          <strong>No sensitive free text.</strong>
-          <span>The repair note is generated from structured choices only. Do not add names, exact locations, complaint details, survivor information, child data, diagnoses, officials, organizations, or confidential records.</span>
+    <main className="m5-screen m5-screen--asset-visual m5-portfolio-note-screen" aria-labelledby="M5-R13-title">
+      <section className="m5-hero-panel m5-portfolio-note-hero">
+        <div className="m5-hero-panel__copy cso-content-safe-header">
+          <ModuleContextLabel>{config.context}</ModuleContextLabel>
+          <ProgressChip>MEAL step: Portfolio note</ProgressChip>
+          <ScreenTitle id="M5-R13-title" lead={config.lead}>
+            {config.title}
+          </ScreenTitle>
+          <p className="m5-r13-instruction">
+            Use the structured choices below. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, or identifiable examples.
+          </p>
+          <article className="m5-story-card">
+            <p className="m5-card-kicker">Scenario</p>
+            <h2>{config.storyTitle}</h2>
+            {config.story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </article>
         </div>
+        <EvidenceVisual config={config} />
+      </section>
+
+      <section className="m5-canvas m5-portfolio-note-canvas" aria-labelledby="m5-r13-practice">
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">Structured repair note</p>
-            <h2 id="m5-r13-practice">Choose each part of the repair note</h2>
-            <p>Review all safe note checks, then choose one option for each repair-note field.</p>
+            <p className="m5-card-kicker">Structured portfolio builder</p>
+            <h2 id="m5-r13-practice">{config.activityTitle}</h2>
+            <p>{config.activityPrompt}</p>
           </div>
-          <ProgressChip>{openedIds.length} of {allRevealIds.length} checks reviewed</ProgressChip>
+          <ProgressChip>{Object.values(answers).filter(Boolean).length} of {repairNoteSteps.length} choices complete</ProgressChip>
         </div>
-        <Module5ClinicRevealCards config={config} openedIds={openedIds} onOpen={openReveal} />
-        <div className="m5-decision-grid">
+        <div className="m5-r13-builder-grid">
           {repairNoteSteps.map((step) => {
             const selected = answers[step.id] || '';
             return (
-              <article key={step.id} className="m5-classification-card">
+              <article key={step.id} className="m5-r13-builder-card">
                 <label>
                   <span>{step.title}</span>
                   <small>{step.prompt}</small>
@@ -4126,29 +5655,67 @@ function Module5RepairNoteScreen({ state, onChangeState }: Module5RendererProps)
             );
           })}
         </div>
-        {submitted && (
-          <article className="m5-feedback-card is-strong m5-repair-note-output" aria-live="polite">
-            <p className="m5-card-kicker">Generated safe repair note</p>
-            <h3>The note is practical, safe, honest, and connected to account-back.</h3>
-            <pre tabIndex={0}>{repairNoteText}</pre>
-            <PrimaryButton onClick={copySummary}>{copyStatus === 'copied' ? 'Safe summary copied' : 'Copy safe summary'}</PrimaryButton>
+        {allAnswered && (
+          <article className="m5-r13-generated-note" aria-live="polite">
+            <p className="m5-card-kicker">Generated portfolio note</p>
+            <h2>My HRBA MEAL, Accountability, and Learning Note</h2>
+            <p>This note captures one safe and practical MEAL improvement from Module 5.</p>
+            <dl>
+              {selectedSummaries.map((item) => (
+                <div key={item.id}>
+                  <dt>{item.title}</dt>
+                  <dd><strong>{item.sentenceLabel}:</strong> {item.label}</dd>
+                </div>
+              ))}
+            </dl>
+            <article className="m5-r13-generated-paragraph">
+              <h3>My improvement note:</h3>
+              <p>
+                In the next MEAL review, the team will improve <strong>{selectedById.area}</strong> by using <strong>{selectedById.repair}</strong> to answer <strong>{selectedById.gap}</strong>. The team will protect rights-holders by applying <strong>{selectedById.involve}</strong>. Based on the evidence, the team will <strong>{selectedById.limit}</strong> and will account back by <strong>{selectedById.accountBack}</strong>.
+              </p>
+            </article>
+            <PrimaryButton onClick={copySummary}>{copyStatus === 'copied' ? 'Portfolio note copied' : 'Copy portfolio note'}</PrimaryButton>
             {copyStatus !== 'idle' && (
               <p className="m5-selected-summary" role="status" aria-live="polite">
                 {copyStatus === 'copied'
-                  ? 'Safe summary copied.'
-                  : 'Copy did not complete. Select and copy the summary manually.'}
+                  ? 'Portfolio note copied.'
+                  : 'Copy did not complete. Select and copy the note manually.'}
               </p>
             )}
           </article>
         )}
-        <footer className="m5-ladder-actions">
+        <article className="m5-r13-confirmation">
+          <h2>Before you continue</h2>
+          <p>Confirm that your portfolio note uses fictional or generalized learning only and does not include names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos.</p>
+          <label>
+            <input
+              type="checkbox"
+              checked={confirmedSafe}
+              disabled={!allAnswered}
+              onChange={(event) => setSafetyConfirmation(event.target.checked)}
+            />
+            <span>I confirm this note is safe to save and does not include identifying or sensitive details.</span>
+          </label>
+        </article>
+        {confirmedSafe && allAnswered && (
+          <article className="m5-r13-ready" aria-live="polite">
+            <h2>Your portfolio note is ready.</h2>
+            <p>You have created a safe HRBA MEAL note that connects evidence, action, protection, and account-back. In the next screen, you will turn this note into a simple 30/60/90-day practice bridge.</p>
+          </article>
+        )}
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos. In real work, follow your organization&apos;s consent, safeguarding, referral, reporting, and data-protection procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r13-actions">
           <div>
-            <h3>{submitted ? 'Repair note generated' : 'Complete all six structured choices'}</h3>
-            <p>{submitted ? config.feedbackStrong : 'The summary will be generated only from safe structured choices.'}</p>
+            <h3>{!allAnswered ? 'Complete your portfolio note' : confirmedSafe ? 'Your portfolio note is ready' : 'Confirm the note is safe to save'}</h3>
+            <p>{confirmedSafe && allAnswered ? config.feedbackStrong : 'The note is generated only from structured choices and must be confirmed safe before you continue.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Generate repair note' : 'Review checks and answer all fields'}</PrimaryButton>
-            <PrimaryButton onClick={() => completeSimpleScreen('M5-R13', 'M5-R14', module5Routes['M5-R14'], onChangeState, key, { answers, repairNoteText, submitted: true })} disabled={!canContinue}>{config.ctaButton}</PrimaryButton>
+            <PrimaryButton onClick={() => completeSimpleScreen('M5-R13', 'M5-R14', module5Routes['M5-R14'], onChangeState, key, { answers, confirmedSafe, repairNoteText, submitted: true })} disabled={!canContinue}>
+              {!allAnswered ? 'Complete your portfolio note' : confirmedSafe ? config.ctaButton : 'Confirm the note is safe to save'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -4163,8 +5730,13 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
   const completed = (state.screenProgress[MODULE_ID] || []).includes('M5-R14');
   const allRevealIds = config.revealItems.map((item) => item.id);
   const [openedIds, setOpenedIds] = useState<string[]>(completed ? allRevealIds : (stored.openedIds as string[]) || []);
-  const [selected, setSelected] = useState<Record<string, string[]>>((stored.selected as Record<string, string[]>) || {});
-  const [submitted, setSubmitted] = useState(Boolean(stored.submitted || completed));
+  const [selected, setSelected] = useState<Record<string, string>>(() => {
+    const storedSelected = (stored.selected as Record<string, string | string[]>) || {};
+    return Object.fromEntries(
+      Object.entries(storedSelected).map(([groupId, value]) => [groupId, Array.isArray(value) ? value[0] || '' : value]),
+    );
+  });
+  const [confirmedSafe, setConfirmedSafe] = useState(Boolean(stored.confirmedSafe || completed));
 
   const openReveal = (id: string) => {
     const next = openedIds.includes(id) ? openedIds : [...openedIds, id];
@@ -4173,49 +5745,52 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
   };
 
   const toggle = (groupId: string, optionId: string) => {
-    const groupValues = selected[groupId] || [];
-    const nextGroup = groupValues.includes(optionId)
-      ? groupValues.filter((item) => item !== optionId)
-      : [...groupValues, optionId];
-    const next = { ...selected, [groupId]: nextGroup };
+    const next = { ...selected, [groupId]: optionId };
     setSelected(next);
-    setSubmitted(false);
+    setConfirmedSafe(false);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.delete('M5-R14');
       progress.delete('M5-PLAYER-COMPLETE');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selected: next, submitted: false, status: 'in_progress' }) };
+      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { selected: next, confirmedSafe: false, status: 'in_progress' }) };
     });
   };
 
   const allReviewed = openedIds.length === allRevealIds.length;
-  const allStagesSelected = bridgeActionGroups.every((group) => (selected[group.id] || []).length > 0);
-  const canSubmit = allReviewed && allStagesSelected;
-  const canComplete = completed || submitted;
-  const commitmentText = [
-    '90-day HRBA MEAL practice bridge',
-    ...bridgeActionGroups.map((group) => {
-      const choices = (selected[group.id] || [])
-        .map((id) => group.options.find((option) => option.id === id))
-        .filter(Boolean)
-        .map((option) => `${option?.label}: ${option?.summary}`)
-        .join(' ');
-      return `${group.title}: ${choices}`;
-    }),
-    'Account-back commitment: Share what was heard, what changed, what remains unresolved, and next steps without identifying people or exposing sensitive details.',
-  ].join('\n');
+  const allStagesSelected = bridgeActionGroups.every((group) => Boolean(selected[group.id]));
+  const canConfirm = allReviewed && allStagesSelected;
+  const canComplete = completed || (allStagesSelected && confirmedSafe);
+  const selectedOptions = Object.fromEntries(
+    bridgeActionGroups.map((group) => [group.id, group.options.find((option) => option.id === selected[group.id])]),
+  );
+  const day30 = selectedOptions.day30?.label || '[selected Section 1 option]';
+  const day60 = selectedOptions.day60?.label || '[selected Section 2 option]';
+  const day90 = selectedOptions.day90?.label || '[selected Section 3 option]';
+  const accountBackRoute = selectedOptions.accountBackRoute?.label || '[selected Section 4 option]';
+  const safetyRule = selectedOptions.safetyRule?.label || '[selected Section 5 option]';
+  const commitmentText = `My 90-day practice bridge: In the first 30 days, the team will ${day30.toLowerCase()}. By 60 days, the team will ${day60.toLowerCase()}. By 90 days, the team will ${day90.toLowerCase()}. The team will account back through ${accountBackRoute.toLowerCase()} and will protect rights-holders by applying ${safetyRule.toLowerCase()}.`;
 
-  const submit = () => {
-    if (!canSubmit) return;
-    setSubmitted(true);
+  const updateConfirmation = (checked: boolean) => {
+    if (!canConfirm) return;
+    setConfirmedSafe(checked);
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
-      progress.add('M5-R14');
-      return { ...prev, screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) }, practiceCheckState: updatePracticeState(prev, key, { openedIds, selected, submitted: true, commitmentText, status: 'completed' }) };
+      progress.delete('M5-PLAYER-COMPLETE');
+      if (checked) {
+        progress.add('M5-R14');
+      } else {
+        progress.delete('M5-R14');
+      }
+      return {
+        ...prev,
+        screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
+        practiceCheckState: updatePracticeState(prev, key, { openedIds, selected, confirmedSafe: checked, commitmentText, status: checked ? 'completed' : 'in_progress' }),
+      };
     });
   };
 
   const completeModule = () => {
+    if (!canComplete) return;
     onChangeState((prev) => {
       const progress = new Set(prev.screenProgress[MODULE_ID] || []);
       progress.add('M5-R14');
@@ -4225,25 +5800,25 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
         currentScreenId: 'M5-PLAYER-COMPLETE',
         completedModules: prev.completedModules.includes(MODULE_ID) ? prev.completedModules : [...prev.completedModules, MODULE_ID],
         screenProgress: { ...prev.screenProgress, [MODULE_ID]: Array.from(progress) },
-        practiceCheckState: updatePracticeState(prev, key, { openedIds, selected, submitted: true, commitmentText, status: 'completed' }),
+        practiceCheckState: updatePracticeState(prev, key, { openedIds, selected, confirmedSafe: true, commitmentText, status: 'completed' }),
       };
     });
     setRoute(module5Routes['M5-PLAYER-COMPLETE']);
   };
 
   return (
-    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen" aria-labelledby="M5-R14-title">
+    <main className="m5-screen m5-screen--asset-visual m5-clinic-screen m5-practice-bridge-screen" aria-labelledby="M5-R14-title">
       <Module5ClinicHero config={config} />
-      <section className="m5-canvas m5-clinic-canvas" aria-labelledby="m5-r14-practice">
+      <section className="m5-canvas m5-clinic-canvas m5-r14-canvas" aria-labelledby="m5-r14-practice">
         <div className="m5-safety-warning">
-          <strong>Start small and account back.</strong>
-          <span>Choose realistic team actions. Do not default to collecting more personal data or asking untrained staff to investigate sensitive concerns.</span>
+          <strong>Choose realistic actions.</strong>
+          <span>Choose practical actions for the next 30, 60, and 90 days. Keep the plan realistic, safe, and focused on one improvement your team could test in normal MEAL practice.</span>
         </div>
         <div className="m5-canvas__header">
           <div>
-            <p className="m5-card-kicker">90-day practice bridge</p>
-            <h2 id="m5-r14-practice">Select at least one action for each stage</h2>
-            <p>Review the three bridge stages, then choose practical actions for 30, 60, and 90 days.</p>
+            <p className="m5-card-kicker">90-day plan builder</p>
+            <h2 id="m5-r14-practice">Build one safe practice bridge</h2>
+            <p>Review the bridge, then choose one preparation action, one test, one learning action, one account-back route, and one safety rule.</p>
           </div>
           <ProgressChip>{openedIds.length} of {allRevealIds.length} stages reviewed</ProgressChip>
         </div>
@@ -4254,10 +5829,10 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
               <legend>{group.title}</legend>
               <p>{group.prompt}</p>
               {group.options.map((option) => {
-                const isSelected = (selected[group.id] || []).includes(option.id);
+                const isSelected = selected[group.id] === option.id;
                 return (
                   <label key={option.id} className={`m5-choice-card ${isSelected ? 'is-selected' : ''}`}>
-                    <input type="checkbox" checked={isSelected} onChange={() => toggle(group.id, option.id)} />
+                    <input type="radio" name={`m5-r14-${group.id}`} checked={isSelected} onChange={() => toggle(group.id, option.id)} />
                     <span className="m5-choice-card__mark" aria-hidden="true">{isSelected ? '✓' : '•'}</span>
                     <span><strong>{option.label}</strong><small>{option.summary}</small></span>
                   </label>
@@ -4266,21 +5841,53 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
             </fieldset>
           ))}
         </div>
-        {submitted && (
-          <article className="m5-feedback-card is-strong m5-repair-note-output" aria-live="polite">
-            <p className="m5-card-kicker">Final practice commitment</p>
-            <h3>{config.feedbackStrong}</h3>
-            <pre tabIndex={0}>{commitmentText}</pre>
+        <article className={`m5-r14-generated-plan ${allStagesSelected ? 'is-ready' : ''}`} aria-live="polite">
+          <p className="m5-card-kicker">My 90-Day MEAL Learning and Account-Back Plan</p>
+          <h2>My 90-Day MEAL Learning and Account-Back Plan</h2>
+          <p>This plan turns one HRBA MEAL improvement into a practical 90-day action.</p>
+          <dl>
+            {bridgeActionGroups.map((group) => {
+              const option = selectedOptions[group.id];
+              return (
+                <div key={group.id}>
+                  <dt>{group.outputLabel}</dt>
+                  <dd>{option ? <>I will: <strong>{option.label}</strong></> : 'Choose one option above.'}</dd>
+                </div>
+              );
+            })}
+          </dl>
+          <div className="m5-r14-summary">
+            <h3>My 90-day practice bridge:</h3>
+            <p>{commitmentText}</p>
+          </div>
+        </article>
+        <article className="m5-r14-confirmation">
+          <h2>Before completing Module 5</h2>
+          <p>Confirm that your 90-day plan uses fictional or generalized learning only and does not include names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos.</p>
+          <label>
+            <input type="checkbox" checked={confirmedSafe} disabled={!canConfirm} onChange={(event) => updateConfirmation(event.target.checked)} />
+            <span>I confirm this plan is safe to save and does not include identifying or sensitive details.</span>
+          </label>
+        </article>
+        {confirmedSafe && allStagesSelected && (
+          <article className="m5-r14-ready" aria-live="polite">
+            <h2>Your 90-day practice bridge is ready.</h2>
+            <p>You have connected HRBA MEAL evidence to practical action, learning, and account-back. This plan can help a CSO test one realistic improvement without exposing people or overclaiming results.</p>
           </article>
         )}
-        <footer className="m5-ladder-actions">
+        <article className="m5-safety-warning">
+          <strong>Safe practice note</strong>
+          <span>Use fictional or generalized examples only. Do not enter real names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos. In real work, follow your organization&apos;s MEAL, safeguarding, referral, reporting, consent, and data-protection procedures.</span>
+        </article>
+        <footer className="m5-ladder-actions m5-r14-actions">
           <div>
-            <h3>{submitted ? '90-day bridge ready' : 'Choose at least one action for each stage'}</h3>
-            <p>{submitted ? 'You can now complete Module 5.' : 'The bridge should be realistic, safe, and specific enough to guide action without identifying people.'}</p>
+            <h3>{!allStagesSelected ? 'Complete your 90-day plan' : confirmedSafe ? 'Your 90-day practice bridge is ready' : 'Confirm the plan is safe to complete'}</h3>
+            <p>{confirmedSafe && allStagesSelected ? config.feedbackStrong : 'The plan is generated only from structured choices and must be confirmed safe before completion.'}</p>
           </div>
           <div className="m5-ladder-actions__buttons">
-            <PrimaryButton onClick={submit} disabled={!canSubmit}>{canSubmit ? 'Check 90-day bridge' : 'Review stages and select actions'}</PrimaryButton>
-            <PrimaryButton onClick={completeModule} disabled={!canComplete}>Complete Module 5</PrimaryButton>
+            <PrimaryButton onClick={completeModule} disabled={!canComplete}>
+              {!allStagesSelected ? 'Complete your 90-day plan' : confirmedSafe ? 'Complete Module 5' : 'Confirm the plan is safe to complete'}
+            </PrimaryButton>
           </div>
         </footer>
       </section>
@@ -4289,43 +5896,101 @@ function Module5PracticeBridgeScreen({ state, onChangeState }: Module5RendererPr
 }
 
 function Module5CompleteScreen({ onChangeState }: { onChangeState: Module5RendererProps['onChangeState'] }) {
+  const returnToCourse = () => {
+    onChangeState((prev) => ({
+      ...prev,
+      currentLayer: 'platform',
+      currentSubState: null,
+      activeModal: null,
+    }));
+  };
+
+  const practicedCards = [
+    ['Evidence beyond activity counts', 'You looked beyond meetings, attendance, forms, and reports to ask what the evidence shows and what it may still hide.'],
+    ['Indicators and logframe evidence', 'You improved indicators so they can show access, participation, feedback response, safety, accountability, and change.'],
+    ['Safe data and disaggregation', 'You practiced collecting enough evidence to reveal exclusion without exposing people.'],
+    ['Feedback and response', 'You strengthened feedback as a response pathway: receive safely, review, respond or refer, adapt, and account back.'],
+    ['Ethical qualitative evidence', 'You practiced using stories, quotes, photos, and feedback themes with dignity, consent, anonymity, and truthful limits.'],
+    ['Evidence-to-action learning', 'You used evidence to decide what should continue, adapt, be referred, be discussed with responsible actors, be reported with limits, or be explained back.'],
+  ];
+  const outputCards = [
+    ['HRBA MEAL, Accountability, and Learning Note', 'A structured note that connects one MEAL improvement with safe evidence, action, and account-back.'],
+    ['90-Day MEAL Learning and Account-Back Plan', 'A practical bridge for preparing, testing, learning, and explaining back over the next 90 days.'],
+  ];
+
   return (
     <main className="m5-screen m5-screen--complete" aria-labelledby="m5-complete-title">
-      <section className="m5-hero-panel">
-        <div className="m5-hero-panel__copy">
-          <ModuleContextLabel>Module 5 · HRBA in MEAL</ModuleContextLabel>
-          <ScreenTitle
-            id="m5-complete-title"
-            lead="You have completed the HRBA in Monitoring, Evaluation, Accountability and Learning pathway."
-          >
-            Module 5 Complete
-          </ScreenTitle>
-          <article className="m5-insight-card m5-insight-card--dark">
-            <p className="m5-card-kicker">Course-to-practice bridge</p>
-            <h2>Use evidence to learn safely and respond well</h2>
-            <p>
-              You have practiced looking beyond activity numbers, repairing indicators, using gender-sensitive
-              and disability-inclusive evidence, choosing safer data, responding to feedback, adapting based on
-              signals, and reporting truthfully.
-            </p>
+      <section className="m5-complete-shell">
+        <header className="m5-complete-hero">
+          <div>
+            <ModuleContextLabel>MODULE 5 COMPLETE</ModuleContextLabel>
+            <ScreenTitle
+              id="m5-complete-title"
+              lead="You have completed Module 5. You practiced how to use MEAL evidence to look beyond activity counts, identify who may be missing, protect people, respond to feedback, adapt action, report truthfully, and account back."
+            >
+              Module 5 Complete: HRBA MEAL Practice Bridge
+            </ScreenTitle>
+          </div>
+          <div className="m5-complete-badge" aria-hidden="true">
+            <span>✓</span>
+            <strong>Module 5 complete</strong>
+          </div>
+        </header>
+
+        <section className="m5-complete-section" aria-labelledby="m5-complete-practiced">
+          <div className="m5-canvas__header">
+            <div>
+              <p className="m5-card-kicker">What you practiced</p>
+              <h2 id="m5-complete-practiced">What you practiced</h2>
+            </div>
+          </div>
+          <div className="m5-complete-grid">
+            {practicedCards.map(([title, body]) => (
+              <article key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="m5-complete-section m5-complete-outputs" aria-labelledby="m5-complete-outputs">
+          <div>
+            <p className="m5-card-kicker">Your Module 5 outputs</p>
+            <h2 id="m5-complete-outputs">Your Module 5 outputs</h2>
+          </div>
+          <div className="m5-complete-output-grid">
+            {outputCards.map(([title, body]) => (
+              <article key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="m5-complete-takeaway" aria-labelledby="m5-complete-takeaway">
+          <article>
+            <h2 id="m5-complete-takeaway">Key takeaway</h2>
+            <p>HRBA-informed MEAL is not only about collecting data or proving results. It is about using evidence to see exclusion, protect people, respond responsibly, adapt practice, report truthfully, and account back to rights-holders and communities.</p>
           </article>
-          <PrimaryButton
-            onClick={() =>
-              onChangeState((prev) => ({
-                ...prev,
-                currentLayer: 'platform',
-                currentSubState: null,
-                activeModal: null,
-              }))
-            }
+          <article>
+            <h2>Apply this safely</h2>
+            <p>When applying this learning in real CSO work, use your organization&apos;s MEAL, safeguarding, consent, referral, reporting, and data-protection procedures. Do not include names, exact locations, complaint details, survivor stories, child data, disability diagnoses, confidential records, organization names, official names, or identifiable photos in unsafe formats.</p>
+          </article>
+        </section>
+
+        <footer className="m5-complete-actions">
+          <ScreenTitle
+            id="m5-complete-next"
+            lead="Your Module 5 outputs are ready for safe review in the course flow."
           >
-            Return to course page
-          </PrimaryButton>
-        </div>
-        <EvidenceVisual config={{
-          ...module5Screens['M5-S1-25'],
-          blockType: 'Module completion',
-        }} />
+            Ready for the next step
+          </ScreenTitle>
+          <div className="m5-ladder-actions__buttons">
+            <PrimaryButton onClick={returnToCourse}>Return to course</PrimaryButton>
+          </div>
+        </footer>
       </section>
     </main>
   );
@@ -4354,9 +6019,12 @@ export default function Module5Renderer(props: Module5RendererProps) {
     return <Module5IntroVideoScreen {...props} />;
   }
 
+  if (props.screenId === 'M5-R03') {
+    return <Module5EvidenceGapDiagnosticScreen {...props} />;
+  }
 
   if (props.screenId === 'M5-R04') {
-    return <Module5EvidenceLadderScreen {...props} />;
+    return <Module5HrbaMealLensCycleScreen {...props} />;
   }
 
   if (props.screenId === 'M5-R05') {
@@ -4399,7 +6067,7 @@ export default function Module5Renderer(props: Module5RendererProps) {
     return <Module5PracticeBridgeScreen {...props} />;
   }
 
-  if (props.screenId === 'M5-S1-02') {
+  if (props.screenId === 'M5-R02' || props.screenId === 'M5-S1-02') {
     return <Module5LearningObjectivesScreen {...props} />;
   }
 
