@@ -27532,10 +27532,54 @@ body:has(.course-shell) {
 .player-split-canvas {
   display: grid;
   grid-template-columns: minmax(164px, 14.5%) minmax(0, 1fr);
+  position: relative;
   min-height: 0;
   height: auto;
   overflow: hidden;
   background: var(--player-stage-bg);
+}
+
+.course-shell--screen-stabilizing .player-sidebar-aside,
+.course-shell--screen-stabilizing .player-main-content {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.course-screen-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background:
+    linear-gradient(135deg, rgba(7, 28, 51, 0.98), rgba(11, 33, 56, 0.98)),
+    radial-gradient(circle at 84% 14%, rgba(145, 200, 82, 0.2), transparent 28%);
+  color: var(--cso-color-text-inverse);
+  text-align: center;
+}
+
+.course-screen-loading > div {
+  display: grid;
+  gap: 0.45rem;
+  max-width: 420px;
+}
+
+.course-screen-loading__eyebrow {
+  margin: 0;
+  color: var(--color-accent-green);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.course-screen-loading__title {
+  margin: 0;
+  color: var(--cso-color-text-inverse);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 850;
+  line-height: 1.16;
 }
 
 .player-sidebar-aside {

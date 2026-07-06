@@ -138,6 +138,12 @@ export default function CoursePlayerShell({
   const mainContentRef = useRef<HTMLElement>(null);
   const focusMainContentAfterMenuSelectionRef = useRef(false);
   const previousScreenIdRef = useRef<string | null>(null);
+  const screenStabilizationHandlesRef = useRef<{
+    firstFrame?: number;
+    secondFrame?: number;
+    timer?: number;
+  }>({});
+  const [stabilizedScreenKey, setStabilizedScreenKey] = useState<string | null>(null);
   const [hiddenModule3RedirectQa, setHiddenModule3RedirectQa] = useState<string | null>(null);
   const [accessibilityPreferences, setAccessibilityPreferences] = useState<AccessibilityPreferences>({
     highContrast: false,
@@ -203,6 +209,52 @@ export default function CoursePlayerShell({
     ? module3InstructionalScreens.length
     : totalScreens;
   const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-PLAYER-COMPLETE';
+  const screenStabilizationKey = `${state.currentModuleId || 'course'}:${screenId || 'screen'}`;
+  const screenStabilized = stabilizedScreenKey === screenStabilizationKey;
+
+  useEffect(() => {
+    function resetScreenViewport() {
+      window.scrollTo({ left: 0, top: 0 });
+      mainContentRef.current?.scrollTo({ left: 0, top: 0 });
+      document
+        .querySelector<HTMLElement>('.main-screen-canvas__content')
+        ?.scrollTo({ left: 0, top: 0 });
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    const firstFrame = window.requestAnimationFrame(() => {
+      resetScreenViewport();
+
+      const secondFrame = window.requestAnimationFrame(() => {
+        resetScreenViewport();
+
+        const stabilizationTimer = window.setTimeout(() => {
+          resetScreenViewport();
+          setStabilizedScreenKey(screenStabilizationKey);
+        }, 420);
+
+        screenStabilizationHandlesRef.current.timer = stabilizationTimer;
+      });
+
+      screenStabilizationHandlesRef.current.secondFrame = secondFrame;
+    });
+
+    screenStabilizationHandlesRef.current.firstFrame = firstFrame;
+
+    return () => {
+      const { firstFrame, secondFrame, timer } = screenStabilizationHandlesRef.current;
+      if (firstFrame !== undefined) {
+        window.cancelAnimationFrame(firstFrame);
+      }
+      if (secondFrame !== undefined) {
+        window.cancelAnimationFrame(secondFrame);
+      }
+      if (timer !== undefined) {
+        window.clearTimeout(timer);
+      }
+      screenStabilizationHandlesRef.current = {};
+    };
+  }, [screenStabilizationKey]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_01_hrba_foundations' || !state.currentScreenId) {
@@ -857,7 +909,7 @@ export default function CoursePlayerShell({
     : 'Module 1: Starting the HRBA Learning Journey';
   return (
     <div
-      className="player-container course-shell"
+      className={`player-container course-shell ${screenStabilized ? '' : 'course-shell--screen-stabilizing'}`.trim()}
       data-a11y-high-contrast={accessibilityPreferences.highContrast ? 'true' : 'false'}
       data-a11y-text-size={accessibilityPreferences.textSize}
       data-a11y-reduce-motion={accessibilityPreferences.reduceMotion ? 'true' : 'false'}
@@ -904,6 +956,14 @@ export default function CoursePlayerShell({
       />
 
       <div className="player-split-canvas">
+        {!screenStabilized && (
+          <div className="course-screen-loading" role="status" aria-live="polite">
+            <div>
+              <p className="course-screen-loading__eyebrow">Course screen</p>
+              <p className="course-screen-loading__title">Preparing this screen...</p>
+            </div>
+          </div>
+        )}
         <PlayerSidebar
           onToggleModal={handleToggleModal}
           activeModal={state.activeModal}
