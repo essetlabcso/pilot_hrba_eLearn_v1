@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { LearningState } from '../../state/learningState';
 import { getHRBAModuleById } from '../../data/hrbaCourseModules';
 
@@ -212,15 +212,27 @@ export default function CoursePlayerShell({
   const screenStabilizationKey = `${state.currentModuleId || 'course'}:${screenId || 'screen'}`;
   const screenStabilized = stabilizedScreenKey === screenStabilizationKey;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function resetScreenViewport() {
-      window.scrollTo({ left: 0, top: 0 });
-      mainContentRef.current?.scrollTo({ left: 0, top: 0 });
+      const html = document.documentElement;
+      const body = document.body;
+      const scrollingElement = document.scrollingElement;
+
+      window.scrollTo(0, 0);
+      html.scrollTop = 0;
+      html.scrollLeft = 0;
+      body.scrollTop = 0;
+      body.scrollLeft = 0;
+      scrollingElement?.scrollTo(0, 0);
+      document.getElementById('root')?.scrollTo(0, 0);
+      mainContentRef.current?.scrollTo(0, 0);
       document
         .querySelector<HTMLElement>('.main-screen-canvas__content')
-        ?.scrollTo({ left: 0, top: 0 });
+        ?.scrollTo(0, 0);
       window.dispatchEvent(new Event('resize'));
     }
+
+    resetScreenViewport();
 
     const firstFrame = window.requestAnimationFrame(() => {
       resetScreenViewport();
