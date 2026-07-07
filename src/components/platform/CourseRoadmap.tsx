@@ -7,6 +7,7 @@ interface CourseRoadmapProps {
   currentModuleId: string | null;
   currentScreenId: string | null;
   onLaunchModule: (moduleId: string, reviewMode: boolean) => void;
+  portalModeActive?: boolean;
 }
 
 export default function CourseRoadmap({
@@ -14,6 +15,7 @@ export default function CourseRoadmap({
   screenProgress,
   currentModuleId,
   onLaunchModule,
+  portalModeActive = false,
 }: CourseRoadmapProps) {
   const statusByModuleId = new Map<string, ModuleLaunchStatus>();
 
@@ -22,7 +24,8 @@ export default function CourseRoadmap({
     const hasProgress = (screenProgress[module.moduleId] || []).length > 0 || currentModuleId === module.moduleId;
     const previousModules = HRBA_COURSE_MODULES.filter((candidate) => candidate.moduleSeq < module.moduleSeq);
     const previousModule = previousModules.at(-1);
-    const previousCompleted = !previousModule || completedModules.includes(previousModule.moduleId);
+    const portalFinalAssessmentUnlocked = portalModeActive && module.moduleId === 'final_assessment';
+    const previousCompleted = portalFinalAssessmentUnlocked || !previousModule || completedModules.includes(previousModule.moduleId);
 
     if (isCompleted) {
       statusByModuleId.set(module.moduleId, 'completed');

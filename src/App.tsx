@@ -115,6 +115,7 @@ export default function App() {
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const screenIdParam = params.get('screenId');
     const moduleIdParam = params.get('moduleId');
+    const isPortalLaunch = params.get('embed') === 'portal' && Boolean(params.get('launchToken'));
     const allowQaProgressOverride = typeof window !== 'undefined' && (
       window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
@@ -220,6 +221,7 @@ export default function App() {
       const moduleDefinition = getHRBAModuleById(moduleId);
       if (!moduleDefinition) return false;
       if (moduleDefinition.moduleSeq === 1) return true;
+      if (isPortalLaunch && moduleId === 'final_assessment') return true;
       const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
       return previousModules.every((module) => completedModules.includes(module.moduleId));
     };
@@ -467,7 +469,8 @@ export default function App() {
     setState((prev) => {
       const moduleDefinition = getHRBAModuleById(moduleId) || HRBA_COURSE_MODULES[0];
       const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
-      const isUnlocked = previousModules.every((module) => prev.completedModules.includes(module.moduleId));
+      const isPortalFinalAssessment = Boolean(portalContext) && moduleId === 'final_assessment';
+      const isUnlocked = isPortalFinalAssessment || previousModules.every((module) => prev.completedModules.includes(module.moduleId));
 
       if (!isUnlocked) {
         return prev;
