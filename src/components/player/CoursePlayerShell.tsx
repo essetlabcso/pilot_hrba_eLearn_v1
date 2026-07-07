@@ -919,9 +919,15 @@ export default function CoursePlayerShell({
       ? activeModule.title
       : `${activeModule.itemLabel}: ${activeModule.title}`
     : 'Module 1: Starting the HRBA Learning Journey';
+  const courseShellClassName = [
+    'player-container course-shell',
+    screenStabilized ? '' : 'course-shell--screen-stabilizing',
+    portalModeActive ? 'course-shell--portal-mode' : ''
+  ].filter(Boolean).join(' ');
+
   return (
     <div
-      className={`player-container course-shell ${screenStabilized ? '' : 'course-shell--screen-stabilizing'}`.trim()}
+      className={courseShellClassName}
       data-a11y-high-contrast={accessibilityPreferences.highContrast ? 'true' : 'false'}
       data-a11y-text-size={accessibilityPreferences.textSize}
       data-a11y-reduce-motion={accessibilityPreferences.reduceMotion ? 'true' : 'false'}

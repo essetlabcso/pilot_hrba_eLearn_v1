@@ -27377,6 +27377,10 @@ body:has(.course-shell) {
   color: var(--text-on-dark);
 }
 
+.course-shell.player-container.course-shell--portal-mode {
+  grid-template-rows: 4px auto minmax(64px, 9.5%) minmax(0, 1fr) minmax(48px, 6.8%);
+}
+
 .player-progress-strip {
   width: 100%;
   height: 4px !important;
