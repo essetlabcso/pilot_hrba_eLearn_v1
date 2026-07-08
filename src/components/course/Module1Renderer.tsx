@@ -1569,18 +1569,11 @@ function Module1StartingPointSelfAssessmentScreen({
       : 'You are starting with strong confidence. Use the course to sharpen your practice, reflect on your CSO work, and support peer learning.';
   const shellStyle: CSSProperties = {
     display: 'grid',
-    gap: '1rem',
-    width: 'min(100%, 880px)',
+    gap: '1.05rem',
+    width: 'min(100%, 1040px)',
     margin: '0 auto',
-    padding: '1.25rem 1rem 7rem',
+    padding: '1.25rem 1.1rem 7rem',
     color: '#10233f'
-  };
-  const panelStyle: CSSProperties = {
-    background: '#ffffff',
-    border: '1px solid rgba(16, 92, 91, 0.16)',
-    borderRadius: '8px',
-    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
-    padding: '1rem'
   };
   const titleStyle: CSSProperties = {
     color: '#0b2a55',
@@ -1647,62 +1640,56 @@ function Module1StartingPointSelfAssessmentScreen({
           </p>
         </header>
 
-        <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+        <figure className="m1-confidence-visual">
           <img
             src="/assets/hrba/modules/module-1/m1-s07-starting-point-confidence-scale.png"
             alt="Four-point confidence scale for checking readiness to apply HRBA, from not confident yet to very confident."
             loading="eager"
-            style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
           />
         </figure>
 
-        <section style={panelStyle}>
-          <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>Before you begin</h2>
-          <p style={{ color: '#26394f', lineHeight: 1.55 }}>This is not a test.</p>
-          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+        <section className="m1-confidence-panel m1-confidence-before">
+          <h2>Before you begin</h2>
+          <p>This is not a test.</p>
+          <p>
             It helps you notice your starting point before the course begins. Your answers can help you see where you want to focus your learning.
           </p>
         </section>
 
-        <section style={panelStyle}>
-          <h2 style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.75rem' }}>Rating scale</h2>
-          <ol style={{ display: 'grid', gap: '0.55rem', margin: 0, paddingLeft: '1.35rem' }}>
+        <section className="m1-confidence-panel m1-confidence-scale">
+          <h2>Rating scale</h2>
+          <ol>
             {ratingLevels.map((level) => (
-              <li key={level.value} style={{ color: '#26394f', lineHeight: 1.45 }}>{level.label}</li>
+              <li key={level.value}>
+                <span aria-hidden="true">{level.value}</span>
+                <strong>{level.label}</strong>
+              </li>
             ))}
           </ol>
         </section>
 
-        <form aria-labelledby="m1-confidence-form-heading" style={{ display: 'grid', gap: '0.9rem' }}>
-          <section style={panelStyle}>
-            <h2 id="m1-confidence-form-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.35rem' }}>
+        <form aria-labelledby="m1-confidence-form-heading" className="m1-confidence-form">
+          <section className="m1-confidence-progress">
+            <div>
+              <span>Self-assessment progress</span>
+              <h2 id="m1-confidence-form-heading">
               How confident are you now to:
-            </h2>
-            <p aria-live="polite" style={{ color: '#0f766e', fontWeight: 900, margin: 0 }}>{answeredCount} of 10 answered</p>
+              </h2>
+            </div>
+            <p aria-live="polite" aria-atomic="true">{answeredCount} of 10 answered</p>
           </section>
 
           {questions.map((question, index) => {
             const questionId = `q${index + 1}`;
             const currentRating = Number(ratings[questionId] || 0);
             return (
-              <fieldset key={question} style={{ ...panelStyle, display: 'grid', gap: '0.75rem', margin: 0 }}>
-                <legend style={{ color: '#0b2a55', fontWeight: 900, padding: '0 0.35rem' }}>{index + 1}. {question}</legend>
-                <div style={{ display: 'grid', gap: '0.55rem' }}>
+              <fieldset key={question} className={`m1-confidence-question${currentRating ? ' is-answered' : ''}`}>
+                <legend><span>Question {index + 1}</span>{question}</legend>
+                <div className="m1-confidence-options">
                   {ratingLevels.map((level) => (
                     <label
                       key={level.value}
-                      style={{
-                        display: 'flex',
-                        gap: '0.65rem',
-                        alignItems: 'center',
-                        minHeight: '44px',
-                        border: currentRating === level.value ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.2)',
-                        borderRadius: '8px',
-                        background: currentRating === level.value ? '#e7f5f1' : '#ffffff',
-                        color: '#10233f',
-                        cursor: 'pointer',
-                        padding: '0.65rem 0.75rem'
-                      }}
+                      className={`m1-confidence-option${currentRating === level.value ? ' is-selected' : ''}`}
                     >
                       <input
                         type="radio"
@@ -1711,8 +1698,9 @@ function Module1StartingPointSelfAssessmentScreen({
                         checked={currentRating === level.value}
                         onChange={() => setRating(questionId, level.value)}
                       />
-                      <span>{level.label}</span>
-                      {currentRating === level.value && <strong style={{ marginLeft: 'auto' }}>Selected</strong>}
+                      <span className="m1-confidence-option__number" aria-hidden="true">{level.value}</span>
+                      <span className="m1-confidence-option__label">{level.label}</span>
+                      {currentRating === level.value && <strong>Selected</strong>}
                     </label>
                   ))}
                 </div>
@@ -1721,24 +1709,24 @@ function Module1StartingPointSelfAssessmentScreen({
           })}
         </form>
 
-        <section aria-label="Self-assessment actions" style={panelStyle}>
+        <section aria-label="Self-assessment actions" className="m1-confidence-actions">
           <button type="button" className="m1-b2-primary" onClick={submitAssessment} disabled={!canSubmit}>
             {submitted ? 'Update self-assessment' : 'Submit self-assessment'}
           </button>
-          <p style={{ color: canSubmit ? '#42566d' : '#7c2d12', fontWeight: 800, margin: '0.75rem 0 0' }}>
+          <p className={canSubmit ? 'is-ready' : 'is-incomplete'}>
             {canSubmit ? 'All items answered. Submit to see your starting-point feedback.' : 'Answer all 10 items before submitting.'}
           </p>
         </section>
 
         {submitted && (
-          <section aria-labelledby="m1-confidence-results-heading" style={{ ...panelStyle, background: '#ecfdf5' }}>
-            <h2 id="m1-confidence-results-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>Your starting-point result</h2>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>You answered 10 of 10 items.</p>
-            <p style={{ color: '#10233f', fontSize: '1.08rem', fontWeight: 900, lineHeight: 1.45 }}>
+          <section aria-labelledby="m1-confidence-results-heading" className="m1-confidence-results">
+            <h2 id="m1-confidence-results-heading">Your starting-point result</h2>
+            <p>You answered 10 of 10 items.</p>
+            <p className="m1-confidence-results__score">
               Average confidence score: {Number(averageScore.toFixed(1)).toFixed(1)} out of 4
             </p>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>{feedbackText}</p>
-            <p style={{ color: '#134e4a', fontWeight: 900, lineHeight: 1.55 }}>
+            <p>{feedbackText}</p>
+            <p className="m1-confidence-results__next">
               Use this result to choose a learning priority on the next screen.
             </p>
           </section>
