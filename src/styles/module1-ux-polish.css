@@ -964,6 +964,17 @@
   border-radius: 6px;
 }
 
+@media (min-width: 941px) {
+  .m1-portfolio-intro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .m1-portfolio-safe-visual {
+    justify-self: center;
+    width: min(100%, 44rem);
+  }
+}
+
 .m1-portfolio-safety-panel,
 .m1-portfolio-example,
 .m1-portfolio-start {
