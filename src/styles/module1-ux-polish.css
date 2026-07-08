@@ -392,9 +392,9 @@
 
 .m1-hrba-lens-message {
   display: grid;
-  grid-template-columns: minmax(10rem, 0.28fr) minmax(0, 0.42fr) minmax(0, 0.3fr);
-  gap: 0.9rem;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+  align-items: start;
   border-color: rgba(16, 92, 91, 0.18);
   background: linear-gradient(135deg, #ffffff 0%, #fafdfd 66%, #eef7f5 100%);
 }
