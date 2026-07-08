@@ -1319,14 +1319,6 @@ function Module1SafePortfolioScreen({
     padding: '1.25rem 1.25rem 7rem',
     color: '#10233f'
   };
-  const panelStyle: CSSProperties = {
-    background: '#ffffff',
-    border: '1px solid rgba(16, 92, 91, 0.16)',
-    borderRadius: '8px',
-    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
-    color: '#10233f',
-    padding: '1rem'
-  };
   const titleStyle: CSSProperties = {
     color: '#0b2a55',
     fontFamily: 'var(--font-family-headings)',
@@ -1334,13 +1326,6 @@ function Module1SafePortfolioScreen({
     lineHeight: 1.06,
     margin: 0
   };
-  const twoColumnStyle: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-    gap: '1rem',
-    alignItems: 'start'
-  };
-
   const toggleFocus = (option: string) => {
     onChangeState((prev) => {
       const previousFocus = Array.isArray(prev.practiceCheckState.module1FirstSafePortfolioFocus)
@@ -1403,129 +1388,134 @@ function Module1SafePortfolioScreen({
           </p>
         </header>
 
-        <div style={twoColumnStyle}>
-          <section aria-labelledby="m1-portfolio-intro-heading" style={panelStyle}>
-            <h2 id="m1-portfolio-intro-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
+        <div className="m1-portfolio-intro-grid">
+          <section className="m1-portfolio-intro-card" aria-labelledby="m1-portfolio-intro-heading">
+            <span className="m1-portfolio-eyebrow">PRIVATE · PRACTICAL · SAFE</span>
+            <h2 id="m1-portfolio-intro-heading">
               Your private learning notebook
             </h2>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>Your portfolio is your private learning notebook for this course.</p>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>It is not a test. It does not need perfect answers.</p>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>It helps you:</p>
-            <ul style={{ color: '#26394f', display: 'grid', gap: '0.45rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.25rem' }}>
+            <p>Your portfolio is your private learning notebook for this course.</p>
+            <p className="m1-portfolio-intro-card__reassurance">It is not a test. It does not need perfect answers.</p>
+            <p>It helps you:</p>
+            <ul>
               {usefulnessItems.map((item) => <li key={item}>{item}</li>)}
             </ul>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+            <p className="m1-portfolio-intro-card__closing">
               You may use your portfolio to prepare what you want to share with others. But your portfolio itself should stay safe and respectful.
             </p>
           </section>
 
-          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
-            <img
-              src="/assets/hrba/modules/module-1/m1-s06-safe-portfolio-peer-learning.png"
-              alt="Safe portfolio notebook with examples of what is safe to write and what should not be recorded."
-              loading="eager"
-              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
-            />
+          <figure className="m1-portfolio-safe-visual" aria-labelledby="m1-portfolio-safe-caption">
+            <figcaption id="m1-portfolio-safe-caption">
+              <span>Safe reflection</span>
+              <strong>Keep the learning. Remove identifying detail.</strong>
+            </figcaption>
+            <div className="m1-portfolio-safe-visual__notebook" aria-hidden="true">
+              <span className="m1-portfolio-safe-visual__lock">PRIVATE NOTE</span>
+              <i />
+              <i />
+              <i />
+              <strong>General patterns</strong>
+              <small>Learning and action ideas</small>
+            </div>
+            <ul>
+              <li><span aria-hidden="true">✓</span> Reflect privately</li>
+              <li><span aria-hidden="true">✓</span> Share general learning</li>
+              <li><span aria-hidden="true">×</span> No names or identifying details</li>
+            </ul>
           </figure>
         </div>
 
-        <section aria-labelledby="m1-portfolio-safety-heading" style={panelStyle}>
-          <h2 id="m1-portfolio-safety-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.85rem' }}>
+        <section className="m1-portfolio-safety-panel" aria-labelledby="m1-portfolio-safety-heading">
+          <div className="m1-portfolio-section-head">
+            <span aria-hidden="true">!</span>
+            <div>
+              <p>Protect people, communities, and organisations</p>
+              <h2 id="m1-portfolio-safety-heading">
             Safety guidance
-          </h2>
-          <div style={twoColumnStyle}>
-            <article style={{ border: '1px solid rgba(190, 64, 42, 0.24)', borderRadius: '8px', background: '#fff7ed', padding: '0.9rem' }}>
-              <h3 style={{ color: '#7c2d12', fontSize: '1.12rem', margin: '0 0 0.55rem' }}>Do not write:</h3>
-              <ul style={{ color: '#26394f', display: 'grid', gap: '0.4rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.25rem' }}>
+              </h2>
+            </div>
+          </div>
+          <div className="m1-portfolio-safety-grid">
+            <article className="m1-portfolio-safety-card is-unsafe">
+              <h3><span aria-hidden="true">×</span> Do not write:</h3>
+              <ul>
                 {unsafeItems.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </article>
-            <article style={{ border: '1px solid rgba(16, 92, 91, 0.2)', borderRadius: '8px', background: '#f0fdfa', padding: '0.9rem' }}>
-              <h3 style={{ color: '#134e4a', fontSize: '1.12rem', margin: '0 0 0.55rem' }}>Instead, write about:</h3>
-              <ul style={{ color: '#26394f', display: 'grid', gap: '0.4rem', lineHeight: 1.45, margin: 0, paddingLeft: '1.25rem' }}>
+            <article className="m1-portfolio-safety-card is-safe">
+              <h3><span aria-hidden="true">✓</span> Instead, write about:</h3>
+              <ul>
                 {safeItems.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </article>
           </div>
         </section>
 
-        <section aria-labelledby="m1-safe-example-heading" style={{ ...panelStyle, background: '#f8fbfb' }}>
-          <h2 id="m1-safe-example-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.75rem' }}>
+        <section className="m1-portfolio-example" aria-labelledby="m1-safe-example-heading">
+          <h2 id="m1-safe-example-heading">
             Safe example
           </h2>
-          <div style={twoColumnStyle}>
-            <article style={{ borderLeft: '4px solid #dc2626', background: '#fff7ed', borderRadius: '8px', padding: '0.85rem' }}>
-              <h3 style={{ color: '#7c2d12', fontSize: '1rem', margin: '0 0 0.45rem' }}>Instead of writing:</h3>
-              <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>A woman from X kebele complained that Y person blocked her from joining the project.</p>
+          <div className="m1-portfolio-example__grid">
+            <article className="is-unsafe">
+              <h3><span aria-hidden="true">×</span> Instead of writing:</h3>
+              <p>A woman from X kebele complained that Y person blocked her from joining the project.</p>
             </article>
-            <article style={{ borderLeft: '4px solid #0f766e', background: '#ecfdf5', borderRadius: '8px', padding: '0.85rem' }}>
-              <h3 style={{ color: '#134e4a', fontSize: '1rem', margin: '0 0 0.45rem' }}>Write:</h3>
-              <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>In one activity, some women faced gatekeeping and could not participate equally. I want to learn how HRBA helps us notice and respond to this safely.</p>
+            <article className="is-safe">
+              <h3><span aria-hidden="true">✓</span> Write:</h3>
+              <p>In one activity, some women faced gatekeeping and could not participate equally. I want to learn how HRBA helps us notice and respond to this safely.</p>
             </article>
           </div>
         </section>
 
-        <section aria-labelledby="m1-first-note-question" style={panelStyle}>
-          <h2 id="m1-first-note-question" style={{ color: '#0b2a55', fontSize: '1.45rem', lineHeight: 1.25, margin: '0 0 0.6rem' }}>
+        <section className="m1-portfolio-start" aria-labelledby="m1-first-note-question">
+          <span className="m1-portfolio-eyebrow">YOUR STARTING POINT</span>
+          <h2 id="m1-first-note-question">
             Which area of your CSO work do you most want to connect with HRBA during this course?
           </h2>
-          <p id="m1-focus-selection-help" style={{ color: '#26394f', lineHeight: 1.55, margin: '0 0 0.85rem' }}>
+          <p id="m1-focus-selection-help">
             Choose the areas where HRBA feels most useful for your current learning. Your selections help set a safe starting point for reflection and peer discussion.
           </p>
 
-          <fieldset aria-describedby="m1-focus-selection-help m1-focus-selection-status" style={{ border: '1px solid rgba(16, 92, 91, 0.18)', borderRadius: '8px', padding: '0.9rem', margin: '0 0 1rem' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.55rem' }}>
+          <fieldset aria-describedby="m1-focus-selection-help m1-focus-selection-status">
+            <legend>Select 1 to 4 areas</legend>
+            <div className="m1-portfolio-focus-grid">
               {focusOptions.map((option) => {
                 const selected = selectedFocus.includes(option);
                 const disabled = !selected && hasMaximumFocusSelections;
                 return (
                   <button
+                    className={`m1-portfolio-focus${selected ? ' is-selected' : ''}`}
                     key={option}
                     type="button"
                     onClick={() => toggleFocus(option)}
                     aria-pressed={selected}
                     aria-disabled={disabled}
                     disabled={disabled}
-                    style={{
-                      minHeight: '44px',
-                      border: selected ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.24)',
-                      borderRadius: '999px',
-                      background: selected ? '#e7f5f1' : '#ffffff',
-                      color: disabled ? '#64748b' : '#10233f',
-                      cursor: disabled ? 'not-allowed' : 'pointer',
-                      font: 'inherit',
-                      fontWeight: 800,
-                      opacity: disabled ? 0.62 : 1,
-                      padding: '0.55rem 0.8rem'
-                    }}
                   >
+                    <span aria-hidden="true">{selected ? '✓' : '+'}</span>
                     {selected ? 'Selected: ' : ''}{option}
                   </button>
                 );
               })}
             </div>
           </fieldset>
-          <label htmlFor="m1-first-safe-note" style={{ color: '#0b2a55', display: 'block', fontWeight: 900, marginBottom: '0.45rem' }}>
-            Or take your short note here
-          </label>
-          <textarea
-            id="m1-first-safe-note"
-            value={note}
-            onChange={(event) => updateNote(event.target.value)}
-            rows={4}
-            placeholder="Write a general, safe note. Avoid names, exact locations, sensitive complaints, and identifying details."
-            style={{
-              width: '100%',
-              border: '1px solid rgba(16, 92, 91, 0.24)',
-              borderRadius: '8px',
-              color: '#10233f',
-              font: 'inherit',
-              lineHeight: 1.5,
-              padding: '0.8rem',
-              resize: 'vertical'
-            }}
-          />
-          <p id="m1-focus-selection-status" aria-live="polite" style={{ color: isComplete ? '#0f766e' : '#42566d', fontWeight: 800, margin: '0.65rem 0 0' }}>
+
+          <div className="m1-portfolio-note-wrap">
+            <div>
+              <label htmlFor="m1-first-safe-note">Or take your short note here</label>
+              <p>Write a general, safe note. Avoid names, exact locations, sensitive complaints, and identifying details.</p>
+            </div>
+            <textarea
+              id="m1-first-safe-note"
+              value={note}
+              onChange={(event) => updateNote(event.target.value)}
+              rows={4}
+              placeholder="Write a general pattern, lesson, or practical action idea..."
+            />
+          </div>
+          <p className={`m1-portfolio-status${isComplete ? ' is-saved' : ''}`} id="m1-focus-selection-status" aria-live="polite">
+            {isComplete && <span aria-hidden="true">✓</span>}
             {isComplete
               ? hasValidFocusSelection
                 ? `${selectedFocus.length} of 4 selected. Portfolio starting point saved. Continue when ready.`
