@@ -1081,17 +1081,17 @@ function Module1LearningMethodologyScreen({
     {
       id: 'portfolio-note',
       title: 'Save a portfolio note',
-      text: 'Write a short private note that connects the learning to your own CSO work.'
+      text: 'Keep a short, safe note that helps you remember and apply the learning.'
     },
     {
       id: 'discuss-safely',
       title: 'Discuss safely',
-      text: 'Use general lessons from your portfolio to participate in peer exchange or discussion forums.'
+      text: 'Prepare for peer exchange without sharing names, exact locations, complaints, or sensitive details.'
     },
     {
       id: 'apply',
       title: 'Apply in CSO work',
-      text: 'Take one idea back to your project, team, activity, MEAL process, or advocacy work.'
+      text: 'Connect the learning to project design, implementation, MEAL, advocacy, participation, and accountability.'
     }
   ];
   const viewedSteps = Array.isArray(state.practiceCheckState.module1LearningCycleViewedSteps)
@@ -1107,13 +1107,6 @@ function Module1LearningMethodologyScreen({
     padding: '1.25rem 1.25rem 7rem',
     color: '#10233f'
   };
-  const panelStyle: CSSProperties = {
-    background: '#ffffff',
-    border: '1px solid rgba(16, 92, 91, 0.16)',
-    borderRadius: '8px',
-    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
-    color: '#10233f'
-  };
   const titleStyle: CSSProperties = {
     color: '#0b2a55',
     fontFamily: 'var(--font-family-headings)',
@@ -1121,12 +1114,6 @@ function Module1LearningMethodologyScreen({
     lineHeight: 1.06,
     margin: 0
   };
-  const cardGridStyle: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-    gap: '0.85rem'
-  };
-
   const viewStep = (stepId: string) => {
     onChangeState((prev) => {
       const previousViewed = Array.isArray(prev.practiceCheckState.module1LearningCycleViewedSteps)
@@ -1168,98 +1155,80 @@ function Module1LearningMethodologyScreen({
           </p>
         </header>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '1rem', alignItems: 'start' }}>
-          <section aria-labelledby="m1-learning-intro-heading" style={{ ...panelStyle, padding: '1rem' }}>
-            <h2 id="m1-learning-intro-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
+        <div className="m1-method-intro-grid">
+          <section className="m1-method-intro-card" aria-labelledby="m1-learning-intro-heading">
+            <span className="m1-method-intro-card__label">LEARN · REFLECT · APPLY</span>
+            <h2 id="m1-learning-intro-heading">
               Practical learning methodology
             </h2>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>This course uses a practical learning methodology.</p>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+            <p>This course uses a practical learning methodology.</p>
+            <p>
               You will not only read definitions. You will work with short examples, simple choices, reflection prompts, feedback, portfolio notes, and peer exchange.
             </p>
-            <p style={{ color: '#26394f', lineHeight: 1.55 }}>The learning cycle is simple:</p>
+            <p className="m1-method-intro-card__closing">The learning cycle is simple:</p>
           </section>
 
-          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
-            <img
-              src="/assets/hrba/modules/module-1/m1-s05-learning-methodology-cycle.png"
-              alt="Six-step learning cycle: watch or read, notice, practice, save a portfolio note, discuss safely, and apply in CSO work."
-              loading="eager"
-              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
-            />
+          <figure className="m1-method-cycle-visual" aria-labelledby="m1-method-cycle-caption">
+            <figcaption id="m1-method-cycle-caption">
+              <span>Your learning cycle</span>
+              <strong>From a short input to practical CSO action</strong>
+            </figcaption>
+            <ol aria-label="Six-step learning cycle visual">
+              {learningSteps.map((step, index) => (
+                <li key={step.id}>
+                  <span aria-hidden="true">{index + 1}</span>
+                  <strong>{step.title}</strong>
+                </li>
+              ))}
+            </ol>
+            <p>Repeat the cycle as you build confidence and apply HRBA in practice.</p>
           </figure>
         </div>
 
-        <section aria-labelledby="m1-learning-cycle-heading" style={{ ...panelStyle, padding: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.8rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+        <section className="m1-method-steps-panel" aria-labelledby="m1-learning-cycle-heading">
+          <div className="m1-method-steps-panel__head">
             <div>
-              <h2 id="m1-learning-cycle-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: 0 }}>
+              <h2 id="m1-learning-cycle-heading">
                 Six learning steps
               </h2>
-              <p style={{ color: '#42566d', margin: '0.35rem 0 0' }}>Open each step to complete this screen.</p>
+              <p>Open each step to complete this screen.</p>
             </div>
-            <span aria-live="polite" style={{ color: '#0f766e', fontWeight: 900 }}>
+            <span className="m1-method-progress" aria-live="polite" aria-atomic="true">
               {viewedSet.size} of 6 viewed
             </span>
           </div>
 
-          <ol aria-label="Six-step learning cycle" style={cardGridStyle}>
+          <ol className="m1-method-step-grid" aria-label="Six-step learning cycle">
             {learningSteps.map((step, index) => {
               const viewed = viewedSet.has(step.id);
               const detailId = `m1-learning-step-${step.id}`;
               return (
                 <li
                   key={step.id}
-                  style={{
-                    listStyle: 'none',
-                    minWidth: 0,
-                    border: viewed ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.18)',
-                    borderRadius: '8px',
-                    background: viewed ? '#e7f5f1' : '#f8fbfb',
-                    padding: '0.75rem'
-                  }}
+                  className={`m1-method-step m1-method-step--${index + 1}${viewed ? ' is-viewed' : ''}`}
                 >
                   <button
+                    className="m1-method-step__button"
                     type="button"
                     onClick={() => viewStep(step.id)}
                     aria-expanded={viewed}
                     aria-controls={detailId}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2.25rem minmax(0, 1fr) auto',
-                      gap: '0.75rem',
-                      alignItems: 'center',
-                      width: '100%',
-                      minHeight: '44px',
-                      border: 0,
-                      background: 'transparent',
-                      color: '#10233f',
-                      cursor: 'pointer',
-                      font: 'inherit',
-                      padding: 0,
-                      textAlign: 'left'
-                    }}
+                    aria-label={`${viewed ? 'Review' : 'Open'} step ${index + 1}: ${step.title}${viewed ? ', viewed' : ''}`}
                   >
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        display: 'inline-grid',
-                        placeItems: 'center',
-                        width: '2.25rem',
-                        height: '2.25rem',
-                        borderRadius: '999px',
-                        background: viewed ? '#0f766e' : '#d9eeea',
-                        color: viewed ? '#ffffff' : '#0b2a55',
-                        fontWeight: 800
-                      }}
-                    >
-                      {viewed ? '✓' : index + 1}
+                    <span className="m1-method-step__topline">
+                      <span className="m1-method-step__number" aria-hidden="true">{index + 1}</span>
+                      <span className="m1-method-step__state">
+                        {viewed && <span aria-hidden="true">✓ </span>}
+                        {viewed ? 'Viewed' : 'Open'}
+                      </span>
                     </span>
                     <strong>{step.title}</strong>
-                    <span style={{ color: '#0f766e', fontSize: '0.85rem', fontWeight: 900 }}>{viewed ? 'Viewed' : 'Open'}</span>
+                    <span className="m1-method-step__action" aria-hidden="true">
+                      {viewed ? 'Review step' : 'Reveal step'} <span>→</span>
+                    </span>
                   </button>
-                  <div id={detailId} hidden={!viewed} style={{ marginTop: '0.75rem' }}>
-                    <p style={{ color: '#26394f', lineHeight: 1.55, margin: 0 }}>{step.text}</p>
+                  <div className="m1-method-step__detail" id={detailId} hidden={!viewed}>
+                    <p>{step.text}</p>
                   </div>
                 </li>
               );
@@ -1267,8 +1236,9 @@ function Module1LearningMethodologyScreen({
           </ol>
         </section>
 
-        <section aria-label="Practical learning note" style={{ ...panelStyle, padding: '1rem', background: '#f8fbfb' }}>
-          <p style={{ color: '#10233f', fontSize: '1.05rem', fontWeight: 800, lineHeight: 1.5, margin: 0 }}>
+        <section className="m1-method-note" aria-label="Practical learning note">
+          <span aria-hidden="true">✓</span>
+          <p>
             You do not need to memorize legal terms. You will practice asking better questions and improving real CSO work.
           </p>
         </section>
