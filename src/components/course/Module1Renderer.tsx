@@ -1405,24 +1405,11 @@ function Module1SafePortfolioScreen({
             </p>
           </section>
 
-          <figure className="m1-portfolio-safe-visual" aria-labelledby="m1-portfolio-safe-caption">
-            <figcaption id="m1-portfolio-safe-caption">
-              <span>Safe reflection</span>
-              <strong>Keep the learning. Remove identifying detail.</strong>
-            </figcaption>
-            <div className="m1-portfolio-safe-visual__notebook" aria-hidden="true">
-              <span className="m1-portfolio-safe-visual__lock">PRIVATE NOTE</span>
-              <i />
-              <i />
-              <i />
-              <strong>General patterns</strong>
-              <small>Learning and action ideas</small>
-            </div>
-            <ul>
-              <li><span aria-hidden="true">✓</span> Reflect privately</li>
-              <li><span aria-hidden="true">✓</span> Share general learning</li>
-              <li><span aria-hidden="true">×</span> No names or identifying details</li>
-            </ul>
+          <figure className="m1-portfolio-safe-visual">
+            <img
+              src="/assets/hrba/modules/module-1/m1-s06-safe-portfolio-peer-learning.png"
+              alt="Safe portfolio diagram: safe to write patterns, barriers, lessons, decisions, and ideas; do not write names, exact locations, survivor stories, identifiable complaints, or private community information."
+            />
           </figure>
         </div>
 
