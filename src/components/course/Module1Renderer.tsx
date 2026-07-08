@@ -724,7 +724,7 @@ function Module1HrbaPracticalLensScreen({
   };
 
   return (
-    <section className="m1-b2-screen m1-b2-hrba-lens" aria-labelledby="m1-hrba-lens-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
+    <section className="m1-b2-screen m1-b2-hrba-lens" aria-labelledby="m1-hrba-lens-title" style={{ overflow: 'visible' }}>
       <div className="m1-hrba-lens-shell">
         <header className="m1-hrba-lens-header">
           <div className="m1-next-kicker">HRBA IN ONE PRACTICAL LENS</div>
