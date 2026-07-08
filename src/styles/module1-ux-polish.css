@@ -276,16 +276,51 @@
   text-shadow: none;
 }
 
-.main-screen-canvas__content:has(.m1-b2-hrba-lens) {
+.main-screen-canvas__content:has(:is(
+  .m1-b2-welcome-course,
+  .m1-b2-about-course,
+  .m1-b2-hrba-lens,
+  .m1-b2-course-journey,
+  .m1-b2-learning-methodology,
+  .m1-b2-safe-portfolio,
+  .m1-b2-starting-confidence,
+  .m1-b2-first-commitment,
+  .m1-revised-finished-screen
+)) {
   background:
     linear-gradient(160deg, #fafdfd 0%, #fafdfd 58%, #eaf3f2 100%) !important;
 }
 
-.m1-b2-screen.m1-b2-hrba-lens {
+.m1-b2-screen:is(
+  .m1-b2-welcome-course,
+  .m1-b2-about-course,
+  .m1-b2-hrba-lens,
+  .m1-b2-course-journey,
+  .m1-b2-learning-methodology,
+  .m1-b2-safe-portfolio,
+  .m1-b2-starting-confidence,
+  .m1-b2-first-commitment
+),
+.m1-revised-finished-screen {
   background:
     linear-gradient(160deg, #fafdfd 0%, #fafdfd 58%, #eaf3f2 100%) !important;
   border-color: rgba(16, 92, 91, 0.18);
   color: #10233f;
+}
+
+.m1-b2-screen:is(
+  .m1-b2-welcome-course,
+  .m1-b2-about-course,
+  .m1-b2-course-journey,
+  .m1-b2-learning-methodology,
+  .m1-b2-safe-portfolio,
+  .m1-b2-starting-confidence,
+  .m1-b2-first-commitment
+) > div {
+  background:
+    linear-gradient(180deg, rgba(250, 253, 253, 0.98) 0%, rgba(250, 253, 253, 0.98) 66%, rgba(234, 243, 242, 0.96) 100%);
+  color: #10233f;
+  isolation: isolate;
 }
 
 .m1-hrba-lens-shell {
