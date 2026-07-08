@@ -276,6 +276,183 @@
   text-shadow: none;
 }
 
+.m1-hrba-lens-shell {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem 7rem;
+  color: #10233f;
+}
+
+.m1-hrba-lens-header {
+  max-width: 58rem;
+}
+
+.m1-hrba-lens-intro {
+  margin: 0.55rem 0 0;
+  color: #174163;
+  font-size: 1.12rem;
+}
+
+.m1-hrba-lens-main {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(380px, 1.14fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.m1-hrba-lens-card {
+  min-width: 0;
+  border: 1px solid rgba(16, 92, 91, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+  color: #10233f;
+  padding: 1rem;
+}
+
+.m1-hrba-lens-card h2 {
+  margin: 0 0 0.65rem;
+  color: #0b2a55;
+  font-size: 1.38rem;
+  line-height: 1.18;
+}
+
+.m1-hrba-lens-card p {
+  margin: 0;
+  color: #26394f;
+  line-height: 1.52;
+}
+
+.m1-hrba-lens-card p + p,
+.m1-hrba-question-list {
+  margin-top: 0.65rem;
+}
+
+.m1-hrba-question-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  padding-left: 1.35rem;
+}
+
+.m1-hrba-question-list li {
+  color: #26394f;
+  line-height: 1.42;
+}
+
+.m1-hrba-lens-visual {
+  display: grid;
+  place-items: center;
+  padding: 0.55rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f5fbfa 100%);
+}
+
+.m1-hrba-lens-visual img {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.m1-hrba-lens-message {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.28fr) minmax(0, 0.42fr) minmax(0, 0.3fr);
+  gap: 0.9rem;
+  align-items: center;
+  background: #f8fbfb;
+}
+
+.m1-hrba-lens-message h2 {
+  margin: 0;
+}
+
+.m1-hrba-lens-key {
+  color: #10233f !important;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.42 !important;
+}
+
+.m1-hrba-lens-forward {
+  color: #42566d !important;
+}
+
+.m1-hrba-lens-practice {
+  padding-bottom: 1.1rem;
+}
+
+.m1-hrba-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+}
+
+.m1-hrba-question-choice {
+  display: grid;
+  grid-template-rows: auto minmax(4.2rem, 1fr) auto;
+  gap: 0.55rem;
+  align-items: start;
+  width: 100%;
+  min-height: 11rem;
+  border: 1px solid rgba(16, 92, 91, 0.24);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #10233f;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.m1-hrba-question-choice:hover {
+  border-color: rgba(15, 118, 110, 0.58);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+}
+
+.m1-hrba-question-choice:focus-visible {
+  outline: 3px solid var(--m1-a11y-ring, #f59e0b);
+  outline-offset: 3px;
+}
+
+.m1-hrba-question-choice.is-selected {
+  border: 2px solid #0f766e;
+  background: #e7f5f1;
+}
+
+.m1-hrba-choice-number {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: #d9eeea;
+  color: #0b2a55;
+  font-weight: 800;
+}
+
+.m1-hrba-question-choice.is-selected .m1-hrba-choice-number {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.m1-hrba-question-choice strong {
+  color: #0b2a55;
+  font-size: 0.85rem;
+}
+
+.m1-hrba-lens-feedback {
+  margin-top: 1rem;
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: #124236;
+  padding: 0.9rem;
+}
+
 .m1-portfolio-save-confirmation {
   display: flex;
   align-items: center;
@@ -402,6 +579,23 @@
     overflow: visible !important;
   }
 
+  .m1-hrba-lens-shell {
+    padding: 1rem 1rem 7rem;
+  }
+
+  .m1-hrba-lens-main,
+  .m1-hrba-lens-message {
+    grid-template-columns: 1fr;
+  }
+
+  .m1-hrba-lens-visual img {
+    max-height: 300px;
+  }
+
+  .m1-hrba-question-choice {
+    min-height: 7.8rem;
+  }
+
   .m1-b2-screen .m1-b2-footer {
     align-items: stretch;
     flex-direction: column;
@@ -428,6 +622,29 @@
   .m1-s13-level-grid,
   .m1-s14-pathway {
     grid-template-columns: 1fr !important;
+  }
+
+  .m1-hrba-lens-shell {
+    padding: 0.85rem 0.75rem 7rem;
+  }
+
+  .m1-hrba-lens-card {
+    padding: 0.9rem;
+  }
+
+  .m1-hrba-lens-visual img {
+    max-height: 220px;
+  }
+
+  .m1-hrba-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .m1-hrba-question-choice {
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    grid-template-rows: auto;
+    align-items: center;
+    min-height: 4.75rem;
   }
 
   .m1-next-instruction,

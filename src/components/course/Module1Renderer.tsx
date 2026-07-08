@@ -695,34 +695,12 @@ function Module1HrbaPracticalLensScreen({
   ];
   const selectedQuestion = String(state.practiceCheckState.module1HrbaLensFirstQuestion || '');
   const isComplete = Boolean(selectedQuestion);
-  const shellStyle: CSSProperties = {
-    display: 'grid',
-    gap: '1.1rem',
-    width: 'min(100%, 1180px)',
-    margin: '0 auto',
-    padding: '1.25rem 1.25rem 7rem',
-    color: '#10233f'
-  };
-  const panelStyle: CSSProperties = {
-    background: '#ffffff',
-    border: '1px solid rgba(16, 92, 91, 0.16)',
-    borderRadius: '8px',
-    boxShadow: '0 14px 30px rgba(15, 23, 42, 0.09)',
-    color: '#10233f',
-    padding: '1rem'
-  };
   const titleStyle: CSSProperties = {
     color: '#0b2a55',
     fontFamily: 'var(--font-family-headings)',
     fontSize: 'clamp(2rem, 4vw, 3.25rem)',
     lineHeight: 1.06,
     margin: 0
-  };
-  const gridStyle: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-    gap: '1rem',
-    alignItems: 'start'
   };
 
   const selectQuestion = (question: string) => {
@@ -747,110 +725,80 @@ function Module1HrbaPracticalLensScreen({
 
   return (
     <section className="m1-b2-screen m1-b2-hrba-lens" aria-labelledby="m1-hrba-lens-title" style={{ background: '#eef7f5', overflow: 'visible' }}>
-      <div style={shellStyle}>
-        <header>
+      <div className="m1-hrba-lens-shell">
+        <header className="m1-hrba-lens-header">
           <div className="m1-next-kicker">HRBA IN ONE PRACTICAL LENS</div>
           <h1 id="m1-hrba-lens-title" style={titleStyle}>HRBA in One Practical Lens</h1>
-          <p className="m1-next-intro" style={{ color: '#174163', fontSize: '1.12rem', margin: '0.55rem 0 0' }}>
+          <p className="m1-next-intro m1-hrba-lens-intro">
             A simple way to start noticing what matters
           </p>
         </header>
 
-        <div style={gridStyle}>
-          <div style={{ display: 'grid', gap: '1rem', minWidth: 0 }}>
-            <section aria-labelledby="m1-hrba-orientation-heading" style={panelStyle}>
-              <h2 id="m1-hrba-orientation-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.75rem' }}>
-                Start with five practical questions
-              </h2>
-              <p style={{ lineHeight: 1.55 }}>
-                In this course, HRBA means using human rights standards and principles to improve how CSOs plan, implement, monitor, and learn from their work.
-              </p>
-              <p style={{ lineHeight: 1.55 }}>For now, you do not need to know all the technical details.</p>
-              <p style={{ lineHeight: 1.55 }}>Start with five practical questions:</p>
-              <ol style={{ display: 'grid', gap: '0.55rem', margin: 0, paddingLeft: '1.35rem' }}>
-                {questions.map((question) => (
-                  <li key={question} style={{ color: '#26394f', lineHeight: 1.45 }}>{question}</li>
-                ))}
-              </ol>
-            </section>
+        <div className="m1-hrba-lens-main">
+          <section className="m1-hrba-lens-card m1-hrba-lens-explain" aria-labelledby="m1-hrba-orientation-heading">
+            <h2 id="m1-hrba-orientation-heading">
+              Start with five practical questions
+            </h2>
+            <p>
+              In this course, HRBA means using human rights standards and principles to improve how CSOs plan, implement, monitor, and learn from their work.
+            </p>
+            <p>For now, you do not need to know all the technical details.</p>
+            <p>Start with five practical questions:</p>
+            <ol className="m1-hrba-question-list">
+              {questions.map((question) => (
+                <li key={question}>{question}</li>
+              ))}
+            </ol>
+          </section>
 
-            <section aria-labelledby="m1-hrba-message-heading" style={{ ...panelStyle, background: '#f8fbfb' }}>
-              <h2 id="m1-hrba-message-heading" style={{ color: '#0b2a55', fontSize: '1.35rem', margin: '0 0 0.6rem' }}>
-                Key message
-              </h2>
-              <p style={{ color: '#10233f', fontSize: '1.08rem', fontWeight: 800, lineHeight: 1.45 }}>
-                HRBA is not an extra paragraph in a proposal. It is a way of working.
-              </p>
-              <p style={{ color: '#26394f', lineHeight: 1.55 }}>
-                HRBA helps CSOs support people&apos;s voice, engage duty-bearers, and improve accountability in safe and practical ways.
-              </p>
-              <p style={{ color: '#42566d', lineHeight: 1.55 }}>
-                In the next module, you will look more closely at rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe use of human rights standards.
-              </p>
-            </section>
-          </div>
-
-          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+          <figure className="m1-hrba-lens-card m1-hrba-lens-visual">
             <img
               src="/assets/hrba/modules/module-1/m1-s03-hrba-five-question-lens.png"
               alt="HRBA practical lens diagram with five questions about who is affected, who may be left out, who participates, who has responsibility, and what should be followed up."
               loading="eager"
-              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
             />
           </figure>
         </div>
 
-        <section aria-labelledby="m1-hrba-practice-heading" style={panelStyle}>
-          <h2 id="m1-hrba-practice-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.65rem' }}>
+        <section className="m1-hrba-lens-card m1-hrba-lens-message" aria-labelledby="m1-hrba-message-heading">
+          <h2 id="m1-hrba-message-heading">
+            Key message
+          </h2>
+          <p className="m1-hrba-lens-key">
+            HRBA is not an extra paragraph in a proposal. It is a way of working.
+          </p>
+          <p>
+            HRBA helps CSOs support people&apos;s voice, engage duty-bearers, and improve accountability in safe and practical ways.
+          </p>
+          <p className="m1-hrba-lens-forward">
+            In the next module, you will look more closely at rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe use of human rights standards.
+          </p>
+        </section>
+
+        <section className="m1-hrba-lens-card m1-hrba-lens-practice" aria-labelledby="m1-hrba-practice-heading">
+          <h2 id="m1-hrba-practice-heading">
             Micro-practice
           </h2>
-          <p style={{ color: '#26394f', lineHeight: 1.55 }}>
+          <p>
             Think about one project, activity, or service your CSO works on. Which HRBA question would be most useful to ask first?
           </p>
-          <div role="group" aria-label="Choose the first HRBA question to ask" style={{ display: 'grid', gap: '0.7rem', marginTop: '0.85rem' }}>
+          <div className="m1-hrba-choice-grid" role="group" aria-label="Choose the first HRBA question to ask">
             {questions.map((question, index) => {
               const isSelected = selectedQuestion === question;
               return (
                 <button
                   key={question}
                   type="button"
+                  className={`m1-hrba-question-choice ${isSelected ? 'is-selected' : ''}`}
                   onClick={() => selectQuestion(question)}
                   aria-pressed={isSelected}
                   aria-describedby={isSelected ? 'm1-hrba-lens-feedback' : undefined}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '2.25rem minmax(0, 1fr) auto',
-                    gap: '0.75rem',
-                    alignItems: 'center',
-                    width: '100%',
-                    minHeight: '44px',
-                    border: isSelected ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.24)',
-                    borderRadius: '8px',
-                    background: isSelected ? '#e7f5f1' : '#ffffff',
-                    color: '#10233f',
-                    cursor: 'pointer',
-                    font: 'inherit',
-                    padding: '0.75rem',
-                    textAlign: 'left'
-                  }}
                 >
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      display: 'inline-grid',
-                      placeItems: 'center',
-                      width: '2.25rem',
-                      height: '2.25rem',
-                      borderRadius: '999px',
-                      background: isSelected ? '#0f766e' : '#d9eeea',
-                      color: isSelected ? '#ffffff' : '#0b2a55',
-                      fontWeight: 800
-                    }}
-                  >
+                  <span className="m1-hrba-choice-number" aria-hidden="true">
                     {index + 1}
                   </span>
                   <span>{question}</span>
-                  <strong style={{ fontSize: '0.85rem' }}>{isSelected ? 'Selected' : 'Choose'}</strong>
+                  <strong>{isSelected ? 'Selected' : 'Choose'}</strong>
                 </button>
               );
             })}
@@ -859,14 +807,7 @@ function Module1HrbaPracticalLensScreen({
             <div
               id="m1-hrba-lens-feedback"
               aria-live="polite"
-              style={{
-                marginTop: '1rem',
-                border: '1px solid rgba(15, 118, 110, 0.35)',
-                borderRadius: '8px',
-                background: '#ecfdf5',
-                color: '#124236',
-                padding: '0.9rem'
-              }}
+              className="m1-hrba-lens-feedback"
             >
               Good. This is your first HRBA noticing habit. You will build on this in Module 2.
             </div>
