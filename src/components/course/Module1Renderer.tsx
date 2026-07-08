@@ -282,8 +282,8 @@ function Module1OpeningScreen({ onNext }: { onNext: () => void }) {
 
       <figure className="m1-b2-opening__visual">
         <img
-          src="/assets/hrba/modules/module-1.png"
-          alt="Learners walking along a glowing path toward a community landscape for Module 1, Starting the HRBA Learning Journey."
+          src="/assets/hrba/modules/module-1.webp"
+          alt="Learners walking along a glowing pathway through a fictional Ethiopian highland landscape at sunrise."
           loading="eager"
         />
       </figure>

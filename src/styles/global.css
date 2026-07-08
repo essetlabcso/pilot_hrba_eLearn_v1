@@ -16054,6 +16054,10 @@ h1, h2, h3, h4, h5, h6 {
   object-fit: cover;
 }
 
+.m2-cover-screen--module-1 .m2-cover-screen__image {
+  object-position: 58% center;
+}
+
 @media (max-width: 1040px) {
   .m2-cover-screen {
     grid-template-columns: 1fr;
@@ -24212,6 +24216,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 58% center;
   display: block;
 }
 

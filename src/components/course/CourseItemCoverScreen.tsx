@@ -16,7 +16,7 @@ export default function CourseItemCoverScreen({
   const ctaLabel = module.moduleId === 'module_03_project_design' ? 'Start Here' : `Start ${module.itemLabel}`;
 
   return (
-    <section className="m2-cover-screen" aria-labelledby={titleId}>
+    <section className={`m2-cover-screen m2-cover-screen--module-${module.moduleSeq}`} aria-labelledby={titleId}>
       <button
         type="button"
         className="m2-cover-screen__back"
