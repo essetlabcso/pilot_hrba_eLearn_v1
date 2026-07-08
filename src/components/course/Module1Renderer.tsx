@@ -840,6 +840,7 @@ function Module1CourseJourneyScreen({
     {
       id: 'module-1',
       title: 'Module 1 — Start the journey',
+      cue: 'Orient yourself and choose a learning priority.',
       text: [
         'Understand the course, the CSF Plus capacity development context, the portfolio, and your own learning priority.'
       ]
@@ -847,6 +848,7 @@ function Module1CourseJourneyScreen({
     {
       id: 'module-2',
       title: 'Module 2 — Build the HRBA foundation',
+      cue: 'Build a shared language for rights-based practice.',
       text: [
         'Learn the main HRBA concepts: rights, rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe standards use.'
       ]
@@ -854,6 +856,7 @@ function Module1CourseJourneyScreen({
     {
       id: 'module-3',
       title: 'Module 3 — Apply HRBA in project design',
+      cue: 'Use practical tools before implementation begins.',
       text: [
         'Use practical tools to review and improve a project idea before implementation.',
         'You will look at rights-holders, duty-bearers, barriers, power, gender, disability, risk, participation, accountability, intervention logic, and indicators.'
@@ -862,6 +865,7 @@ function Module1CourseJourneyScreen({
     {
       id: 'module-4',
       title: 'Module 4 — Apply HRBA during implementation',
+      cue: 'Notice barriers and adapt while work is under way.',
       text: [
         'Practice noticing whether implementation is staying inclusive, participatory, accountable, and safe.',
         'You will learn how to respond when participation weakens, barriers appear, or feedback is not being acted on.'
@@ -870,6 +874,7 @@ function Module1CourseJourneyScreen({
     {
       id: 'module-5',
       title: 'Module 5 — Apply HRBA in MEAL',
+      cue: 'Strengthen evidence, feedback, and learning safely.',
       text: [
         'Use monitoring, evaluation, accountability, feedback, reporting, evidence, and learning in safer and more rights-based ways.',
         'You will practice improving indicators, using feedback responsibly, and reporting without causing harm.'
@@ -913,12 +918,6 @@ function Module1CourseJourneyScreen({
     lineHeight: 1.06,
     margin: 0
   };
-  const cardGridStyle: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
-    gap: '0.9rem'
-  };
-
   const viewRoadmapCard = (cardId: string) => {
     onChangeState((prev) => {
       const previousViewed = Array.isArray(prev.practiceCheckState.module1LearningJourneyViewedCards)
@@ -969,20 +968,20 @@ function Module1CourseJourneyScreen({
           />
         </figure>
 
-        <section aria-labelledby="m1-roadmap-cards-heading" style={{ ...panelStyle, padding: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.8rem', flexWrap: 'wrap', marginBottom: '0.85rem' }}>
+        <section className="m1-roadmap-panel" aria-labelledby="m1-roadmap-cards-heading">
+          <div className="m1-roadmap-panel__head">
             <div>
-              <h2 id="m1-roadmap-cards-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: 0 }}>
+              <h2 id="m1-roadmap-cards-heading">
                 Course roadmap
               </h2>
-              <p style={{ color: '#42566d', margin: '0.35rem 0 0' }}>Open each module card to complete this screen.</p>
+              <p>Open each module card to complete this screen.</p>
             </div>
-            <span aria-live="polite" style={{ color: '#0f766e', fontWeight: 900 }}>
+            <span className="m1-roadmap-progress" aria-live="polite" aria-atomic="true">
               {viewedSet.size} of 5 viewed
             </span>
           </div>
 
-          <ol aria-label="Five course modules" style={cardGridStyle}>
+          <ol className="m1-roadmap-grid" aria-label="Five course modules">
             {roadmapCards.map((card, index) => {
               const viewed = viewedSet.has(card.id);
               const detailId = `m1-roadmap-card-${card.id}`;
@@ -990,57 +989,32 @@ function Module1CourseJourneyScreen({
               return (
                 <li
                   key={card.id}
-                  style={{
-                    listStyle: 'none',
-                    minWidth: 0,
-                    border: viewed ? '2px solid #0f766e' : '1px solid rgba(16, 92, 91, 0.18)',
-                    borderRadius: '8px',
-                    background: viewed ? '#e7f5f1' : '#f8fbfb',
-                    padding: '0.75rem'
-                  }}
+                  className={`m1-roadmap-card m1-roadmap-card--${index + 1}${viewed ? ' is-viewed' : ''}`}
                 >
                   <button
+                    className="m1-roadmap-card__button"
                     type="button"
                     onClick={() => viewRoadmapCard(card.id)}
                     aria-expanded={viewed}
                     aria-controls={detailId}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2.25rem minmax(0, 1fr) auto',
-                      gap: '0.75rem',
-                      alignItems: 'center',
-                      width: '100%',
-                      minHeight: '44px',
-                      border: 0,
-                      background: 'transparent',
-                      color: '#10233f',
-                      cursor: 'pointer',
-                      font: 'inherit',
-                      padding: 0,
-                      textAlign: 'left'
-                    }}
+                    aria-label={`${viewed ? 'Review' : 'Open'} ${card.title}${viewed ? ', viewed' : ''}`}
                   >
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        display: 'inline-grid',
-                        placeItems: 'center',
-                        width: '2.25rem',
-                        height: '2.25rem',
-                        borderRadius: '999px',
-                        background: viewed ? '#0f766e' : '#d9eeea',
-                        color: viewed ? '#ffffff' : '#0b2a55',
-                        fontWeight: 800
-                      }}
-                    >
-                      {viewed ? '✓' : index + 1}
+                    <span className="m1-roadmap-card__topline">
+                      <span className="m1-roadmap-card__number" aria-hidden="true">{index + 1}</span>
+                      <span className="m1-roadmap-card__state">
+                        {viewed && <span aria-hidden="true">✓ </span>}
+                        {viewed ? 'Viewed' : 'Open'}
+                      </span>
                     </span>
                     <strong>{card.title}</strong>
-                    <span style={{ color: '#0f766e', fontSize: '0.85rem', fontWeight: 900 }}>{viewed ? 'Viewed' : 'Open'}</span>
+                    <span className="m1-roadmap-card__cue">{card.cue}</span>
+                    <span className="m1-roadmap-card__action" aria-hidden="true">
+                      {viewed ? 'Review module' : 'Reveal module'} <span>→</span>
+                    </span>
                   </button>
-                  <div id={detailId} hidden={!viewed} style={{ marginTop: '0.75rem' }}>
+                  <div className="m1-roadmap-card__detail" id={detailId} hidden={!viewed}>
                     {card.text.map((paragraph) => (
-                      <p key={paragraph} style={{ color: '#26394f', lineHeight: 1.55, margin: '0 0 0.65rem' }}>{paragraph}</p>
+                      <p key={paragraph}>{paragraph}</p>
                     ))}
                   </div>
                 </li>
@@ -1049,11 +1023,11 @@ function Module1CourseJourneyScreen({
           </ol>
         </section>
 
-        <section aria-labelledby="m1-after-modules-heading" style={{ ...panelStyle, padding: '1rem' }}>
+        <section className="m1-roadmap-after" aria-labelledby="m1-after-modules-heading">
           <h2 id="m1-after-modules-heading" style={{ color: '#0b2a55', fontSize: '1.45rem', margin: '0 0 0.85rem' }}>
             After the modules
           </h2>
-          <div style={cardGridStyle}>
+          <div className="m1-roadmap-after__grid">
             {continuationCards.map((card) => (
               <article key={card.title} style={{ border: '1px solid rgba(16, 92, 91, 0.18)', borderRadius: '8px', background: '#f8fbfb', padding: '0.9rem' }}>
                 <h3 style={{ color: '#0b2a55', fontSize: '1.1rem', margin: '0 0 0.45rem' }}>{card.title}</h3>
