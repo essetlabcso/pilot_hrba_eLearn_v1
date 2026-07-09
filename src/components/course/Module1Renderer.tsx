@@ -5276,6 +5276,9 @@ function Module1FinishedScreen({
       currentSubState: null,
       activeModal: null
     }));
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/');
+    }
   };
 
   const continueToModule2 = () => {
@@ -5288,6 +5291,9 @@ function Module1FinishedScreen({
       currentSubState: null,
       activeModal: null
     }));
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/?moduleId=module_02_everyday_cso_work&screenId=M2-PLAYER-00');
+    }
   };
 
   const reviewModule = () => {
@@ -5300,105 +5306,76 @@ function Module1FinishedScreen({
       currentSubState: null,
       activeModal: null
     }));
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/?moduleId=module_01_hrba_foundations&screenId=M1-S1-06B');
+    }
   };
 
-  const summaryItems = [
-    'You explored why the course matters for local and grassroots CSOs.',
-    'You reviewed the learning journey and methodology.',
-    'You prepared your portfolio for safe reflection and peer exchange.',
-    'You completed a starting self-assessment and saved a first learning commitment.'
-  ];
-
   return (
-    <section
-      className="m1-revised-finished-screen"
-      aria-labelledby="m1-finished-title"
-      style={{
-        display: 'grid',
-        width: '100%',
-        placeItems: 'center',
-        background: '#eef7f5',
-        padding: '1.25rem 1rem 7rem'
-      }}
-    >
-      <div
-        className="m1-revised-finished-slide"
-        style={{
-          display: 'grid',
-          gap: '1rem',
-          width: 'min(100%, 880px)',
-          border: '1px solid rgba(16, 92, 91, 0.16)',
-          borderRadius: '8px',
-          background: '#ffffff',
-          boxShadow: '0 18px 42px rgba(15, 23, 42, 0.12)',
-          color: '#10233f',
-          padding: 'clamp(1.25rem, 3vw, 2rem)',
-          textAlign: 'left'
-        }}
-      >
-        <div
-          className="m1-revised-finished-mark"
-          aria-hidden="true"
-          style={{
-            display: 'inline-grid',
-            placeItems: 'center',
-            width: '3.5rem',
-            height: '3.5rem',
-            borderRadius: '999px',
-            background: '#d9eeea',
-            color: '#0b2a55',
-            fontSize: '1.65rem',
-            fontWeight: 950
-          }}
-        >
-          ✓
-        </div>
-        <div className="m1-completion-kicker" style={{ color: '#0f766e', fontWeight: 900, letterSpacing: '0.08em' }}>
-          MODULE 1 | COMPLETED
-        </div>
-        <h1 id="m1-finished-title" style={{ color: '#0b2a55', fontSize: 'clamp(2rem, 4vw, 3.25rem)', lineHeight: 1.08, margin: 0 }}>
-          Module 1 Complete
-        </h1>
-        <p style={{ color: '#26394f', fontSize: '1.08rem', lineHeight: 1.55, margin: 0 }}>
-          You have completed Module 1: Starting the HRBA Learning Journey.
-        </p>
-        <p style={{ color: '#26394f', fontSize: '1.08rem', lineHeight: 1.55, margin: 0 }}>
-          You are now ready to continue to Module 2: Foundations of HRBA — Rights, Actors, Principles, and Power.
-        </p>
-        <section
-          className="m1-revised-finished-summary"
-          aria-labelledby="m1-finished-summary-title"
-          style={{
-            border: '1px solid rgba(16, 92, 91, 0.16)',
-            borderRadius: '8px',
-            background: '#f8fbfb',
-            color: '#10233f',
-            padding: '1rem'
-          }}
-        >
-          <h2 id="m1-finished-summary-title" style={{ color: '#0b2a55', fontSize: '1.25rem', margin: '0 0 0.75rem' }}>
-            Completion summary
-          </h2>
-          <ul style={{ display: 'grid', gap: '0.55rem', margin: 0, paddingLeft: '1.25rem' }}>
-            {summaryItems.map((item) => (
-              <li key={item} style={{ color: '#26394f', lineHeight: 1.45 }}>{item}</li>
-            ))}
-          </ul>
+    <section className="m1-revised-finished-screen" aria-labelledby="m1-finished-title">
+      <div className="m1-closure-shell">
+        <header className="m1-closure-header">
+          <div className="m1-closure-mark" aria-hidden="true">✓</div>
+          <div>
+            <p className="m1-closure-kicker">Module 1 completed</p>
+            <h1 id="m1-finished-title">Module 1 Complete</h1>
+            <p>You have completed Module 1: Starting the HRBA Learning Journey.</p>
+          </div>
+        </header>
+
+        <section className="m1-closure-next" aria-labelledby="m1-closure-next-title">
+          <div className="m1-closure-next__copy">
+            <p>Continue the learning journey</p>
+            <h2 id="m1-closure-next-title">Next Steps: Module 2</h2>
+            <p>
+              Congratulations on completing Module 1. You have started the HRBA learning journey and prepared your safe portfolio starting point. Module 2 will build the HRBA foundation: rights, actors, principles, and power.
+            </p>
+          </div>
+
+          <div
+            className="m1-closure-bridge"
+            role="img"
+            aria-label="Learning pathway from Module 1, Start the HRBA learning journey, to Module 2, Build the HRBA foundation."
+          >
+            <article>
+              <span>Module 1</span>
+              <strong>Start the HRBA learning journey</strong>
+              <small>Completed</small>
+            </article>
+            <div className="m1-closure-bridge__path" aria-hidden="true">
+              <span>Continue</span>
+            </div>
+            <article>
+              <span>Module 2</span>
+              <strong>Build the HRBA foundation</strong>
+              <small>Next</small>
+            </article>
+          </div>
         </section>
-        <div className="m1-revised-finished-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'flex-start' }}>
+
+        <section className="m1-closure-grid" aria-label="Module 1 closure summary">
+          <article>
+            <span className="m1-closure-card-icon" aria-hidden="true">✓</span>
+            <h2>What Module 1 completed</h2>
+            <p>You explored the course purpose, HRBA learning journey, practical methodology, safe portfolio use, starting confidence, and first learning commitment.</p>
+          </article>
+          <article>
+            <span className="m1-closure-card-icon is-caution" aria-hidden="true">!</span>
+            <h2>What Module 1 does not do</h2>
+            <p>It does not yet teach the full HRBA framework. It prepares you to enter Module 2 with a clear starting point and safe reflection habit.</p>
+          </article>
+          <article>
+            <span className="m1-closure-card-icon is-next" aria-hidden="true">2</span>
+            <h2>What comes next</h2>
+            <p>Module 2 builds the HRBA foundation: rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe use of standards.</p>
+          </article>
+        </section>
+
+        <footer className="m1-closure-actions" aria-label="Module 1 completion actions">
           <button
             type="button"
             className="m1-revised-finished-secondary"
             onClick={returnToCourseMenu}
-            style={{
-              minHeight: '44px',
-              border: '1px solid rgba(11, 42, 85, 0.28)',
-              borderRadius: '999px',
-              background: '#ffffff',
-              color: '#0b2a55',
-              fontWeight: 900,
-              padding: '0.75rem 1.15rem'
-            }}
           >
             Return to course
           </button>
@@ -5406,15 +5383,6 @@ function Module1FinishedScreen({
             type="button"
             className="m1-revised-finished-review"
             onClick={reviewModule}
-            style={{
-              minHeight: '44px',
-              border: '1px solid rgba(11, 42, 85, 0.28)',
-              borderRadius: '999px',
-              background: '#ffffff',
-              color: '#0b2a55',
-              fontWeight: 900,
-              padding: '0.75rem 1.15rem'
-            }}
           >
             Review commitment
           </button>
@@ -5422,19 +5390,10 @@ function Module1FinishedScreen({
             type="button"
             className="m1-revised-finished-primary"
             onClick={continueToModule2}
-            style={{
-              minHeight: '44px',
-              border: '1px solid #0b5a7e',
-              borderRadius: '999px',
-              background: '#0b5a7e',
-              color: '#ffffff',
-              fontWeight: 900,
-              padding: '0.75rem 1.15rem'
-            }}
           >
             Proceed to Module 2
           </button>
-        </div>
+        </footer>
       </div>
     </section>
   );
