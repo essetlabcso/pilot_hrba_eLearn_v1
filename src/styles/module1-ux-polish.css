@@ -2098,7 +2098,7 @@
 
 .m1-closure-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
 }
 
@@ -2119,11 +2119,6 @@
   background: #dff2e9;
   color: #0b615b;
   font-weight: 950;
-}
-
-.m1-closure-card-icon.is-caution {
-  background: #fff0e5;
-  color: #8a3217;
 }
 
 .m1-closure-card-icon.is-next {

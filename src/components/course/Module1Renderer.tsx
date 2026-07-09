@@ -5360,11 +5360,6 @@ function Module1FinishedScreen({
             <p>You explored the course purpose, HRBA learning journey, practical methodology, safe portfolio use, starting confidence, and first learning commitment.</p>
           </article>
           <article>
-            <span className="m1-closure-card-icon is-caution" aria-hidden="true">!</span>
-            <h2>What Module 1 does not do</h2>
-            <p>It does not yet teach the full HRBA framework. It prepares you to enter Module 2 with a clear starting point and safe reflection habit.</p>
-          </article>
-          <article>
             <span className="m1-closure-card-icon is-next" aria-hidden="true">2</span>
             <h2>What comes next</h2>
             <p>Module 2 builds the HRBA foundation: rights-holders, duty-bearers, participation, accountability, equality, non-discrimination, power, and safe use of standards.</p>
