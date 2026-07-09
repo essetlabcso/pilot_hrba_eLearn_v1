@@ -16,6 +16,7 @@ import waterStoryVisual from '../../assets/hrba/module-1/visuals/m1-s1-04-water-
 import accountabilityActorMap from '../../assets/hrba/module-1/visuals/m1-s2-01-accountability-actor-map.svg';
 import servicesToRightsPathway from '../../assets/hrba/module-1/visuals/m1-s2-03-services-to-rights-pathway.svg';
 import { module1RefinementAssets } from '../../data/module1/module_1_refinement_assets';
+import { evaluateModule1SelfAssessment, module1AssessmentQuestions } from '../../data/module1/module_1_self_assessment';
 import '../../styles/module1-visual-supports.css';
 import '../../styles/module1-ux-polish.css';
 
@@ -1539,34 +1540,15 @@ function Module1StartingPointSelfAssessmentScreen({
     { value: 3, label: 'Confident' },
     { value: 4, label: 'Very confident' }
   ];
-  const questions = [
-    'Explain HRBA in simple CSO language.',
-    'Identify rights-holders and duty-bearers in a project.',
-    'Notice who may be excluded from a project or activity.',
-    'Distinguish attendance from meaningful participation.',
-    'Recognize when accountability and follow-up are weak.',
-    'Connect HRBA to project design.',
-    'Apply HRBA during implementation.',
-    'Use MEAL, evidence, feedback, and reporting safely.',
-    'Connect HRBA to advocacy, gender equality, or economic inclusion.',
-    'Identify one practical change your CSO could make after this course.'
-  ];
   const savedAssessment = state.practiceCheckState.module1StartingConfidence || {};
   const ratings = typeof savedAssessment.ratings === 'object' && savedAssessment.ratings
     ? savedAssessment.ratings as Record<string, number>
     : {};
   const submitted = Boolean(savedAssessment.submitted);
-  const answeredCount = questions.filter((_, index) => ratings[`q${index + 1}`]).length;
-  const canSubmit = answeredCount === questions.length;
-  const averageScore = canSubmit
-    ? questions.reduce((total, _, index) => total + Number(ratings[`q${index + 1}`] || 0), 0) / questions.length
-    : 0;
-  const feedbackCategory = averageScore < 2 ? 'good_starting_point' : averageScore < 3.2 ? 'some_strengths' : 'strong_confidence';
-  const feedbackText = feedbackCategory === 'good_starting_point'
-    ? 'This is a good starting point. The course is designed to build confidence step by step. You do not need to know everything now.'
-    : feedbackCategory === 'some_strengths'
-      ? 'You already have some strengths. Use the course to deepen the areas where you want more confidence.'
-      : 'You are starting with strong confidence. Use the course to sharpen your practice, reflect on your CSO work, and support peer learning.';
+  const assessmentResult = evaluateModule1SelfAssessment(ratings);
+  const answeredCount = assessmentResult.answeredCount;
+  const canSubmit = assessmentResult.isComplete;
+  const averageScore = assessmentResult.averageScore;
   const shellStyle: CSSProperties = {
     display: 'grid',
     gap: '1.05rem',
@@ -1617,7 +1599,13 @@ function Module1StartingPointSelfAssessmentScreen({
           module1StartingConfidence: {
             ratings,
             averageScore: Number(averageScore.toFixed(1)),
-            feedbackCategory,
+            feedbackCategory: assessmentResult.confidenceBand.id,
+            confidenceBand: assessmentResult.confidenceBand.label,
+            domainAverages: Object.fromEntries(assessmentResult.domainAverages.map((domain) => [domain.id, Number(domain.average.toFixed(1))])),
+            strongestDomain: assessmentResult.strongestDomain.id,
+            weakestDomain: assessmentResult.weakestDomain.id,
+            suggestedModuleFocus: assessmentResult.weakestDomain.suggestedModuleFocus,
+            suggestedPriority: assessmentResult.weakestDomain.suggestedPriority,
             submitted: true
           }
         },
@@ -1679,12 +1667,12 @@ function Module1StartingPointSelfAssessmentScreen({
             <p aria-live="polite" aria-atomic="true">{answeredCount} of 10 answered</p>
           </section>
 
-          {questions.map((question, index) => {
-            const questionId = `q${index + 1}`;
+          {module1AssessmentQuestions.map((question, index) => {
+            const questionId = question.id;
             const currentRating = Number(ratings[questionId] || 0);
             return (
-              <fieldset key={question} className={`m1-confidence-question${currentRating ? ' is-answered' : ''}`}>
-                <legend><span>Question {index + 1}</span>{question}</legend>
+              <fieldset key={question.id} className={`m1-confidence-question${currentRating ? ' is-answered' : ''}`}>
+                <legend><span>Question {index + 1}</span>{question.text}</legend>
                 <div className="m1-confidence-options">
                   {ratingLevels.map((level) => (
                     <label
@@ -1720,15 +1708,39 @@ function Module1StartingPointSelfAssessmentScreen({
 
         {submitted && (
           <section aria-labelledby="m1-confidence-results-heading" className="m1-confidence-results">
-            <h2 id="m1-confidence-results-heading">Your starting-point result</h2>
-            <p>You answered 10 of 10 items.</p>
-            <p className="m1-confidence-results__score">
-              Average confidence score: {Number(averageScore.toFixed(1)).toFixed(1)} out of 4
-            </p>
-            <p>{feedbackText}</p>
-            <p className="m1-confidence-results__next">
-              Use this result to choose a learning priority on the next screen.
-            </p>
+            <article className="m1-confidence-result-card m1-confidence-result-card--summary">
+              <span>Self-assessment summary</span>
+              <h2 id="m1-confidence-results-heading">Your starting-point result</h2>
+              <p>You answered 10 of 10 items.</p>
+              <p className="m1-confidence-results__score">
+                Average confidence score: {Number(averageScore.toFixed(1)).toFixed(1)} out of 4
+              </p>
+              <p className="m1-confidence-results__band">{assessmentResult.confidenceBand.label}</p>
+              <p>{assessmentResult.confidenceBand.feedback}</p>
+            </article>
+
+            <article className="m1-confidence-result-card">
+              <span>Learning focus</span>
+              <dl className="m1-confidence-focus-list">
+                <div>
+                  <dt>Strongest starting area</dt>
+                  <dd>{assessmentResult.strongestDomain.label}</dd>
+                </div>
+                <div>
+                  <dt>Area to strengthen</dt>
+                  <dd>{assessmentResult.weakestDomain.label}</dd>
+                </div>
+              </dl>
+              <p className="m1-confidence-results__next">{assessmentResult.weakestDomain.suggestedModuleFocus}</p>
+            </article>
+
+            <article className="m1-confidence-result-card m1-confidence-result-card--priority">
+              <span>Suggested priority for Screen 9</span>
+              <p className="m1-confidence-results__priority">
+                Suggested priority based on your self-assessment: {assessmentResult.weakestDomain.suggestedPriority}
+              </p>
+              <p>You can still choose the priority that feels most useful for your work on the next screen.</p>
+            </article>
           </section>
         )}
 
