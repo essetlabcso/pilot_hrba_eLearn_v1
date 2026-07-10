@@ -10916,11 +10916,10 @@ function PowerInfluenceMapScreen({
   const [ownCsoError, setOwnCsoError] = useState('');
   const [submittedOutput, setSubmittedOutput] = useState<Screen9Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [understandAnswer, setUnderstandAnswer] = useState('');
   const [exampleReviewed, setExampleReviewed] = useState(false);
   const [activeActorFilter, setActiveActorFilter] = useState<'public' | 'service' | 'rights' | 'community' | 'support' | 'custom' | 'all'>('public');
-  const [currentActorIndex, setCurrentActorIndex] = useState(0);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [copyStatus, setCopyStatus] = useState('');
   const outputRef = useRef<HTMLHeadingElement>(null);
@@ -11151,8 +11150,6 @@ Use role categories and generalized group labels. Do not record names, accusatio
 
   const submittedRows = submittedOutput?.generatedActorRows || [];
   const outputZones = submittedOutput?.generatedPowerMapZones || generatePowerMapZones(completedRatings);
-  const currentActor = selectedActors[Math.min(currentActorIndex, Math.max(selectedActors.length - 1, 0))];
-  const currentRating = currentActor ? actorRatings[currentActor.actorId] : undefined;
   const screen9SafeNote = (
     <div className="m3-power-studio-safe-note" role="note" data-testid="m3-s09-safety-note">
       <strong>Safe use note</strong>
@@ -11175,21 +11172,19 @@ Use role categories and generalized group labels. Do not record names, accusatio
       : actorOptions.filter((actor) => actorFilterDefinitions.find((filter) => filter.id === activeActorFilter)?.categories?.includes(actor.category));
   const understandComplete = understandAnswer === 'informal';
   const mapGenerated = Boolean(submittedOutput && !formChanged);
-  const stageDefinitions: Array<{ id: 1 | 2 | 3 | 4 | 5 | 6; label: string; unlocked: boolean; complete: boolean; note?: string }> = [
+  const stageDefinitions: Array<{ id: 1 | 2 | 3 | 4 | 5; label: string; unlocked: boolean; complete: boolean; note?: string }> = [
     { id: 1, label: 'Understand', unlocked: true, complete: understandComplete },
     { id: 2, label: 'Example', unlocked: understandComplete, complete: exampleReviewed },
-    { id: 3, label: 'Select actors', unlocked: exampleReviewed, complete: actorSelectionReady },
-    { id: 4, label: 'Rate actors', unlocked: actorSelectionReady, complete: ratedActorCount >= 3 },
-    { id: 5, label: 'Review map', unlocked: Boolean(submittedOutput), complete: mapGenerated },
-    { id: 6, label: 'Apply/Download', unlocked: exampleReviewed, complete: mapGenerated },
+    { id: 3, label: 'Practice', unlocked: exampleReviewed, complete: mapReadyToGenerate },
+    { id: 4, label: 'Review power map', unlocked: Boolean(submittedOutput), complete: mapGenerated },
+    { id: 5, label: 'Apply/Download', unlocked: Boolean(submittedOutput), complete: mapGenerated },
   ];
-  const stageTestIds: Record<1 | 2 | 3 | 4 | 5 | 6, string | undefined> = {
+  const stageTestIds: Record<1 | 2 | 3 | 4 | 5, string | undefined> = {
     1: 'm3-s09-stage-understand',
     2: undefined,
     3: 'm3-s09-stage-practice',
-    4: 'm3-s09-stage-rate',
-    5: 'm3-s09-stage-review',
-    6: 'm3-s09-stage-apply',
+    4: 'm3-s09-stage-review',
+    5: 'm3-s09-stage-apply',
   };
   const selectionChecks = [
     { label: 'At least three actors selected', complete: selectedActorIds.length >= 3 },
@@ -11231,38 +11226,10 @@ Use role categories and generalized group labels. Do not record names, accusatio
       screen9: submittedOutput,
     });
   };
-  const goToStage = (stageId: 1 | 2 | 3 | 4 | 5 | 6) => {
+  const goToStage = (stageId: 1 | 2 | 3 | 4 | 5) => {
     const stage = stageDefinitions.find((item) => item.id === stageId);
     if (stage?.unlocked) setActiveStage(stageId);
   };
-  const renderOptionButtons = <T extends string>(
-    label: string,
-    helper: string,
-    value: T | '',
-    options: Array<{ value: T; label: string }>,
-    onSelect: (nextValue: T) => void,
-    testId?: string,
-  ) => (
-    <fieldset className="m3-power-studio-rating-field">
-      <legend>{label}</legend>
-      <p>{helper}</p>
-      <div className="m3-power-studio-segmented">
-        {options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            className={value === option.value ? 'is-selected' : ''}
-            aria-pressed={value === option.value}
-            data-testid={value === option.value ? testId : undefined}
-            onClick={() => onSelect(option.value)}
-          >
-            <span aria-hidden="true">{value === option.value ? '●' : '○'}</span>
-            {option.label}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  );
   const renderQuadrantBoard = (zones: Screen9PowerMapZone[], compact = false) => (
     <div className={compact ? 'm3-power-studio-quadrants is-compact' : 'm3-power-studio-quadrants'} aria-label="Power and influence quadrant map">
       {zones.map((zone) => (
@@ -11290,11 +11257,11 @@ Use role categories and generalized group labels. Do not record names, accusatio
     </div>
   );
   const renderPowerPanel = () => (
-    <aside className="m3-power-studio-live-panel" aria-label="Your power map so far">
+    <aside className="m3-power-studio-live-panel" aria-label="Power map so far">
       <div className="m3-power-studio-live-head">
         <span aria-hidden="true">▣</span>
         <div>
-          <h2>Your power map so far</h2>
+          <h2>Power map so far</h2>
           <p>{selectedActorIds.length > 0 ? selectedCountLabel : 'Your map will appear here'}</p>
         </div>
       </div>
@@ -11314,7 +11281,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
         </div>
       )}
       {completedRatings.length > 0 && renderQuadrantBoard(generatePowerMapZones(completedRatings), true)}
-      <button type="button" className="m3-power-studio-primary" disabled={!mapReadyToGenerate} onClick={() => { submitMap(); setActiveStage(5); }} data-testid="m3-s09-generate-map">
+      <button type="button" className="m3-power-studio-primary" disabled={!mapReadyToGenerate} onClick={() => { submitMap(); setActiveStage(4); }} data-testid="m3-s09-generate-map">
         {submittedOutput ? 'Update power and influence map' : 'Generate power and influence map'}
       </button>
       {!mapReadyToGenerate && <p className="m3-power-studio-helper">Rate influence and support/interest for at least three selected actors.</p>}
@@ -11452,90 +11419,109 @@ Use role categories and generalized group labels. Do not record names, accusatio
         )}
 
         {activeStage === 3 && (
-          <section className="m3-power-studio-stage m3-power-studio-workspace" aria-labelledby={taskId}>
+          <section className="m3-power-studio-stage m3-power-studio-workspace m3-power-studio-practice" aria-labelledby={taskId}>
             <div className="m3-power-studio-main">
-              <h2 id={taskId}>Select actors connected to the Jiru Amba issue</h2>
-              <p>Select 3–6 actors. Include at least one rights-holder group and at least one public, service, or committee actor.</p>
-              <div className="m3-power-studio-filter-tabs" role="tablist" aria-label="Actor categories">
-                {actorFilterDefinitions.map((filter) => (
-                  <button key={filter.id} type="button" className={activeActorFilter === filter.id ? 'is-active' : ''} onClick={() => setActiveActorFilter(filter.id)}>
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
-              {activeActorFilter === 'custom' ? (
-                <section className="m3-power-studio-custom">
-                  <h3>Add another generalized actor role</h3>
-                  <label><span>Use a general actor role only</span><input value={customActorLabel} onChange={(event) => setCustomActorLabel(event.target.value)} placeholder="Example: local service committee" aria-invalid={hasUnsafeLabel} /></label>
-                  <label><span>Actor category</span><select value={customActorCategory} onChange={(event) => setCustomActorCategory(event.target.value as ActorCategory)}>{screen9CustomActorCategoryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-                  {hasUnsafeLabel && <p className="m3-power-map-error">{customValidation.error}</p>}
-                  <button type="button" className="m3-power-studio-primary" onClick={addCustomActor} disabled={!customValidation.isValid}>Add generalized actor role</button>
-                </section>
-              ) : (
-                <div className="m3-power-studio-actor-grid" role="group" aria-label="Actor options">
-                  {filteredActorOptions.map((actor) => {
-                    const selected = selectedActorIds.includes(actor.actorId);
-                    const content = getScreen9ActorContent(actor);
-                    const disabled = !selected && selectedActorIds.length >= 6;
-                    return (
-                      <button key={actor.actorId} type="button" className={`m3-power-studio-actor-card${selected ? ' is-selected' : ''}`} aria-pressed={selected} disabled={disabled} data-testid={selected ? 'm3-s09-selected-actor' : 'm3-s09-selectable-actor'} onClick={() => toggleActor(actor)}>
-                        <span aria-hidden="true" className="m3-power-studio-card-check">{selected ? '✓' : '□'}</span>
-                        <strong>{actor.label}</strong>
-                        <em>{actorCategoryLabels[actor.category]}</em>
-                        <p>{actor.actorId === 'women_water_context' ? 'In this case, women are considered in relation to household water responsibilities and water-service decisions.' : content.clue}</p>
-                        <small>{selected ? 'Selected' : disabled ? 'Six actors selected' : 'Select'}</small>
-                      </button>
-                    );
-                  })}
+              <section className="m3-power-studio-practice-step" aria-labelledby={`${screen.id}-select-actors`}>
+                <h2 id={taskId}>Practice with Jiru Amba</h2>
+                <h3 id={`${screen.id}-select-actors`}>Step 1: Select actors</h3>
+                <p>Select 3-6 actors. Include at least one rights-holder group and at least one public, service, or committee actor.</p>
+                <div className="m3-power-studio-filter-tabs" role="tablist" aria-label="Actor categories">
+                  {actorFilterDefinitions.map((filter) => (
+                    <button key={filter.id} type="button" className={activeActorFilter === filter.id ? 'is-active' : ''} onClick={() => setActiveActorFilter(filter.id)}>
+                      {filter.label}
+                    </button>
+                  ))}
                 </div>
-              )}
+                {activeActorFilter === 'custom' ? (
+                  <section className="m3-power-studio-custom">
+                    <h3>Add another generalized actor role</h3>
+                    <label><span>Use a general actor role only</span><input value={customActorLabel} onChange={(event) => setCustomActorLabel(event.target.value)} placeholder="Example: local service committee" aria-invalid={hasUnsafeLabel} /></label>
+                    <label><span>Actor category</span><select value={customActorCategory} onChange={(event) => setCustomActorCategory(event.target.value as ActorCategory)}>{screen9CustomActorCategoryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+                    {hasUnsafeLabel && <p className="m3-power-map-error">{customValidation.error}</p>}
+                    <button type="button" className="m3-power-studio-primary" onClick={addCustomActor} disabled={!customValidation.isValid}>Add generalized actor role</button>
+                  </section>
+                ) : (
+                  <div className="m3-power-studio-actor-grid" role="group" aria-label="Actor options">
+                    {filteredActorOptions.map((actor) => {
+                      const selected = selectedActorIds.includes(actor.actorId);
+                      const content = getScreen9ActorContent(actor);
+                      const disabled = !selected && selectedActorIds.length >= 6;
+                      return (
+                        <button key={actor.actorId} type="button" className={`m3-power-studio-actor-card${selected ? ' is-selected' : ''}`} aria-pressed={selected} disabled={disabled} data-testid={selected ? 'm3-s09-selected-actor' : 'm3-s09-selectable-actor'} onClick={() => toggleActor(actor)}>
+                          <span aria-hidden="true" className="m3-power-studio-card-check">{selected ? '✓' : '+'}</span>
+                          <strong>{actor.label}</strong>
+                          <p>{actor.actorId === 'women_water_context' ? 'Connected to household water responsibilities and water-service decisions.' : content.clue}</p>
+                          <small>{selected ? 'Selected' : disabled ? 'Six actors selected' : 'Select'}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+
+              <section className={`m3-power-studio-practice-step ${selectedActors.length === 0 ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-rate-actors`}>
+                <h3 id={`${screen.id}-rate-actors`}>Step 2: Rate selected actors</h3>
+                {selectedActors.length === 0 ? (
+                  <p className="m3-power-studio-empty-note">Select actors first. Rating rows will appear here.</p>
+                ) : (
+                  <div className="m3-power-studio-rating-rows" role="group" aria-label="Selected actor rating rows">
+                    {selectedActors.map((actor) => {
+                      const rating = actorRatings[actor.actorId] || createEmptyActorRating(actor);
+                      return (
+                        <article key={actor.actorId} className="m3-power-studio-rating-row" data-testid="m3-s09-rating-row">
+                          <div className="m3-power-studio-rating-actor">
+                            <span aria-hidden="true">{getActorIcon(actor.category)}</span>
+                            <div>
+                              <strong>{actor.label}</strong>
+                              <small>{actorCategoryLabels[actor.category]}</small>
+                              <p>{getScreen9ActorContent(actor).role}</p>
+                            </div>
+                          </div>
+                          <label>
+                            <span>Influence level</span>
+                            <select value={rating.influenceLevel} onChange={(event) => updateRating(actor.actorId, 'influenceLevel', event.target.value)} data-testid="m3-s09-influence-select">
+                              <option value="">Choose influence</option>
+                              {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                            </select>
+                          </label>
+                          <label>
+                            <span>Support/resistance or engagement risk</span>
+                            <select value={rating.supportInterestLevel} onChange={(event) => updateRating(actor.actorId, 'supportInterestLevel', event.target.value)} data-testid="m3-s09-support-select">
+                              <option value="">Choose support or risk</option>
+                              {screen9SupportOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                            </select>
+                          </label>
+                          <label>
+                            <span>Engagement approach</span>
+                            <select value={rating.engagementApproach} onChange={(event) => updateRating(actor.actorId, 'engagementApproach', event.target.value)} data-testid="m3-s09-engagement-select">
+                              <option value="">Choose approach</option>
+                              {screen9EngagementApproachOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                            </select>
+                          </label>
+                          <div className="m3-power-studio-rating-signal">
+                            <span>Capacity or support gap</span>
+                            <p>{rating.likelyChangeRole ? getScreen9RoleLabel(rating.likelyChangeRole) : 'Auto-suggested after influence and support are rated.'}</p>
+                          </div>
+                          <label className="m3-power-studio-row-implication">
+                            <span>Strategy implication</span>
+                            <textarea value={rating.designImplication} onChange={(event) => updateRating(actor.actorId, 'designImplication', event.target.value)} />
+                          </label>
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="m3-power-studio-selection-footer">
+                  {selectionChecks.map((check) => <span key={check.label} className={check.complete ? 'is-complete' : ''}><strong aria-hidden="true">{check.complete ? '✓' : '○'}</strong>{check.label}</span>)}
+                </div>
+              </section>
             </div>
             {renderPowerPanel()}
             <div className="m3-power-studio-mobile-drawer">{renderPowerPanel()}</div>
-            <div className="m3-power-studio-selection-footer">
-              {selectionChecks.map((check) => <span key={check.label} className={check.complete ? 'is-complete' : ''}><strong aria-hidden="true">{check.complete ? '✓' : '○'}</strong>{check.label}</span>)}
-              <button type="button" className="m3-power-studio-primary" disabled={!actorSelectionReady} onClick={() => { setCurrentActorIndex(0); setActiveStage(4); }}>Continue to rating actors</button>
-            </div>
           </section>
         )}
 
-        {activeStage === 4 && (
-          <section className="m3-power-studio-stage m3-power-studio-workspace" aria-labelledby={`${screen.id}-rate`}>
-            <div className="m3-power-studio-main">
-              <h2 id={`${screen.id}-rate`}>Rate selected actors</h2>
-              {currentActor && currentRating ? (
-                <article className="m3-power-studio-rating-card">
-                  <div className="m3-power-studio-rating-head">
-                    <span aria-hidden="true">{getActorIcon(currentActor.category)}</span>
-                    <div>
-                      <p>Actor {Math.min(currentActorIndex + 1, selectedActors.length)} of {selectedActors.length}</p>
-                      <h3>{currentActor.label}</h3>
-                      <strong>{actorCategoryLabels[currentActor.category]}</strong>
-                      <p><b>Connected issue:</b> {getScreen9ActorContent(currentActor).role}</p>
-                    </div>
-                  </div>
-                  {renderOptionButtons('1. Practical influence', 'Rate whether this actor can shape decisions, information, access, resources, timing, trust, voice, or follow-up in practice.', currentRating.influenceLevel, screen9InfluenceOptions, (value) => updateRating(currentActor.actorId, 'influenceLevel', value), 'm3-s09-power-rating')}
-                  {renderOptionButtons('2. Support or interest level', 'Rate whether the actor is likely to support the project’s HRBA design direction.', currentRating.supportInterestLevel, screen9SupportOptions, (value) => updateRating(currentActor.actorId, 'supportInterestLevel', value), 'm3-s09-influence-rating')}
-                  {renderOptionButtons('3. Likely role', 'Auto-suggested from influence and support, but you can change it.', currentRating.likelyChangeRole, likelyRoleOptions.map((option) => ({ value: option.id, label: option.label })), (value) => updateRating(currentActor.actorId, 'likelyChangeRole', value))}
-                  {renderOptionButtons('4. Engagement approach', 'Choose the safest and most useful way to engage.', currentRating.engagementApproach, screen9EngagementApproachOptions, (value) => updateRating(currentActor.actorId, 'engagementApproach', value))}
-                  <label className="m3-power-studio-design-field">
-                    <span>5. Design implication</span>
-                    <textarea value={currentRating.designImplication} onChange={(event) => updateRating(currentActor.actorId, 'designImplication', event.target.value)} />
-                  </label>
-                  <div className="m3-power-studio-actions">
-                    <button type="button" className="m3-power-studio-secondary" disabled={currentActorIndex === 0} onClick={() => setCurrentActorIndex((value) => Math.max(0, value - 1))}>Previous actor</button>
-                    <button type="button" className="m3-power-studio-secondary" onClick={() => setCurrentActorIndex((value) => Math.min(selectedActors.length - 1, value + 1))}>Save rating</button>
-                    <button type="button" className="m3-power-studio-primary" onClick={() => currentActorIndex < selectedActors.length - 1 ? setCurrentActorIndex((value) => value + 1) : undefined} disabled={currentActorIndex >= selectedActors.length - 1}>Next actor</button>
-                  </div>
-                </article>
-              ) : <p>Select actors before rating.</p>}
-            </div>
-            {renderPowerPanel()}
-            <div className="m3-power-studio-mobile-drawer">{renderPowerPanel()}</div>
-          </section>
-        )}
-
-        {activeStage === 5 && submittedOutput && (
+        {activeStage === 4 && submittedOutput && (
           <section className="m3-power-studio-stage m3-power-studio-review" aria-live="polite" aria-labelledby={`${screen.id}-output`}>
             <div className="m3-power-studio-review-head">
               <div>
@@ -11549,14 +11535,14 @@ Use role categories and generalized group labels. Do not record names, accusatio
             <section className="m3-power-studio-table-wrap" aria-label="Actor engagement strategy">
               <h3>Actor engagement strategy</h3>
               <table>
-                <thead><tr><th>Actor or role</th><th>Practical influence</th><th>Support or interest</th><th>Engagement approach</th><th>Safety or voice consideration</th><th>Design implication</th><th>Carry-forward note</th></tr></thead>
+                <thead><tr><th>Actor</th><th>Role or responsibility</th><th>Influence level</th><th>Support/resistance or engagement risk</th><th>Capacity or support gap</th><th>Strategy implication</th><th>Carry forward to design repair</th></tr></thead>
                 <tbody>
                   {submittedRows.map((row) => (
                       <tr key={row.actor} data-testid="m3-s09-generated-map-row">
                         <td>{row.actor}</td>
+                        <td>{row.roleFromResponsibilityMap}</td>
                         <td>{row.influenceLevel}</td>
                         <td>{row.supportInterestLevel}</td>
-                        <td>{row.engagementApproach}</td>
                         <td>{row.likelyRoleInChange}</td>
                         <td>{row.designImplication}</td>
                         <td>{row.questionForScreen10}</td>
@@ -11579,9 +11565,10 @@ Use role categories and generalized group labels. Do not record names, accusatio
             {submittedOutput.warnings.length > 0 && <section className={`m3-power-map-feedback m3-power-map-feedback--${submittedOutput.feedbackLevel}`}><h3>Feedback</h3><p>{getScreen9FeedbackCopy(submittedOutput.feedbackLevel)}</p><ul>{submittedOutput.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul></section>}
             {screen9SafeNote}
             <div className="m3-power-studio-actions">
-              <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(4)}>Edit actor ratings</button>
+              <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(3)}>Edit practice choices</button>
               <button type="button" className="m3-power-studio-secondary" onClick={copyMapSummary}>Copy map summary</button>
               <button type="button" className="m3-power-studio-secondary" onClick={() => downloadPowerTemplate('md')}>Download template</button>
+              <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(5)}>Go to Apply/Download</button>
               <PrimaryButton disabled={!canContinue} testId="m3-s09-final-continue" onClick={saveAndContinue}>{screen.continueLabel}</PrimaryButton>
             </div>
             {copyStatus && <p className="m3-context-copy-status" aria-live="polite">{copyStatus}</p>}
@@ -11589,7 +11576,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
           </section>
         )}
 
-        {activeStage === 6 && (
+        {activeStage === 5 && (
           <section className="m3-power-studio-stage m3-power-studio-apply" aria-labelledby={`${screen.id}-apply`}>
             <h2 id={`${screen.id}-apply`}>Apply and download</h2>
             <p>Use your Jiru Amba map, try a safe version with your own CSO context, or download reusable tools.</p>
@@ -11641,7 +11628,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
                   <h3>Jiru Amba power map saved</h3>
                   <p><strong>Own-CSO practice optional</strong></p>
                   <PrimaryButton disabled={!canContinue} testId="m3-s09-final-continue" onClick={saveAndContinue}>{screen.continueLabel}</PrimaryButton>
-                  <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(5)}>Return to Review map</button>
+                  <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(4)}>Return to Review map</button>
                 </aside>
               </div>
             )}
