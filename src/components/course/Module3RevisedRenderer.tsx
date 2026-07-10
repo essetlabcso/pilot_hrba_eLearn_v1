@@ -5866,26 +5866,8 @@ function buildMarkdownTemplateHtml(title: string, markdown: string) {
   }).join('')}</body></html>`;
 }
 
-function emptyScreen14Selections(): Screen14Selections {
-  return { rightsHolders: [], barriers: [], responsibilities: [], changes: [], scope: [] };
-}
-
 function joinList(values: string[]) {
   return values.join(', ');
-}
-
-function getScreen14ValidationMessages(selections: Screen14Selections) {
-  const messages: string[] = [];
-  if (selections.rightsHolders.length < 2) messages.push('Please select at least two specific rights-holder groups. A strong HRBA objective should move beyond “the community.”');
-  if (selections.barriers.length < 2) messages.push('Please select the barriers the objective should respond to. A repaired objective should show what exclusion pattern the project is trying to reduce.');
-  if (!selections.responsibilities.some((item) => item !== 'Awra as facilitator and support actor, not sole responder')) messages.push('Please include a responsible public, service, committee, or sector actor. Awra can support and facilitate, but the objective should not make the CSO responsible for everything.');
-  if (selections.changes.length === 0) messages.push('Please select what should change: influence, access, feedback, accessibility, follow-up, evidence use, or accountability.');
-  if (selections.scope.length === 0) messages.push('This objective is still too broad. Add specific groups, barriers, responsible actors, and the change the project will support.');
-  return messages;
-}
-
-function isScreen14Valid(selections: Screen14Selections) {
-  return getScreen14ValidationMessages(selections).length === 0;
 }
 
 function buildScreen14Objective(selections: Screen14Selections) {
@@ -13426,8 +13408,7 @@ function downloadDesignRepairTemplate(markdown: string, filename: string, format
   URL.revokeObjectURL(url);
 }
 
-type Screen14StageId = 1 | 2 | 3 | 4 | 5 | 6;
-type Screen14Choice = 'a' | 'b' | 'c' | '';
+type Screen14StageId = 1 | 2 | 3 | 4 | 5;
 
 function uniqueNonEmpty(values: Array<string | null | undefined>, fallback: string[]) {
   const cleaned = values.map((value) => String(value || '').trim()).filter(Boolean);
@@ -13490,174 +13471,126 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
   const titleId = `${screen.id}-title`;
   const carriedAnalysis = buildScreen14CarryForward(state);
   const strongObjective = 'Strengthen Jiru Amba service-improvement decisions so women traders, persons with disabilities, youth, and remote kebele residents can access information, influence priorities, receive responses, and benefit from safer, more accountable services.';
-  const objectivePreset: Screen14Selections = {
-    rightsHolders: [screen14Options.rightsHolders[0], screen14Options.rightsHolders[2], screen14Options.rightsHolders[3], screen14Options.rightsHolders[5]],
-    barriers: [screen14Options.barriers[0], screen14Options.barriers[1], screen14Options.barriers[3], screen14Options.barriers[7]],
-    responsibilities: [screen14Options.responsibilities[0], screen14Options.responsibilities[2], screen14Options.responsibilities[7]],
-    changes: [screen14Options.changes[1], screen14Options.changes[2], screen14Options.changes[3], screen14Options.changes[7]],
-    scope: [screen14Options.scope[0], screen14Options.scope[1], screen14Options.scope[4]],
+  const designIssues = [
+    { id: 'objectiveBarrier', label: 'Objective does not name the barrier clearly', context: 'The objective is broad and activity-based, so the design does not show what barrier will change.' },
+    { id: 'activityBarrier', label: 'Activity does not respond to rights-holder barriers', context: 'Activities are listed, but the link to specific barriers and rights-holder benefit is weak.' },
+    { id: 'responsibilityUnclear', label: 'Responsibility is unclear', context: 'The design does not show who must respond, who supports, and what the CSO can realistically enable.' },
+    { id: 'lateParticipation', label: 'Participation is too late or weak', context: 'Rights-holders may be consulted after key decisions are already shaped.' },
+    { id: 'feedbackFollowup', label: 'Feedback and follow-up are unclear', context: 'Feedback is collected, but response roles and what changes next are not visible.' },
+    { id: 'riskExclusion', label: 'Risk or exclusion is not addressed', context: 'The design may create exclusion, unsafe feedback, role overload, or unrealistic expectations.' },
+  ];
+  const evidenceOptions = ['Root-cause and capacity-gap map', 'Gender and disability inclusion check', 'Participation and accountability pathway', 'Risk and do-no-harm check', 'Rights-holder and barrier map', 'Actor responsibility and power analysis'];
+  const weakFeatureOptions = ['Broad objective language', 'Activities not linked to barriers', 'Unclear duty-bearer or service responsibility', 'Participation after decisions are shaped', 'Feedback without response route', 'Risk or exclusion not built into design'];
+  const repairedStatementOptions = [
+    strongObjective,
+    'Repair the project design so selected rights-holder groups influence priorities before implementation and responsible actors respond to feedback and access barriers.',
+    'Revise the design so activities respond to specific barriers, clarify responsibility, and include safe feedback, accessibility, and implementation watch-points.',
+  ];
+  const designChangeOptions = ['Add early information and accessible participation before decisions', 'Link each activity to a rights-holder barrier and responsible actor', 'Add feedback-response timeline and follow-up role', 'Build accessibility and reasonable accommodation into activity planning', 'Add risk mitigation and implementation watch-point', 'Add safe, non-identifying evidence of influence and response'];
+  const actorRoleOptions = ['Woreda planning office with Awra facilitation support', 'Relevant sector office with service committee follow-up', 'Market committee with women trader participation pathway', 'Water committee or service actor with response role', 'Project accountability focal point with Awra documentation support', 'Awra as facilitator, connector, and non-sensitive documentation support'];
+  const watchPointOptions = ['Monitor whether feedback receives a response and accessibility measures are used', 'Check whether selected groups influenced at least one priority before implementation', 'Watch whether responsibility shifts too much onto the CSO', 'Check whether lower-influence groups are absent, silent, or excluded', 'Track whether risk mitigation changes activity design before rollout', 'Check whether activities drift back to generic training or meetings'];
+  const initialRepairDraft = {
+    evidenceSource: '',
+    weakFeature: '',
+    repairedStatement: '',
+    designChange: '',
+    actorRole: '',
+    watchPoint: '',
   };
-  const objectiveOptions = [
-    {
-      id: 'a' as const,
-      label: 'Option A',
-      text: 'Improve service delivery by training staff and engaging communities to increase satisfaction.',
-      feedback: 'This is still too activity-focused. It names training and engagement, but it does not clearly show specific rights-holders, barriers, responsibility, influence, accountability, or safer service benefit.',
-    },
-    {
-      id: 'b' as const,
-      label: 'Option B',
-      text: strongObjective,
-      feedback: 'This is the stronger HRBA objective. It names specific rights-holder groups, shows access and influence, includes response/accountability, and points to safer service benefit.',
-    },
-    {
-      id: 'c' as const,
-      label: 'Option C',
-      text: 'Improve governance and service delivery in Jiru Amba for all residents.',
-      feedback: 'This is too broad. "All residents" sounds inclusive, but it does not show who faces barriers, what should change, who has responsibility, or what result the project should influence.',
-    },
-  ];
-  const activityComponents = [
-    { id: 'earlyInfo', title: 'Early information before decisions', body: 'Share plan purpose, options, criteria, and timeline early.', tag: 'Participation', group: 'Participation and influence', strong: true, feedback: 'Strong choice. This responds to late information and supports meaningful participation before decisions are finalized.' },
-    { id: 'accessibleParticipation', title: 'Accessible participation and accommodation', body: 'Use inclusive formats, ramps, interpreters, childcare, and transport support.', tag: 'Accessibility', group: 'Access and accommodation', strong: true, feedback: 'Strong choice. This responds to accessibility barriers and makes participation practical for people with different access needs.' },
-    { id: 'womenTradersDiscussion', title: 'Women traders’ market-priority discussion', body: 'Separate and safe spaces for women traders to set market priorities.', tag: 'Participation', group: 'Participation and influence', strong: true, feedback: 'Strong choice. This creates a safer and more specific pathway for women traders to influence market-related priorities.' },
-    { id: 'dutyBearerResponse', title: 'Duty-bearer response and follow-up', body: 'Assign responsibility, commit to actions, and follow up on decisions.', tag: 'Service responsibility', group: 'Accountability and response', strong: true, feedback: 'Strong choice. This clarifies responsibility and helps avoid feedback without response.' },
-    { id: 'safeFeedback', title: 'Safe feedback-response pathway', body: 'Provide confidential channels and ensure answers or referrals.', tag: 'Accountability', group: 'Accountability and response', strong: true, feedback: 'Strong choice. This strengthens accountability and protects people from unsafe or identifiable complaint handling.' },
-    { id: 'implementationWatch', title: 'Implementation watch-point', body: 'Track inclusion, access, response, and risk during implementation.', tag: 'Risk mitigation', group: 'Risk and follow-up', strong: true, feedback: 'Strong choice. This keeps inclusion, access, response, and risk visible during implementation.' },
-    { id: 'finalMeeting', title: 'One final public meeting only', body: 'Invite everyone to one meeting at the end to share decisions.', tag: 'Weak option', group: 'Weak options', strong: false, feedback: 'This is weak by itself. A final meeting shares information too late and does not prove that rights-holders influenced decisions.' },
-    { id: 'trainingNoFollowup', title: 'Training without follow-up pathway', body: 'Provide training but no plan for application, feedback, or support.', tag: 'Weak option', group: 'Weak options', strong: false, feedback: 'This is weak by itself. Training may be useful, but without application, feedback, or support, it does not show a pathway to practical benefit.' },
-  ];
-  const indicatorOptions = [
-    { id: 'a' as const, text: 'Number of people attending consultations.', feedback: 'This counts attendance, but it does not show whether people influenced decisions.' },
-    { id: 'b' as const, text: 'Number of meetings held and reports submitted.', feedback: 'This tracks activity delivery, but it does not show whether the design changed or whether duty-bearers responded.' },
-    { id: 'c' as const, text: 'Evidence that selected groups influenced at least one priority, response, or design adjustment before implementation.', feedback: 'Stronger indicator. It looks for influence, response, and design change, using safe evidence.' },
-  ];
-  const watchPointOptions = [
-    { id: 'a' as const, text: 'Check whether training was delivered.', feedback: 'This is an activity-delivery check, not a design watch-point.' },
-    { id: 'b' as const, text: 'Monitor whether feedback receives a response and whether accessibility measures are used.', feedback: 'Strong watch-point. It checks accountability, accessibility, and implementation risk.' },
-    { id: 'c' as const, text: 'Count how many forms were distributed.', feedback: 'This counts materials but does not show access, influence, or response.' },
-  ];
   const [stage, setStage] = useState<Screen14StageId>(1);
-  const [startDone, setStartDone] = useState(false);
-  const [compareDone, setCompareDone] = useState(false);
-  const [objectiveChoice, setObjectiveChoice] = useState<Screen14Choice>('');
-  const [objectiveSaved, setObjectiveSaved] = useState(false);
-  const [selections, setSelections] = useState<Screen14Selections>(emptyScreen14Selections());
-  const [activityIds, setActivityIds] = useState<string[]>([]);
-  const [activityPackageSaved, setActivityPackageSaved] = useState(false);
-  const [indicatorChoice, setIndicatorChoice] = useState<Screen14Choice>('');
-  const [watchPointChoice, setWatchPointChoice] = useState<Screen14Choice>('');
+  const [selectedIssueId, setSelectedIssueId] = useState('');
+  const [repairDraft, setRepairDraft] = useState(initialRepairDraft);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen14OwnCsoDraft>(getEmptyScreen14OwnCsoDraft());
   const [ownCsoOutput, setOwnCsoOutput] = useState<Screen14OwnCsoOutput | null>(null);
   const [ownCsoError, setOwnCsoError] = useState('');
   const [submittedOutput, setSubmittedOutput] = useState<Screen14Submission | null>(null);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
-  const strongActivityIds = activityComponents.filter((item) => item.strong).map((item) => item.id);
-  const selectedActivities = activityComponents.filter((item) => activityIds.includes(item.id));
-  const selectedStrongActivities = selectedActivities.filter((item) => item.strong);
-  const activityPackageValid = strongActivityIds.every((id) => activityIds.includes(id));
-  const objectiveReady = objectiveChoice === 'b' && isScreen14Valid(selections);
-  const logicReady = indicatorChoice === 'c' && watchPointChoice === 'b';
-  const groupedActivities = ['Participation and influence', 'Access and accommodation', 'Accountability and response', 'Risk and follow-up'].map((group) => ({
-    group,
-    items: selectedStrongActivities.filter((item) => item.group === group),
-  }));
-  const logicChain = [
-    ['Barrier / root cause', 'Women traders and remote groups have limited influence before market priorities are finalized.'],
-    ['Repaired objective', 'Strengthen inclusive, accountable service-improvement decisions.'],
-    ['Activity package', 'Early information, accessible consultation, response loop, follow-up responsibility.'],
-    ['Output', 'Rights-holder priorities documented safely before final decisions.'],
-    ['Outcome', 'Design choices reflect barriers, access needs, and feedback response.'],
-    ['Indicator', 'Evidence that selected groups influenced at least one priority, response, or design adjustment before implementation.'],
-    ['Safe evidence', 'Non-identifying summaries, participation records, accessibility checks.'],
-    ['Watch-point', 'Monitor whether feedback receives a response and whether accessibility measures are used.'],
-  ];
-  const previewRows = [
-    ['Repaired objective', objectiveSaved],
-    ['Activity package', activityPackageSaved],
-    ['Logic chain', logicReady],
-    ['Indicator', indicatorChoice === 'c'],
-    ['Watch-point', watchPointChoice === 'b'],
-  ] as const;
+  const selectedIssue = designIssues.find((issue) => issue.id === selectedIssueId);
+  const completedRepairFields = Object.values(repairDraft).filter(Boolean).length;
+  const repairComplete = Boolean(selectedIssue && completedRepairFields === 6);
   const stages: Array<{ id: Screen14StageId; label: string; qa: string; complete: boolean; available: boolean }> = [
-    { id: 1, label: 'Start repair', qa: 'm3-s14-stage-start', complete: startDone, available: true },
-    { id: 2, label: 'Compare', qa: 'm3-s14-stage-compare', complete: compareDone, available: startDone || compareDone },
-    { id: 3, label: 'Objective', qa: 'm3-s14-stage-objective', complete: objectiveSaved, available: compareDone || objectiveSaved },
-    { id: 4, label: 'Activities', qa: 'm3-s14-stage-activities', complete: activityPackageSaved, available: objectiveSaved },
-    { id: 5, label: 'Logic & indicators', qa: 'm3-s14-stage-logic-indicators', complete: Boolean(submittedOutput) || (activityPackageSaved && logicReady), available: activityPackageSaved },
-    { id: 6, label: 'Review package', qa: 'm3-s14-stage-review-package', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
+    { id: 1, label: 'Understand', qa: 'm3-s14-stage-understand', complete: stage > 1, available: true },
+    { id: 2, label: 'Example', qa: 'm3-s14-stage-example', complete: stage > 2, available: true },
+    { id: 3, label: 'Practice', qa: 'm3-s14-stage-practice', complete: Boolean(submittedOutput), available: true },
+    { id: 4, label: 'Review repair', qa: 'm3-s14-stage-review', complete: Boolean(submittedOutput) && stage > 4, available: Boolean(submittedOutput) },
+    { id: 5, label: 'Apply/Download', qa: 'm3-s14-stage-apply', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
   ];
-  const selectObjective = (choice: 'a' | 'b' | 'c') => {
-    setObjectiveChoice(choice);
-    setObjectiveSaved(false);
-    setSubmittedOutput(null);
-    if (choice === 'b') setSelections(objectivePreset);
-    else setSelections(emptyScreen14Selections());
-  };
-  const toggleActivity = (id: string) => {
-    setActivityIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
-    setActivityPackageSaved(false);
-    setSubmittedOutput(null);
-  };
   const goToStage = (target: Screen14StageId) => {
     const item = stages.find((candidate) => candidate.id === target);
     if (item?.available) setStage(target);
   };
-  const buildIntegratedOutput = () => {
+  const selectIssue = (issueId: string) => {
+    setSelectedIssueId((current) => current === issueId ? '' : issueId);
+    setRepairDraft(initialRepairDraft);
+    setSubmittedOutput(null);
+  };
+  const updateRepairDraft = (field: keyof typeof repairDraft, value: string) => {
+    setRepairDraft((current) => ({ ...current, [field]: value }));
+    setSubmittedOutput(null);
+  };
+  const getRepairSelections = (): Screen14Selections => ({
+    rightsHolders: [screen14Options.rightsHolders[0], screen14Options.rightsHolders[2], screen14Options.rightsHolders[3]],
+    barriers: [repairDraft.weakFeature || screen14Options.barriers[0], screen14Options.barriers[1]],
+    responsibilities: [repairDraft.actorRole || screen14Options.responsibilities[0], screen14Options.responsibilities[7]],
+    changes: [repairDraft.designChange || screen14Options.changes[0], screen14Options.changes[2]],
+    scope: [screen14Options.scope[0], screen14Options.scope[1]],
+  });
+  const generateRepair = () => {
+    if (!repairComplete || !selectedIssue) return;
+    const selections = getRepairSelections();
     const base = buildScreen14Submission(selections, ownCsoOutput);
-    const selectedOldActions = activityRepairActions.slice(0, 3);
     const output: Screen14Submission = {
       ...base,
-      title: 'HRBA Project Design Repair',
       repairedObjective: {
         ...base.repairedObjective,
         originalWeakObjective: 'Improve local services through consultation, training, and infrastructure support.',
-        repairedHrbaObjective: strongObjective,
-        whatWasMissing: 'The weak objective is activity-focused, does not name specific rights-holders, leaves responsibility unclear, treats participation as attendance, misses accountability, and does not show risk.',
-        hrbaDesignLogic: 'The repaired objective responds to barriers, access, influence, response, safer service benefit, and accountable service-improvement decisions.',
-        carryIntoActivityRepair: 'Use this objective to select activities that strengthen participation, accessibility, responsibility, accountability, and risk mitigation before implementation.',
+        repairedHrbaObjective: repairDraft.repairedStatement,
+        whatWasMissing: repairDraft.weakFeature,
+        hrbaDesignLogic: `This repair uses ${repairDraft.evidenceSource} to connect the design issue to a concrete activity change, responsible actor, and implementation watch-point.`,
+        carryIntoActivityRepair: 'Use this repair in the draft plan review to check whether the proposal text, budget, indicators, and responsibilities are aligned.',
       },
       repairedActivityPackage: {
-        selectedActionIds: selectedStrongActivities.map((item) => item.id),
-        repairedActivities: selectedOldActions,
-        generatedSummary: 'Selected components respond to participation, accessibility, accountability, service responsibility, and risk mitigation.',
-        feedbackMessages: selectedStrongActivities.map((item) => item.feedback),
-        repairedObjectiveUsed: strongObjective,
+        selectedActionIds: [selectedIssue.id],
+        repairedActivities: activityRepairActions.slice(0, 1),
+        generatedSummary: repairDraft.designChange,
+        feedbackMessages: ['The repair links earlier analysis to objective wording, activity design, responsibility, and follow-up.'],
+        repairedObjectiveUsed: repairDraft.repairedStatement,
       },
       interventionLogicIndicators: {
-        barrierRootCause: logicChain[0][1],
-        repairedObjective: logicChain[1][1],
-        repairedActivity: logicChain[2][1],
-        output: logicChain[3][1],
-        outcome: logicChain[4][1],
-        indicator: logicChain[5][1],
-        safeEvidenceSource: logicChain[6][1],
-        assumptionRisk: 'Participation may remain late or symbolic unless response and follow-up are built in.',
-        implementationWatchPoint: logicChain[7][1],
-        logicQualitySummary: 'Strong logic chain. The indicator shows influence and response, and the watch-point keeps accessibility, accountability, and risk visible during implementation.',
-        feedbackMessages: ['The logic chain links analysis to objective, activities, output, outcome, indicator, safe evidence, and implementation watch-point.'],
+        barrierRootCause: repairDraft.weakFeature,
+        repairedObjective: repairDraft.repairedStatement,
+        repairedActivity: repairDraft.designChange,
+        output: 'Repaired design statement and activity change documented before implementation.',
+        outcome: 'The project design responds more clearly to rights-holder barriers, responsibility, participation, accountability, and risk.',
+        indicator: 'Evidence that the repaired design is reflected in at least one objective, activity, responsibility, or follow-up commitment.',
+        safeEvidenceSource: 'Non-identifying design review notes, activity package changes, and follow-up records.',
+        assumptionRisk: 'The repair may remain only wording unless roles, budget, and implementation follow-up are updated.',
+        implementationWatchPoint: repairDraft.watchPoint,
+        logicQualitySummary: 'Strong repair row. The design issue is linked to analysis, objective wording, activity change, responsibility, and a watch-point.',
+        feedbackMessages: ['The repair connects analysis to a practical design change and carry-forward check.'],
       },
       designRepairPackage: {
-        repairedObjective: strongObjective,
-        selectedActivityPackage: selectedStrongActivities.map((item) => item.title),
-        interventionLogicChain: logicChain.map(([label, value]) => `${label}: ${value}`),
-        indicatorSignOfChange: logicChain[5][1],
-        safeEvidenceSource: 'Non-identifying summaries, participation records, accessibility checks, feedback-response notes.',
-        riskAssumption: 'Participation may remain late or symbolic unless response and follow-up are built in.',
-        implementationWatchPoint: logicChain[7][1],
+        repairedObjective: repairDraft.repairedStatement,
+        selectedActivityPackage: [repairDraft.designChange],
+        interventionLogicChain: [
+          `Design issue repaired: ${selectedIssue.label}`,
+          `Evidence or analysis used: ${repairDraft.evidenceSource}`,
+          `Weak design feature: ${repairDraft.weakFeature}`,
+          `Activity or design change: ${repairDraft.designChange}`,
+          `Responsible actor or role: ${repairDraft.actorRole}`,
+        ],
+        indicatorSignOfChange: 'The repaired statement and activity change are reflected in the draft plan before implementation.',
+        safeEvidenceSource: 'Non-identifying design review notes and updated activity package.',
+        riskAssumption: 'A repair may not change implementation unless responsibility and follow-up are visible.',
+        implementationWatchPoint: repairDraft.watchPoint,
         carryForwardNote: 'Use this package in the draft plan review to check whether the proposal text, budget, indicators, and responsibilities are aligned.',
         generatedAt: new Date().toISOString(),
       },
-      portfolioSummary: 'You completed an HRBA Design Repair Package covering the repaired objective, activity package, intervention logic, indicator, safe evidence, risk or assumption, implementation watch-point, and carry-forward note.',
+      portfolioSummary: 'You completed an HRBA Project Design Repair linking earlier analysis to a concrete objective, activity/design change, responsible actor, and implementation watch-point.',
       savedAt: new Date().toISOString(),
     };
-    return output;
-  };
-  const generatePackage = () => {
-    if (!objectiveSaved || !activityPackageSaved || !logicReady) return;
-    const output = buildIntegratedOutput();
     setSubmittedOutput(output);
-    setStage(6);
+    setStage(4);
   };
   const updateOwnCso = (field: keyof Screen14OwnCsoDraft, value: string) => {
     setOwnCsoDraft((current) => ({ ...current, [field]: value }));
@@ -13680,12 +13613,23 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
     setOwnCsoError('');
   };
   const finalPackage = submittedOutput?.designRepairPackage;
+  const helperText = repairComplete
+    ? submittedOutput ? 'Your repair is ready to review or update.' : 'Ready to generate your repair.'
+    : 'Select one design issue and complete evidence, weak feature, repaired statement, activity/design change, responsible actor, and watch-point fields.';
+  const repairRowFields: Array<{ field: keyof typeof repairDraft; label: string; options: string[]; testId: string }> = [
+    { field: 'evidenceSource', label: 'Evidence or analysis used', options: evidenceOptions, testId: 'm3-s14-evidence-source-select' },
+    { field: 'weakFeature', label: 'Weak design feature', options: weakFeatureOptions, testId: 'm3-s14-weak-feature-select' },
+    { field: 'repairedStatement', label: 'Repaired objective or design statement', options: repairedStatementOptions, testId: 'm3-s14-repaired-statement-select' },
+    { field: 'designChange', label: 'Activity or design change', options: designChangeOptions, testId: 'm3-s14-design-change-select' },
+    { field: 'actorRole', label: 'Responsible actor or role', options: actorRoleOptions, testId: 'm3-s14-actor-role-select' },
+    { field: 'watchPoint', label: 'Implementation watch-point', options: watchPointOptions, testId: 'm3-s14-watch-point-select' },
+  ];
 
   return (
     <main className="m3-screen m3-design-repair-screen m3-integrated-repair-screen" aria-labelledby={titleId} data-qa="m3-s14-design-repair">
       <article className="m3-design-repair-shell m3-integrated-repair-shell">
         <header className="m3-design-repair-header m3-integrated-repair-header">
-          <ProgressChip>{screen.phase} · Screen 14 of 20</ProgressChip>
+          <ProgressChip>{screen.phase}</ProgressChip>
           <p className="m3-design-repair-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>HRBA Project Design Repair</h1>
           <p className="m3-design-repair-subtitle">Turn your HRBA analysis into a stronger objective, activity package, logic, indicators, and watch-points.</p>
@@ -13723,123 +13667,122 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
               {['Objective', 'Activity package', 'Logic chain', 'Indicator', 'Watch-point'].map((item) => <article key={item}><span aria-hidden="true">→</span><strong>{item}</strong></article>)}
             </section>
             <section className="m3-integrated-explain-grid">
-              <article><h2>What this section is about</h2><p>Repair the objective, activity package, logic, indicators, and implementation watch-points in one workflow.</p></article>
+              <article><h2>What this section is about</h2><p>Repair a weak project design using the analysis from Screens 10 to 13.</p></article>
               <article><h2>Why this matters for CSOs</h2><p>A stronger project design uses analysis before activities are finalized.</p></article>
-              <article><h2>What you will do</h2><p>Choose stronger design options and assemble a practical repair package.</p></article>
-              <article><h2>What you will produce</h2><p>An HRBA Design Repair Package for the draft plan review.</p></article>
+              <article><h2>What you will do</h2><p>Select one design issue, use earlier analysis, and build one practical repair row.</p></article>
+              <article><h2>What you will produce</h2><p>A portfolio-ready HRBA Project Design Repair for the draft plan review.</p></article>
             </section>
-            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => { setStartDone(true); setStage(2); }}>Start project design repair</button></div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>See worked example</button></div>
           </>
         )}
 
         {stage === 2 && (
           <section className="m3-integrated-section-card">
-            <h2>Compare: activity-first design vs HRBA-aligned repair</h2>
+            <h2>Worked example: repair one weak design issue</h2>
             <p className="m3-integrated-info">Before repairing the design, notice the difference between a design that lists activities and a design that responds to barriers, responsibilities, participation, risk, and accountability.</p>
-            <div className="m3-used-step-panel">
-              <h3>Used in this step</h3>
-              {carriedAnalysis.compact.map((item) => <p key={item.label}><strong>{item.label}:</strong> {item.value}</p>)}
+            <div className="m3-s14-example-grid">
+              <article><h3>Design issue</h3><p>Participation is too late or weak.</p></article>
+              <article><h3>Evidence or analysis used</h3><p>Participation and accountability pathway; risk and do-no-harm check.</p></article>
+              <article><h3>Weak design feature</h3><p>Final public meeting happens after priorities are mostly shaped.</p></article>
+              <article><h3>Repaired statement</h3><p>{strongObjective}</p></article>
+              <article><h3>Activity or design change</h3><p>Add early information, accessible pre-consultation, response timeline, and follow-up responsibility before implementation.</p></article>
+              <article><h3>Implementation watch-point</h3><p>Check whether selected groups influenced at least one priority before implementation.</p></article>
             </div>
-            <div className="m3-integrated-compare">
-              <article><h3>Activity-first design</h3>{['Names a problem', 'Lists activities', 'Counts people reached', 'Assumes participation happened', 'Uses weak evidence of change'].map((item) => <p key={item}>{item}</p>)}</article>
-              <div className="m3-integrated-compare-arrow">Repair the design</div>
-              <article className="is-strong"><h3>HRBA-aligned repair</h3>{['Responds to specific barriers', 'Clarifies responsibility', 'Strengthens participation and accountability', 'Includes accessibility and risk mitigation', 'Uses indicators that show influence, access, response, or change'].map((item) => <p key={item}>{item}</p>)}</article>
-            </div>
-            <div className="m3-integrated-example"><h3>Jiru Amba example</h3><p><strong>Current weak design:</strong> Improve market services through consultation and training.</p><p><strong>Stronger design direction:</strong> Improve market service decisions by addressing women traders' access, influence, fee information, feedback response, and follow-up.</p></div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to start repair</button><button type="button" className="m3-design-repair-submit" onClick={() => { setCompareDone(true); setStage(3); }}>Continue to objective repair</button></div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Start practice</button></div>
           </section>
         )}
 
         {stage === 3 && (
-          <section className="m3-integrated-section-card">
-            <h2>Repair the objective</h2>
-            <p className="m3-integrated-info">Choose the objective that best uses the HRBA analysis. Feedback appears after you select an option.</p>
-            <div className="m3-used-step-panel">
-              <h3>Used in this step</h3>
-              <p><strong>Rights-holder groups:</strong> {carriedAnalysis.chips[0].value}</p>
-              <p><strong>Barriers and responsibility:</strong> {carriedAnalysis.chips[1].value}; {carriedAnalysis.chips[2].value}</p>
-            </div>
-            <div className="m3-integrated-objective-layout">
-              <aside className="m3-integrated-weak-card"><h3>Current weak objective</h3><blockquote>Improve local services through consultation, training, and infrastructure support.</blockquote><p>Use the prior analysis to decide which option repairs the design most clearly.</p></aside>
-              <div className="m3-integrated-choice-stack">
-                <h3>Choose a stronger objective</h3>
-                {objectiveOptions.map((option) => {
-                  const selected = objectiveChoice === option.id;
-                  return (
-                    <button key={option.id} type="button" className={`m3-integrated-objective-choice ${selected ? 'is-selected' : ''}`} onClick={() => selectObjective(option.id)} aria-pressed={selected} data-qa={option.id === 'b' && selected ? 'm3-s14-selected-objective' : undefined}>
-                      <strong>{option.label}</strong><span>{option.text}</span>
-                      {selected && <em className={option.id === 'b' ? 'is-strong-feedback' : 'is-weak-feedback'} data-qa="m3-s14-objective-feedback">{option.feedback}</em>}
-                    </button>
-                  );
-                })}
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-practice`}>
+            <div className="m3-s14-practice-layout">
+              <div className="m3-guided-stage-main">
+                <h2 id={`${screen.id}-practice`}>Practice: repair one design issue</h2>
+                <p className="m3-integrated-info">Select a weak design issue, then complete one repair row. Generate stays disabled until the row is complete.</p>
+                <section className="m3-s14-practice-step" aria-labelledby={`${screen.id}-issue-step`}>
+                  <p className="m3-risk-step-label">Step 1</p>
+                  <h3 id={`${screen.id}-issue-step`}>Select the design issue to repair</h3>
+                  <div className="m3-s14-issue-tiles">
+                    {designIssues.map((issue) => {
+                      const selected = selectedIssueId === issue.id;
+                      return (
+                        <button key={issue.id} type="button" className={`m3-s14-issue-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => selectIssue(issue.id)} data-testid="m3-s14-design-issue-tile">
+                          <span>{selected ? 'Selected' : 'Select'}</span>
+                          <strong>{issue.label}</strong>
+                          <small>{issue.context}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+                <section className={`m3-s14-practice-step ${selectedIssue ? '' : 'is-disabled'}`} aria-labelledby={`${screen.id}-repair-row`}>
+                  <p className="m3-risk-step-label">Step 2</p>
+                  <h3 id={`${screen.id}-repair-row`}>Complete the repair row</h3>
+                  {selectedIssue ? (
+                    <div className="m3-s14-repair-row" data-testid="m3-s14-repair-row">
+                      <div><span>Selected design issue</span><p>{selectedIssue.label}</p></div>
+                      {repairRowFields.map(({ field, label, options, testId }) => (
+                        <label key={field}>
+                          <span>{label}</span>
+                          <select value={repairDraft[field]} onChange={(event) => updateRepairDraft(field, event.target.value)} data-testid={testId}>
+                            <option value="">Choose one</option>
+                            {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="m3-risk-empty-note">Select one design issue first. The repair row will appear here.</p>
+                  )}
+                </section>
+                <div className="m3-risk-submit-row">
+                  <button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateRepair} data-testid="m3-s14-generate-repair">{submittedOutput ? 'Update repair' : 'Generate repair'}</button>
+                  <p aria-live="polite">{helperText}</p>
+                </div>
               </div>
-              <aside className="m3-integrated-preview"><h3>Design Repair Package Preview</h3>{previewRows.map(([item, complete]) => <p key={item} className={complete ? 'is-complete' : ''}><span>{item}</span><strong>{complete ? 'Completed' : 'Pending'}</strong></p>)}</aside>
-            </div>
-            <p className="m3-guided-helper" aria-live="polite">{objectiveChoice ? objectiveOptions.find((option) => option.id === objectiveChoice)?.feedback : 'Choose an objective option to see feedback.'}</p>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(2)}>Back to compare</button><button type="button" className="m3-design-repair-submit" disabled={!objectiveReady} onClick={() => { setObjectiveSaved(true); setStage(4); }}>Save objective and continue to activities</button></div>
-          </section>
-        )}
-
-        {stage === 4 && (
-          <section className="m3-integrated-section-card">
-            <h2>Repair the activity package</h2>
-            <p className="m3-integrated-info">Select activity components that match the repaired objective. The package must cover participation/influence, access/accommodation, accountability/response, duty-bearer follow-up, and risk watch-points.</p>
-            <div className="m3-used-step-panel">
-              <h3>Used in this step</h3>
-              <p><strong>Objective:</strong> {strongObjective}</p>
-              <p><strong>Watch-point:</strong> {carriedAnalysis.chips[3].value}</p>
-            </div>
-            <div className="m3-integrated-activity-layout">
-              <div className="m3-integrated-activity-grid">
-                {activityComponents.map((item) => {
-                  const selected = activityIds.includes(item.id);
-                  return <button key={item.id} type="button" className={`m3-integrated-activity-card ${selected ? 'is-selected' : ''} ${!item.strong ? 'is-weak' : ''}`} aria-pressed={selected} onClick={() => toggleActivity(item.id)} data-qa={selected ? 'm3-s14-selected-activity' : undefined}><strong>{item.title}</strong><span>{item.body}</span><em>{item.tag}</em>{selected && <small className={item.strong ? 'is-strong-feedback' : 'is-weak-feedback'} data-qa="m3-s14-activity-feedback">{item.feedback}</small>}</button>;
-                })}
-              </div>
-              <aside className="m3-integrated-preview"><h3>Activity package preview</h3>{groupedActivities.map((group) => <div key={group.group}><strong>{group.group}</strong>{group.items.length > 0 ? group.items.map((item) => <p key={item.id} className="is-complete">{item.title}</p>) : <p>Pending</p>}</div>)}<p><span>Strong components</span><strong>{selectedStrongActivities.length} of {strongActivityIds.length}</strong></p><aside className="m3-integrated-warning">Weak options can be discussed, but they do not complete the repair by themselves.</aside></aside>
-            </div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Back to objective</button><button type="button" className="m3-design-repair-submit" disabled={!activityPackageValid} onClick={() => { setActivityPackageSaved(true); setStage(5); }}>Save activity package and continue to logic and indicators</button></div>
-          </section>
-        )}
-
-        {stage === 5 && (
-          <section className="m3-integrated-section-card">
-            <h2>Check the logic, indicator, and watch-point</h2>
-            <p className="m3-integrated-info">Connect the repaired objective and activity package to outputs, outcomes, indicators, safe evidence, and implementation watch-points.</p>
-            <div className="m3-integrated-logic-layout">
-              <div className="m3-integrated-logic-chain" data-qa="m3-s14-logic-chain">{logicChain.map(([label, value], index) => <article key={label}><span>{index + 1}</span><h3>{label}</h3><p>{value}</p></article>)}</div>
-              <aside className="m3-integrated-preview">
-                <h3>Choose the strongest indicator</h3>
-                <div className="m3-logic-choice-set" data-qa="m3-s14-indicator-choice">{indicatorOptions.map((option) => <button key={option.id} type="button" className={indicatorChoice === option.id ? 'is-selected' : ''} onClick={() => setIndicatorChoice(option.id)} aria-pressed={indicatorChoice === option.id}><strong>Option {option.id.toUpperCase()}</strong><span>{option.text}</span>{indicatorChoice === option.id && <em className={option.id === 'c' ? 'is-strong-feedback' : 'is-weak-feedback'}>{option.feedback}</em>}</button>)}</div>
-                <h3>Choose the strongest watch-point</h3>
-                <div className="m3-logic-choice-set" data-qa="m3-s14-watchpoint-choice">{watchPointOptions.map((option) => <button key={option.id} type="button" className={watchPointChoice === option.id ? 'is-selected' : ''} onClick={() => setWatchPointChoice(option.id)} aria-pressed={watchPointChoice === option.id}><strong>Option {option.id.toUpperCase()}</strong><span>{option.text}</span>{watchPointChoice === option.id && <em className={option.id === 'b' ? 'is-strong-feedback' : 'is-weak-feedback'}>{option.feedback}</em>}</button>)}</div>
+              <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-repair-live`}>
+                <h2 id={`${screen.id}-repair-live`}>Repair draft so far</h2>
+                <p>{selectedIssue ? '1 selected design issue' : 'No design issue selected yet'}</p>
+                <div className="m3-guided-chip-list">
+                  <span className={selectedIssue ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Issue: {selectedIssue?.label || 'Not selected'}</span>
+                  <span className={repairDraft.evidenceSource ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Evidence: {repairDraft.evidenceSource || 'Not selected'}</span>
+                  <span className={repairDraft.weakFeature ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Weak feature: {repairDraft.weakFeature || 'Not selected'}</span>
+                  <span className={repairDraft.designChange ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Design change: {repairDraft.designChange || 'Not selected'}</span>
+                  <span className={repairDraft.actorRole ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Actor: {repairDraft.actorRole || 'Not selected'}</span>
+                  <span className={repairDraft.watchPoint ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Watch-point: {repairDraft.watchPoint || 'Not selected'}</span>
+                </div>
+                <p className="m3-guided-helper">Completed repair rows: {repairComplete ? 1 : 0}</p>
+                <p className="m3-guided-helper">Completed fields: {completedRepairFields} of 6</p>
+                <p className="m3-guided-helper">{helperText}</p>
+                <button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateRepair}>{submittedOutput ? 'Update repair' : 'Generate repair'}</button>
               </aside>
             </div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Back to activities</button><button type="button" className="m3-design-repair-submit" disabled={!logicReady} onClick={generatePackage}>Generate HRBA Design Repair Package</button></div>
           </section>
         )}
 
-        {stage === 6 && finalPackage && (
+        {stage === 4 && finalPackage && selectedIssue && (
           <section className="m3-integrated-section-card" data-qa="m3-s14-generated-package">
-            <h2>Your HRBA Design Repair Package</h2>
-            <p>This package shows how the analysis changes the objective, activity package, intervention logic, indicator, and implementation watch-point. It is a learning output to use in the draft plan review.</p>
-            <section className="m3-analysis-audit">
-              <h3>Analysis used in this repair</h3>
-              <div>{carriedAnalysis.chips.map((item) => <article key={item.label}><strong>{item.label}</strong><span>{item.value}</span></article>)}</div>
-            </section>
-            <div className="m3-integrated-badge-row">{['Barrier addressed', 'Responsibility clarified', 'Participation strengthened', 'Risk reduced', 'Indicator improved'].map((item) => <span key={item}>{item}</span>)}</div>
-            <div className="m3-integrated-package-grid">
-              <article><h3>Repaired objective</h3><p>{finalPackage.repairedObjective}</p></article>
-              <article><h3>Activity package</h3>{groupedActivities.map((group) => <p key={group.group}><strong>{group.group}:</strong> {group.items.map((item) => item.title).join('; ')}</p>)}</article>
-              <article><h3>Intervention logic</h3><p>Barrier / root cause → Objective → Activities → Output → Outcome</p></article>
-              <article><h3>Indicator or sign of change</h3><p>{finalPackage.indicatorSignOfChange}</p></article>
-              <article><h3>Safe evidence source</h3><p>{finalPackage.safeEvidenceSource}</p></article>
-              <article><h3>Risk or assumption</h3><p>{finalPackage.riskAssumption}</p></article>
-              <article><h3>Implementation watch-point</h3><p>{finalPackage.implementationWatchPoint}</p></article>
-              <article><h3>Carry-forward note</h3><p>{finalPackage.carryForwardNote}</p></article>
+            <h2>Your HRBA Project Design Repair</h2>
+            <p>This repair shows how the analysis changes one weak part of the design before implementation.</p>
+            <div className="m3-s14-review-grid">
+              {[
+                ['Design issue repaired', selectedIssue.label],
+                ['Evidence or analysis used', repairDraft.evidenceSource],
+                ['Weak design feature', repairDraft.weakFeature],
+                ['Repaired objective or design statement', repairDraft.repairedStatement],
+                ['Activity or design change', repairDraft.designChange],
+                ['Responsible actor or role', repairDraft.actorRole],
+                ['Implementation watch-point', repairDraft.watchPoint],
+                ['Carry forward to draft plan review', finalPackage.carryForwardNote],
+              ].map(([label, value]) => <article key={label} data-testid="m3-s14-generated-repair-row"><h3>{label}</h3><p>{value}</p></article>)}
             </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit repair</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(5)}>Go to Apply/Download</button></div>
+          </section>
+        )}
+
+        {stage === 5 && finalPackage && (
+          <section className="m3-integrated-section-card">
             <article className="m3-integrated-continue-card">
-              <div><h3>Required package ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
+              <div><h3>Required repair ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
               <button type="button" className="m3-primary-button" data-testid="m3-s14-final-continue" data-qa="m3-s14-final-continue" onClick={() => submittedOutput && onComplete({ designRepairPackage: submittedOutput.designRepairPackage, repairedObjective: submittedOutput.repairedObjective, repairedActivityPackage: submittedOutput.repairedActivityPackage, interventionLogicIndicators: submittedOutput.interventionLogicIndicators, screen14: submittedOutput })}>{screen.continueLabel}</button>
             </article>
             <div className="m3-guided-tabs" role="tablist" aria-label="Optional apply or download">
@@ -13848,7 +13791,6 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
             </div>
             {applyTab === 'own' && <section className="m3-design-repair-own-cso"><h2>Try with my CSO context (optional)</h2><p>Open the template, adjust examples, and test how this repair package works in your own context.</p><div className="m3-design-repair-own-grid">{[['originalObjective', 'Original objective', 'Write the current objective in one sentence.'], ['rightsHolderGroups', 'Specific rights-holder groups', 'Which groups should be visible?'], ['priorityBarriers', 'Priority barriers', 'Which barriers should the package respond to?'], ['responsibleActors', 'Responsible actors', 'Who has a role?'], ['capacityAccountabilityChange', 'Capacity or accountability change', 'What should improve?'], ['realisticProjectScope', 'Realistic project scope', 'What can the project realistically influence?']].map(([field, label, placeholder]) => <label key={field}><span>{label}</span><textarea value={ownCsoDraft[field as keyof Screen14OwnCsoDraft]} onChange={(event) => updateOwnCso(field as keyof Screen14OwnCsoDraft, event.target.value)} placeholder={placeholder} /></label>)}</div>{ownCsoError && <p className="m3-design-repair-error" role="alert">{ownCsoError}</p>}<button type="button" className="m3-design-repair-submit" onClick={generateOwnCso}>Open editable template</button>{ownCsoOutput && <article className="m3-design-repair-own-output"><h3>My repaired objective starter</h3><p>{ownCsoOutput.generatedObjective}</p></article>}</section>}
             {applyTab === 'downloads' && <section className="m3-design-repair-template"><h2>HRBA Design Repair Package Template</h2><div className="m3-design-repair-template-actions"><button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(`${objectiveRepairTemplateMarkdown}\n\n${activityRepairTemplateMarkdown}\n\n${logicMiniMatrixTemplateMarkdown}`, 'hrba-design-repair-package-template', 'docx')}>Download HRBA Design Repair Package Template</button><button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(`${objectiveRepairTemplateMarkdown}\n\n${activityRepairTemplateMarkdown}\n\n${logicMiniMatrixTemplateMarkdown}`, 'hrba-design-repair-package-template', 'md')}>Download markdown copy</button><button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate('', 'hrba-design-repair-blank-worksheet', 'md')}>Download blank worksheet</button></div></section>}
-            <p className="m3-design-repair-safe" data-qa="m3-s14-safety-note">Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
           </section>
         )}
       </article>
