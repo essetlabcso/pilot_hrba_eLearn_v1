@@ -2828,14 +2828,25 @@ const screen11Warnings = [
 ];
 
 type Screen12PathwaySelection = {
+  projectMoment?: string;
   group: string;
   gap: string;
   decision: string;
+  participationMethod?: string;
   supports: string[];
   responseChannel: string;
   responsibleActor: string;
   designAdjustment: string;
+  implementationWatchPoint?: string;
   customGroup?: string;
+};
+
+type Screen12ProjectMoment = {
+  label: string;
+  context: string;
+  group: string;
+  gap: string;
+  decision: string;
 };
 
 type Screen12OwnCsoDraft = {
@@ -2869,6 +2880,7 @@ type Screen12Submission = {
     responseChannel: string;
     responsibleActor: string;
     followUpMethod: string;
+    implementationWatchPoint?: string;
     designAdjustment: string;
     safetyNote: string;
     indicatorEvidenceQuestion: string;
@@ -2957,40 +2969,42 @@ const screen13Assets = {
   severity: '/assets/hrba/modules/module-3/m3-s13-risk-severity-status.svg',
 };
 
-const screen12Groups = [
-  'Women traders',
-  'Persons with disabilities',
-  'Remote kebele residents',
-  'Youth seeking livelihood opportunities',
-  'Informal workers',
-  'Low-income households',
-];
-
-const screen12GroupClues: Record<string, string> = {
-  'Women traders': 'They may need earlier information, livelihood-sensitive timing, and a way to influence market priorities before decisions are finalized.',
-  'Persons with disabilities': 'They may need accessible information, venues, communication, feedback channels, and reasonable accommodation.',
-  'Remote kebele residents': 'They may need information before decisions are finalized and practical ways to participate without traveling to central locations.',
-  'Youth seeking livelihood opportunities': 'They may need to influence which support pathway is selected and how it connects to practical opportunities.',
-  'Informal workers': 'They may need safe and flexible ways to participate without risking income, stigma, or exclusion from formal channels.',
-  'Low-income households': 'They may need fee, transport, information, and timing barriers addressed before participation becomes realistic.',
-};
-
-const screen12Gaps = [
-  'Invited after decisions were mostly shaped',
-  'Information shared too late',
-  'Meeting venue or materials not accessible',
-  'Feedback is collected but no response is given',
-  'Group priorities not reflected in final plan',
-  'Follow-up responsibilities unclear',
-];
-
-const screen12Decisions = [
-  'Market service priorities',
-  'Health-post renovation priorities',
-  'Water-service repair and fee communication',
-  'Youth livelihood support pathway',
-  'Accessibility and reasonable accommodation budget',
-  'Feedback and response arrangements',
+const screen12ProjectMoments: Screen12ProjectMoment[] = [
+  {
+    label: 'Before priorities are finalized',
+    context: 'Rights-holders need information and influence before the activity package is locked.',
+    group: 'Women traders',
+    gap: 'Invited after decisions were mostly shaped',
+    decision: 'Market service priorities',
+  },
+  {
+    label: 'During activity planning',
+    context: 'Accessibility, timing, and support measures need to be built into activity plans.',
+    group: 'Persons with disabilities',
+    gap: 'Meeting venue or materials not accessible',
+    decision: 'Accessibility and reasonable accommodation budget',
+  },
+  {
+    label: 'During implementation',
+    context: 'People need practical ways to raise issues while services and activities are underway.',
+    group: 'Remote kebele residents',
+    gap: 'Information shared too late',
+    decision: 'Water-service repair and fee communication',
+  },
+  {
+    label: 'When feedback is received',
+    context: 'Feedback should be received safely, summarized, answered, and used.',
+    group: 'Informal workers',
+    gap: 'Feedback is collected but no response is given',
+    decision: 'Feedback and response arrangements',
+  },
+  {
+    label: 'When changes are communicated',
+    context: 'People need to know what changed, what did not change, why, and next steps.',
+    group: 'Low-income households',
+    gap: 'Follow-up responsibilities unclear',
+    decision: 'Water-service repair and fee communication',
+  },
 ];
 
 const screen12Supports = [
@@ -3002,6 +3016,14 @@ const screen12Supports = [
   'Safe route for questions or concerns',
   'Transport or distance-sensitive option',
   'Plain-language explanation',
+];
+
+const screen12ParticipationMethods = [
+  'Small-group discussion before final decisions',
+  'Accessible consultation with support person or trusted facilitator',
+  'Local discussion close to the group before central meeting',
+  'Feedback review session with response record',
+  'Priority-setting check with clear explanation of what changed',
 ];
 
 const screen12ResponseChannels = [
@@ -3031,6 +3053,14 @@ const screen12DesignAdjustments = [
   'Add indicator on influence and response',
   'Add safe referral or escalation pathway',
   'Add budget line for participation support',
+];
+
+const screen12ImplementationWatchPoints = [
+  'Check whether rights-holders influenced the decision before activities were finalized.',
+  'Check whether information reached people early enough and in accessible forms.',
+  'Check whether feedback was answered and people know what changed.',
+  'Check whether the responsible actor followed up within the agreed timeline.',
+  'Check whether lower-influence groups were excluded, exposed, or left without response.',
 ];
 
 const screen12PortfolioSummary = 'You completed a Participation and Accountability Pathway. You designed how a specific rights-holder group can access information, influence a decision, receive response, see what changed, and carry this pathway into risk checks and design repair.';
@@ -5047,29 +5077,32 @@ function buildScreen11Submission(
 
 function getScreen12RequiredSignature(selection: Screen12PathwaySelection) {
   return JSON.stringify({
+    projectMoment: selection.projectMoment || '',
     group: selection.group,
     gap: selection.gap,
     decision: selection.decision,
+    participationMethod: selection.participationMethod || '',
     supports: [...selection.supports].sort(),
     responseChannel: selection.responseChannel,
     responsibleActor: selection.responsibleActor,
     designAdjustment: selection.designAdjustment,
+    implementationWatchPoint: selection.implementationWatchPoint || '',
     customGroup: selection.customGroup || '',
   });
 }
 
 function isScreen12Valid(selection: Screen12PathwaySelection) {
-  const hasSafeCustomGroup = selection.group !== 'Another generalized group'
-    || Boolean(selection.customGroup?.trim() && !hasUnsafeLearningDetail(selection.customGroup));
   return Boolean(
+    selection.projectMoment &&
     selection.group &&
-    hasSafeCustomGroup &&
     selection.gap &&
     selection.decision &&
-    selection.supports.length >= 2 &&
+    selection.participationMethod &&
+    selection.supports.length >= 1 &&
     selection.responseChannel &&
     selection.responsibleActor &&
-    selection.designAdjustment
+    selection.designAdjustment &&
+    selection.implementationWatchPoint
   );
 }
 
@@ -5082,15 +5115,9 @@ function getScreen12HelperText(
   if (submitted && formChanged) return 'Update your pathway before saving this screen.';
   if (submitted) return 'Your participation and accountability pathway is ready to save.';
   if (limitMessage) return limitMessage;
-  if (!selection.group) return 'Please select a specific rights-holder group. A useful pathway starts with who needs stronger participation or accountability.';
-  if (selection.group === 'Another generalized group' && !selection.customGroup?.trim()) return 'Use a generalized group label only. Do not enter real names, exact sensitive locations, complaint details, or identifiable personal information.';
-  if (selection.group === 'Another generalized group' && hasUnsafeLearningDetail(selection.customGroup || '')) return 'Keep this safe. Do not enter names, complaint details, exact sensitive locations, disability details, accusations, survivor stories, or identifiable information. Use the Jiru Amba case and generalized role categories.';
-  if (!selection.gap) return 'Select the participation or accountability gap this pathway should address.';
-  if (!selection.decision) return 'Please select the decision this group should influence. Participation is meaningful when people shape a decision before it is finalized.';
-  if (selection.supports.length < 2) return 'Select at least two access supports. Information, timing, access, safety, language, care work, transport, or accessibility barriers may need attention.';
-  if (!selection.responseChannel) return 'Choose how feedback, concerns, or questions will receive a response.';
-  if (!selection.responsibleActor) return 'Feedback collection is not accountability by itself. Add who responds, how they respond, and how people know what changed.';
-  if (!selection.designAdjustment) return 'Choose the design adjustment this pathway should carry forward.';
+  if (!selection.projectMoment || !selection.participationMethod || selection.supports.length < 1 || !selection.responseChannel || !selection.responsibleActor || !selection.designAdjustment || !selection.implementationWatchPoint) {
+    return 'Select one project moment and complete participation, information access, feedback, response, design adaptation, and watch-point fields.';
+  }
   return 'Ready to generate your participation and accountability pathway.';
 }
 
@@ -5312,10 +5339,11 @@ function buildScreen12Submission(selection: Screen12PathwaySelection, ownCsoOutp
       participationAccountabilityGap: selection.gap,
       decisionToInfluence: selection.decision,
       accessSupport: selection.supports,
-      influenceMethod: getScreen12InfluenceMethod(selection),
+      influenceMethod: selection.participationMethod || getScreen12InfluenceMethod(selection),
       responseChannel: selection.responseChannel,
       responsibleActor: getScreen12ResponsibleActorText(selection),
       followUpMethod: getScreen12FollowUpMeaning(),
+      implementationWatchPoint: selection.implementationWatchPoint,
       designAdjustment: selection.designAdjustment,
       safetyNote: screen12SafetyNote,
       indicatorEvidenceQuestion: getScreen12IndicatorQuestion(selection),
@@ -12472,13 +12500,16 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   const [selection, setSelection] = useState<Screen12PathwaySelection>({
+    projectMoment: '',
     group: '',
     gap: '',
     decision: '',
+    participationMethod: '',
     supports: [],
     responseChannel: '',
     responsibleActor: '',
     designAdjustment: '',
+    implementationWatchPoint: '',
     customGroup: '',
   });
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen12OwnCsoDraft>(getEmptyScreen12OwnCsoDraft());
@@ -12486,9 +12517,7 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   const [ownCsoError, setOwnCsoError] = useState('');
   const [submittedOutput, setSubmittedOutput] = useState<Screen12Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [limitMessage, setLimitMessage] = useState('');
   const [showHero, setShowHero] = useState(true);
-  const [showLoop, setShowLoop] = useState(true);
   const [activeStage, setActiveStage] = useState(1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
@@ -12497,34 +12526,53 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
   const isValid = isScreen12Valid(selection);
   const canContinue = Boolean(submittedOutput && !formChanged);
-  const helperText = getScreen12HelperText(selection, Boolean(submittedOutput), formChanged, limitMessage);
-  const setSingleSelection = (field: 'group' | 'gap' | 'decision' | 'responseChannel' | 'responsibleActor' | 'designAdjustment', value: string) => {
-    setLimitMessage('');
-    setSelection((current) => ({
-      ...current,
-      [field]: value,
-      ...(field === 'group' && value !== 'Another generalized group' ? { customGroup: '' } : {}),
-    }));
-  };
-  const toggleSupport = (value: string, limit: number) => {
-    setSelection((current) => {
-      const values = current.supports;
-      if (values.includes(value)) {
-        setLimitMessage('');
-        return { ...current, supports: values.filter((item) => item !== value) };
-      }
-      if (values.length >= limit) {
-        setLimitMessage('Select up to three support actions so the pathway stays practical.');
-        return current;
-      }
-      setLimitMessage('');
-      return { ...current, supports: [...values, value] };
+  const helperText = getScreen12HelperText(selection, Boolean(submittedOutput), formChanged);
+  const selectedProjectMoment = screen12ProjectMoments.find((moment) => moment.label === selection.projectMoment);
+  const completedPathwayFields = [
+    selection.participationMethod,
+    selection.supports[0],
+    selection.responseChannel,
+    selection.responsibleActor,
+    selection.designAdjustment,
+    selection.implementationWatchPoint,
+  ].filter(Boolean).length;
+  const completedPathwayRowCount = isValid ? 1 : 0;
+  const selectProjectMoment = (moment: Screen12ProjectMoment) => {
+    setSelection((current) => current.projectMoment === moment.label ? {
+      projectMoment: '',
+      group: '',
+      gap: '',
+      decision: '',
+      participationMethod: '',
+      supports: [],
+      responseChannel: '',
+      responsibleActor: '',
+      designAdjustment: '',
+      implementationWatchPoint: '',
+      customGroup: '',
+    } : {
+      projectMoment: moment.label,
+      group: moment.group,
+      gap: moment.gap,
+      decision: moment.decision,
+      participationMethod: '',
+      supports: [],
+      responseChannel: '',
+      responsibleActor: '',
+      designAdjustment: '',
+      implementationWatchPoint: '',
+      customGroup: '',
     });
+  };
+  const updatePathwayField = (field: 'participationMethod' | 'responseChannel' | 'responsibleActor' | 'designAdjustment' | 'implementationWatchPoint', value: string) => {
+    setSelection((current) => ({ ...current, [field]: value }));
+  };
+  const updateAccessSupport = (value: string) => {
+    setSelection((current) => ({ ...current, supports: value ? [value] : [] }));
   };
   const submitPathway = () => {
     if (!isValid) return;
     const output = buildScreen12Submission(selection, ownCsoOutput);
-    setLimitMessage('');
     setSubmittedOutput(output);
     setSubmittedSignature(currentSignature);
     setActiveStage(4);
@@ -12585,27 +12633,22 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
     5: 'm3-s12-stage-apply',
   };
   const pathwayProgressItems = [
-    ['Group', selection.group === 'Another generalized group' ? selection.customGroup || selection.group : selection.group],
-    ['Gap', selection.gap],
-    ['Decision', selection.decision],
-    ['Supports', selection.supports.join('; ')],
-    ['Response', selection.responseChannel],
-    ['Actor', selection.responsibleActor],
-    ['Adjustment', selection.designAdjustment],
+    ['Moment', selection.projectMoment || ''],
+    ['Group', selection.group],
+    ['Participation', selection.participationMethod || ''],
+    ['Information/access', selection.supports[0] || ''],
+    ['Feedback', selection.responseChannel],
+    ['Response actor', selection.responsibleActor],
+    ['Watch-point', selection.implementationWatchPoint || ''],
   ];
-  const optionButton = (value: string, selected: boolean, onClick: () => void, support?: string, testId?: string) => (
-    <button
-      key={value}
-      type="button"
-      className={`m3-participation-option${selected ? ' is-selected' : ''}`}
-      aria-pressed={selected}
-      data-testid={testId}
-      onClick={onClick}
-    >
-      <span aria-hidden="true">{selected ? '✓' : '○'}</span>
-      <span><strong>{value}</strong>{support && <small>{support}</small>}{selected && <em>Selected</em>}</span>
-    </button>
-  );
+  const pathwayRowFields: Array<{ label: string; value: string; onChange: (value: string) => void; options: string[]; testId: string }> = [
+    { label: 'Participation method', value: selection.participationMethod || '', onChange: (value) => updatePathwayField('participationMethod', value), options: screen12ParticipationMethods, testId: 'm3-s12-participation-method-select' },
+    { label: 'Information/access measure', value: selection.supports[0] || '', onChange: updateAccessSupport, options: screen12Supports, testId: 'm3-s12-access-measure-select' },
+    { label: 'Feedback or concern channel', value: selection.responseChannel, onChange: (value) => updatePathwayField('responseChannel', value), options: screen12ResponseChannels, testId: 'm3-s12-feedback-channel-select' },
+    { label: 'Response/follow-up actor or role', value: selection.responsibleActor, onChange: (value) => updatePathwayField('responsibleActor', value), options: screen12ResponsibleActors, testId: 'm3-s12-response-actor-select' },
+    { label: 'Design adaptation', value: selection.designAdjustment, onChange: (value) => updatePathwayField('designAdjustment', value), options: screen12DesignAdjustments, testId: 'm3-s12-design-adaptation-select' },
+    { label: 'Implementation watch-point', value: selection.implementationWatchPoint || '', onChange: (value) => updatePathwayField('implementationWatchPoint', value), options: screen12ImplementationWatchPoints, testId: 'm3-s12-watch-point-select' },
+  ];
 
   return (
     <main className="m3-screen m3-participation-screen" aria-labelledby={titleId}>
@@ -12720,77 +12763,73 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
 
         {activeStage === 3 && (
         <section className="m3-participation-builder m3-guided-stage-card" aria-labelledby={`${screen.id}-activity`}>
-          <div className="m3-guided-practice-layout">
+          <div className="m3-guided-practice-layout m3-participation-practice-layout">
             <div className="m3-guided-stage-main">
           <div className="m3-participation-builder-copy">
             <h2 id={`${screen.id}-activity`}>Practice a participation and accountability pathway using the Jiru Amba case</h2>
-            <p>Build one pathway for the Jiru Amba case. Select a group, a gap, a decision, access and influence support, response channel, responsible actor, and design adjustment. Do not choose only a meeting or feedback channel.</p>
+            <p>Select one project moment, then complete the compact pathway row from participation method to implementation watch-point.</p>
           </div>
-          <div className="m3-participation-builder-layout">
-            <section className="m3-participation-step-list">
-              <fieldset className="m3-participation-fieldset">
-                <legend>1. Who needs a stronger participation pathway?</legend>
-                <p>Choose one specific rights-holder group so the pathway does not become a general consultation plan.</p>
-                <div className="m3-participation-options">{screen12Groups.map((value) => optionButton(value, selection.group === value, () => setSingleSelection('group', value), screen12GroupClues[value], 'm3-s12-group-choice'))}</div>
-                {selection.group === 'Another generalized group' && (
-                  <label className="m3-participation-custom-group">
-                    <span>Use a generalized group label only</span>
-                    <input
-                      value={selection.customGroup || ''}
-                      onChange={(event) => setSelection((current) => ({ ...current, customGroup: event.target.value }))}
-                      placeholder="Example: caregivers, people with limited literacy, low-income households, or people using informal transport."
-                      aria-invalid={Boolean(selection.customGroup && hasUnsafeLearningDetail(selection.customGroup))}
-                    />
+
+          <section className="m3-participation-practice-step" aria-labelledby={`${screen.id}-moment-step`}>
+            <h3 id={`${screen.id}-moment-step`}>Step 1: Select a project moment to strengthen</h3>
+            <div className="m3-participation-moment-tiles" role="group" aria-label="Project moment options">
+              {screen12ProjectMoments.map((moment) => {
+                const selected = selection.projectMoment === moment.label;
+                return (
+                  <button
+                    key={moment.label}
+                    type="button"
+                    className={`m3-participation-moment-tile${selected ? ' is-selected' : ''}`}
+                    aria-pressed={selected}
+                    onClick={() => selectProjectMoment(moment)}
+                    data-testid={selected ? 'm3-s12-selected-project-moment' : 'm3-s12-project-moment-tile'}
+                  >
+                    <span aria-hidden="true">{selected ? '✓' : '+'}</span>
+                    <strong>{moment.label}</strong>
+                    <small>{moment.context}</small>
+                    <em>{selected ? 'Selected' : 'Select'}</em>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className={`m3-participation-practice-step ${!selectedProjectMoment ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-pathway-row`}>
+            <h3 id={`${screen.id}-pathway-row`}>Step 2: Complete compact pathway row</h3>
+            {selectedProjectMoment ? (
+              <article className="m3-participation-pathway-row" data-testid="m3-s12-pathway-row">
+                {[
+                  ['Selected project moment', selectedProjectMoment.label],
+                  ['Rights-holder or participant group', selection.group],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <span>{label}</span>
+                    <p>{value}</p>
+                  </div>
+                ))}
+                {pathwayRowFields.map(({ label, value, onChange, options, testId }) => (
+                  <label key={label}>
+                    <span>{label}</span>
+                    <select value={value} onChange={(event) => onChange(event.target.value)} data-testid={testId}>
+                      <option value="">Choose {label.toLowerCase()}</option>
+                      {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
                   </label>
-                )}
-              </fieldset>
-              <fieldset className="m3-participation-fieldset">
-                <legend>2. What participation or accountability gap should this pathway address?</legend>
-                <p>Name the gap that keeps participation from becoming influence and response.</p>
-                <div className="m3-participation-options">{screen12Gaps.map((value) => optionButton(value, selection.gap === value, () => setSingleSelection('gap', value), undefined, 'm3-s12-gap-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-participation-fieldset">
-                <legend>3. Which decision should this group influence?</legend>
-                <p>Select the concrete decision where their voice should shape the design before it is finalized.</p>
-                <div className="m3-participation-options">{screen12Decisions.map((value) => optionButton(value, selection.decision === value, () => setSingleSelection('decision', value), undefined, 'm3-s12-decision-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-participation-fieldset">
-                <legend>4. What support makes participation realistic?</legend>
-                <p>Select at least two supports. These make participation practical rather than symbolic.</p>
-                <div className="m3-participation-options">{screen12Supports.map((value) => optionButton(value, selection.supports.includes(value), () => toggleSupport(value, 3), undefined, 'm3-s12-support-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-participation-fieldset">
-                <legend>5. How will people receive a response?</legend>
-                <p>Choose how people will hear what changed, what did not change, and why.</p>
-                <div className="m3-participation-options">{screen12ResponseChannels.map((value) => optionButton(value, selection.responseChannel === value, () => setSingleSelection('responseChannel', value), undefined, 'm3-s12-response-channel-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-participation-fieldset">
-                <legend>6. Who must respond?</legend>
-                <p>Accountability needs an actor who can respond, not only a channel that collects comments.</p>
-                <div className="m3-participation-options">{screen12ResponsibleActors.map((value) => optionButton(value, selection.responsibleActor === value, () => setSingleSelection('responsibleActor', value), undefined, 'm3-s12-responsible-actor-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-participation-fieldset">
-                <legend>7. What design adjustment should carry forward?</legend>
-                <p>Choose the change that should be carried into risk, activities, indicators, and follow-up.</p>
-                <div className="m3-participation-options">{screen12DesignAdjustments.map((value) => optionButton(value, selection.designAdjustment === value, () => setSingleSelection('designAdjustment', value), undefined, 'm3-s12-design-adjustment-choice'))}</div>
-              </fieldset>
-            </section>
-            <aside className="m3-participation-preview">
-              <h3>Draft pathway preview</h3>
-              <p>Your draft pathway will appear after selections. Use this space to check the sequence from voice to influence, response, and follow-up.</p>
-              {showLoop && <img src={screen12Assets.loop} alt="Support visual showing voice, influence, response, and follow-up as an accountability loop." onError={() => setShowLoop(false)} />}
-              <ol>
-                {['Rights-holder group', 'Participation or accountability gap', 'Decision to influence', 'Access support', 'Influence method', 'Response channel', 'Responsible actor', 'Follow-up method', 'Design adjustment'].map((item) => <li key={item}>{item}</li>)}
-              </ol>
-            </aside>
-          </div>
+                ))}
+              </article>
+            ) : (
+              <p className="m3-participation-empty-note">Select one project moment first. The pathway row will appear here.</p>
+            )}
+          </section>
+
           <div className="m3-participation-submit-row">
-            <button type="button" className="m3-participation-submit" disabled={!isValid} data-testid="m3-s12-generate-pathway" onClick={submitPathway}>{submittedOutput ? 'Update pathway' : 'Generate participation and accountability pathway'}</button>
+            <button type="button" className="m3-participation-submit" disabled={!isValid} data-testid="m3-s12-generate-pathway" onClick={submitPathway}>{submittedOutput ? 'Update pathway' : 'Generate pathway'}</button>
             <p aria-live="polite">{helperText}</p>
           </div>
             </div>
             <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-pathway-live`}>
               <h2 id={`${screen.id}-pathway-live`}>Pathway so far</h2>
+              <p aria-live="polite">{selection.projectMoment ? '1 selected project moment' : 'No project moment selected yet'}</p>
               <div className="m3-guided-chip-list">
                 {pathwayProgressItems.map(([label, value]) => (
                   <span key={label} className={value ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>
@@ -12798,8 +12837,12 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
                   </span>
                 ))}
               </div>
+              <p className="m3-guided-helper">Completed fields: {completedPathwayFields} of 6</p>
+              <p className="m3-guided-helper">Completed pathway rows: {completedPathwayRowCount}</p>
               <p className="m3-guided-helper">{helperText}</p>
-              <p className="m3-guided-safe-note">Keep participation and accountability language generalized. Do not enter names, exact locations, complaints, medical or disability details, accusations, or identifiable information.</p>
+              <button type="button" className="m3-participation-submit" disabled={!isValid} onClick={submitPathway}>
+                {submittedOutput ? 'Update pathway' : 'Generate pathway'}
+              </button>
             </aside>
           </div>
         </section>
@@ -12812,18 +12855,15 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
             <div className="m3-participation-badge-row">{pathway.badges.map((badge) => <span key={badge}>{badge}</span>)}</div>
             <div className="m3-participation-pathway">
               {[
-                ['Rights-holder group', pathway.rightsHolderGroup],
-                ['Participation or accountability gap', pathway.participationAccountabilityGap],
-                ['Decision they should influence', pathway.decisionToInfluence],
-                ['Access support', pathway.accessSupport.join('; ')],
-                ['Influence method', pathway.influenceMethod],
-                ['Response channel', pathway.responseChannel],
-                ['Responsible actor', pathway.responsibleActor],
-                ['Follow-up method', pathway.followUpMethod],
-                ['Design adjustment', pathway.designAdjustment],
-                ['Safety note', pathway.safetyNote],
-                ['Safe evidence or indicator question', pathway.indicatorEvidenceQuestion],
-                ['Carry-forward note for Screen 13', 'Use this pathway in the next screen to check risks and do-no-harm. A participation pathway may create risk if feedback is not safe, if people are exposed, if expectations are not managed, or if responsibility is unclear.'],
+                ['Project moment strengthened', pathway.projectMoment || pathway.decisionToInfluence],
+                ['Rights-holder or participant group', pathway.rightsHolderGroup],
+                ['Participation method', pathway.influenceMethod],
+                ['Information/access measure', pathway.accessSupport.join('; ')],
+                ['Feedback or concern channel', pathway.responseChannel],
+                ['Response/follow-up actor or role', pathway.responsibleActor],
+                ['Design adaptation', pathway.designAdjustment],
+                ['Implementation watch-point', pathway.implementationWatchPoint || pathway.indicatorEvidenceQuestion],
+                ['Carry forward to risk and do-no-harm check', 'Use this pathway in the next screen to check whether participation or feedback could expose people, create unmet expectations, exclude lower-influence groups, or leave response responsibility unclear.'],
               ].map(([label, value], index) => <article key={label} data-testid="m3-s12-generated-pathway-row"><span>{index + 1}</span><h3>{label}</h3><p>{value}</p></article>)}
             </div>
             <section className="m3-participation-suggests" aria-labelledby={`${screen.id}-suggests`}>
