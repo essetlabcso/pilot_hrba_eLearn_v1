@@ -2251,6 +2251,24 @@ type Screen11DashboardRow = {
   carryForwardUse: string;
 };
 
+type Screen11InclusionCheckDraft = {
+  genderConsideration: string;
+  disabilityConsideration: string;
+  designAdaptation: string;
+  responsibleRole: string;
+  watchPoint: string;
+};
+
+type Screen11InclusionCheckRow = {
+  designAreaReviewed: string;
+  genderRelatedConsideration: string;
+  disabilityAccessibilityConsideration: string;
+  designAdaptation: string;
+  responsibleActorOrRole: string;
+  implementationWatchPoint: string;
+  carryForwardToParticipationAccountabilityRisk: string;
+};
+
 type Screen11OwnCsoDraft = {
   projectIssueOrActivity: string;
   genderDesignSignal: string;
@@ -2277,6 +2295,7 @@ type Screen11Submission = {
   selectedRepairs: M3Screen11RepairId[];
   markerLiteDashboard: {
     rows: Screen11DashboardRow[];
+    inclusionCheckRows?: Screen11InclusionCheckRow[];
     selectedRepairRows: Array<{
       repairSelected: string;
       whyItMatters: string;
@@ -2288,6 +2307,7 @@ type Screen11Submission = {
   genderDesignStatus: Screen11GenderStatus;
   disabilityDesignStatus: Screen11DisabilityStatus;
   primaryFeedbackState: Screen11FeedbackState;
+  inclusionCheckRows?: Screen11InclusionCheckRow[];
   warningIds: string[];
   carryForwardQuestion: 'Who needs to participate, what support do they need to participate safely, how can they influence decisions, and how will they receive feedback?';
   ownCsoPracticeOutput?: Screen11OwnCsoOutput;
@@ -2632,6 +2652,46 @@ const screen11DashboardRows: Screen11DashboardRow[] = [
     carryForwardUse: 'Use in intervention logic, indicators, and final portfolio snapshot.',
   },
 ];
+
+const screen11GenderConsiderationOptions = [
+  'Check whether women and girls can attend safely and practically, not only be counted.',
+  'Check whether women’s priorities can influence objectives, activities, budget choices, indicators, and follow-up.',
+  'Check timing, care responsibilities, livelihood constraints, privacy, safety, and influence over decisions.',
+  'Check whether women and lower-influence groups can use feedback channels safely and receive response.',
+];
+
+const screen11DisabilityConsiderationOptions = [
+  'Check accessible information, communication support, venue access, transport, reasonable accommodation, and feedback access.',
+  'Check whether disability inclusion is budgeted, assigned, monitored, and linked to follow-up.',
+  'Check whether persons with disabilities can influence decisions, not only attend or be invited.',
+  'Check whether accessibility is built into meetings, services, information, feedback, and indicators.',
+];
+
+const screen11ResponsibleRoleOptions = [
+  'Planning actors adjust participation conditions and document how priorities changed decisions.',
+  'Service actors budget, provide, and monitor accessibility and reasonable accommodation measures.',
+  'Project and MEAL actors track safe, non-identifying inclusion evidence and use it for follow-up.',
+  'CSO facilitators support inclusive participation, safe documentation, feedback access, and follow-up without replacing responsible actors.',
+  'Planning, service, CSO, and support actors share responsibility for accessible participation and response.',
+];
+
+const screen11WatchPointOptions = [
+  'Check whether different groups influenced decisions before activities are finalized.',
+  'Check whether accessibility and accommodation measures are provided, budgeted, and monitored.',
+  'Check whether feedback is safe, accessible, answered, and communicated back to rights-holders.',
+  'Check whether indicators show influence, access, benefit, barriers, and response, not only attendance.',
+  'Check whether overlapping gender, disability, distance, income, livelihood, and safety barriers are missed.',
+];
+
+function getEmptyScreen11InclusionCheckDraft(): Screen11InclusionCheckDraft {
+  return {
+    genderConsideration: '',
+    disabilityConsideration: '',
+    designAdaptation: '',
+    responsibleRole: '',
+    watchPoint: '',
+  };
+}
 
 function getEmptyScreen11OwnCsoDraft(): Screen11OwnCsoDraft {
   return {
@@ -4880,25 +4940,6 @@ function buildScreen10Submission(
   };
 }
 
-function getScreen11ClassifiedCount(classifications: Partial<Record<M3Screen11SignalId, InclusionStatus>>) {
-  return screen11Signals.filter((signal) => classifications[signal.id]).length;
-}
-
-function getScreen11HelperText(
-  classifications: Partial<Record<M3Screen11SignalId, InclusionStatus>>,
-  selectedRepairs: M3Screen11RepairId[],
-  limitMessage: string,
-) {
-  if (limitMessage) return limitMessage;
-  const classifiedCount = getScreen11ClassifiedCount(classifications);
-  if (classifiedCount < screen11Signals.length) return 'Please classify each design signal before generating the dashboard. A useful check needs to show what is missing, what is only mentioned, and what is built into the design.';
-  if (selectedRepairs.length === 0) return 'Add at least two design repairs. A gender and disability check is useful only if it changes what the project will do.';
-  if (selectedRepairs.length === 1) return 'Select at least two repairs. Try to include one repair linked to gendered barriers or influence and one repair linked to disability accessibility or reasonable accommodation.';
-  const values = Object.values(classifications);
-  if (values.length === screen11Signals.length && values.every((value) => value === 'built')) return 'Check again. Naming, inviting, or counting a group is not the same as building gender and disability into the design.';
-  return 'Ready to generate your Gender and Disability Design Check Dashboard.';
-}
-
 function getScreen11GenderStatus(classifications: Record<M3Screen11SignalId, InclusionStatus>): Screen11GenderStatus {
   const relevant = ['meetingInvitation', 'meetingTimeVenue', 'womensInfluence', 'feedbackChannels', 'indicatorsFollowUp'] as M3Screen11SignalId[];
   const builtCount = relevant.filter((id) => classifications[id] === 'built').length;
@@ -4964,6 +5005,7 @@ function buildScreen11Submission(
   classifications: Partial<Record<M3Screen11SignalId, InclusionStatus>>,
   selectedRepairs: M3Screen11RepairId[],
   ownCsoOutput: Screen11OwnCsoOutput | null,
+  inclusionCheckRows: Screen11InclusionCheckRow[] = [],
 ): Screen11Submission {
   const completeClassifications = Object.fromEntries(
     screen11Signals.map((signal) => [signal.id, classifications[signal.id] as InclusionStatus]),
@@ -4986,6 +5028,7 @@ function buildScreen11Submission(
     selectedRepairs,
     markerLiteDashboard: {
       rows: screen11DashboardRows,
+      inclusionCheckRows,
       selectedRepairRows,
       dashboardInterpretation: screen11FeedbackText[primaryFeedbackState].text,
       safetyConfirmation: 'This learning output uses generalized Jiru Amba case content and safe pattern language. It is not formal donor marker scoring.',
@@ -4993,6 +5036,7 @@ function buildScreen11Submission(
     genderDesignStatus,
     disabilityDesignStatus,
     primaryFeedbackState,
+    inclusionCheckRows,
     warningIds: getScreen11Warnings(completeClassifications).map((warning) => warning.id),
     carryForwardQuestion: 'Who needs to participate, what support do they need to participate safely, how can they influence decisions, and how will they receive feedback?',
     ownCsoPracticeOutput: ownCsoOutput || undefined,
@@ -11870,51 +11914,74 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
 }) {
   const [classifications, setClassifications] = useState<Partial<Record<M3Screen11SignalId, InclusionStatus>>>({});
   const [selectedRepairs, setSelectedRepairs] = useState<M3Screen11RepairId[]>([]);
+  const [selectedDesignAreaId, setSelectedDesignAreaId] = useState<M3Screen11SignalId | ''>('');
+  const [inclusionCheckDraft, setInclusionCheckDraft] = useState<Screen11InclusionCheckDraft>(getEmptyScreen11InclusionCheckDraft());
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen11OwnCsoDraft>(getEmptyScreen11OwnCsoDraft());
   const [ownCsoOutput, setOwnCsoOutput] = useState<Screen11OwnCsoOutput | null>(null);
   const [ownCsoError, setOwnCsoError] = useState('');
   const [submittedOutput, setSubmittedOutput] = useState<Screen11Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [limitMessage, setLimitMessage] = useState('');
   const [showHero, setShowHero] = useState(true);
   const [showScale, setShowScale] = useState(true);
-  const [showEmptyDashboard, setShowEmptyDashboard] = useState(true);
   const [activeStage, setActiveStage] = useState(1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
   const dashboardId = `${screen.id}-dashboard`;
-  const classifiedCount = getScreen11ClassifiedCount(classifications);
-  const allClassified = classifiedCount === screen11Signals.length;
-  const canSubmit = allClassified && selectedRepairs.length >= 2;
-  const currentSignature = JSON.stringify({ classifications, selectedRepairs: [...selectedRepairs].sort() });
+  const selectedDesignArea = screen11DashboardRows.find((row) => row.signalId === selectedDesignAreaId);
+  const completedCheckFields = Object.values(inclusionCheckDraft).filter(Boolean).length;
+  const checkComplete = Boolean(selectedDesignArea && completedCheckFields === 5);
+  const completedCheckCount = checkComplete ? 1 : 0;
+  const canSubmit = checkComplete;
+  const currentSignature = JSON.stringify({ selectedDesignAreaId, inclusionCheckDraft, classifications, selectedRepairs: [...selectedRepairs].sort() });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
   const canContinue = Boolean(submittedOutput && !formChanged);
-  const helperText = getScreen11HelperText(classifications, selectedRepairs, limitMessage);
+  const helperText = canSubmit
+    ? submittedOutput && formChanged
+      ? 'Update the inclusion check before continuing.'
+      : submittedOutput && !formChanged
+        ? 'Your inclusion check is ready to save.'
+        : 'Ready to generate your inclusion check.'
+    : 'Select one design area and complete gender, disability/accessibility, adaptation, responsible role, and watch-point fields.';
   const dashboardClassifications = submittedOutput?.classifications;
   const warnings = dashboardClassifications ? getScreen11Warnings(dashboardClassifications) : [];
 
-  const selectClassification = (signalId: M3Screen11SignalId, value: InclusionStatus) => {
-    setLimitMessage('');
-    setClassifications((current) => ({ ...current, [signalId]: value }));
+  const selectDesignArea = (signalId: M3Screen11SignalId) => {
+    setSelectedDesignAreaId((current) => current === signalId ? '' : signalId);
+    setInclusionCheckDraft(getEmptyScreen11InclusionCheckDraft());
   };
 
-  const toggleRepair = (repairId: M3Screen11RepairId) => {
-    setSelectedRepairs((current) => {
-      if (current.includes(repairId)) {
-        setLimitMessage('');
-        return current.filter((id) => id !== repairId);
-      }
-      setLimitMessage('');
-      return [...current, repairId];
-    });
+  const updateInclusionCheckDraft = (field: keyof Screen11InclusionCheckDraft, value: string) => {
+    setInclusionCheckDraft((current) => ({ ...current, [field]: value }));
   };
 
   const submitDashboard = () => {
-    if (!canSubmit) return;
-    const submission = buildScreen11Submission(classifications, selectedRepairs, ownCsoOutput);
+    if (!canSubmit || !selectedDesignArea) return;
+    const generatedClassifications = Object.fromEntries(
+      screen11DashboardRows.map((row) => [row.signalId, row.signalId === selectedDesignArea.signalId ? 'built' : row.markerResult]),
+    ) as Record<M3Screen11SignalId, InclusionStatus>;
+    const selectedAdaptationRepair = screen11Repairs.find((repair) => repair.title === inclusionCheckDraft.designAdaptation);
+    const generatedRepairs = Array.from(new Set([
+      selectedAdaptationRepair?.id,
+      'assignResponsibility',
+      selectedDesignArea.signalId === 'feedbackChannels' ? 'strengthenFeedbackChannels' : undefined,
+      selectedDesignArea.signalId === 'disabilityAccessibility' ? 'improveAccessibilityAccommodation' : undefined,
+      selectedDesignArea.signalId === 'womensInfluence' ? 'strengthenWomensInfluence' : undefined,
+    ].filter(Boolean))) as M3Screen11RepairId[];
+    const inclusionCheckRows: Screen11InclusionCheckRow[] = [{
+      designAreaReviewed: selectedDesignArea.designArea,
+      genderRelatedConsideration: inclusionCheckDraft.genderConsideration,
+      disabilityAccessibilityConsideration: inclusionCheckDraft.disabilityConsideration,
+      designAdaptation: inclusionCheckDraft.designAdaptation,
+      responsibleActorOrRole: inclusionCheckDraft.responsibleRole,
+      implementationWatchPoint: inclusionCheckDraft.watchPoint,
+      carryForwardToParticipationAccountabilityRisk: 'Carry this into participation, accountability, and risk checks so inclusion changes who participates, how feedback is answered, and what implementation risks are monitored.',
+    }];
+    setClassifications(generatedClassifications);
+    setSelectedRepairs(generatedRepairs);
+    const submission = buildScreen11Submission(generatedClassifications, generatedRepairs, ownCsoOutput, inclusionCheckRows);
     setSubmittedOutput(submission);
-    setSubmittedSignature(currentSignature);
+    setSubmittedSignature(JSON.stringify({ selectedDesignAreaId, inclusionCheckDraft, classifications: generatedClassifications, selectedRepairs: [...generatedRepairs].sort() }));
     setActiveStage(4);
     if (typeof window !== 'undefined') {
       window.setTimeout(() => outputRef.current?.focus(), 0);
@@ -11974,7 +12041,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
     { id: 1, label: 'Understand', complete: activeStage > 1 },
     { id: 2, label: 'Example', complete: activeStage > 2 },
     { id: 3, label: 'Practice', complete: Boolean(submittedOutput) || activeStage > 3 },
-    { id: 4, label: 'Review dashboard', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput) },
+    { id: 4, label: 'Review inclusion check', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput) },
     { id: 5, label: 'Apply/Download', complete: canContinue, unlocked: Boolean(submittedOutput) },
   ];
   const genderDisabilityStageTestIds: Record<number, string> = {
@@ -11984,12 +12051,17 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
     4: 'm3-s11-stage-review',
     5: 'm3-s11-stage-apply',
   };
-  const classifiedSignalLabels = screen11Signals
-    .filter((signal) => classifications[signal.id])
-    .map((signal) => `${signal.title}: ${inclusionStatusLabels[classifications[signal.id] as InclusionStatus]}`);
-  const selectedRepairLabels = selectedRepairs
-    .map((repairId) => screen11Repairs.find((repair) => repair.id === repairId)?.title)
-    .filter(Boolean) as string[];
+  const inclusionCheckFields: Array<{
+    field: keyof Screen11InclusionCheckDraft;
+    label: string;
+    options: string[];
+  }> = [
+    { field: 'genderConsideration', label: 'Gender-related consideration', options: screen11GenderConsiderationOptions },
+    { field: 'disabilityConsideration', label: 'Disability/accessibility consideration', options: screen11DisabilityConsiderationOptions },
+    { field: 'designAdaptation', label: 'Design adaptation', options: screen11Repairs.map((repair) => repair.title) },
+    { field: 'responsibleRole', label: 'Actor or role responsible for follow-up', options: screen11ResponsibleRoleOptions },
+    { field: 'watchPoint', label: 'Implementation watch-point', options: screen11WatchPointOptions },
+  ];
 
   return (
     <main className="m3-screen m3-s11-screen" aria-labelledby={titleId}>
@@ -12114,127 +12186,102 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
         )}
 
         {activeStage === 3 && (
-        <section className="m3-guided-stage-card m3-guided-practice-layout" aria-labelledby={`${screen.id}-task`}>
+        <section className="m3-guided-stage-card m3-guided-practice-layout m3-s11-practice-layout" aria-labelledby={`${screen.id}-task`}>
           <div className="m3-guided-stage-main">
-        <section className="m3-s11-task">
+        <section className="m3-s11-task m3-s11-practice-workspace">
           <div className="m3-s11-task-header">
             <div>
               <h2 id={`${screen.id}-task`}>Practice a Gender and Disability Design Check using the Jiru Amba case</h2>
-              <p>Classify each Jiru Amba design signal. Then select at least two repairs that would make gender and disability inclusion practical, not only mentioned.</p>
-              <p>Do not classify a signal as “built into the design” just because a group is named, invited, or counted. Look for whether the design changes information, timing, accessibility, safety, influence, feedback, budget, indicators, responsibility, or follow-up.</p>
+              <p>Select one design area or activity, then complete the compact inclusion-check row before generating the Review stage.</p>
             </div>
-            <span className="m3-s11-count" aria-live="polite">{classifiedCount} of 6 classified</span>
+            <span className="m3-s11-count" aria-live="polite">{selectedDesignArea ? '1 design area selected' : '0 design areas selected'}</span>
           </div>
-          <div className="m3-s11-signal-grid">
-            {screen11Signals.map((signal) => {
-              const selected = classifications[signal.id];
-              return (
-                <article key={signal.id} className="m3-s11-signal-card" data-testid="m3-s11-signal-card">
-                  <div className="m3-s11-signal-heading">
-                    <img src={signal.icon} alt="" aria-hidden="true" />
-                    <div>
-                      <h3>{signal.title}</h3>
-                      <p>{signal.text}</p>
-                    </div>
-                  </div>
-                  <p className="m3-s11-hint">{signal.hint}</p>
-                  <div className="m3-s11-status-options" aria-label={`${signal.title} classification`}>
-                    {(Object.keys(inclusionStatusLabels) as InclusionStatus[]).map((status) => (
-                      <button
-                        key={status}
-                        type="button"
-                        className={`m3-s11-status-button m3-s11-status-button--${status}${selected === status ? ' m3-s11-status-button--selected' : ''}`}
-                        aria-pressed={selected === status}
-                        data-testid="m3-s11-classification-choice"
-                        onClick={() => selectClassification(signal.id, status)}
-                      >
-                        <span aria-hidden="true">{selected === status ? '✓' : '○'}</span>
-                        {inclusionStatusLabels[status]}
-                      </button>
-                    ))}
-                  </div>
-                  {selected && (
-                    <p className="m3-s11-selection-explanation" aria-live="polite">
-                      <strong>{inclusionStatusLabels[selected]}:</strong> {signal.explanation}
-                    </p>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-        </section>
 
-        <section className="m3-s11-repairs" aria-labelledby={`${screen.id}-repairs`}>
-          <div className="m3-s11-task-header">
-            <div>
-              <h2 id={`${screen.id}-repairs`}>Choose design repairs</h2>
-              <p>Select at least two repairs that would make gender and disability more meaningfully built into the Jiru Amba design. A strong selection includes at least one repair related to gendered barriers or influence and at least one repair related to disability accessibility or reasonable accommodation, or a cross-cutting repair that addresses overlapping barriers.</p>
-              <p>Do not block yourself looking for a perfect balance. If gender influence or disability accessibility is still weak, the dashboard will flag it for repair.</p>
-            </div>
-            <span className="m3-s11-count" aria-live="polite">{selectedRepairs.length} repairs selected</span>
-          </div>
-          <div className="m3-s11-repair-grid">
-            {screen11Repairs.map((repair) => {
-              const selected = selectedRepairs.includes(repair.id);
+          <section className="m3-s11-practice-step" aria-labelledby={`${screen.id}-design-area-step`}>
+            <h3 id={`${screen.id}-design-area-step`}>Step 1: Select design area or activity to check</h3>
+            <div className="m3-s11-design-area-tiles" role="group" aria-label="Design area options">
+              {screen11DashboardRows.map((row) => {
+                const selected = selectedDesignAreaId === row.signalId;
               return (
                 <button
-                  key={repair.id}
+                  key={row.signalId}
                   type="button"
-                  className={`m3-s11-repair-card${selected ? ' m3-s11-repair-card--selected' : ''}`}
+                  className={`m3-s11-design-area-tile${selected ? ' is-selected' : ''}`}
                   aria-pressed={selected}
-                  data-testid="m3-s11-repair-card"
-                  onClick={() => toggleRepair(repair.id)}
+                  onClick={() => selectDesignArea(row.signalId)}
+                  data-testid={selected ? 'm3-s11-selected-design-area' : 'm3-s11-design-area-tile'}
                 >
-                  <img src={repair.icon} alt="" aria-hidden="true" />
-                  <span>{selected ? '✓ Selected repair' : 'Select repair'}</span>
-                  <strong>{repair.title}</strong>
-                  <small>{repair.explanation}</small>
+                  <span aria-hidden="true">{selected ? '✓' : '+'}</span>
+                  <strong>{row.designArea}</strong>
+                  <small>{row.currentDesignSignal}</small>
+                  <em>{selected ? 'Selected' : 'Select'}</em>
                 </button>
               );
             })}
-          </div>
+            </div>
+          </section>
+
+          <section className={`m3-s11-practice-step ${!selectedDesignArea ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-check-row`}>
+            <h3 id={`${screen.id}-check-row`}>Step 2: Complete inclusion-check row</h3>
+            {selectedDesignArea ? (
+              <article className="m3-s11-inclusion-row" data-testid="m3-s11-inclusion-check-row">
+                <div>
+                  <span>Selected design area/activity</span>
+                  <p>{selectedDesignArea.designArea}</p>
+                </div>
+                {inclusionCheckFields.map(({ field, label, options }) => (
+                  <label key={field}>
+                    <span>{label}</span>
+                    <select
+                      value={inclusionCheckDraft[field]}
+                      onChange={(event) => updateInclusionCheckDraft(field, event.target.value)}
+                      data-testid={`m3-s11-${field}-select`}
+                    >
+                      <option value="">Choose {label.toLowerCase()}</option>
+                      {options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </article>
+            ) : (
+              <p className="m3-s11-empty-note">Select one design area first. The inclusion-check row will appear here.</p>
+            )}
+          </section>
+
           <div className="m3-s11-submit-row">
             <button type="button" className="m3-s11-submit-button" disabled={!canSubmit} data-testid="m3-s11-generate-dashboard" onClick={submitDashboard}>
-              {submittedOutput ? 'Update dashboard' : 'Generate Gender and Disability Design Check Dashboard'}
+              {submittedOutput ? 'Update inclusion check' : 'Generate inclusion check'}
             </button>
             <p aria-live="polite">{helperText}</p>
           </div>
         </section>
-
-        {!submittedOutput && (
-          <aside className="m3-s11-dashboard-preview" aria-label="Gender and Disability Design Check Dashboard preview">
-            <div>
-              <h2>Gender and Disability Design Check Dashboard</h2>
-              <p>Your dashboard will appear here after you classify all six design signals and select at least two design repairs.</p>
-            </div>
-            {showEmptyDashboard && <img src={module3Screen11Assets.emptyDashboard.src} alt={module3Screen11Assets.emptyDashboard.alt} onError={() => setShowEmptyDashboard(false)} />}
-          </aside>
-        )}
           </div>
           <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-gender-live`}>
-            <h2 id={`${screen.id}-gender-live`}>Design check so far</h2>
-            <p aria-live="polite">{classifiedCount} of {screen11Signals.length} signals classified.</p>
+            <h2 id={`${screen.id}-gender-live`}>Inclusion check so far</h2>
+            <p aria-live="polite">{selectedDesignArea ? '1 selected design area' : 'No design area selected yet'}</p>
             <div className="m3-guided-chip-list">
-              {classifiedSignalLabels.length > 0 ? classifiedSignalLabels.map((label) => (
-                <span key={label} className="m3-guided-selected-chip">{label}</span>
-              )) : <span className="m3-guided-muted">Classify each design signal.</span>}
+              {selectedDesignArea ? (
+                <span className="m3-guided-selected-chip">{selectedDesignArea.designArea}</span>
+              ) : (
+                <span className="m3-guided-muted">Select one design area.</span>
+              )}
             </div>
-            <p><strong>{selectedRepairs.length}</strong> repairs selected.</p>
-            <div className="m3-guided-chip-list">
-              {selectedRepairLabels.length > 0 ? selectedRepairLabels.map((label) => (
-                <span key={label} className="m3-guided-selected-chip">✓ {label}</span>
-              )) : <span className="m3-guided-muted">Select at least two repairs.</span>}
-            </div>
+            <p className="m3-guided-helper">Completed fields: {completedCheckFields} of 5</p>
+            <p className="m3-guided-helper">Completed checks: {completedCheckCount}</p>
             <p className="m3-guided-helper">{helperText}</p>
-            <p className="m3-guided-safe-note">Use safe pattern language. Do not enter names, exact locations, medical or disability details about specific people, complaints, or identifying information.</p>
+            <button type="button" className="m3-s11-submit-button" disabled={!canSubmit} onClick={submitDashboard}>
+              {submittedOutput ? 'Update inclusion check' : 'Generate inclusion check'}
+            </button>
           </aside>
         </section>
         )}
 
         {activeStage === 4 && submittedOutput && dashboardClassifications && (
           <section className="m3-s11-dashboard" aria-live="polite" aria-labelledby={dashboardId}>
-            <h2 id={dashboardId} ref={outputRef} tabIndex={-1}>Your Gender and Disability Design Check Dashboard</h2>
-            <p>This dashboard shows where gender and disability are missing, only mentioned, or built into the Jiru Amba design. Use it to identify repairs that should be carried into participation, accountability, risk, activities, indicators, and follow-up. It is a learning output, not formal donor marker scoring.</p>
+            <h2 id={dashboardId} ref={outputRef} tabIndex={-1}>Your Gender and Disability Inclusion Check</h2>
+            <p>This inclusion check shows how the selected design area should respond to gender-related and disability/accessibility barriers before activities are finalized. It is a learning output, not formal donor marker scoring.</p>
             <div className="m3-s11-dashboard-summary">
               {[
                 ['Gender design status', submittedOutput.genderDesignStatus, getScreen11StatusDescription('gender', submittedOutput.genderDesignStatus)],
@@ -12248,22 +12295,20 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
               ))}
             </div>
             <section aria-labelledby={`${screen.id}-review`}>
-              <h3 id={`${screen.id}-review`}>Design check summary</h3>
-              <div className="m3-s11-signal-output-grid">
-                {submittedOutput.markerLiteDashboard.rows.map((row) => {
+              <h3 id={`${screen.id}-review`}>Review inclusion check</h3>
+              <div className="m3-s11-inclusion-output-grid">
+                {(submittedOutput.inclusionCheckRows || submittedOutput.markerLiteDashboard.inclusionCheckRows || []).map((row) => {
                   return (
-                    <article key={row.signalId} data-testid="m3-s11-generated-dashboard-row">
-                      <h4>{row.designArea}</h4>
+                    <article key={row.designAreaReviewed} data-testid="m3-s11-generated-dashboard-row">
+                      <h4>{row.designAreaReviewed}</h4>
                       <dl>
-                        <div><dt>Design area</dt><dd>{row.designArea}</dd></div>
-                        <div><dt>Current design signal</dt><dd>{row.currentDesignSignal}</dd></div>
-                        <div><dt>Learner classification</dt><dd>{inclusionStatusLabels[row.markerResult]}</dd></div>
-                        <div><dt>Gender design status</dt><dd>{getScreen11StatusLabel(submittedOutput.genderDesignStatus)}</dd></div>
-                        <div><dt>Disability design status</dt><dd>{getScreen11StatusLabel(submittedOutput.disabilityDesignStatus)}</dd></div>
-                        <div><dt>What is weak or strong</dt><dd>{row.whatIsWeakOrStrong}</dd></div>
-                        <div><dt>Design repair</dt><dd>{row.designRepair}</dd></div>
-                        <div><dt>Responsibility / follow-up</dt><dd>{row.responsibilityFollowUp}</dd></div>
-                        <div><dt>Carry-forward use</dt><dd>{row.carryForwardUse}</dd></div>
+                        <div><dt>Design area or activity reviewed</dt><dd>{row.designAreaReviewed}</dd></div>
+                        <div><dt>Gender-related consideration</dt><dd>{row.genderRelatedConsideration}</dd></div>
+                        <div><dt>Disability/accessibility consideration</dt><dd>{row.disabilityAccessibilityConsideration}</dd></div>
+                        <div><dt>Design adaptation</dt><dd>{row.designAdaptation}</dd></div>
+                        <div><dt>Responsible actor or role</dt><dd>{row.responsibleActorOrRole}</dd></div>
+                        <div><dt>Implementation watch-point</dt><dd>{row.implementationWatchPoint}</dd></div>
+                        <div><dt>Carry forward to participation, accountability, and risk checks</dt><dd>{row.carryForwardToParticipationAccountabilityRisk}</dd></div>
                       </dl>
                     </article>
                   );
@@ -12339,7 +12384,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
 
         {activeStage === 4 && submittedOutput && (
           <div className="m3-guided-stage-actions">
-            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(3)}>Edit classifications</button>
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(3)}>Edit inclusion check</button>
             <button type="button" className="m3-s11-submit-button" onClick={() => setActiveStage(5)}>Go to Apply/Download</button>
           </div>
         )}

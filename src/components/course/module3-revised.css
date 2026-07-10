@@ -12702,6 +12702,7 @@
 .m3-s11-signal-card,
 .m3-s11-status-card,
 .m3-s11-signal-output-grid article,
+.m3-s11-inclusion-output-grid article,
 .m3-s11-selected-repair-grid article,
 .m3-s11-save-grid article {
   display: grid;
@@ -12737,9 +12738,160 @@
   font-weight: 900;
 }
 
+.m3-s11-practice-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  align-items: start;
+}
+
+.m3-s11-practice-workspace {
+  gap: 0.85rem;
+}
+
+.m3-s11-practice-step {
+  display: grid;
+  gap: 0.7rem;
+  border: 1px solid rgba(183, 221, 238, 0.78);
+  border-radius: 16px;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.m3-s11-practice-step h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.m3-s11-practice-step.is-disabled {
+  background: rgba(250, 253, 253, 0.76);
+}
+
+.m3-s11-design-area-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.62rem;
+}
+
+.m3-s11-design-area-tile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.18rem 0.62rem;
+  min-height: 124px;
+  border: 1px solid rgba(183, 221, 238, 0.85);
+  border-radius: 15px;
+  padding: 0.78rem;
+  background: #ffffff;
+  color: #071c33;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(7, 28, 51, 0.06);
+}
+
+.m3-s11-design-area-tile > span {
+  display: inline-grid;
+  grid-row: 1 / span 3;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  background: #eaf7f4;
+  color: #0f766e;
+  font-weight: 900;
+}
+
+.m3-s11-design-area-tile strong {
+  line-height: 1.25;
+}
+
+.m3-s11-design-area-tile small {
+  color: #36506d;
+  font-weight: 720;
+  line-height: 1.38;
+}
+
+.m3-s11-design-area-tile em {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 0.22rem 0.55rem;
+  background: #eef7fc;
+  color: #0f4f76;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.m3-s11-design-area-tile.is-selected {
+  border-color: rgba(15, 118, 110, 0.72);
+  background: #effbf8;
+  box-shadow: inset 0 0 0 2px rgba(15, 118, 110, 0.14), 0 12px 26px rgba(15, 118, 110, 0.1);
+}
+
+.m3-s11-design-area-tile.is-selected em {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.m3-s11-inclusion-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.58rem;
+}
+
+.m3-s11-inclusion-row div,
+.m3-s11-inclusion-row label {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid rgba(183, 221, 238, 0.74);
+  border-radius: 13px;
+  padding: 0.68rem;
+  background: #ffffff;
+}
+
+.m3-s11-inclusion-row label:nth-last-child(1) {
+  grid-column: 1 / -1;
+  background: #f0fbf2;
+  border-color: rgba(18, 128, 67, 0.28);
+}
+
+.m3-s11-inclusion-row span {
+  color: #0f4f76;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.m3-s11-inclusion-row p,
+.m3-s11-empty-note {
+  margin: 0;
+}
+
+.m3-s11-inclusion-row select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(15, 79, 118, 0.32);
+  border-radius: 10px;
+  padding: 0.5rem 2.25rem 0.5rem 0.62rem;
+  background: #ffffff;
+  color: #071c33;
+  font: inherit;
+  font-weight: 760;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.m3-s11-empty-note {
+  border: 1px dashed rgba(59, 153, 212, 0.46);
+  border-radius: 14px;
+  padding: 0.85rem;
+  background: #f8fcfd;
+  color: #36506d;
+  font-weight: 760;
+}
+
 .m3-s11-signal-grid,
 .m3-s11-repair-grid,
 .m3-s11-signal-output-grid,
+.m3-s11-inclusion-output-grid,
 .m3-s11-save-grid,
 .m3-s11-own-grid {
   display: grid;
@@ -12881,16 +13033,21 @@
 
 .m3-s11-signal-output-grid dl,
 .m3-s11-signal-output-grid dt,
-.m3-s11-signal-output-grid dd {
+.m3-s11-signal-output-grid dd,
+.m3-s11-inclusion-output-grid dl,
+.m3-s11-inclusion-output-grid dt,
+.m3-s11-inclusion-output-grid dd {
   margin: 0;
 }
 
-.m3-s11-signal-output-grid dl {
+.m3-s11-signal-output-grid dl,
+.m3-s11-inclusion-output-grid dl {
   display: grid;
   gap: 0.45rem;
 }
 
-.m3-s11-signal-output-grid dt {
+.m3-s11-signal-output-grid dt,
+.m3-s11-inclusion-output-grid dt {
   color: #0f4f76;
   font-size: 0.76rem;
   font-weight: 900;
@@ -13048,6 +13205,8 @@
 
 .m3-s11-status-button:focus-visible,
 .m3-s11-repair-card:focus-visible,
+.m3-s11-design-area-tile:focus-visible,
+.m3-s11-inclusion-row select:focus-visible,
 .m3-s11-submit-button:focus-visible,
 .m3-s11-dashboard h2:focus-visible,
 .m3-s11-reflection textarea:focus-visible,
@@ -13143,14 +13302,20 @@
 
   .m3-s11-signal-grid,
   .m3-s11-repair-grid,
+  .m3-s11-inclusion-row,
   .m3-s11-dashboard-summary,
   .m3-s11-signal-output-grid,
+  .m3-s11-inclusion-output-grid,
   .m3-s11-selected-repair-grid,
   .m3-s11-save-grid,
   .m3-s11-marker-grid,
   .m3-s11-explain-grid,
   .m3-s11-own-grid {
     grid-template-columns: 1fr;
+  }
+
+  .m3-s11-inclusion-row label:nth-last-child(1) {
+    grid-column: auto;
   }
 
   .m3-s11-status-options,
@@ -18894,6 +19059,10 @@
 
 @media (min-width: 1121px) and (max-width: 1440px) {
   .main-screen-canvas__content:has(.m3-root-cause-map-screen) .m3-root-cause-map-practice-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
+  }
+
+  .main-screen-canvas__content:has(.m3-s11-screen) .m3-s11-practice-layout {
     grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
   }
 }
