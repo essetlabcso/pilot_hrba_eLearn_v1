@@ -3113,17 +3113,6 @@ const screen13RiskCategories = [
   'Service quality or livelihood risk',
 ];
 
-const screen13RiskCategoryDescriptions: Record<string, string> = {
-  'Exclusion or access risk': 'Some groups may still be left out because of timing, location, information, disability access, language, care work, cost, distance, or livelihood barriers.',
-  'Safety or retaliation risk': 'People may face pressure, blame, retaliation, stigma, or social consequences for speaking up or participating.',
-  'Data or visibility risk': 'Feedback, complaints, disability information, photos, names, stories, or portfolio entries may expose people if handled carelessly.',
-  'Power or capture risk': 'Influential actors may shape decisions, filter participation, control resources, or decide what feedback is heard.',
-  'Unrealistic expectation risk': 'The plan may promise change without the budget, role clarity, referral route, service response, or opportunity pathway needed to deliver it.',
-  'Feedback or response risk': 'Feedback may be collected without a clear response, timeline, escalation route, or explanation of what changed.',
-  'CSO role-overload risk': 'The CSO may be expected to solve issues that require duty-bearer, service-actor, committee, or sector response.',
-  'Service quality or livelihood risk': 'A service or livelihood activity may create new costs, confusion, reduced access, or practical harm if quality and follow-up are weak.',
-};
-
 const screen13AffectedGroups = [
   { label: 'Women traders' },
   { label: 'Persons with disabilities' },
@@ -3177,17 +3166,6 @@ const screen13WatchSigns = [
   'Activities are completed but practical benefit is unclear.',
   'Rumors, tension, or fear increase.',
   'The CSO is expected to solve responsibilities that belong to service or public actors.',
-];
-
-const screen13DesignAdjustments = [
-  'Add early participation before final decisions.',
-  'Add safe and accessible feedback-response arrangements.',
-  'Add clear responsibility for response and follow-up.',
-  'Add accessibility and participation budget.',
-  'Add non-identifying evidence rules.',
-  'Adjust the activity package before rollout.',
-  'Add an implementation watch-point.',
-  'Add an indicator that tracks response, influence, or safe access.',
 ];
 
 const screen13PortfolioSummary = 'You completed a Risk and Do-No-Harm Board. You identified what could exclude, expose, silence, or harm people, who may be affected, how to reduce the risk, who should respond, what sign to watch, and what should change before implementation.';
@@ -5412,13 +5390,15 @@ function getScreen13ValidationMessages(selection: Screen13RiskBoardSelection) {
   if (!selection.responsibleActor) messages.push('Add a responsible actor. The risk board should show who acts, who responds, and who follows up.');
   if (isScreen13CsoOverload(selection)) messages.push('This mitigation gives too much responsibility to the CSO. Awra can facilitate, protect records, and support safe communication, but the public, service, committee, or sector actor connected to the issue should remain visible.');
   if (!selection.watchSign) messages.push('Add a watch sign. The project team needs to know what to monitor during implementation, such as silence from one group, repeated confusion, unsafe feedback, or exclusion from follow-up.');
-  if (!selection.designAdjustment) messages.push('Add a design adjustment. Do-no-harm means changing the design before harm happens.');
   return messages;
 }
 
 function getScreen13HelperText(selection: Screen13RiskBoardSelection, submitted: boolean, formChanged: boolean) {
   if (submitted && formChanged) return 'Update risk board before saving this screen.';
   if (submitted) return 'Your risk and do-no-harm board is ready to save.';
+  if (!selection.riskSituation || selection.riskCategories.length === 0 || selection.affectedGroups.length === 0 || !selection.impactLevel || selection.mitigationActions.length === 0 || !selection.responsibleActor || !selection.watchSign) {
+    return 'Select one design decision or activity and complete possible risk, affected group, risk level, mitigation or design adaptation, follow-up actor, and implementation watch-point fields.';
+  }
   return getScreen13ValidationMessages(selection)[0] || 'Ready to generate your risk and do-no-harm board.';
 }
 
@@ -5473,7 +5453,7 @@ function buildScreen13Submission(selection: Screen13RiskBoardSelection, ownCsoOu
         mitigationAction: selection.mitigationActions.join('; '),
         responsibleActor: getScreen13ResponsibleActorOutput(selection),
         watchSign: selection.watchSign,
-        designAdjustment: selection.designAdjustment,
+        designAdjustment: selection.designAdjustment || selection.mitigationActions.join('; '),
         carryForwardUse: getScreen13CarryForwardUse(),
       },
       interpretationMessages: getScreen13InterpretationMessages(selection),
@@ -12988,7 +12968,6 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
   const [submittedOutput, setSubmittedOutput] = useState<Screen13Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
   const [showHero, setShowHero] = useState(true);
-  const [showEmpty, setShowEmpty] = useState(true);
   const [activeStage, setActiveStage] = useState(1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
@@ -12999,16 +12978,20 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
   const isValid = validationMessages.length === 0;
   const canContinue = Boolean(submittedOutput && !formChanged);
   const helperText = getScreen13HelperText(selection, Boolean(submittedOutput), formChanged);
-  const setSingleSelection = (field: keyof Screen13RiskBoardSelection, value: string) => {
-    setSelection((current) => ({ ...current, [field]: value }));
+  const selectRiskSituation = (riskSituation: string) => {
+    setSelection((current) => current.riskSituation === riskSituation
+      ? getEmptyRiskBoardSelection()
+      : {
+        ...getEmptyRiskBoardSelection(),
+        riskSituation,
+      });
   };
-  const toggleListSelection = (field: 'riskCategories' | 'affectedGroups' | 'mitigationActions', value: string) => {
+  const updateRiskField = (field: keyof Screen13RiskBoardSelection, value: string) => {
     setSelection((current) => {
-      const selected = current[field].includes(value);
-      return {
-        ...current,
-        [field]: selected ? current[field].filter((item) => item !== value) : [...current[field], value],
-      };
+      if (field === 'riskCategories' || field === 'affectedGroups' || field === 'mitigationActions') {
+        return { ...current, [field]: value ? [value] : [] };
+      }
+      return { ...current, [field]: value };
     });
   };
   const submitBoard = () => {
@@ -13057,29 +13040,45 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
     link.remove();
     URL.revokeObjectURL(url);
   };
-  const riskOption = (value: string, selected: boolean, onClick: () => void, support?: string, testId?: string) => (
-    <button key={value} type="button" className={`m3-risk-option ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={onClick} data-testid={testId}>
-      <span aria-hidden="true">{selected ? '✓' : '+'}</span>
-      <span><strong>{value}</strong>{support && <small>{support}</small>}{selected && <em>Selected</em>}</span>
-    </button>
-  );
   const generatedBoard = submittedOutput?.riskDoNoHarmBoard.generatedBoard;
   const riskStages = [
     { id: 1, label: 'Understand', testId: 'm3-s13-stage-understand', complete: activeStage > 1, unlocked: true },
     { id: 2, label: 'Example', testId: 'm3-s13-stage-example', complete: activeStage > 2, unlocked: true },
     { id: 3, label: 'Practice', testId: 'm3-s13-stage-practice', complete: Boolean(submittedOutput) || activeStage > 3, unlocked: true },
-    { id: 4, label: 'Review board', testId: 'm3-s13-stage-review', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput) },
+    { id: 4, label: 'Review risk check', testId: 'm3-s13-stage-review', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput) },
     { id: 5, label: 'Apply/Download', testId: 'm3-s13-stage-apply', complete: canContinue, unlocked: Boolean(submittedOutput) },
   ];
   const riskProgressItems = [
-    ['Risk situation', selection.riskSituation],
-    ['Risk categories', selection.riskCategories.join('; ')],
-    ['Affected groups', selection.affectedGroups.join('; ')],
-    ['Impact', getRiskStatusLabel(selection.impactLevel)],
-    ['Mitigations', selection.mitigationActions.join('; ')],
-    ['Responsible actor', selection.responsibleActor],
-    ['Watch sign', selection.watchSign],
-    ['Design adjustment', selection.designAdjustment],
+    ['Decision/activity', selection.riskSituation],
+    ['Possible risk', selection.riskCategories.join('; ')],
+    ['Affected group', selection.affectedGroups.join('; ')],
+    ['Risk level', getRiskStatusLabel(selection.impactLevel)],
+    ['Mitigation', selection.mitigationActions.join('; ')],
+    ['Follow-up actor', selection.responsibleActor],
+    ['Watch-point', selection.watchSign],
+  ];
+  const completedRiskFields = [
+    selection.riskCategories[0],
+    selection.affectedGroups[0],
+    selection.impactLevel,
+    selection.mitigationActions[0],
+    selection.responsibleActor,
+    selection.watchSign,
+  ].filter(Boolean).length;
+  const completedRiskRowCount = isValid ? 1 : 0;
+  const riskRowFields: Array<{
+    key: keyof Screen13RiskBoardSelection;
+    label: string;
+    value: string;
+    options: Array<string | { value: string; label: string }>;
+    testId: string;
+  }> = [
+    { key: 'riskCategories', label: 'Possible risk or unintended harm', value: selection.riskCategories[0] || '', options: screen13RiskCategories, testId: 'm3-s13-risk-category-select' },
+    { key: 'affectedGroups', label: 'Who may be affected', value: selection.affectedGroups[0] || '', options: screen13AffectedGroups.map((group) => group.label), testId: 'm3-s13-affected-group-select' },
+    { key: 'impactLevel', label: 'Risk level', value: selection.impactLevel, options: screen13ImpactLevels.map((level) => ({ value: level.value, label: level.label })), testId: 'm3-s13-impact-select' },
+    { key: 'mitigationActions', label: 'Mitigation or design adaptation', value: selection.mitigationActions[0] || '', options: screen13Mitigations, testId: 'm3-s13-mitigation-select' },
+    { key: 'responsibleActor', label: 'Follow-up actor or role', value: selection.responsibleActor, options: screen13ResponsibleActors, testId: 'm3-s13-responsible-actor-select' },
+    { key: 'watchSign', label: 'Implementation watch-point', value: selection.watchSign, options: screen13WatchSigns, testId: 'm3-s13-watch-sign-select' },
   ];
 
   return (
@@ -13174,73 +13173,76 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
             <div className="m3-guided-stage-main">
           <div className="m3-risk-builder-copy">
             <h2 id={`${screen.id}-activity`}>Practice a risk and do-no-harm board using the Jiru Amba case</h2>
-            <p>Build one risk and do-no-harm board for the Jiru Amba case. Select one risk situation, the risk category, who may be affected, the impact level, a mitigation action, the responsible actor, a watch sign, and a design adjustment.</p>
-            <p>Do not focus only on delivery delays. A strong HRBA risk board asks who may be excluded, exposed, silenced, blamed, ignored, or given unrealistic expectations because of the design.</p>
+            <p>Select one design decision or activity, then complete the compact risk-check row. The goal is to decide what should change before implementation, not to write a long risk report.</p>
           </div>
-          <div className="m3-risk-builder-layout">
-            <section className="m3-risk-card-list">
-              <fieldset className="m3-risk-risk-card">
-                <legend>1. Risk situation</legend>
-                <p>Choose one Jiru Amba design situation that could create exclusion, exposure, silence, overload, or harm.</p>
-                <div className="m3-risk-option-grid">{screen13RiskSituations.map((item) => riskOption(item.label, selection.riskSituation === item.label, () => setSingleSelection('riskSituation', item.label), item.body, 'm3-s13-risk-situation-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>2. Risk category</legend>
-                <p>Select at least one category that explains the type of design risk.</p>
-                <div className="m3-risk-option-grid">{screen13RiskCategories.map((category) => riskOption(category, selection.riskCategories.includes(category), () => toggleListSelection('riskCategories', category), screen13RiskCategoryDescriptions[category], 'm3-s13-risk-category-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>3. Who may be affected</legend>
-                <p>Select at least one group that may be excluded, exposed, silenced, blamed, over-promised to, or left without response.</p>
-                <div className="m3-risk-option-grid">{screen13AffectedGroups.map((group) => riskOption(group.label, selection.affectedGroups.includes(group.label), () => toggleListSelection('affectedGroups', group.label), undefined, 'm3-s13-affected-group-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>4. Impact level</legend>
-                <p>Rate impact from the rights-holder perspective, not only from the project delivery perspective.</p>
-                <div className="m3-risk-option-grid">{screen13ImpactLevels.map((level) => riskOption(level.label, selection.impactLevel === level.value, () => setSingleSelection('impactLevel', level.value), level.body, 'm3-s13-impact-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>5. Mitigation action</legend>
-                <p>Select at least one action that would change the design before harm happens.</p>
-                <div className="m3-risk-option-grid">{screen13Mitigations.map((mitigation) => riskOption(mitigation, selection.mitigationActions.includes(mitigation), () => toggleListSelection('mitigationActions', mitigation), undefined, 'm3-s13-mitigation-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>6. Responsible actor</legend>
-                <p>Choose who should act, respond, or follow up. Awra can support safely, but should not replace public, service, committee, or sector responsibility.</p>
-                <div className="m3-risk-option-grid">{screen13ResponsibleActors.map((actor) => riskOption(actor, selection.responsibleActor === actor, () => setSingleSelection('responsibleActor', actor), undefined, 'm3-s13-responsible-actor-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>7. Watch sign</legend>
-                <p>Choose one practical sign the project team should monitor during implementation.</p>
-                <div className="m3-risk-option-grid">{screen13WatchSigns.map((watchSign) => riskOption(watchSign, selection.watchSign === watchSign, () => setSingleSelection('watchSign', watchSign), undefined, 'm3-s13-watch-sign-choice'))}</div>
-              </fieldset>
-              <fieldset className="m3-risk-risk-card">
-                <legend>8. Design adjustment</legend>
-                <p>Choose what should change in the project design before implementation begins.</p>
-                <div className="m3-risk-option-grid">{screen13DesignAdjustments.map((adjustment) => riskOption(adjustment, selection.designAdjustment === adjustment, () => setSingleSelection('designAdjustment', adjustment), undefined, 'm3-s13-design-adjustment-choice'))}</div>
-              </fieldset>
+          <div className="m3-risk-practice-layout">
+            <section className="m3-risk-practice-step" aria-labelledby={`${screen.id}-decision-step`}>
+              <div>
+                <p className="m3-risk-step-label">Step 1</p>
+                <h3 id={`${screen.id}-decision-step`}>Select a design decision or activity to check</h3>
+              </div>
+              <div className="m3-risk-decision-tiles">
+                {screen13RiskSituations.map((item) => {
+                  const selected = selection.riskSituation === item.label;
+                  return (
+                    <button
+                      key={item.label}
+                      type="button"
+                      className={`m3-risk-decision-tile ${selected ? 'is-selected' : ''}`}
+                      aria-pressed={selected}
+                      onClick={() => selectRiskSituation(item.label)}
+                      data-testid="m3-s13-risk-situation-choice"
+                    >
+                      <span>{selected ? 'Selected' : 'Select'}</span>
+                      <strong>{item.label}</strong>
+                      <small>{item.body}</small>
+                    </button>
+                  );
+                })}
+              </div>
             </section>
-            <aside className="m3-risk-preview">
-              <h3>Risk board preview</h3>
-              <p>Your risk board will appear after the required selections are complete. Use this preview to check risk situation, who may be affected, mitigation, responsibility, watch sign, and design adjustment.</p>
-              {showEmpty && <img src={screen13Assets.empty} alt="Support visual showing an empty risk board preview." onError={() => setShowEmpty(false)} />}
-              <ul>
-                <li>Risk situation: {selection.riskSituation || 'Not selected'}</li>
-                <li>Categories: {selection.riskCategories.join('; ') || 'Not selected'}</li>
-                <li>Affected groups: {selection.affectedGroups.join('; ') || 'Not selected'}</li>
-                <li>Impact: {getRiskStatusLabel(selection.impactLevel) || 'Not selected'}</li>
-              </ul>
-            </aside>
+
+            <section className={`m3-risk-practice-step ${selection.riskSituation ? '' : 'is-disabled'}`} aria-labelledby={`${screen.id}-row-step`}>
+              <div>
+                <p className="m3-risk-step-label">Step 2</p>
+                <h3 id={`${screen.id}-row-step`}>Complete the risk-check row</h3>
+              </div>
+              {selection.riskSituation ? (
+                <div className="m3-risk-check-row" data-testid="m3-s13-risk-check-row">
+                  <div>
+                    <span>Design decision or activity reviewed</span>
+                    <p>{selection.riskSituation}</p>
+                  </div>
+                  {riskRowFields.map((field) => (
+                    <label key={field.label}>
+                      <span>{field.label}</span>
+                      <select value={field.value} onChange={(event) => updateRiskField(field.key, event.target.value)} data-testid={field.testId}>
+                        <option value="">Choose one</option>
+                        {field.options.map((option) => {
+                          const value = typeof option === 'string' ? option : option.value;
+                          const label = typeof option === 'string' ? option : option.label;
+                          return <option key={value} value={value}>{label}</option>;
+                        })}
+                      </select>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p className="m3-risk-empty-note">Select one design decision or activity first. The risk-check row will appear here.</p>
+              )}
+            </section>
           </div>
           <div className="m3-risk-submit-row">
-            <button type="button" className="m3-risk-submit" disabled={!isValid} onClick={submitBoard} data-testid="m3-s13-generate-board">{submittedOutput ? 'Update risk board' : 'Generate risk and do-no-harm board'}</button>
+            <button type="button" className="m3-risk-submit" disabled={!isValid} onClick={submitBoard} data-testid="m3-s13-generate-board">{submittedOutput ? 'Update risk check' : 'Generate risk check'}</button>
             <p aria-live="polite">{helperText}</p>
           </div>
           {isScreen13CsoOverload(selection) && <p className="m3-risk-validation m3-risk-overload-warning" role="alert" data-testid="m3-s13-cso-overload-warning">This mitigation gives too much responsibility to the CSO. Awra can facilitate, protect records, and support safe communication, but the public, service, committee, or sector actor connected to the issue should remain visible.</p>}
           {validationMessages.length > 0 && <ul className="m3-risk-validation" aria-live="polite">{validationMessages.slice(0, 3).map((message) => <li key={message}>{message}</li>)}</ul>}
             </div>
             <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-risk-live`}>
-              <h2 id={`${screen.id}-risk-live`}>Risk board so far</h2>
+              <h2 id={`${screen.id}-risk-live`}>Risk check so far</h2>
+              <p aria-live="polite">{selection.riskSituation ? '1 selected decision/activity' : 'No decision/activity selected yet'}</p>
+              <p className="m3-guided-helper">Completed risk-check rows: {completedRiskRowCount}</p>
               <div className="m3-guided-chip-list">
                 {riskProgressItems.map(([label, value]) => (
                   <span key={label} className={value ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>
@@ -13248,7 +13250,11 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
                   </span>
                 ))}
               </div>
+              <p className="m3-guided-helper">Completed fields: {completedRiskFields} of 6</p>
               <p className="m3-guided-helper">{helperText}</p>
+              <button type="button" className="m3-risk-submit" disabled={!isValid} onClick={submitBoard}>
+                {submittedOutput ? 'Update risk check' : 'Generate risk check'}
+              </button>
               <p className="m3-guided-safe-note">Use actor roles and generalized group labels. Do not record names, exact locations, complaint details, survivor stories, accusations, or identifiable information.</p>
             </aside>
           </div>
@@ -13257,19 +13263,18 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
 
         {activeStage === 4 && submittedOutput && generatedBoard && (
           <section className="m3-risk-output" aria-live="polite" aria-labelledby={`${screen.id}-output`}>
-            <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Risk and Do-No-Harm Board</h2>
+            <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Risk and Do-No-Harm Check</h2>
             <p>This board shows what could exclude, expose, silence, overload, or harm people before implementation, and what should change in the design. It is a learning output, not a complaint record, investigation, or formal risk assessment.</p>
             <div className="m3-risk-output-grid m3-risk-output-grid--board">
               {[
-                ['Risk situation', generatedBoard.riskSituation],
-                ['Risk category', generatedBoard.riskCategory],
+                ['Design decision or activity reviewed', generatedBoard.riskSituation],
+                ['Possible risk or unintended harm', generatedBoard.riskCategory],
                 ['Who may be affected', generatedBoard.whoMayBeAffected],
-                ['Impact level', generatedBoard.impactLevel],
-                ['Mitigation action', generatedBoard.mitigationAction],
-                ['Responsible actor', generatedBoard.responsibleActor],
-                ['Watch sign', generatedBoard.watchSign],
-                ['Design adjustment', generatedBoard.designAdjustment],
-                ['Carry-forward use', generatedBoard.carryForwardUse],
+                ['Risk level', generatedBoard.impactLevel],
+                ['Mitigation or design adaptation', generatedBoard.mitigationAction],
+                ['Follow-up actor or role', generatedBoard.responsibleActor],
+                ['Implementation watch-point', generatedBoard.watchSign],
+                ['Carry forward to design repair', generatedBoard.carryForwardUse],
               ].map(([label, value]) => (
                 <article key={label} className="m3-risk-output-card" data-testid="m3-s13-generated-board-row">
                   <h3>{label}</h3>
