@@ -5684,6 +5684,17 @@ type Screen15Submission = {
     feedbackMessages: string[];
     repairedObjectiveUsed: string;
   };
+  draftPlanActivityRepair?: {
+    draftSectionReviewed: string;
+    hrbaIssueFromEarlierAnalysis: string;
+    weaknessInCurrentDraft: string;
+    activityOrDesignRepair: string;
+    responsibilityOrCoordinationRepair: string;
+    resourceBudgetAccessibilityImplication: string;
+    indicatorEvidenceImplication: string;
+    implementationWatchPoint: string;
+    carryForwardNote: string;
+  };
   ownCsoPracticeOutput?: Screen15OwnCsoOutput;
   portfolioSummary: string;
   savedAt: string;
@@ -5917,17 +5928,6 @@ function getActivityRepairCoverage(actionIds: string[]) {
 function isScreen15Valid(actionIds: string[]) {
   const coverage = getActivityRepairCoverage(actionIds);
   return actionIds.length >= 3 && coverage.influence && coverage.inclusion && coverage.accountability;
-}
-
-function getScreen15Helper(actionIds: string[], submitted: boolean, stale: boolean, limitMessage: string) {
-  if (limitMessage) return limitMessage;
-  if (submitted && stale) return designRepairStaleMessage;
-  if (actionIds.length < 3) return 'Please repair at least three activities. A useful package should show more than one design response.';
-  const coverage = getActivityRepairCoverage(actionIds);
-  if (!coverage.influence) return 'Add at least one repair that strengthens rights-holder influence before decisions are finalized.';
-  if (!coverage.inclusion) return 'Add at least one repair that addresses accessibility, reasonable accommodation, information, timing, or other access barriers.';
-  if (!coverage.accountability) return 'Add the risk or accountability adjustment. The activity should show how feedback, safety, response, or do-no-harm will be handled.';
-  return 'Ready to generate your repaired activity package.';
 }
 
 function getScreen15Feedback(actions: ActivityRepairAction[]) {
@@ -13805,36 +13805,439 @@ function ActivityRepairScreen({ screen, state, onComplete }: {
 }) {
   const titleId = `${screen.id}-title`;
   const repairedObjective = getScreen14SavedOutput(state)?.repairedObjective.repairedHrbaObjective || screen16FallbackObjective;
-  const compatibilityIds = ['communityMeetings', 'disabilityInclusion', 'feedbackBoxes'];
-  const compatibilityPackage = buildScreen15Submission(compatibilityIds, repairedObjective, null);
-  const compatibilityCoverage = getActivityRepairCoverage(compatibilityIds);
-  const compatibilityHelper = getScreen15Helper(compatibilityIds, true, false, '');
-  const compatibilityValid = isScreen15Valid(compatibilityIds);
-  const emptyOwnCsoDraft = getEmptyScreen15OwnCsoDraft();
+  type Screen15Stage = 1 | 2 | 3 | 4 | 5;
+  type Screen15RepairField =
+    | 'hrbaIssue'
+    | 'weakness'
+    | 'activityRepair'
+    | 'responsibilityRepair'
+    | 'resourceImplication'
+    | 'indicatorImplication'
+    | 'watchPoint';
+  type Screen15RepairDraft = Record<Screen15RepairField, string>;
+
+  const stages: Array<{ id: Screen15Stage; label: string }> = [
+    { id: 1, label: 'Understand' },
+    { id: 2, label: 'Example' },
+    { id: 3, label: 'Practice' },
+    { id: 4, label: 'Review activity repair' },
+    { id: 5, label: 'Apply/Download' },
+  ];
+  const draftSections = [
+    {
+      id: 'activityPackage',
+      label: 'Activity package',
+      context: 'Activities need a clearer link to barriers, responsibilities, resources, indicators, and follow-up.',
+      actionIds: ['communityMeetings', 'disabilityInclusion', 'feedbackBoxes'],
+    },
+    {
+      id: 'participationProcess',
+      label: 'Participation process',
+      context: 'Participation may happen too late or may not show who influenced the design.',
+      actionIds: ['communityMeetings', 'marketImprovement', 'feedbackBoxes'],
+    },
+    {
+      id: 'responsibilityCoordination',
+      label: 'Responsibility and coordination',
+      context: 'Actors, CSO support roles, and response routes need to be clearer before implementation.',
+      actionIds: ['waterPoints', 'feedbackBoxes', 'communityMeetings'],
+    },
+    {
+      id: 'feedbackFollowup',
+      label: 'Feedback and follow-up',
+      context: 'Feedback channels need response roles, accessible routes, and a clear adaptation loop.',
+      actionIds: ['feedbackBoxes', 'waterPoints', 'communityMeetings'],
+    },
+    {
+      id: 'inclusionAccessibility',
+      label: 'Inclusion and accessibility measures',
+      context: 'Design details need practical adaptation for gender, disability, timing, information, and access.',
+      actionIds: ['disabilityInclusion', 'healthPost', 'communityMeetings'],
+    },
+    {
+      id: 'indicatorsEvidence',
+      label: 'Indicators and evidence',
+      context: 'Indicators should show access, influence, response, benefit, and follow-up, not only delivery.',
+      actionIds: ['feedbackBoxes', 'disabilityInclusion', 'youthTraining'],
+    },
+  ];
+  const emptyRepairDraft: Screen15RepairDraft = {
+    hrbaIssue: '',
+    weakness: '',
+    activityRepair: '',
+    responsibilityRepair: '',
+    resourceImplication: '',
+    indicatorImplication: '',
+    watchPoint: '',
+  };
+  const repairFieldOptions: Array<{ field: Screen15RepairField; label: string; options: string[]; testId: string }> = [
+    {
+      field: 'hrbaIssue',
+      label: 'HRBA issue from earlier analysis',
+      testId: 'm3-s15-hrba-issue-select',
+      options: [
+        'Rights-holder barriers are not visible enough',
+        'Participation happens after decisions are shaped',
+        'Responsibility and CSO role are unclear',
+        'Accessibility and reasonable accommodation are under-planned',
+        'Feedback does not show response or follow-up',
+        'Indicators count activities but not influence, access, response, or benefit',
+      ],
+    },
+    {
+      field: 'weakness',
+      label: 'Weakness in current draft',
+      testId: 'm3-s15-weakness-select',
+      options: [
+        'Activities are listed without a barrier link',
+        'Draft relies on one meeting or training',
+        'Follow-up actor is not named',
+        'Resources or accessibility support are missing',
+        'Feedback channel has no response route',
+        'Evidence source is too activity-count focused',
+      ],
+    },
+    {
+      field: 'activityRepair',
+      label: 'Activity or design repair',
+      testId: 'm3-s15-activity-repair-select',
+      options: [
+        'Link each activity to a rights-holder barrier and planned design response',
+        'Add early information and accessible participation before priorities are finalized',
+        'Add multiple feedback-response channels and follow-up timeline',
+        'Build accessibility checks and reasonable accommodation into delivery',
+        'Add practical follow-up after training or consultation',
+      ],
+    },
+    {
+      field: 'responsibilityRepair',
+      label: 'Responsibility or coordination repair',
+      testId: 'm3-s15-responsibility-repair-select',
+      options: [
+        'Name the public, service, committee, or sector actor that must respond',
+        'Keep Awra in a facilitation, connection, and documentation role',
+        'Add coordination check-in before implementation',
+        'Assign feedback review and response role',
+      ],
+    },
+    {
+      field: 'resourceImplication',
+      label: 'Resource, budget, or accessibility implication',
+      testId: 'm3-s15-resource-implication-select',
+      options: [
+        'Add budget line or resource note for accessibility and timing adaptations',
+        'Include facilitation time for pre-consultation and follow-up',
+        'Add translation, accessible information, or venue support where needed',
+        'Reserve time for responsible actor coordination',
+      ],
+    },
+    {
+      field: 'indicatorImplication',
+      label: 'Indicator or evidence implication',
+      testId: 'm3-s15-indicator-implication-select',
+      options: [
+        'Track whether selected groups influenced at least one priority',
+        'Track whether feedback received a response and what changed',
+        'Track accessibility checks completed and design adjustments made',
+        'Use non-identifying evidence of activity repair and follow-up',
+      ],
+    },
+    {
+      field: 'watchPoint',
+      label: 'Implementation watch-point',
+      testId: 'm3-s15-watch-point-select',
+      options: [
+        'Check that activities do not drift back to generic meetings or training',
+        'Check that responsibility does not shift entirely to the CSO',
+        'Check that lower-influence groups are not absent or silent',
+        'Check that feedback is answered before implementation moves on',
+      ],
+    },
+  ];
+
+  const [stage, setStage] = useState<Screen15Stage>(1);
+  const [selectedSectionId, setSelectedSectionId] = useState('');
+  const [repairDraft, setRepairDraft] = useState<Screen15RepairDraft>(emptyRepairDraft);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen15Submission | null>(getScreen15SavedOutput(state));
+  const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
+  const [ownCsoDraft, setOwnCsoDraft] = useState<Screen15OwnCsoDraft>(getEmptyScreen15OwnCsoDraft());
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen15OwnCsoOutput | null>(null);
+  const [ownCsoError, setOwnCsoError] = useState('');
+
+  const selectedSection = draftSections.find((section) => section.id === selectedSectionId) || null;
+  const completedRepairFields = repairFieldOptions.filter(({ field }) => repairDraft[field]).length;
+  const repairComplete = Boolean(selectedSection && completedRepairFields === repairFieldOptions.length);
+  const helperText = repairComplete
+    ? 'Ready to generate the activity repair.'
+    : 'Select one draft section and complete the HRBA issue, weakness, repair, responsibility, resource, indicator, and watch-point fields.';
+  const finalRepair = submittedOutput?.draftPlanActivityRepair || null;
+
+  const selectDraftSection = (sectionId: string) => {
+    setSelectedSectionId(sectionId);
+    setSubmittedOutput(null);
+  };
+
+  const updateRepairDraft = (field: Screen15RepairField, value: string) => {
+    setRepairDraft((current) => ({ ...current, [field]: value }));
+    setSubmittedOutput(null);
+  };
+
+  const generateActivityRepair = () => {
+    if (!selectedSection || !repairComplete || !isScreen15Valid(selectedSection.actionIds)) return;
+    const baseOutput = buildScreen15Submission(selectedSection.actionIds, repairedObjective, ownCsoOutput);
+    const draftPlanActivityRepair = {
+      draftSectionReviewed: selectedSection.label,
+      hrbaIssueFromEarlierAnalysis: repairDraft.hrbaIssue,
+      weaknessInCurrentDraft: repairDraft.weakness,
+      activityOrDesignRepair: repairDraft.activityRepair,
+      responsibilityOrCoordinationRepair: repairDraft.responsibilityRepair,
+      resourceBudgetAccessibilityImplication: repairDraft.resourceImplication,
+      indicatorEvidenceImplication: repairDraft.indicatorImplication,
+      implementationWatchPoint: repairDraft.watchPoint,
+      carryForwardNote: 'Use this activity repair to test the intervention logic, indicators, resources, responsibilities, and implementation watch-points.',
+    };
+    setSubmittedOutput({
+      ...baseOutput,
+      draftPlanActivityRepair,
+      repairedActivityPackage: {
+        ...baseOutput.repairedActivityPackage,
+        generatedSummary: `${selectedSection.label}: ${repairDraft.activityRepair} Responsibility: ${repairDraft.responsibilityRepair} Evidence: ${repairDraft.indicatorImplication}`,
+      },
+      portfolioSummary: `Draft plan activity repair completed for ${selectedSection.label}.`,
+      savedAt: new Date().toISOString(),
+    });
+    setStage(4);
+  };
+
+  const updateOwnCso = (field: keyof Screen15OwnCsoDraft, value: string) => {
+    setOwnCsoDraft((current) => ({ ...current, [field]: value }));
+    setOwnCsoError('');
+  };
+
+  const generateOwnCsoPractice = () => {
+    const missingField = Object.values(ownCsoDraft).some((value) => !value.trim());
+    if (missingField) {
+      setOwnCsoError('Complete each field before opening the editable activity repair starter.');
+      return;
+    }
+    setOwnCsoOutput({ ...ownCsoDraft, generatedAt: new Date().toISOString() });
+    setOwnCsoError('');
+  };
+
+  const continueWithScreen15 = () => {
+    if (!submittedOutput) return;
+    const finalOutput: Screen15Submission = ownCsoOutput
+      ? { ...submittedOutput, ownCsoPracticeOutput: ownCsoOutput, savedAt: new Date().toISOString() }
+      : submittedOutput;
+    onComplete({ repairedActivityPackage: finalOutput.repairedActivityPackage, screen15: finalOutput });
+  };
 
   return (
-    <main className="m3-screen m3-design-repair-screen m3-integrated-notice-screen" aria-labelledby={titleId} data-qa="m3-s15-integrated-notice">
-      <article className="m3-design-repair-shell">
-        <header className="m3-design-repair-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
-          <p className="m3-design-repair-eyebrow">{screen.eyebrow}</p>
-          <h1 id={titleId}>This step is included in HRBA Project Design Repair</h1>
-          <p className="m3-design-repair-subtitle">The objective repair, activity package repair, and intervention logic check are now completed together in Screen 14: HRBA Project Design Repair.</p>
+    <main className="m3-screen m3-design-repair-screen m3-s15-activity-repair-screen" aria-labelledby={titleId} data-qa="m3-s15-guided-workspace">
+      <article className="m3-design-repair-shell m3-integrated-repair-shell">
+        <header className="m3-design-repair-header m3-integrated-repair-header">
+          <ProgressChip>Part 5 of 7 · Repair the design</ProgressChip>
+          <p className="m3-design-repair-eyebrow">MODULE 3 · DRAFT PLAN REVIEW</p>
+          <h1 id={titleId}>Draft Plan Review and Activity Package Repair</h1>
+          <p className="m3-design-repair-subtitle">Use earlier HRBA analysis to repair one weak section of a draft plan before implementation.</p>
         </header>
-        <section className="m3-integrated-section-card" aria-label={screen15Assets.hero.alt}>
-          <h2>Nothing else is required on this route</h2>
-          <p>The activity package repair is part of the integrated Screen 14 workflow. This keeps the learning flow smoother and helps you save one complete design repair package.</p>
-          <div className="m3-integrated-badge-row">
-            <span>{compatibilityPackage.repairedActivityPackage.repairedActivities.length} activity repair examples included</span>
-            <span>{compatibilityCoverage.influence ? 'Influence covered' : 'Influence pending'}</span>
-            <span>{compatibilityCoverage.inclusion ? 'Accessibility covered' : 'Accessibility pending'}</span>
-            <span>{compatibilityCoverage.accountability ? 'Accountability covered' : 'Accountability pending'}</span>
-          </div>
-          <p className="m3-guided-helper">{compatibilityValid ? compatibilityHelper : emptyOwnCsoDraft.originalActivity}</p>
-          <div className="m3-integrated-actions">
-            <PrimaryButton onClick={() => onComplete({ screen15: { integratedInScreen14: true, packagePreview: compatibilityPackage.repairedActivityPackage } })}>{screen.continueLabel}</PrimaryButton>
-          </div>
-        </section>
+
+        <nav className="m3-integrated-repair-stage-nav" aria-label="Screen 15 stages">
+          {stages.map((item) => {
+            const locked = item.id > 3 && !submittedOutput;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`${stage === item.id ? 'is-active' : ''} ${submittedOutput && item.id < stage ? 'is-complete' : ''} ${locked ? 'is-locked' : ''}`}
+                disabled={locked}
+                onClick={() => setStage(item.id)}
+              >
+                <span>{item.id}</span>
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {stage === 1 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-understand`}>
+            <div className="m3-integrated-payoff-card">
+              <div className="m3-integrated-payoff-icon">15</div>
+              <div>
+                <h2 id={`${screen.id}-understand`}>Repair the draft package before implementation</h2>
+                <p>A draft plan can name HRBA priorities but still leave weak links between activities, responsibilities, resources, indicators, and follow-up.</p>
+              </div>
+              <aside>Output: a portfolio-ready activity repair note.</aside>
+            </div>
+            <div className="m3-integrated-explain-grid">
+              <article><h2>What this section is about</h2><p>Review one draft plan section and make the repair concrete enough to guide implementation.</p></article>
+              <article><h2>Why activity repair matters</h2><p>Activities should respond to the barrier, not sit beside the analysis as a separate list.</p></article>
+              <article><h2>What you will do</h2><p>Select one draft section, identify the HRBA weakness, and complete a compact repair row.</p></article>
+              <article><h2>What you will produce</h2><p>A short activity repair with responsibility, resources, indicators, evidence, and watch-point notes.</p></article>
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>See example</button></div>
+          </section>
+        )}
+
+        {stage === 2 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-example`}>
+            <h2 id={`${screen.id}-example`}>Worked example: repair one weak draft section</h2>
+            <p className="m3-integrated-info">The example is short on purpose. The Practice stage is where you make the choices.</p>
+            <div className="m3-s15-example-grid">
+              {[
+                ['Draft section reviewed', 'Feedback and follow-up'],
+                ['HRBA issue from earlier analysis', 'Feedback does not show response or follow-up'],
+                ['Weakness in the current draft', 'Feedback channel has no response route'],
+                ['Activity or design repair', 'Add multiple feedback-response channels and a follow-up timeline.'],
+                ['Responsibility or coordination repair', 'Assign feedback review and response role.'],
+                ['Resource, budget, or accessibility implication', 'Add translation, accessible information, or venue support where needed.'],
+                ['Indicator or evidence implication', 'Track whether feedback received a response and what changed.'],
+                ['Implementation watch-point', 'Check that feedback is answered before implementation moves on.'],
+              ].map(([label, value]) => <article key={label}><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <figure className="m3-integrated-preview">
+              <img src={screen15Assets.hero.src} alt={screen15Assets.hero.alt} />
+            </figure>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Start practice</button></div>
+          </section>
+        )}
+
+        {stage === 3 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-practice`}>
+            <div className="m3-s15-practice-layout">
+              <div className="m3-guided-stage-main">
+                <h2 id={`${screen.id}-practice`}>Practice: repair one draft plan section</h2>
+                <p className="m3-integrated-info">Select one section, then complete the compact repair row. Generate stays disabled until every required field is complete.</p>
+                <section className="m3-s15-practice-step" aria-labelledby={`${screen.id}-section-step`}>
+                  <p className="m3-risk-step-label">Step 1</p>
+                  <h3 id={`${screen.id}-section-step`}>Select draft plan section to review</h3>
+                  <div className="m3-s15-section-tiles">
+                    {draftSections.map((section) => {
+                      const selected = selectedSectionId === section.id;
+                      return (
+                        <button key={section.id} type="button" className={`m3-s15-section-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => selectDraftSection(section.id)} data-testid="m3-s15-draft-section-tile">
+                          <span>{selected ? 'Selected' : 'Select'}</span>
+                          <strong>{section.label}</strong>
+                          <small>{section.context}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+                <section className={`m3-s15-practice-step ${selectedSection ? '' : 'is-disabled'}`} aria-labelledby={`${screen.id}-repair-row`}>
+                  <p className="m3-risk-step-label">Step 2</p>
+                  <h3 id={`${screen.id}-repair-row`}>Complete the activity repair row</h3>
+                  {selectedSection ? (
+                    <div className="m3-s15-repair-row" data-testid="m3-s15-repair-row">
+                      <div><span>Selected draft section</span><p>{selectedSection.label}</p></div>
+                      {repairFieldOptions.map(({ field, label, options, testId }) => (
+                        <label key={field}>
+                          <span>{label}</span>
+                          <select value={repairDraft[field]} onChange={(event) => updateRepairDraft(field, event.target.value)} data-testid={testId}>
+                            <option value="">Choose one</option>
+                            {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="m3-risk-empty-note">Select one draft section first. The repair row will appear here.</p>
+                  )}
+                </section>
+                <div className="m3-risk-submit-row">
+                  <button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateActivityRepair} data-testid="m3-s15-generate-repair">{submittedOutput ? 'Update activity repair' : 'Generate activity repair'}</button>
+                  <p aria-live="polite">{helperText}</p>
+                </div>
+              </div>
+              <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-activity-live`}>
+                <h2 id={`${screen.id}-activity-live`}>Activity repair so far</h2>
+                <p>{selectedSection ? '1 selected draft section' : 'No draft section selected yet'}</p>
+                <div className="m3-guided-chip-list">
+                  <span className={selectedSection ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Section: {selectedSection?.label || 'Not selected'}</span>
+                  <span className={repairDraft.hrbaIssue ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>HRBA issue: {repairDraft.hrbaIssue || 'Not selected'}</span>
+                  <span className={repairDraft.activityRepair ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Repair: {repairDraft.activityRepair || 'Not selected'}</span>
+                  <span className={repairDraft.responsibilityRepair ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Responsibility: {repairDraft.responsibilityRepair || 'Not selected'}</span>
+                  <span className={repairDraft.watchPoint ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Watch-point: {repairDraft.watchPoint || 'Not selected'}</span>
+                </div>
+                <p className="m3-guided-helper">Completed repair rows: {repairComplete ? 1 : 0}</p>
+                <p className="m3-guided-helper">Completed fields: {completedRepairFields} of 7</p>
+                <p className="m3-guided-helper">{helperText}</p>
+                <button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateActivityRepair}>{submittedOutput ? 'Update activity repair' : 'Generate activity repair'}</button>
+              </aside>
+            </div>
+          </section>
+        )}
+
+        {stage === 4 && finalRepair && (
+          <section className="m3-integrated-section-card" data-qa="m3-s15-generated-package">
+            <h2>Review activity repair</h2>
+            <p>This repair connects earlier HRBA analysis to a practical change in the draft activity package.</p>
+            <div className="m3-s15-review-grid">
+              {[
+                ['Draft section reviewed', finalRepair.draftSectionReviewed],
+                ['HRBA issue from earlier analysis', finalRepair.hrbaIssueFromEarlierAnalysis],
+                ['Weakness in the current draft', finalRepair.weaknessInCurrentDraft],
+                ['Activity or design repair', finalRepair.activityOrDesignRepair],
+                ['Responsibility or coordination repair', finalRepair.responsibilityOrCoordinationRepair],
+                ['Resource, budget, or accessibility implication', finalRepair.resourceBudgetAccessibilityImplication],
+                ['Indicator or evidence implication', finalRepair.indicatorEvidenceImplication],
+                ['Implementation watch-point', finalRepair.implementationWatchPoint],
+                ['Carry forward to intervention logic and indicators', finalRepair.carryForwardNote],
+              ].map(([label, value]) => <article key={label} data-testid="m3-s15-generated-repair-row"><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit activity repair</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(5)}>Go to Apply/Download</button></div>
+          </section>
+        )}
+
+        {stage === 5 && submittedOutput && (
+          <section className="m3-integrated-section-card">
+            <article className="m3-integrated-continue-card">
+              <div><h3>Activity repair ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
+              <button type="button" className="m3-primary-button" data-testid="m3-s15-final-continue" data-qa="m3-s15-final-continue" onClick={continueWithScreen15}>{screen.continueLabel}</button>
+            </article>
+            <div className="m3-guided-tabs" role="tablist" aria-label="Optional apply or download">
+              <button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
+              <button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s15-download-tools">Download tools</button>
+            </div>
+            {applyTab === 'own' && (
+              <section className="m3-design-repair-own-cso">
+                <h2>Try with my CSO context (optional)</h2>
+                <p>Use the same structure to repair one activity package section in your own work.</p>
+                <div className="m3-design-repair-own-grid">
+                  {[
+                    ['originalActivity', 'Original activity', 'Name the current activity or package section.'],
+                    ['weakness', 'Weakness', 'What appears weak in the current draft?'],
+                    ['barrierLink', 'Barrier link', 'Which HRBA barrier or issue should it respond to?'],
+                    ['rightsHolderGroup', 'Rights-holder group', 'Which group should be more visible?'],
+                    ['repairedActivity', 'Repaired activity', 'What practical repair would you add?'],
+                    ['responsibleActorCsoRole', 'Responsible actor or CSO role', 'Who should act, coordinate, facilitate, or follow up?'],
+                    ['riskAccountabilityAdjustment', 'Risk or accountability adjustment', 'What adjustment should be built in?'],
+                    ['safeEvidenceQuestion', 'Evidence question', 'What non-identifying evidence would show the repair worked?'],
+                  ].map(([field, label, placeholder]) => (
+                    <label key={field}>
+                      <span>{label}</span>
+                      <textarea value={ownCsoDraft[field as keyof Screen15OwnCsoDraft]} onChange={(event) => updateOwnCso(field as keyof Screen15OwnCsoDraft, event.target.value)} placeholder={placeholder} />
+                    </label>
+                  ))}
+                </div>
+                {ownCsoError && <p className="m3-design-repair-error" role="alert">{ownCsoError}</p>}
+                <button type="button" className="m3-design-repair-submit" onClick={generateOwnCsoPractice}>Open editable activity repair starter</button>
+                {ownCsoOutput && <article className="m3-s15-own-output"><h3>My activity repair starter</h3><p>{ownCsoOutput.repairedActivity}</p></article>}
+              </section>
+            )}
+            {applyTab === 'downloads' && (
+              <section className="m3-design-repair-template">
+                <h2>HRBA Activity Package Repair Template</h2>
+                <div className="m3-design-repair-template-actions">
+                  <button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(activityRepairTemplateMarkdown, 'hrba-activity-package-repair-template', 'docx')}>Download HRBA Activity Package Repair Template</button>
+                  <button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(activityRepairTemplateMarkdown, 'hrba-activity-package-repair-template', 'md')}>Download markdown copy</button>
+                  <button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate('', 'hrba-activity-repair-blank-worksheet', 'md')}>Download blank worksheet</button>
+                </div>
+              </section>
+            )}
+          </section>
+        )}
       </article>
     </main>
   );
