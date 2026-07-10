@@ -512,20 +512,22 @@ type JiruAmbaSignalId =
   | 'service_improvement_uncertainty';
 
 type SourceLayer =
-  | 'HRBA principle / local planning commitment'
-  | 'HRBA principle / rights standard'
-  | 'Rights standard / accessibility principle'
-  | 'HRBA principle / accountability standard'
-  | 'HRBA principle / project accountability commitment'
-  | 'Sector/service commitment / project commitment';
+  | 'Participation'
+  | 'Equality and inclusion'
+  | 'Disability and access'
+  | 'Information and transparency'
+  | 'Accountability'
+  | 'Service quality';
 type FeedbackLevel = 'strong' | 'good_with_gap' | 'partial' | 'surface';
 
 type PolicyAnchor = {
   id: PolicyAnchorId;
   title: string;
   sourceLayer: SourceLayer;
+  sourcesToCheck: string;
   plainMeaning: string;
   relatedReferences: string[];
+  detailSourcesLabel: string;
   useWhen: string;
   protectsOrRequires: string;
   designImplication: string;
@@ -558,6 +560,7 @@ type GeneratedStandardsMapRow = {
   anchorId: PolicyAnchorId;
   anchorTitle: string;
   sourceLayer: SourceLayer;
+  sourcesToCheck: string;
   relatedReferences: string[];
   signalId: JiruAmbaSignalId;
   signalLabel: string;
@@ -567,17 +570,36 @@ type GeneratedStandardsMapRow = {
   snapshotTag: string;
 };
 
-const module3RightsHolderBarrierAssets = {
-  defaultPreview: {
-    src: '/assets/hrba/modules/module-3/m3-s07-rights-holders-jiru-amba.webp',
-    alt: 'Illustration of a local planning discussion with different community groups present, including women, youth, people from remote areas, and a person with disability, showing why specific rights-holder and barrier analysis is needed.',
-  },
+type PolicyAnchorCategory =
+  | 'all'
+  | 'participation'
+  | 'non_discrimination'
+  | 'accessibility'
+  | 'accountability'
+  | 'livelihood';
+
+const policyAnchorCategoryLabels: Record<PolicyAnchorCategory, string> = {
+  all: 'Show all',
+  participation: 'Participation',
+  non_discrimination: 'Equality and inclusion',
+  accessibility: 'Disability and access',
+  accountability: 'Accountability',
+  livelihood: 'Service quality',
+};
+
+const policyAnchorCategories: Record<PolicyAnchorId, Exclude<PolicyAnchorCategory, 'all'>> = {
+  meaningful_participation: 'participation',
+  non_discrimination_equality: 'non_discrimination',
+  disability_accessibility: 'accessibility',
+  transparency_information: 'accountability',
+  accountability_response: 'accountability',
+  livelihood_service_commitment: 'livelihood',
 };
 
 const policyMapIntroParagraphs = [
   'A project design should not only respond to visible needs. It should also consider the rights people are entitled to, the responsibilities of duty-bearers, and the policy or service commitments that already exist.',
   'For a CSO, this does not mean turning the project into a legal document. It means using standards and commitments to ask better design questions: What should people be able to access? Who has responsibility? What should be adjusted so the project supports inclusion, participation, accountability, dignity, and safe follow-up?',
-  'In the Jiru Amba case, the standards and policy map helps you connect the proposed activities to practical design anchors before implementation begins.',
+  'In the Jiru Amba case, the standards and policy map helps you connect the proposed activities to design lenses and sources to check before implementation begins.',
 ];
 
 const policyMapKeyIdea =
@@ -596,7 +618,7 @@ const policyMapExplainCards = [
   },
   {
     title: 'What you will do',
-    text: 'Review practical design anchors and select the standards or commitments most relevant to the project problem.',
+    text: 'Review practical design lenses and select the standards or commitments most relevant to the project problem.',
     tone: 'blue',
   },
   {
@@ -625,29 +647,33 @@ const policyAnchors: PolicyAnchor[] = [
   {
     id: 'meaningful_participation',
     title: 'Meaningful participation in decision-making',
-    sourceLayer: 'HRBA principle / local planning commitment',
-    plainMeaning: 'People should have timely, informed, inclusive, and meaningful opportunities to influence decisions that affect them.',
-    relatedReferences: ['HRBA participation principle', 'Local planning or consultation commitment', 'Project participation commitment'],
-    useWhen: 'Weak influence, late consultation, decisions shaped before people can respond, or participation that does not affect priorities.',
-    protectsOrRequires: 'People should have timely, informed, inclusive, and meaningful opportunities to influence decisions that affect them.',
-    designImplication: 'Build participation into the design before decisions are finalized, not only as a meeting or information-sharing event.',
-    designQuestionPreview: 'How will different groups influence priorities before the plan is finalized?',
+    sourceLayer: 'Participation',
+    sourcesToCheck: 'Local planning rules; consultation procedures; HRBA participation principle.',
+    plainMeaning: 'The design should check whether different groups influence priorities, not only whether they are invited or counted.',
+    relatedReferences: ['Local planning rules; consultation procedures; HRBA participation principle.', 'ICCPR participation in public affairs; CEDAW and CRPD participation provisions where women or persons with disabilities are affected.'],
+    detailSourcesLabel: 'International sources to check where relevant',
+    useWhen: 'People attend, but may not influence priorities before decisions are finalized.',
+    protectsOrRequires: 'The design should check whether different groups influence priorities, not only whether they are invited or counted.',
+    designImplication: 'The design should check whether different groups influence priorities, not only whether they are invited or counted.',
+    designQuestionPreview: 'How will affected groups influence priorities before the plan is finalized?',
     relatedSignalIds: ['presence_without_influence', 'different_barriers_across_groups', 'weak_follow_up_response'],
     defaultSignalId: 'presence_without_influence',
-    designQuestion: 'How will different groups influence priorities before the plan is finalized?',
-    responsibilityQuestion: 'Which planning or facilitation actor ensures that consultation happens early enough to influence decisions?',
+    designQuestion: 'How will affected groups influence priorities before the plan is finalized?',
+    responsibilityQuestion: 'Which planning or facilitation actor ensures early, informed, and accessible participation?',
     snapshotTag: 'Participation and consultation reference',
     priority: 'core',
   },
   {
     id: 'non_discrimination_equality',
-    title: 'Non-discrimination, equality, and inclusion',
-    sourceLayer: 'HRBA principle / rights standard',
-    plainMeaning: 'The design should respond to different barriers faced by different groups, not assume one equal process works for everyone.',
-    relatedReferences: ['HRBA non-discrimination and equality principle', 'Rights standard on equality', 'Project inclusion commitment'],
-    useWhen: 'Different barriers by gender, age, disability, income, location, livelihood, language, or social position.',
-    protectsOrRequires: 'The design should respond to different barriers faced by different groups, not assume one equal process works for everyone.',
-    designImplication: 'Adjust outreach, access, information, budget, timing, indicators, and feedback so the design does not reproduce exclusion.',
+    title: 'Non-discrimination and equality',
+    sourceLayer: 'Equality and inclusion',
+    sourcesToCheck: 'National equality commitments; gender/disability/child/youth policies; CEDAW, CRPD, CRC, ICESCR.',
+    plainMeaning: 'The design should respond to different barriers faced by different groups, not assume one process works for everyone.',
+    relatedReferences: ['National equality commitments; gender/disability/child/youth policies; CEDAW, CRPD, CRC, ICESCR.', 'CEDAW for women and girls; CRPD for persons with disabilities; CRC for children and adolescents; ICESCR for economic and social rights.'],
+    detailSourcesLabel: 'International sources to check where relevant',
+    useWhen: 'Different groups may face unequal access, information, safety, income, location, or livelihood barriers.',
+    protectsOrRequires: 'The design should respond to different barriers faced by different groups, not assume one process works for everyone.',
+    designImplication: 'The design should respond to different barriers faced by different groups, not assume one process works for everyone.',
     designQuestionPreview: 'Which groups face different barriers, and what design changes are needed to reduce them?',
     relatedSignalIds: ['different_barriers_across_groups', 'disability_access_barriers', 'service_improvement_uncertainty'],
     defaultSignalId: 'different_barriers_across_groups',
@@ -659,29 +685,33 @@ const policyAnchors: PolicyAnchor[] = [
   {
     id: 'disability_accessibility',
     title: 'Accessibility and reasonable accommodation',
-    sourceLayer: 'Rights standard / accessibility principle',
-    plainMeaning: 'Participation, information, services, and feedback must be accessible.',
-    relatedReferences: ['Disability inclusion and accessibility standard', 'Reasonable accommodation principle', 'Project accessibility commitment'],
-    useWhen: 'Inaccessible venues, materials, services, transport, communication, or feedback channels.',
-    protectsOrRequires: 'Participation, information, services, and feedback must be accessible.',
-    designImplication: 'Include accessibility checks, accessible formats, reasonable accommodation, and disability-sensitive feedback in the project design.',
+    sourceLayer: 'Disability and access',
+    sourcesToCheck: 'National disability law or accessibility standard; service access standards; CRPD.',
+    plainMeaning: 'The design should build accessibility and reasonable accommodation into participation, services, information, and feedback.',
+    relatedReferences: ['National disability law or accessibility standard; service access standards; CRPD.', 'CRPD accessibility and reasonable accommodation provisions.'],
+    detailSourcesLabel: 'International sources to check where relevant',
+    useWhen: 'People may face physical, communication, information, transport, or feedback-access barriers.',
+    protectsOrRequires: 'The design should build accessibility and reasonable accommodation into participation, services, information, and feedback.',
+    designImplication: 'The design should build accessibility and reasonable accommodation into participation, services, information, and feedback.',
     designQuestionPreview: 'What accessibility, reasonable accommodation, and communication measures are built into the plan?',
     relatedSignalIds: ['disability_access_barriers', 'information_gaps'],
     defaultSignalId: 'disability_access_barriers',
     designQuestion: 'What accessibility, reasonable accommodation, and communication measures are built into the plan?',
-    responsibilityQuestion: 'Who budgets, provides, and monitors accessibility measures?',
+    responsibilityQuestion: 'Who budgets, provides, and checks accessibility measures?',
     snapshotTag: 'Disability accessibility reference',
     priority: 'core',
   },
   {
     id: 'transparency_information',
     title: 'Transparency and access to information',
-    sourceLayer: 'HRBA principle / accountability standard',
-    plainMeaning: 'People need clear, timely, and accessible information to participate and follow up.',
-    relatedReferences: ['HRBA transparency and access to information principle', 'Public information or service-notice commitment', 'Project communication commitment'],
-    useWhen: 'Information gaps, late communication, unclear criteria, or inaccessible information.',
-    protectsOrRequires: 'People need clear, timely, and accessible information to participate and follow up.',
-    designImplication: 'Add a clear information-sharing plan before consultations, selection, budgeting, implementation, and feedback.',
+    sourceLayer: 'Information and transparency',
+    sourcesToCheck: 'Local information-sharing rules; planning procedures; HRBA transparency principle.',
+    plainMeaning: 'The design should define what information is shared, when, in what format, and through which channels.',
+    relatedReferences: ['Local information-sharing rules; planning procedures; HRBA transparency principle.', 'HRBA transparency and access-to-information principle; relevant public participation standards.'],
+    detailSourcesLabel: 'International sources to check where relevant',
+    useWhen: 'People may not receive clear, timely, accessible, or understandable information.',
+    protectsOrRequires: 'The design should define what information is shared, when, in what format, and through which channels.',
+    designImplication: 'The design should define what information is shared, when, in what format, and through which channels.',
     designQuestionPreview: 'What information will be shared, when, in what format, and through which channels?',
     relatedSignalIds: ['information_gaps', 'presence_without_influence', 'weak_follow_up_response'],
     defaultSignalId: 'information_gaps',
@@ -693,12 +723,14 @@ const policyAnchors: PolicyAnchor[] = [
   {
     id: 'accountability_response',
     title: 'Accountability, safe feedback, and response',
-    sourceLayer: 'HRBA principle / project accountability commitment',
-    plainMeaning: 'People should know how to raise concerns safely and how responses will be made.',
-    relatedReferences: ['HRBA accountability principle', 'Project accountability or feedback commitment', 'Service response or follow-up commitment'],
-    useWhen: 'Unclear feedback channels, no response process, complaint risks, or weak follow-up.',
-    protectsOrRequires: 'People should know how to raise concerns safely and how responses will be made.',
-    designImplication: 'Build a safe feedback-and-response pathway into the design, not only a suggestion box or informal promise.',
+    sourceLayer: 'Accountability',
+    sourcesToCheck: 'Complaint/feedback procedures; local service accountability rules; HRBA accountability principle.',
+    plainMeaning: 'The design should show how feedback is received, protected, answered, and used.',
+    relatedReferences: ['Complaint/feedback procedures; local service accountability rules; HRBA accountability principle.', 'Local grievance or complaint procedures; service accountability standards; community feedback and response standards.'],
+    detailSourcesLabel: 'Sources to check where relevant',
+    useWhen: 'Feedback channels exist, but response, safety, confidentiality, or follow-up is unclear.',
+    protectsOrRequires: 'The design should show how feedback is received, protected, answered, and used.',
+    designImplication: 'The design should show how feedback is received, protected, answered, and used.',
     designQuestionPreview: 'How will feedback, concerns, and complaints be received, protected, answered, and used?',
     relatedSignalIds: ['weak_follow_up_response', 'information_gaps', 'service_improvement_uncertainty'],
     defaultSignalId: 'weak_follow_up_response',
@@ -710,17 +742,19 @@ const policyAnchors: PolicyAnchor[] = [
   {
     id: 'livelihood_service_commitment',
     title: 'Quality, dignity, and safe service access',
-    sourceLayer: 'Sector/service commitment / project commitment',
-    plainMeaning: 'Activities should connect to real service improvement or practical livelihood benefit.',
-    relatedReferences: ['Sector or service-improvement commitment', 'Livelihood or market-access commitment', 'Project commitment on practical benefit'],
-    useWhen: 'Training-to-opportunity gaps, unclear service improvement pathways, or weak connection between activities and practical benefits.',
-    protectsOrRequires: 'Activities should connect to practical improvements in access, quality, livelihood opportunity, or service response.',
-    designImplication: 'Clarify the pathway from activity to practical outcome, including follow-up support, service linkages, and realistic access conditions.',
-    designQuestionPreview: 'How will training, service support, market access, or service activities lead to practical benefit?',
+    sourceLayer: 'Service quality',
+    sourcesToCheck: 'Sector service standards; water/health/livelihood guidelines; ICESCR; AAAQ lens.',
+    plainMeaning: 'The design should check whether services are available, accessible, acceptable, and good enough to be useful and dignified.',
+    relatedReferences: ['Sector service standards; water/health/livelihood guidelines; ICESCR; AAAQ lens.', 'Sector service standards; ICESCR; AAAQ lens; water, health, market, or livelihood service standards depending on the project issue.'],
+    detailSourcesLabel: 'Sources to check where relevant',
+    useWhen: 'Activities may not translate into safe, dignified, accessible, acceptable, or quality services.',
+    protectsOrRequires: 'The design should check whether services are available, accessible, acceptable, and good enough to be useful and dignified.',
+    designImplication: 'The design should check whether services are available, accessible, acceptable, and good enough to be useful and dignified.',
+    designQuestionPreview: 'What service standard should the activity meet, and what barriers could reduce quality or dignity?',
     relatedSignalIds: ['unclear_livelihood_pathway', 'service_improvement_uncertainty'],
     defaultSignalId: 'unclear_livelihood_pathway',
-    designQuestion: 'How will training, service support, market access, or service activities lead to practical benefit?',
-    responsibilityQuestion: 'Which service actor, CSO actor, or livelihood actor must support the pathway from activity to benefit?',
+    designQuestion: 'What service standard should the activity meet, and what barriers could reduce quality or dignity?',
+    responsibilityQuestion: 'Which public, service, or committee actor is responsible for service quality and follow-up?',
     snapshotTag: 'Service and livelihood commitment reference',
     priority: 'supporting',
   },
@@ -908,7 +942,7 @@ const screen5SignalMap: Record<string, JiruAmbaSignalId[]> = {
 };
 
 const policyMapSummary =
-  'Based on the Jiru Amba case selections, the draft map links case-study signals to practical rights and policy references for participation, equality, accessibility, transparency, accountability, and service or livelihood benefit.';
+  'Based on the Jiru Amba case selections, the draft map links case-study signals to design lenses and policy or standards sources to check for participation, equality, accessibility, transparency, accountability, and service or livelihood benefit.';
 
 function uniqueSignalIds(ids: JiruAmbaSignalId[]) {
   return Array.from(new Set(ids));
@@ -943,6 +977,12 @@ function getSignalById(signalId: JiruAmbaSignalId) {
   return jiruAmbaSignalOptions.find((signal) => signal.id === signalId);
 }
 
+function compactPolicyMapLine(text: string, maxLength = 118) {
+  if (text.length <= maxLength) return text;
+  const trimmed = text.slice(0, maxLength).replace(/\s+\S*$/, '').trim();
+  return `${trimmed}...`;
+}
+
 function generateStandardsMapRows(
   signalReferenceMatches: SignalReferenceMatch[],
 ): GeneratedStandardsMapRow[] {
@@ -958,6 +998,7 @@ function generateStandardsMapRows(
       anchorId: anchor.id,
       anchorTitle: anchor.title,
       sourceLayer: anchor.sourceLayer,
+      sourcesToCheck: anchor.sourcesToCheck,
       relatedReferences: anchor.relatedReferences,
       signalId: signal.id,
       signalLabel: signal.label,
@@ -1656,39 +1697,12 @@ function getGroupBarrierIds(
   return barrierTags.map((barrier) => barrier.id).filter((barrierId) => groupBarrierLinks[groupId].includes(barrierId));
 }
 
-function getPreviewStatus(barrierIds: BarrierTagId[]) {
-  const barrierLabels = barrierIds.flatMap((barrierId) => {
-    const barrier = getBarrierById(barrierId);
-    return barrier ? [barrier.label] : [];
-  });
-
-  if (barrierIds.length === 0) return 'No barriers added yet';
-  if (barrierIds.length === 1) return '1 barrier added';
-  if (barrierIds.length <= 3) return `Ready · ${barrierLabels.join(', ')}`;
-  if (barrierIds.length <= 7) return 'Too many selected. Prioritize one or two barriers.';
-  return 'Too broad — focus priority barriers';
-}
-
 function getActiveGroupStatus(barrierCount: number, isBroad = false) {
   if (isBroad) return 'Too broad';
   if (barrierCount === 0) return 'Needs at least 1 barrier';
   if (barrierCount <= 3) return 'Ready';
   if (barrierCount <= 7) return 'Prioritize';
   return 'Too broad';
-}
-
-function getSafeEvidenceForBarrierCategories(categories: BarrierCategory[]) {
-  const evidenceByCategory: Record<BarrierCategory, string[]> = {
-    voice_influence: ['planning or facilitation notes', 'anonymized summaries showing whether priorities changed'],
-    information: ['communication records', 'observation of whether information is accessible and timely'],
-    accessibility: ['observation of accessibility barriers', 'accessibility checklists without personal disability details'],
-    timing_distance_cost: ['participation timing records', 'general transport, distance, or cost observations'],
-    safety: ['safe discussion with trusted community facilitators', 'non-identifying risk notes'],
-    livelihood_benefit: ['service or committee records', 'general follow-up notes on access to practical benefit'],
-    feedback_response: ['anonymized feedback summaries', 'records showing whether feedback received a response'],
-  };
-  const suggestions = categories.flatMap((category) => evidenceByCategory[category] || []);
-  return Array.from(new Set(suggestions)).slice(0, 3);
 }
 
 function generateRightsHolderBarrierRows(
@@ -8428,6 +8442,7 @@ function PolicyStandardsMapScreen({
   const [ownValidationMessage, setOwnValidationMessage] = useState('');
   const [activeStage, setActiveStage] = useState(1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
+  const [activeReferenceFilter, setActiveReferenceFilter] = useState<PolicyAnchorCategory>('all');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
   const taskId = `${screen.id}-task`;
@@ -8560,13 +8575,20 @@ function PolicyStandardsMapScreen({
   const insightCopy = feedbackLevel === 'strong'
     ? 'Your selections show how selected references can help turn context findings into design questions, responsibility questions, and design implications.'
     : feedbackLevel === 'partial' || feedbackLevel === 'good_with_gap'
-      ? 'Your selections are useful, but some matches could be stronger. Check whether each reference source helps explain what the design should check or improve.'
-      : 'Your selections need stronger matching. Start from the context signal, then choose the reference source that helps create a practical design question and implication.';
+      ? 'Your selections are useful, but some matches could be stronger. Check whether each source to check helps explain what the design should check or improve.'
+      : 'Your selections need stronger matching. Start from the context signal, then choose the design lens and source to check that help create a practical design question and implication.';
   const submitHelper = selectedAnchorIds.length === 0
-    ? 'Select at least three reference cards to begin your map.'
+    ? 'Select at least three design lenses and sources to check to begin your map.'
     : readyToSubmit
       ? 'Generate a policy and standards map from your selected references and context-signal matches.'
       : validationMessage || 'Select at least three useful references and match at least three context signals before generating the map.';
+  const generateDisabledHelper = readyToSubmit
+    ? ''
+    : selectedAnchorIds.length < 3
+      ? 'Select at least three design lenses and sources to check before generating the map.'
+      : selectedMatches.length < 3
+        ? 'Match at least three Jiru Amba context signals to selected references before generating the map.'
+        : 'Use at least one selected reference in your context-signal matches before generating the map.';
   const selectedReferenceCountLabel = selectedAnchorIds.length === 1
     ? '1 reference selected'
     : `${selectedAnchorIds.length} references selected`;
@@ -8586,7 +8608,7 @@ function PolicyStandardsMapScreen({
       !ownMap.responsibilityQuestion.trim() ||
       !ownMap.designImplication.trim()
     ) {
-      setOwnValidationMessage('A useful policy and standards map needs at least one context signal, one reference source, one design question, one responsibility question, and one design implication.');
+      setOwnValidationMessage('A useful policy and standards map needs at least one context signal, one source to check, one design question, one responsibility question, and one design implication.');
       setOwnSubmitted(false);
       return;
     }
@@ -8663,13 +8685,26 @@ function PolicyStandardsMapScreen({
   const selectedReferenceTitles = selectedAnchorIds
     .map((anchorId) => getAnchorById(anchorId)?.title)
     .filter(Boolean) as string[];
+  const filteredPolicyAnchors = activeReferenceFilter === 'all'
+    ? policyAnchors
+    : policyAnchors.filter((anchor) => policyAnchorCategories[anchor.id] === activeReferenceFilter);
   const matchedSignalLabels = selectedMatches
     .map((match) => getSignalById(match.signalId)?.label)
     .filter(Boolean) as string[];
+  const mapProgressMessage = readyToSubmit
+    ? 'Ready to generate your draft map.'
+    : 'To generate your map: select at least 3 references and match 3 context signals.';
   const generatePolicyMapFromStage = () => {
     submitMap();
     if (readyToSubmit) setActiveStage(4);
   };
+  const localToStandardsScaffold = [
+    ['Local issue', 'What is happening in the Jiru Amba design context?'],
+    ['Service/policy responsibility', 'Who should act, explain, budget, respond, monitor, or follow up?'],
+    ['National/sector reference', 'Which policy, service, or sector commitment helps guide the response?'],
+    ['HRBA principle/international reference', 'Which HRBA principle or rights standard helps protect participation, equality, accessibility, transparency, or accountability?'],
+    ['Design question', 'What should the project check or change before activities are finalized?'],
+  ];
 
   return (
     <main className="m3-screen m3-policy-map-screen" aria-labelledby={titleId}>
@@ -8689,7 +8724,7 @@ function PolicyStandardsMapScreen({
           onSelect={setActiveStage}
         />
 
-        {activeStage <= 2 && (
+        {activeStage === 1 && (
         <section className="m3-policy-map-studio m3-guided-stage-card" aria-label="Policy and standards map teaching area">
           <div className="m3-policy-map-teaching">
             <section className="m3-policy-map-card m3-policy-map-understand-card" aria-labelledby={`${screen.id}-purpose`}>
@@ -8708,6 +8743,22 @@ function PolicyStandardsMapScreen({
                 </article>
               ))}
             </aside>
+
+            <section className="m3-policy-map-source-card" aria-labelledby={`${screen.id}-scaffold`}>
+              <div>
+                <h2 id={`${screen.id}-scaffold`}>Local-to-standards scaffold</h2>
+                <p>Use this path to connect a local design issue to the standard or commitment that should shape the next project choice.</p>
+              </div>
+              <div className="m3-policy-map-source-flow m3-policy-map-source-flow--scaffold">
+                {localToStandardsScaffold.map(([title, text], index) => (
+                  <article key={title}>
+                    <span aria-hidden="true">{index + 1}</span>
+                    <h3>{title}</h3>
+                    <p>{text}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
 
             <section className="m3-policy-map-source-card" aria-labelledby={`${screen.id}-sources`}>
               <div>
@@ -8729,7 +8780,16 @@ function PolicyStandardsMapScreen({
                 </article>
               </div>
             </section>
+          </div>
+          <div className="m3-guided-stage-actions">
+            <button type="button" className="m3-policy-map-submit-button" onClick={() => setActiveStage(2)}>See worked example</button>
+          </div>
+        </section>
+        )}
 
+        {activeStage === 2 && (
+        <section className="m3-policy-map-studio m3-guided-stage-card" aria-label="Policy and standards map worked example">
+          <div className="m3-policy-map-teaching">
             <section className="m3-policy-map-card" aria-labelledby={`${screen.id}-example`}>
               <h2 id={`${screen.id}-example`}>Worked example</h2>
               <div className="m3-policy-map-example">
@@ -8738,7 +8798,7 @@ function PolicyStandardsMapScreen({
                   <p>Persons with disabilities may be invited, but materials, venues, service points, or feedback channels may not be accessible.</p>
                 </div>
                 <div>
-                  <span>Reference sources</span>
+                  <span>Sources to check</span>
                   <p>Equality and non-discrimination; disability inclusion and accessibility.</p>
                 </div>
                 <div>
@@ -8762,7 +8822,7 @@ function PolicyStandardsMapScreen({
               <div className="m3-policy-map-method">
                 {[
                   ['1. Start from a context signal', 'What did the context scan reveal?', 'A barrier, gap, or design concern.'],
-                  ['2. Choose a reference source', 'Which right, policy, standard, HRBA principle, or commitment applies?', 'A reference that should guide the design.'],
+                  ['2. Choose a design lens and source to check', 'Which right, policy, standard, HRBA principle, or commitment applies?', 'A source that should guide the design.'],
                   ['3. Ask a design question', 'What should the project check or change?', 'A practical design question.'],
                   ['4. Ask a responsibility question', 'Who should act, explain, budget, monitor, or follow up?', 'A clear responsibility question.'],
                 ].map(([step, question, output]) => (
@@ -8777,9 +8837,13 @@ function PolicyStandardsMapScreen({
             </section>
 
             <section className="m3-policy-map-safe-note" aria-labelledby={`${screen.id}-safe`}>
-              <h2 id={`${screen.id}-safe`}>Safe use of rights and policy references</h2>
+              <h2 id={`${screen.id}-safe`}>Safe use of design lenses and sources to check</h2>
               <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
             </section>
+          </div>
+          <div className="m3-guided-stage-actions">
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(1)}>Back to concept</button>
+            <button type="button" className="m3-policy-map-submit-button" onClick={() => setActiveStage(3)}>Practice with Jiru Amba</button>
           </div>
         </section>
         )}
@@ -8789,7 +8853,7 @@ function PolicyStandardsMapScreen({
           <div className="m3-policy-map-task-header">
             <div>
               <p className="m3-card-kicker">Policy and standards map</p>
-              <h2 id={taskId}>Practice mapping rights and policy references using the Jiru Amba case</h2>
+              <h2 id={taskId}>Practice mapping design lenses and sources to check using the Jiru Amba case</h2>
               <p>
                 Select the standards and policy commitments that should shape the Jiru Amba project design. Focus on what would change the design, not on collecting references for decoration.
               </p>
@@ -8800,61 +8864,85 @@ function PolicyStandardsMapScreen({
           </div>
 
           <div className="m3-policy-map-step">
-            <h3>Step 1: Select at least three reference cards that should guide the design.</h3>
+            <h3>Step 1: Select at least three design lenses and sources to check.</h3>
             <p className="m3-policy-map-practice-note">Select cards with a clear design use: participation, inclusion, accessibility, accountability, service quality, or safe follow-up.</p>
-            <div className="m3-policy-map-anchor-grid" role="group" aria-label="Rights and policy references">
-              {policyAnchors.map((anchor) => {
+            <div className="m3-policy-map-filter-row" role="tablist" aria-label="Reference category filters">
+              {(['participation', 'non_discrimination', 'accessibility', 'accountability', 'livelihood', 'all'] as PolicyAnchorCategory[]).map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeReferenceFilter === category}
+                  className={activeReferenceFilter === category ? 'is-active' : ''}
+                  onClick={() => setActiveReferenceFilter(category)}
+                >
+                  {policyAnchorCategoryLabels[category]}
+                </button>
+              ))}
+            </div>
+            <div className="m3-policy-map-anchor-grid" role="group" aria-label="Design lenses and sources to check">
+              {filteredPolicyAnchors.map((anchor) => {
                 const selected = selectedAnchorIds.includes(anchor.id);
                 return (
-                  <button
+                  <article
                     key={anchor.id}
-                    type="button"
                     className={`m3-policy-map-anchor-card ${selected ? 'is-selected' : ''}`}
-                    aria-pressed={selected}
                     data-anchor-id={anchor.id}
                     data-testid={selected ? 'm3-s06-selected-anchor' : undefined}
-                    onClick={() => toggleAnchor(anchor.id)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
-                        event.preventDefault();
-                        toggleAnchor(anchor.id);
-                      }
-                    }}
                   >
-                    <span className="m3-policy-map-anchor-status" aria-hidden="true">
-                      {selected ? '✓' : '+'}
-                    </span>
-                      <span className="m3-policy-map-anchor-copy">
-                        <span className="m3-policy-map-badge">Reference type: {anchor.sourceLayer}</span>
-                        <strong>{anchor.title}</strong>
-                      <span><strong>Use when the context scan shows:</strong> {anchor.useWhen}</span>
-                      <span><strong>What it protects or requires:</strong> {anchor.protectsOrRequires}</span>
-                      <span><strong>Design question:</strong> {anchor.designQuestion}</span>
-                      <span><strong>Responsibility question:</strong> {anchor.responsibilityQuestion}</span>
-                      <span><strong>Design implication:</strong> {anchor.designImplication}</span>
-                      <span className="m3-policy-map-reference-list" aria-label={`Related references for ${anchor.title}`}>
-                        <span>Reference sources</span>
-                        {anchor.relatedReferences.map((reference) => (
-                          <small key={reference}>{reference}</small>
-                        ))}
+                    <div className="m3-policy-map-anchor-head">
+                      <span className="m3-policy-map-anchor-status" aria-hidden="true">
+                        {selected ? '✓' : '+'}
                       </span>
-                      {selected && <span className="m3-policy-map-selected-label">Selected</span>}
-                    </span>
-                  </button>
+                      <span className="m3-policy-map-badge">{anchor.sourceLayer}</span>
+                    </div>
+                    <div className="m3-policy-map-anchor-copy">
+                      <strong>{anchor.title}</strong>
+                      <span><strong>Sources to check:</strong> {compactPolicyMapLine(anchor.sourcesToCheck)}</span>
+                      <span><strong>Use when:</strong> {compactPolicyMapLine(anchor.useWhen)}</span>
+                    </div>
+                    <div className="m3-policy-map-anchor-actions">
+                      <button
+                        type="button"
+                        className="m3-policy-map-anchor-select"
+                        aria-pressed={selected}
+                        onClick={() => toggleAnchor(anchor.id)}
+                      >
+                        {selected ? 'Selected' : 'Select'}
+                      </button>
+                      <details className="m3-policy-map-anchor-details">
+                        <summary>Details</summary>
+                        <div>
+                          <p><strong>What this means:</strong> {anchor.protectsOrRequires}</p>
+                          <p><strong>Design question:</strong> {anchor.designQuestion}</p>
+                          <p><strong>Responsibility question:</strong> {anchor.responsibilityQuestion}</p>
+                          <span className="m3-policy-map-reference-list" aria-label={`Related references for ${anchor.title}`}>
+                            <span>{anchor.detailSourcesLabel}</span>
+                            {anchor.relatedReferences.map((reference) => (
+                              <small key={reference}>{reference}</small>
+                            ))}
+                          </span>
+                        </div>
+                      </details>
+                    </div>
+                  </article>
                 );
               })}
             </div>
           </div>
 
-          {selectedAnchorIds.length > 0 && (
+          {selectedAnchorIds.length < 3 && (
+            <div className="m3-policy-map-step m3-policy-map-match-panel is-disabled">
+              <h3>Step 2: Match selected references to Jiru Amba context signals</h3>
+              <p>Select at least three references first. Then the matching choices will appear.</p>
+            </div>
+          )}
+
+          {selectedAnchorIds.length >= 3 && (
             <div className="m3-policy-map-step m3-policy-map-match-panel">
-              <h3>Step 2: Match each context signal to a useful reference</h3>
-              <p>
-                For each Jiru Amba context signal, choose the reference that best helps explain what
-                the design should check or improve. A good match should help you write a design
-                question, a responsibility question, and a design implication.
-              </p>
-              <div className="m3-policy-map-match-grid">
+              <h3>Step 2: Match selected references to Jiru Amba context signals</h3>
+              <p>Choose which selected reference best helps interpret each context signal.</p>
+              <div className="m3-policy-map-match-rows">
                 {screen6ContextSignalIds.map((signalId) => {
                   const signal = getSignalById(signalId);
                   const logic = policySignalMatchLogic[signalId];
@@ -8870,11 +8958,10 @@ function PolicyStandardsMapScreen({
                   if (!signal || !logic) return null;
 
                   return (
-                    <label key={signalId} className="m3-policy-map-match-card">
-                      <span>
+                    <label key={signalId} className="m3-policy-map-match-row">
+                      <span className="m3-policy-map-match-signal">
                         <strong>{signal.label}</strong>
-                        <small>{signal.plainDescription}</small>
-                        <small>Strongest match: {getAnchorById(logic.strongest)?.title}</small>
+                        <small>{compactPolicyMapLine(signal.plainDescription)}</small>
                       </span>
                       <select
                         aria-label={`Reference source for ${signal.label}`}
@@ -8883,14 +8970,14 @@ function PolicyStandardsMapScreen({
                         onInput={(event) => updateMatch(signalId, event.currentTarget.value)}
                         onChange={(event) => updateMatch(signalId, event.target.value)}
                       >
-                        <option value="">Choose a selected reference source</option>
+                        <option value="">Choose selected reference</option>
                         {selectedAnchorIds.map((anchorId) => (
                           <option key={anchorId} value={anchorId}>
                             {getAnchorById(anchorId)?.title}
                           </option>
                         ))}
                       </select>
-                      {selectedAnchor && <em>{matchHint}: {selectedAnchor.designQuestion}</em>}
+                      <em>{selectedAnchor ? `${matchHint}: ${compactPolicyMapLine(selectedAnchor.designQuestion, 110)}` : `Hint: strongest match is ${getAnchorById(logic.strongest)?.title}.`}</em>
                     </label>
                   );
                 })}
@@ -8898,35 +8985,33 @@ function PolicyStandardsMapScreen({
             </div>
           )}
 
-          <div className="m3-policy-map-submit-row">
-            <button
-              type="button"
-              className="m3-policy-map-submit-button"
-              onClick={generatePolicyMapFromStage}
-            >
-              {submittedOutput ? 'Update policy and standards map' : 'Generate policy and standards map'}
-            </button>
-            <p aria-live="polite">
-              {formChanged ? 'Update your draft map before continuing so the saved output matches your latest choices.' : submitHelper}
-            </p>
-          </div>
-
           <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-live-policy`}>
             <h2 id={`${screen.id}-live-policy`}>Standards map so far</h2>
-            <p aria-live="polite">{selectedReferenceCountLabel}</p>
-            <div className="m3-guided-chip-list" aria-label="Selected reference sources">
+            <div className="m3-policy-map-live-counts" aria-live="polite">
+              <span><strong>{selectedAnchorIds.length}</strong> references selected</span>
+              <span><strong>{selectedMatches.length}</strong> context signals matched</span>
+            </div>
+            <div className="m3-guided-chip-list" aria-label="Selected sources to check">
               {selectedReferenceTitles.length > 0 ? selectedReferenceTitles.map((title) => (
                 <span key={title} className="m3-guided-selected-chip">✓ {title}</span>
-              )) : <span className="m3-guided-muted">No reference sources selected yet.</span>}
+              )) : <span className="m3-guided-muted">No sources to check selected yet.</span>}
             </div>
-            <p><strong>{selectedMatches.length}</strong> context signals matched.</p>
             {matchedSignalLabels.length > 0 && (
               <div className="m3-guided-chip-list" aria-label="Matched context signals">
                 {matchedSignalLabels.map((label) => <span key={label} className="m3-guided-selected-chip">{label}</span>)}
               </div>
             )}
-            <p className="m3-guided-helper" aria-live="polite">{submitHelper}</p>
+            <p className="m3-guided-helper" aria-live="polite">{formChanged ? 'Update your draft map before continuing so the saved output matches your latest choices.' : mapProgressMessage}</p>
             <p className="m3-guided-safe-note">Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
+            <button
+              type="button"
+              className="m3-policy-map-submit-button"
+              disabled={!readyToSubmit}
+              onClick={generatePolicyMapFromStage}
+            >
+              {submittedOutput ? 'Update policy and standards map' : 'Generate policy and standards map'}
+            </button>
+            {!readyToSubmit && <p className="m3-policy-map-live-missing">{generateDisabledHelper || submitHelper}</p>}
           </aside>
         </section>
         )}
@@ -8945,23 +9030,32 @@ function PolicyStandardsMapScreen({
               {generatedRows.map((row) => (
                 <article key={`${row.signalId}-${row.anchorId}`} className="m3-policy-map-output-row" data-testid="m3-s06-generated-map-row">
                   <div>
-                    <span>Context signal</span>
+                    <span>1. Context signal</span>
                     <p>{row.signalLabel}</p>
                   </div>
                   <div>
-                    <span>Reference sources</span>
-                    <p>{row.anchorTitle}</p>
+                    <span>2. Design lens</span>
+                    <p>{row.sourceLayer}</p>
                   </div>
                   <div>
-                    <span>Design question</span>
+                    <span>3. Policy/standards sources to check</span>
+                    <p>{row.sourcesToCheck}</p>
+                    <span className="m3-policy-map-output-references" aria-label={`Related references for ${row.anchorTitle}`}>
+                      {row.relatedReferences.map((reference) => (
+                        <small key={reference}>{reference}</small>
+                      ))}
+                    </span>
+                  </div>
+                  <div>
+                    <span>4. Design question</span>
                     <p>{row.designQuestion}</p>
                   </div>
                   <div>
-                    <span>Responsibility question</span>
+                    <span>5. Responsibility question</span>
                     <p>{row.responsibilityQuestion}</p>
                   </div>
                   <div>
-                    <span>Design implication</span>
+                    <span>6. What this means for project design</span>
                     <p>{row.designImplication}</p>
                   </div>
                 </article>
@@ -9147,11 +9241,9 @@ function RightsHolderBarrierMapScreen({
   const [selectedGroupIds, setSelectedGroupIds] = useState<RightsHolderGroupId[]>([]);
   const [customGroupLabel, setCustomGroupLabel] = useState('');
   const [groupBarrierLinks, setGroupBarrierLinks] = useState<Record<RightsHolderGroupId, BarrierTagId[]>>(emptyBarrierMap);
-  const [activeGroupId, setActiveGroupId] = useState<RightsHolderGroupId | null>(null);
   const [submittedOutput, setSubmittedOutput] = useState<Screen7Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emptyPreviewImageFailed, setEmptyPreviewImageFailed] = useState(false);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen7OwnCsoOutput>({
     projectIdea: '',
     group: '',
@@ -9172,10 +9264,6 @@ function RightsHolderBarrierMapScreen({
   const orderedSelectedGroupIds = orderedRightsHolderGroupIds(selectedGroupIds);
   const selectedSpecificGroupIds = getSpecificGroupIds(orderedSelectedGroupIds, customValidation.isValid);
   const selectedSpecificGroupCount = selectedSpecificGroupIds.length;
-  const activeRenderableGroupId =
-    activeGroupId && selectedSpecificGroupIds.includes(activeGroupId)
-      ? activeGroupId
-      : selectedSpecificGroupIds[0] || null;
   const groupsMissingBarriers = selectedSpecificGroupIds.filter(
     (groupId) => getGroupBarrierIds(groupBarrierLinks, groupId).length === 0,
   );
@@ -9217,13 +9305,23 @@ function RightsHolderBarrierMapScreen({
   );
   const selectedCountLabel =
     orderedSelectedGroupIds.length === 1 ? '1 group selected' : `${orderedSelectedGroupIds.length} groups selected`;
+  const barrierMatchCount = selectedSpecificGroupIds.filter(
+    (groupId) => getGroupBarrierIds(groupBarrierLinks, groupId).length > 0,
+  ).length;
+  const priorityBarrierLinkCount = selectedSpecificGroupIds.reduce(
+    (total, groupId) => total + getGroupBarrierIds(groupBarrierLinks, groupId).length,
+    0,
+  );
+  const selectedSpecificGroupChips = selectedSpecificGroupIds.map((groupId) => ({
+    id: groupId,
+    label: getRightsHolderDisplayLabel(groupId, customGroupLabel),
+  }));
   const specificCountHelper =
     selectedSpecificGroupCount < 2
       ? 'Select at least two specific rights-holder groups to build the practice map.'
       : selectedSpecificGroupCount <= 5
         ? 'Good range for a focused practice map.'
         : 'This map may become too broad. Keep only the groups that most change the design question.';
-  const isBuilderEmpty = selectedSpecificGroupCount === 0;
   const submitHelper =
     selectedSpecificGroupCount === 0
       ? 'Please select at least two specific rights-holder groups. HRBA design should move beyond “the community” and identify who may experience the issue differently.'
@@ -9262,9 +9360,6 @@ function RightsHolderBarrierMapScreen({
 
       if (selected) {
         setGroupBarrierLinks((links) => ({ ...links, [groupId]: [] }));
-        setActiveGroupId((currentActive) => (currentActive === groupId ? null : currentActive));
-      } else if (groupId !== 'community_as_whole') {
-        setActiveGroupId(groupId);
       }
 
       return next;
@@ -9422,14 +9517,6 @@ function RightsHolderBarrierMapScreen({
     submitMap();
     if (canSubmit) setActiveStage(4);
   };
-  const selectedGroupChips = orderedSelectedGroupIds.map((groupId) => ({
-    id: groupId,
-    label: getRightsHolderDisplayLabel(groupId, customGroupLabel),
-    status: groupId === 'community_as_whole'
-      ? 'Broad label'
-      : getPreviewStatus(getGroupBarrierIds(groupBarrierLinks, groupId)),
-  }));
-
   return (
     <main className="m3-screen m3-rights-map-screen" aria-labelledby={titleId}>
       <article className="m3-rights-map-shell">
@@ -9448,7 +9535,7 @@ function RightsHolderBarrierMapScreen({
           onSelect={setActiveStage}
         />
 
-        {activeStage <= 2 && (
+        {activeStage === 1 && (
         <section className="m3-rights-map-orientation m3-guided-stage-card" aria-label="Rights-holder mapping orientation">
           <section className="m3-rights-map-card m3-rights-map-understand-card" aria-labelledby={`${screen.id}-purpose`}>
             <h2 id={`${screen.id}-purpose`}>Rights-holder and barrier analysis makes project design more specific</h2>
@@ -9483,40 +9570,6 @@ function RightsHolderBarrierMapScreen({
             </div>
           </section>
 
-          <section className="m3-rights-map-card" aria-labelledby={`${screen.id}-example`}>
-            <h2 id={`${screen.id}-example`}>Worked example</h2>
-            <p>Here is how one broad signal becomes a more useful map for design.</p>
-            <div className="m3-rights-map-example">
-              <div>
-                <span>Specific rights-holder group</span>
-                <p>Women vendors in the market area.</p>
-              </div>
-              <div>
-                <span>Affected right, service, or project benefit</span>
-                <p>Livelihood participation, access to information, and influence over market-related priorities.</p>
-              </div>
-              <div>
-                <span>Priority barriers</span>
-                <p>Limited influence, timing or care-work barrier, and information barrier.</p>
-              </div>
-              <div>
-                <span>What the barriers may block</span>
-                <p>Women traders may be consulted after priorities are already shaped, may miss information because of work and care schedules, or may not see how market decisions affect their livelihood.</p>
-              </div>
-              <div>
-                <span>Design response</span>
-                <p>Share information earlier, use market-accessible communication channels, schedule consultation around livelihood realities, and show how women traders’ priorities changed the plan.</p>
-              </div>
-              <div>
-                <span>Question for Screen 8</span>
-                <p>Which planning, market, or service actor must respond to these barriers, and what role should Awra realistically play?</p>
-              </div>
-            </div>
-            <p>
-              <strong>Notice:</strong> The point is not to list every possible barrier. The point is to identify the barriers that should change the project design.
-            </p>
-          </section>
-
           <section className="m3-rights-map-safe-note" aria-labelledby={`${screen.id}-safe`} data-testid="m3-s07-safety-note">
             <h2 id={`${screen.id}-safe`}>Safe evidence</h2>
             <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
@@ -9528,18 +9581,47 @@ function RightsHolderBarrierMapScreen({
                   {rightsHolderSafeEvidenceExamples.map((example) => <li key={example}>{example};</li>)}
                 </ul>
               </div>
-              <div>
-                <h3>Do not collect here</h3>
-                <ul>
-                  <li>real names;</li>
-                  <li>complaints or incident details;</li>
-                  <li>survivor stories;</li>
-                  <li>exact sensitive locations;</li>
-                  <li>information that could identify people.</li>
-                </ul>
-              </div>
             </div>
           </section>
+
+          <div className="m3-guided-stage-actions">
+            <button type="button" className="m3-rights-map-submit-button" onClick={() => setActiveStage(2)}>See worked example</button>
+          </div>
+        </section>
+        )}
+
+        {activeStage === 2 && (
+        <section className="m3-rights-map-orientation m3-guided-stage-card" aria-label="Rights-holder mapping worked example">
+          <section className="m3-rights-map-card" aria-labelledby={`${screen.id}-example`}>
+            <h2 id={`${screen.id}-example`}>Worked example</h2>
+            <p>Here is how one broad signal becomes a more useful map for design.</p>
+            <div className="m3-rights-map-example m3-rights-map-example--short">
+              <div>
+                <span>Rights-holder group</span>
+                <p>Women vendors in the market area.</p>
+              </div>
+              <div>
+                <span>Possible barrier</span>
+                <p>Limited influence, timing or care-work barrier, and information barrier.</p>
+              </div>
+              <div>
+                <span>Design question</span>
+                <p>How will women vendors influence market-related priorities before decisions are finalized?</p>
+              </div>
+              <div>
+                <span>What should change in the design</span>
+                <p>Share information earlier, use market-accessible communication channels, schedule consultation around livelihood realities, and show how women traders’ priorities changed the plan.</p>
+              </div>
+            </div>
+            <p>
+              <strong>Notice:</strong> The point is not to list every possible barrier. The point is to identify the barriers that should change the project design.
+            </p>
+          </section>
+
+          <div className="m3-guided-stage-actions">
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(1)}>Back to Understand</button>
+            <button type="button" className="m3-rights-map-submit-button" onClick={() => setActiveStage(3)}>Practice with Jiru Amba</button>
+          </div>
         </section>
         )}
 
@@ -9560,11 +9642,7 @@ function RightsHolderBarrierMapScreen({
           </div>
           <p className="m3-rights-map-helper" aria-live="polite">{specificCountHelper}</p>
 
-          <section
-            className={`m3-rights-map-builder ${
-              isBuilderEmpty ? 'm3-rights-map-builder--empty' : 'm3-rights-map-builder--active'
-            }`}
-          >
+          <section className="m3-rights-map-builder m3-rights-map-builder--guided">
             <section className="m3-rights-map-panel m3-rights-map-groups-panel m3-rights-map-step" aria-labelledby={`${screen.id}-groups`}>
               <h3 id={`${screen.id}-groups`}>Step 1: Select specific rights-holder groups</h3>
               <p>Which specific rights-holder groups should the Jiru Amba plan examine more carefully?</p>
@@ -9600,8 +9678,7 @@ function RightsHolderBarrierMapScreen({
                       <span className="m3-rights-map-group-status" aria-hidden="true">{selected ? '✓' : '+'}</span>
                       <span className="m3-rights-map-group-copy">
                         <strong>{group.label}</strong>
-                        <span><b>Affected right, service, or project benefit:</b> {group.affectedBenefit}</span>
-                        <span><b>Case clue:</b> {group.caseClue}</span>
+                        <span>{compactPolicyMapLine(group.caseClue, 112)}</span>
                         <small>{status}</small>
                       </span>
                     </button>
@@ -9633,145 +9710,54 @@ function RightsHolderBarrierMapScreen({
               )}
             </section>
 
-            {isBuilderEmpty ? (
-              <section className="m3-rights-map-empty-hero" aria-label="Rights-holder map orientation">
-                <div className="m3-rights-map-empty-hero-copy">
-                  <p className="m3-rights-map-kicker">Start with specific groups</p>
-                  <h3>Map who may face different barriers</h3>
-                  <p>
-                    Select at least two rights-holder groups from the Jiru Amba case. Your map will
-                    appear here as you add priority barriers.
-                  </p>
-                  <ul>
-                    <li>Move beyond “the community.”</li>
-                    <li>Choose specific groups.</li>
-                    <li>Add the barriers that should change the design.</li>
-                  </ul>
-                  {orderedSelectedGroupIds.includes('community_as_whole') && (
-                    <p className="m3-rights-map-empty-note">
-                      “The community as a whole” is a broad label only. Add specific groups to
-                      make the map useful.
-                    </p>
-                  )}
+            <section className={`m3-rights-map-panel m3-rights-map-barriers-panel m3-rights-map-step ${selectedSpecificGroupIds.length < 2 ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-barriers`}>
+              <h3 id={`${screen.id}-barriers`}>Step 2: Match priority barriers to selected groups</h3>
+              {selectedSpecificGroupIds.length < 2 ? (
+                <p className="m3-rights-map-empty-note">Select at least two specific groups before matching barriers.</p>
+              ) : (
+                <div className="m3-rights-map-match-rows" role="group" aria-label="Priority barrier matching rows">
+                  {selectedSpecificGroupIds.map((groupId) => {
+                    const group = getRightsHolderGroupById(groupId);
+                    const groupLabel = getRightsHolderDisplayLabel(groupId, customGroupLabel);
+                    const selectedBarriers = getGroupBarrierIds(groupBarrierLinks, groupId);
+                    return (
+                      <article key={groupId} className="m3-rights-map-match-row">
+                        <div className="m3-rights-map-match-group">
+                          <strong>{groupLabel}</strong>
+                          <small>{compactPolicyMapLine(group?.designResponse || '', 112)}</small>
+                        </div>
+                        <div className="m3-rights-map-match-chip-list" aria-label={`Priority barriers for ${groupLabel}`}>
+                          {barrierTags.map((barrier) => {
+                            const selected = selectedBarriers.includes(barrier.id);
+                            const suggested = group?.suggestedBarrierIds.includes(barrier.id);
+                            return (
+                              <button
+                                key={barrier.id}
+                                type="button"
+                                className={`m3-rights-map-match-chip ${selected ? 'is-selected' : ''} ${suggested ? 'is-suggested' : ''}`}
+                                aria-pressed={selected}
+                                data-barrier-id={barrier.id}
+                                data-testid={selected ? 'm3-s07-selected-signal' : 'm3-s07-selectable-signal'}
+                                onClick={() => toggleBarrier(groupId, barrier.id)}
+                              >
+                                {barrier.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <p className="m3-rights-map-match-hint">
+                          {selectedBarriers.length === 0
+                            ? 'Choose one or two barriers that most change the design.'
+                            : selectedBarriers.length > 3
+                              ? 'Narrow this to three or fewer priority barriers.'
+                              : `Design implication hint: ${compactPolicyMapLine(group?.designResponse || '', 118)}`}
+                        </p>
+                      </article>
+                    );
+                  })}
                 </div>
-                {emptyPreviewImageFailed ? (
-                  <div className="m3-rights-map-empty-hero-fallback" aria-hidden="true">
-                    <span>Planning room looks full</span>
-                    <span>Who speaks?</span>
-                    <span>Who accesses information?</span>
-                    <span>Who receives follow-up?</span>
-                  </div>
-                ) : (
-                  <figure className="m3-rights-map-empty-hero-figure">
-                    <img
-                      src={module3RightsHolderBarrierAssets.defaultPreview.src}
-                      alt={module3RightsHolderBarrierAssets.defaultPreview.alt}
-                      loading="lazy"
-                      onError={() => setEmptyPreviewImageFailed(true)}
-                    />
-                    <figcaption>
-                      Case-study visual: a planning meeting may look inclusive, but different
-                      rights-holder groups may still face different barriers.
-                    </figcaption>
-                  </figure>
-                )}
-              </section>
-            ) : (
-              <>
-                <section className="m3-rights-map-panel m3-rights-map-barriers-panel m3-rights-map-step" aria-labelledby={`${screen.id}-barriers`}>
-                  <h3 id={`${screen.id}-barriers`}>Step 2: Add priority barriers for each selected group</h3>
-                  {activeRenderableGroupId && (
-                <>
-                  <div className="m3-rights-map-active-tabs" role="tablist" aria-label="Selected rights-holder groups">
-                    {selectedSpecificGroupIds.map((groupId) => {
-                      const groupLabel = getRightsHolderDisplayLabel(groupId, customGroupLabel);
-                      const barrierCount = getGroupBarrierIds(groupBarrierLinks, groupId).length;
-                      const active = groupId === activeRenderableGroupId;
-                      const status = getActiveGroupStatus(barrierCount);
-
-                      return (
-                        <button
-                          key={groupId}
-                          type="button"
-                          role="tab"
-                          aria-selected={active}
-                          className={`m3-rights-map-active-tab ${active ? 'is-active' : ''}`}
-                          onClick={() => setActiveGroupId(groupId)}
-                        >
-                          <span>{groupLabel} · {barrierCount === 1 ? '1 barrier' : `${barrierCount} barriers`}</span>
-                          <small>{status}</small>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="m3-rights-map-barrier-panel">
-                    <h4>Add priority barriers for: {getRightsHolderDisplayLabel(activeRenderableGroupId, customGroupLabel)}</h4>
-                    <p>Choose one or two barriers that most change the design. You do not need to select everything.</p>
-                    <p>Suggested barriers for this group are marked “Suggested,” but you decide what fits the Jiru Amba case.</p>
-                    <div className="m3-rights-map-barrier-grid" role="group" aria-label={`Priority barriers for ${getRightsHolderDisplayLabel(activeRenderableGroupId, customGroupLabel)}`}>
-                      {barrierTags.map((barrier) => {
-                        const selected = getGroupBarrierIds(groupBarrierLinks, activeRenderableGroupId).includes(barrier.id);
-                        const suggested = getRightsHolderGroupById(activeRenderableGroupId)?.suggestedBarrierIds.includes(barrier.id);
-
-                        return (
-                          <button
-                            key={barrier.id}
-                            type="button"
-                            className={`m3-rights-map-barrier-chip ${selected ? 'is-selected' : ''}`}
-                            aria-pressed={selected}
-                            data-barrier-id={barrier.id}
-                            data-testid={selected ? 'm3-s07-selected-signal' : 'm3-s07-selectable-signal'}
-                            onClick={() => toggleBarrier(activeRenderableGroupId, barrier.id)}
-                            onKeyDown={(event) => {
-                              if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
-                                event.preventDefault();
-                                toggleBarrier(activeRenderableGroupId, barrier.id);
-                              }
-                            }}
-                          >
-                            <span className="m3-rights-map-barrier-icon" aria-hidden="true">{selected ? '✓' : '+'}</span>
-                            <span>
-                              <strong>{barrier.label}</strong>
-                              <small>{barrier.plainMeaning}</small>
-                              <em>Design risk: {barrier.designRisk}</em>
-                              <span className="m3-rights-map-barrier-tags">
-                                {suggested && <span>Suggested</span>}
-                                {selected && <span>Selected</span>}
-                              </span>
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </>
-                  )}
-                </section>
-
-                <aside className="m3-rights-map-panel m3-rights-map-preview-panel m3-rights-map-preview" aria-labelledby={`${screen.id}-preview`}>
-                  <h3 id={`${screen.id}-preview`}>Map preview</h3>
-                  <p>
-                    This preview updates as you select groups and barriers. Submit when each
-                    selected group has at least one priority barrier.
-                  </p>
-                  <div className="m3-rights-map-preview-list">
-                    {selectedSpecificGroupIds.map((groupId) => (
-                      <p key={groupId}>
-                        <strong>{getRightsHolderDisplayLabel(groupId, customGroupLabel)}</strong>
-                        <span>{getPreviewStatus(getGroupBarrierIds(groupBarrierLinks, groupId))}</span>
-                      </p>
-                    ))}
-                    {orderedSelectedGroupIds.includes('community_as_whole') && (
-                      <p>
-                        <strong>The community as a whole</strong>
-                        <span>broad label only. Add specific groups to make the map useful.</span>
-                      </p>
-                    )}
-                  </div>
-                </aside>
-              </>
-            )}
+              )}
+            </section>
           </section>
 
           <div className="m3-rights-map-submit-row">
@@ -9790,16 +9776,26 @@ function RightsHolderBarrierMapScreen({
 
           <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-live-barrier`}>
             <h2 id={`${screen.id}-live-barrier`}>Barrier map so far</h2>
-            <p aria-live="polite">{orderedSelectedGroupIds.length === 0 ? 'No groups selected yet.' : selectedCountLabel}</p>
+            <div className="m3-policy-map-live-counts" aria-live="polite">
+              <span><strong>{selectedSpecificGroupIds.length}</strong> specific groups selected</span>
+              <span><strong>{barrierMatchCount}</strong> groups matched</span>
+            </div>
             <div className="m3-guided-chip-list" aria-label="Selected rights-holder groups">
-              {selectedGroupChips.length > 0 ? selectedGroupChips.map((chip) => (
-                <span key={chip.id} className="m3-guided-selected-chip">✓ {chip.label} · {chip.status}</span>
+              {selectedSpecificGroupChips.length > 0 ? selectedSpecificGroupChips.map((chip) => (
+                <span key={chip.id} className="m3-guided-selected-chip">✓ {chip.label}</span>
               )) : <span className="m3-guided-muted">Select at least two specific groups.</span>}
             </div>
-            <p><strong>{selectedSpecificGroupIds.length}</strong> specific groups ready for barrier mapping.</p>
-            <p><strong>{selectedSpecificGroupIds.reduce((total, groupId) => total + getGroupBarrierIds(groupBarrierLinks, groupId).length, 0)}</strong> priority barriers linked.</p>
+            <p><strong>{priorityBarrierLinkCount}</strong> priority barrier links added.</p>
             <p className="m3-guided-helper" aria-live="polite">{submitHelper}</p>
             <p className="m3-guided-safe-note">Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
+            <button
+              type="button"
+              className="m3-rights-map-submit-button"
+              disabled={!canSubmit}
+              onClick={generateRightsMapFromStage}
+            >
+              {submittedOutput ? 'Update map' : 'Generate map'}
+            </button>
           </aside>
         </section>
         )}
@@ -9842,34 +9838,35 @@ function RightsHolderBarrierMapScreen({
             </section>
 
             <div className="m3-rights-map-generated-card-grid">
-              {generatedRows.map((row) => {
-                const safeEvidence = getSafeEvidenceForBarrierCategories(row.barrierCategories);
-                return (
-                  <article key={row.groupId} className="m3-rights-map-generated-card" data-testid="m3-s07-generated-map-row">
-                    <h3>{row.groupLabel}</h3>
-                    <div>
-                      <span>Rights-holder group</span>
-                      <p>{row.groupLabel}</p>
-                    </div>
-                    <div>
-                      <span>Barrier or exclusion pattern</span>
-                      <p>{row.barrierLabels.join(', ')}</p>
-                    </div>
-                    <div>
-                      <span>Safe evidence to verify</span>
-                      <p>{safeEvidence.length > 0 ? safeEvidence.join('; ') : 'generalized, non-identifying evidence that can be checked safely'}</p>
-                    </div>
-                    <div>
-                      <span>Design implication</span>
-                      <p>{row.designResponse}</p>
-                    </div>
-                    <div>
-                      <span>Carry-forward note for Screen 8</span>
-                      <p>{row.screen8Question}</p>
-                    </div>
-                  </article>
-                );
-              })}
+              {generatedRows.map((row) => (
+                <article key={row.groupId} className="m3-rights-map-generated-card" data-testid="m3-s07-generated-map-row">
+                  <h3>{row.groupLabel}</h3>
+                  <div>
+                    <span>Rights-holder group</span>
+                    <p>{row.groupLabel}</p>
+                  </div>
+                  <div>
+                    <span>Priority barriers</span>
+                    <p>{row.barrierLabels.join(', ')}</p>
+                  </div>
+                  <div>
+                    <span>What the barrier means for design</span>
+                    <p>{row.whatBarrierMayBlock}</p>
+                  </div>
+                  <div>
+                    <span>Design question</span>
+                    <p>What should the project adjust so {row.groupLabel} can access, participate, influence, benefit, or receive follow-up?</p>
+                  </div>
+                  <div>
+                    <span>What should change before finalizing the project</span>
+                    <p>{row.designResponse}</p>
+                  </div>
+                  <div>
+                    <span>Carry forward to duty-bearers and roles</span>
+                    <p>{row.screen8Question}</p>
+                  </div>
+                </article>
+              ))}
             </div>
 
             <p className="m3-rights-map-output-safe" data-testid="m3-s07-safety-note">
@@ -10076,7 +10073,7 @@ function RightsHolderBarrierMapScreen({
           <div>
             <p className="m3-rights-map-kicker">Downloadable template</p>
             <h2 id={`${screen.id}-template`}>Rights-Holder and Barrier Map Template</h2>
-            <p>Use this template after your context and inequality scan and policy/standards map. Keep examples safe, generalized, and non-identifying.</p>
+            <p>Use this template after your context and inequality scan and policy/standards map.</p>
           </div>
           <div className="m3-rights-map-template-actions">
             <button type="button" className="m3-rights-map-submit-button" onClick={() => downloadRightsHolderTemplate('docx')}>
