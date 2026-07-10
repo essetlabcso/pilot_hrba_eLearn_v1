@@ -5740,6 +5740,18 @@ type Screen16Submission = {
     logicQualitySummary: string;
     feedbackMessages: string[];
   };
+  logicIndicatorReview?: {
+    repairedDesignFocus: string;
+    intendedChangeOutcome: string;
+    keyActivityOutput: string;
+    rightsHolderParticipantGroup: string;
+    responsibleActorRole: string;
+    indicator: string;
+    evidenceSourceVerificationMethod: string;
+    assumptionRiskToWatch: string;
+    implementationWatchPoint: string;
+    carryForwardNote: string;
+  };
   ownCsoPracticeOutput?: Screen16OwnCsoOutput;
   portfolioSummary: string;
   savedAt: string;
@@ -5980,11 +5992,18 @@ function emptyScreen16Selections(): Screen16Selections {
   return { barrier: '', repairedObjective: '', repairedActivity: '', output: '', outcome: '', indicator: '', safeEvidenceSource: '', assumptionRisk: '', watchPoint: '' };
 }
 
+function hasUnsafeScreen16LearningDetail(value: string) {
+  const unsafeTermPattern = /\b(\d{2,}|survivor|rape|assault|HIV|diagnosis|medical record|complaint against|accused|killed|beaten)\b/i;
+  const courseFictionRemoved = value.replace(/\bJiru Amba\b/g, '').replace(/\bAwra\b/g, '');
+  const looksLikeName = /\b[A-Z][a-z]+ [A-Z][a-z]+\b/.test(courseFictionRemoved);
+  return unsafeTermPattern.test(value) || looksLikeName;
+}
+
 function getScreen16ValidationMessages(selection: Screen16Selections) {
   const messages: string[] = [];
   if (!selection.barrier || !selection.repairedObjective || !selection.repairedActivity || !selection.output || !selection.outcome || !selection.indicator || !selection.safeEvidenceSource || !selection.assumptionRisk || !selection.watchPoint) messages.push('Please complete each part of the mini-matrix. Intervention logic needs a barrier, objective, activity, output, outcome, indicator, evidence source, assumption or risk, and watch-point.');
   if (outputOnlyIndicatorPattern.test(selection.indicator)) messages.push('This indicator mostly counts delivery. Add a way to show influence, access, response, benefit, accountability, accessibility, or capacity change.');
-  if (hasUnsafeLearningDetail(Object.values(selection).join(' '))) messages.push('Keep indicators safe. Do not require names, complaint details, disability or medical details, survivor stories, exact sensitive locations, accusations, or identifiable information.');
+  if (hasUnsafeScreen16LearningDetail(Object.values(selection).join(' '))) messages.push('Keep indicators safe. Do not require names, complaint details, disability or medical details, survivor stories, exact sensitive locations, accusations, or identifiable information.');
   return messages;
 }
 
@@ -5998,7 +6017,7 @@ function getScreen16Helper(selection: Screen16Selections, submitted: boolean, st
 }
 
 function getScreen16LogicQualitySummary(selection: Screen16Selections) {
-  if (hasUnsafeLearningDetail(Object.values(selection).join(' '))) return 'The evidence source needs to remain safe. Use non-identifying summaries, facilitation notes, accessibility checks, revised activity records, or follow-up summaries. Do not collect names, complaints, disability details, or identifying information.';
+  if (hasUnsafeScreen16LearningDetail(Object.values(selection).join(' '))) return 'The evidence source needs to remain safe. Use non-identifying summaries, facilitation notes, accessibility checks, revised activity records, or follow-up summaries. Do not collect names, complaints, disability details, or identifying information.';
   if (outputOnlyIndicatorPattern.test(selection.indicator)) return 'This logic is still too activity-heavy. Strengthen the outcome and indicator so they show what changes for rights-holders, responsible actors, accessibility, feedback, or accountability.';
   return 'Strong logic chain. Your objective, activity, output, outcome, indicator, safe evidence source, and watch-point fit together. The indicator shows more than delivery and helps track influence, access, response, inclusion, or accountability.';
 }
@@ -14251,41 +14270,427 @@ function InterventionLogicIndicatorsScreen({ screen, state, onComplete }: {
   const carriedObjective = getScreen14SavedOutput(state)?.repairedObjective.repairedHrbaObjective || screen16FallbackObjective;
   const carriedActivities = getScreen15SavedOutput(state)?.repairedActivityPackage.repairedActivities.map((action) => action.repairedActivity) || screen16FallbackActivities;
   const titleId = `${screen.id}-title`;
-  const compatibilitySelection: Screen16Selections = {
-    ...emptyScreen16Selections(),
-    barrier: screen16Barriers[0],
-    repairedObjective: carriedObjective,
-    repairedActivity: carriedActivities[0] || screen16FallbackActivities[0],
-    output: screen16Outputs[0],
-    outcome: screen16Outcomes[0],
-    indicator: screen16Indicators[0],
-    safeEvidenceSource: screen16EvidenceSources[0],
-    assumptionRisk: screen16AssumptionRisks[0],
-    watchPoint: screen16WatchPoints[0],
+  type Screen16Stage = 1 | 2 | 3 | 4 | 5;
+  type Screen16LogicField =
+    | 'intendedChange'
+    | 'keyActivityOutput'
+    | 'participantGroup'
+    | 'actorRole'
+    | 'indicator'
+    | 'evidenceSource'
+    | 'assumptionRisk'
+    | 'watchPoint';
+  type Screen16LogicDraft = Record<Screen16LogicField, string>;
+
+  const stages: Array<{ id: Screen16Stage; label: string }> = [
+    { id: 1, label: 'Understand' },
+    { id: 2, label: 'Example' },
+    { id: 3, label: 'Practice' },
+    { id: 4, label: 'Review logic and indicators' },
+    { id: 5, label: 'Apply/Download' },
+  ];
+  const repairedFocusOptions = [
+    {
+      id: 'repairedObjective',
+      label: 'Repaired objective',
+      context: 'Check whether the intended change is specific enough to guide activities, actors, and evidence.',
+      barrier: screen16Barriers[0],
+    },
+    {
+      id: 'repairedActivityPackage',
+      label: 'Repaired activity package',
+      context: 'Turn the repaired activities into a logic row with outputs, outcome, indicator, and watch-point.',
+      barrier: screen16Barriers[4],
+    },
+    {
+      id: 'participationAccountabilityPathway',
+      label: 'Participation/accountability pathway',
+      context: 'Show how information, participation, feedback, response, and adaptation will be tracked.',
+      barrier: screen16Barriers[3],
+    },
+    {
+      id: 'inclusionAccessibilityAdaptation',
+      label: 'Inclusion/accessibility adaptation',
+      context: 'Convert accessibility and reasonable accommodation repairs into indicators and evidence.',
+      barrier: screen16Barriers[2],
+    },
+    {
+      id: 'riskFollowUpMeasure',
+      label: 'Risk mitigation or follow-up measure',
+      context: 'Link risk mitigation to evidence, assumptions, and implementation watch-points.',
+      barrier: screen16Barriers[7],
+    },
+    {
+      id: 'responsibilityCoordinationRepair',
+      label: 'Responsibility and coordination repair',
+      context: 'Clarify actor responsibility, CSO support role, output, outcome, and follow-up evidence.',
+      barrier: screen16Barriers[5],
+    },
+  ];
+  const emptyLogicDraft: Screen16LogicDraft = {
+    intendedChange: '',
+    keyActivityOutput: '',
+    participantGroup: '',
+    actorRole: '',
+    indicator: '',
+    evidenceSource: '',
+    assumptionRisk: '',
+    watchPoint: '',
   };
-  const compatibilityMatrix = buildScreen16Submission(compatibilitySelection, null);
-  const compatibilityWarnings = getScreen16ValidationMessages(compatibilitySelection);
-  const compatibilityValid = isScreen16Valid(compatibilitySelection);
-  const compatibilityHelper = getScreen16Helper(compatibilitySelection, true, false);
-  const compatibilityFeedback = getScreen16Feedback(compatibilitySelection);
-  const emptyOwnCsoMatrix = getEmptyScreen16OwnCsoDraft();
+  const logicFieldOptions: Array<{ field: Screen16LogicField; label: string; options: string[]; testId: string }> = [
+    {
+      field: 'intendedChange',
+      label: 'Intended change or outcome',
+      testId: 'm3-s16-intended-change-select',
+      options: screen16Outcomes,
+    },
+    {
+      field: 'keyActivityOutput',
+      label: 'Key activity or output',
+      testId: 'm3-s16-key-activity-select',
+      options: [...carriedActivities, ...screen16Outputs].filter((value, index, list) => value && list.indexOf(value) === index),
+    },
+    {
+      field: 'participantGroup',
+      label: 'Rights-holder or participant group',
+      testId: 'm3-s16-participant-group-select',
+      options: [
+        'Women vendors and other lower-influence market users',
+        'Persons with disabilities and others with access needs',
+        'Youth seeking practical livelihood opportunities',
+        'Low-income households facing service access barriers',
+        'Remote kebele residents with information or transport barriers',
+        'People using feedback, service, or committee response channels',
+      ],
+    },
+    {
+      field: 'actorRole',
+      label: 'Responsible actor or role',
+      testId: 'm3-s16-actor-role-select',
+      options: [
+        'Woreda planning office responds; Awra facilitates and documents patterns',
+        'Relevant sector office or service actor follows up',
+        'Market committee or service committee reviews and responds',
+        'Project accountability focal point coordinates response',
+        'Awra supports participation, connection, and non-sensitive documentation',
+        'Joint coordination group checks implementation watch-points',
+      ],
+    },
+    {
+      field: 'indicator',
+      label: 'Indicator',
+      testId: 'm3-s16-indicator-select',
+      options: screen16Indicators.slice(0, 7),
+    },
+    {
+      field: 'evidenceSource',
+      label: 'Evidence source or verification method',
+      testId: 'm3-s16-evidence-source-select',
+      options: screen16EvidenceSources,
+    },
+    {
+      field: 'assumptionRisk',
+      label: 'Assumption or risk to watch',
+      testId: 'm3-s16-assumption-risk-select',
+      options: screen16AssumptionRisks,
+    },
+    {
+      field: 'watchPoint',
+      label: 'Implementation watch-point',
+      testId: 'm3-s16-watch-point-select',
+      options: screen16WatchPoints.filter((point) => !/names|complaint details/i.test(point)),
+    },
+  ];
+
+  const [stage, setStage] = useState<Screen16Stage>(1);
+  const [selectedFocusId, setSelectedFocusId] = useState('');
+  const [logicDraft, setLogicDraft] = useState<Screen16LogicDraft>(emptyLogicDraft);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen16Submission | null>(null);
+  const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
+  const [ownCsoDraft, setOwnCsoDraft] = useState<Screen16OwnCsoDraft>(getEmptyScreen16OwnCsoDraft());
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen16OwnCsoOutput | null>(null);
+  const [ownCsoError, setOwnCsoError] = useState('');
+
+  const selectedFocus = repairedFocusOptions.find((focus) => focus.id === selectedFocusId) || null;
+  const completedLogicFields = logicFieldOptions.filter(({ field }) => logicDraft[field]).length;
+  const logicComplete = Boolean(selectedFocus && completedLogicFields === logicFieldOptions.length);
+  const currentSelection: Screen16Selections = selectedFocus
+    ? {
+      barrier: selectedFocus.barrier,
+      repairedObjective: carriedObjective,
+      repairedActivity: logicDraft.keyActivityOutput,
+      output: logicDraft.keyActivityOutput,
+      outcome: logicDraft.intendedChange,
+      indicator: logicDraft.indicator,
+      safeEvidenceSource: logicDraft.evidenceSource,
+      assumptionRisk: logicDraft.assumptionRisk,
+      watchPoint: logicDraft.watchPoint,
+    }
+    : emptyScreen16Selections();
+  const helperText = logicComplete
+    ? getScreen16Helper(currentSelection, false, false)
+    : 'Select one repaired design focus and complete the outcome, activity/output, participant group, actor, indicator, evidence, assumption/risk, and watch-point fields.';
+  const finalReview = submittedOutput?.logicIndicatorReview || null;
+
+  const selectFocus = (focusId: string) => {
+    setSelectedFocusId(focusId);
+    setSubmittedOutput(null);
+  };
+
+  const updateLogicDraft = (field: Screen16LogicField, value: string) => {
+    setLogicDraft((current) => ({ ...current, [field]: value }));
+    setSubmittedOutput(null);
+  };
+
+  const generateLogicDraft = () => {
+    if (!selectedFocus || !logicComplete || !isScreen16Valid(currentSelection)) return;
+    const baseOutput = buildScreen16Submission(currentSelection, ownCsoOutput);
+    const logicIndicatorReview = {
+      repairedDesignFocus: selectedFocus.label,
+      intendedChangeOutcome: logicDraft.intendedChange,
+      keyActivityOutput: logicDraft.keyActivityOutput,
+      rightsHolderParticipantGroup: logicDraft.participantGroup,
+      responsibleActorRole: logicDraft.actorRole,
+      indicator: logicDraft.indicator,
+      evidenceSourceVerificationMethod: logicDraft.evidenceSource,
+      assumptionRiskToWatch: logicDraft.assumptionRisk,
+      implementationWatchPoint: logicDraft.watchPoint,
+      carryForwardNote: 'Use this logic row to prepare for the final applied knowledge check.',
+    };
+    setSubmittedOutput({
+      ...baseOutput,
+      logicIndicatorReview,
+      portfolioSummary: `Intervention logic and indicator row completed for ${selectedFocus.label}.`,
+      savedAt: new Date().toISOString(),
+    });
+    setStage(4);
+  };
+
+  const updateOwnCso = (field: keyof Screen16OwnCsoDraft, value: string) => {
+    setOwnCsoDraft((current) => ({ ...current, [field]: value }));
+    setOwnCsoError('');
+  };
+
+  const generateOwnCsoPractice = () => {
+    if (Object.values(ownCsoDraft).some((value) => !value.trim())) {
+      setOwnCsoError('Complete each field before opening the editable logic and indicator starter.');
+      return;
+    }
+    setOwnCsoOutput({ ...ownCsoDraft, generatedAt: new Date().toISOString() });
+    setOwnCsoError('');
+  };
+
+  const continueWithScreen16 = () => {
+    if (!submittedOutput) return;
+    const finalOutput: Screen16Submission = ownCsoOutput
+      ? { ...submittedOutput, ownCsoPracticeOutput: ownCsoOutput, savedAt: new Date().toISOString() }
+      : submittedOutput;
+    onComplete({ interventionLogicIndicators: finalOutput.interventionLogicIndicators, screen16: finalOutput });
+  };
 
   return (
-    <main className="m3-screen m3-design-repair-screen m3-integrated-notice-screen" aria-labelledby={titleId} data-qa="m3-s16-integrated-notice">
-      <article className="m3-design-repair-shell">
-        <header className="m3-design-repair-header"><ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip><p className="m3-design-repair-eyebrow">{screen.eyebrow}</p><h1 id={titleId}>This step is included in HRBA Project Design Repair</h1><p className="m3-design-repair-subtitle">The objective repair, activity package repair, and intervention logic check are now completed together in Screen 14: HRBA Project Design Repair.</p></header>
-        <section className="m3-integrated-section-card" aria-label={screen16Assets.hero.alt}>
-          <h2>Nothing else is required on this route</h2>
-          <p>This keeps the learning flow smoother and helps you save one complete design repair package.</p>
-          <div className="m3-integrated-package-grid">
-            <article><h3>Logic chain included</h3><p>{compatibilityMatrix.interventionLogicIndicators.logicQualitySummary}</p></article>
-            <article><h3>Indicator check</h3><p>{compatibilityFeedback[0]}</p></article>
-            <article><h3>Safe draft state</h3><p>{compatibilityWarnings.length === 0 && compatibilityValid ? compatibilityHelper : emptyOwnCsoMatrix.projectBarrierRootCause}</p></article>
-          </div>
-          <div className="m3-integrated-actions">
-            <PrimaryButton onClick={() => onComplete({ screen16: { integratedInScreen14: true, matrixPreview: compatibilityMatrix.interventionLogicIndicators } })}>{screen.continueLabel}</PrimaryButton>
-          </div>
-        </section>
+    <main className="m3-screen m3-design-repair-screen m3-s16-logic-screen" aria-labelledby={titleId} data-qa="m3-s16-guided-workspace">
+      <article className="m3-design-repair-shell m3-integrated-repair-shell">
+        <header className="m3-design-repair-header m3-integrated-repair-header">
+          <ProgressChip>Part 5 of 7 · Repair the design</ProgressChip>
+          <p className="m3-design-repair-eyebrow">MODULE 3 · INTERVENTION LOGIC</p>
+          <h1 id={titleId}>Intervention Logic and Indicators</h1>
+          <p className="m3-design-repair-subtitle">Convert the repaired design into a clear HRBA logic row with indicator, evidence, assumption, and watch-point.</p>
+        </header>
+
+        <nav className="m3-integrated-repair-stage-nav" aria-label="Screen 16 stages">
+          {stages.map((item) => {
+            const locked = item.id > 3 && !submittedOutput;
+            return (
+              <button key={item.id} type="button" className={`${stage === item.id ? 'is-active' : ''} ${submittedOutput && item.id < stage ? 'is-complete' : ''} ${locked ? 'is-locked' : ''}`} disabled={locked} onClick={() => setStage(item.id)}>
+                <span>{item.id}</span>
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {stage === 1 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-understand`}>
+            <div className="m3-integrated-payoff-card">
+              <div className="m3-integrated-payoff-icon">16</div>
+              <div>
+                <h2 id={`${screen.id}-understand`}>Turn the repaired design into logic that can be tracked</h2>
+                <p>After repairing the design, the next step is to connect the change you expect, the activity or output, who should benefit, who responds, and how progress will be verified.</p>
+              </div>
+              <aside>Output: a portfolio-ready logic and indicator row.</aside>
+            </div>
+            <div className="m3-integrated-explain-grid">
+              <article><h2>What this section is about</h2><p>Translate one repaired design focus into outcome, output, indicator, evidence, assumption, and watch-point.</p></article>
+              <article><h2>Why this matters</h2><p>A repaired activity still needs logic that shows how change will happen and how it will be tracked.</p></article>
+              <article><h2>What you will do</h2><p>Select one repaired focus, then complete a compact logic-and-indicator row.</p></article>
+              <article><h2>What you will produce</h2><p>A clear row that connects the repair to rights-holder change, responsible actor follow-up, and evidence.</p></article>
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>See example</button></div>
+          </section>
+        )}
+
+        {stage === 2 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-example`}>
+            <h2 id={`${screen.id}-example`}>Worked example: build one logic row</h2>
+            <p className="m3-integrated-info">The row keeps the repaired design connected to change, evidence, and assumptions.</p>
+            <div className="m3-s16-example-grid">
+              {[
+                ['Repaired design focus', 'Participation/accountability pathway'],
+                ['Intended change or outcome', screen16Outcomes[0]],
+                ['Key activity or output', screen16Outputs[1]],
+                ['Rights-holder or participant group', 'Women vendors and other lower-influence market users'],
+                ['Responsible actor or role', 'Woreda planning office responds; Awra facilitates and documents patterns'],
+                ['Indicator', screen16Indicators[0]],
+                ['Evidence source or verification method', screen16EvidenceSources[0]],
+                ['Assumption or risk to watch', screen16AssumptionRisks[0]],
+                ['Implementation watch-point', screen16WatchPoints[2]],
+              ].map(([label, value]) => <article key={label}><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <figure className="m3-integrated-preview">
+              <img src={screen16Assets.hero.src} alt={screen16Assets.hero.alt} />
+            </figure>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Start practice</button></div>
+          </section>
+        )}
+
+        {stage === 3 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-practice`}>
+            <div className="m3-s16-practice-layout">
+              <div className="m3-guided-stage-main">
+                <h2 id={`${screen.id}-practice`}>Practice: draft one logic-and-indicator row</h2>
+                <p className="m3-integrated-info">Select a repaired design focus, then complete each compact field. Generate stays disabled until the full row is complete.</p>
+                <section className="m3-s16-practice-step" aria-labelledby={`${screen.id}-focus-step`}>
+                  <p className="m3-risk-step-label">Step 1</p>
+                  <h3 id={`${screen.id}-focus-step`}>Select the repaired design focus</h3>
+                  <div className="m3-s16-focus-tiles">
+                    {repairedFocusOptions.map((focus) => {
+                      const selected = selectedFocusId === focus.id;
+                      return (
+                        <button key={focus.id} type="button" className={`m3-s16-focus-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => selectFocus(focus.id)} data-testid="m3-s16-focus-tile">
+                          <span>{selected ? 'Selected' : 'Select'}</span>
+                          <strong>{focus.label}</strong>
+                          <small>{focus.context}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+                <section className={`m3-s16-practice-step ${selectedFocus ? '' : 'is-disabled'}`} aria-labelledby={`${screen.id}-logic-row`}>
+                  <p className="m3-risk-step-label">Step 2</p>
+                  <h3 id={`${screen.id}-logic-row`}>Complete the logic-and-indicator row</h3>
+                  {selectedFocus ? (
+                    <div className="m3-s16-logic-row" data-testid="m3-s16-logic-row">
+                      <div><span>Selected repaired design focus</span><p>{selectedFocus.label}</p></div>
+                      {logicFieldOptions.map(({ field, label, options, testId }) => (
+                        <label key={field}>
+                          <span>{label}</span>
+                          <select value={logicDraft[field]} onChange={(event) => updateLogicDraft(field, event.target.value)} data-testid={testId}>
+                            <option value="">Choose one</option>
+                            {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="m3-risk-empty-note">Select one repaired design focus first. The logic row will appear here.</p>
+                  )}
+                </section>
+                <div className="m3-risk-submit-row">
+                  <button type="button" className="m3-design-repair-submit" disabled={!logicComplete || !isScreen16Valid(currentSelection)} onClick={generateLogicDraft} data-testid="m3-s16-generate-logic">{submittedOutput ? 'Update logic row' : 'Generate logic row'}</button>
+                  <p aria-live="polite">{helperText}</p>
+                </div>
+              </div>
+              <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-logic-live`}>
+                <h2 id={`${screen.id}-logic-live`}>Logic draft so far</h2>
+                <p>{selectedFocus ? '1 selected repaired focus' : 'No repaired focus selected yet'}</p>
+                <div className="m3-guided-chip-list">
+                  <span className={selectedFocus ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Focus: {selectedFocus?.label || 'Not selected'}</span>
+                  <span className={logicDraft.intendedChange ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Outcome: {logicDraft.intendedChange || 'Not selected'}</span>
+                  <span className={logicDraft.keyActivityOutput ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Activity/output: {logicDraft.keyActivityOutput || 'Not selected'}</span>
+                  <span className={logicDraft.indicator ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Indicator: {logicDraft.indicator || 'Not selected'}</span>
+                  <span className={logicDraft.watchPoint ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Watch-point: {logicDraft.watchPoint || 'Not selected'}</span>
+                </div>
+                <p className="m3-guided-helper">Completed logic rows: {logicComplete && isScreen16Valid(currentSelection) ? 1 : 0}</p>
+                <p className="m3-guided-helper">Completed fields: {completedLogicFields} of 8</p>
+                <p className="m3-guided-helper">{helperText}</p>
+                <button type="button" className="m3-design-repair-submit" disabled={!logicComplete || !isScreen16Valid(currentSelection)} onClick={generateLogicDraft}>{submittedOutput ? 'Update logic row' : 'Generate logic row'}</button>
+              </aside>
+            </div>
+          </section>
+        )}
+
+        {stage === 4 && finalReview && (
+          <section className="m3-integrated-section-card" data-qa="m3-s16-generated-package">
+            <h2>Review logic and indicators</h2>
+            <p>This row connects the repaired design to expected change, responsible actors, indicator, evidence, assumptions, and implementation watch-point.</p>
+            <div className="m3-s16-review-grid">
+              {[
+                ['Repaired design focus', finalReview.repairedDesignFocus],
+                ['Intended change or outcome', finalReview.intendedChangeOutcome],
+                ['Key activity or output', finalReview.keyActivityOutput],
+                ['Rights-holder or participant group', finalReview.rightsHolderParticipantGroup],
+                ['Responsible actor or role', finalReview.responsibleActorRole],
+                ['Indicator', finalReview.indicator],
+                ['Evidence source or verification method', finalReview.evidenceSourceVerificationMethod],
+                ['Assumption or risk to watch', finalReview.assumptionRiskToWatch],
+                ['Implementation watch-point', finalReview.implementationWatchPoint],
+                ['Carry forward to final applied knowledge check', finalReview.carryForwardNote],
+              ].map(([label, value]) => <article key={label} data-testid="m3-s16-generated-logic-row"><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit logic row</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(5)}>Go to Apply/Download</button></div>
+          </section>
+        )}
+
+        {stage === 5 && submittedOutput && (
+          <section className="m3-integrated-section-card">
+            <article className="m3-integrated-continue-card">
+              <div><h3>Logic and indicator row ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
+              <button type="button" className="m3-primary-button" data-testid="m3-s16-final-continue" data-qa="m3-s16-final-continue" onClick={continueWithScreen16}>{screen.continueLabel}</button>
+            </article>
+            <div className="m3-guided-tabs" role="tablist" aria-label="Optional apply or download">
+              <button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
+              <button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s16-download-tools">Download tools</button>
+            </div>
+            {applyTab === 'own' && (
+              <section className="m3-design-repair-own-cso">
+                <h2>Try with my CSO context (optional)</h2>
+                <p>Use the same logic row to test one repaired design focus in your own work.</p>
+                <div className="m3-design-repair-own-grid">
+                  {[
+                    ['projectBarrierRootCause', 'Project barrier or root cause', 'Which barrier or root cause is the logic responding to?'],
+                    ['repairedObjective', 'Repaired objective', 'What objective or design statement should guide the row?'],
+                    ['repairedActivity', 'Repaired activity', 'Which activity or output is central?'],
+                    ['output', 'Output', 'What immediate product or action should be produced?'],
+                    ['outcome', 'Outcome', 'What change should this support?'],
+                    ['indicator', 'Indicator', 'What practical indicator will show more than delivery?'],
+                    ['safeEvidenceSource', 'Evidence source', 'What verification method will be used?'],
+                    ['assumptionRisk', 'Assumption or risk', 'What assumption or risk should be watched?'],
+                    ['implementationWatchPoint', 'Implementation watch-point', 'What should the team check during implementation?'],
+                  ].map(([field, label, placeholder]) => (
+                    <label key={field}>
+                      <span>{label}</span>
+                      <textarea value={ownCsoDraft[field as keyof Screen16OwnCsoDraft]} onChange={(event) => updateOwnCso(field as keyof Screen16OwnCsoDraft, event.target.value)} placeholder={placeholder} />
+                    </label>
+                  ))}
+                </div>
+                {ownCsoError && <p className="m3-design-repair-error" role="alert">{ownCsoError}</p>}
+                <button type="button" className="m3-design-repair-submit" onClick={generateOwnCsoPractice}>Open editable logic starter</button>
+                {ownCsoOutput && <article className="m3-s16-own-output"><h3>My logic and indicator starter</h3><p>{ownCsoOutput.indicator}</p></article>}
+              </section>
+            )}
+            {applyTab === 'downloads' && (
+              <section className="m3-design-repair-template">
+                <h2>HRBA Intervention Logic Mini-Matrix Template</h2>
+                <div className="m3-design-repair-template-actions">
+                  <button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(logicMiniMatrixTemplateMarkdown, 'hrba-intervention-logic-mini-matrix-template', 'docx')}>Download HRBA Intervention Logic Mini-Matrix Template</button>
+                  <button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(logicMiniMatrixTemplateMarkdown, 'hrba-intervention-logic-mini-matrix-template', 'md')}>Download markdown copy</button>
+                  <button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate('', 'hrba-intervention-logic-blank-worksheet', 'md')}>Download blank worksheet</button>
+                </div>
+              </section>
+            )}
+          </section>
+        )}
       </article>
     </main>
   );
