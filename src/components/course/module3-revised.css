@@ -9339,7 +9339,7 @@
 
 .m3-responsibility-map-screen .m3-context-stage-nav {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.45rem;
   padding: 0.42rem;
   border: 1px solid rgba(183, 221, 238, 0.78);
@@ -9753,6 +9753,16 @@
   grid-template-columns: minmax(260px, 0.82fr) minmax(360px, 1.18fr);
 }
 
+.m3-responsibility-map-builder--guided {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.38fr);
+  align-items: start;
+}
+
+.m3-responsibility-map-builder--guided .m3-guided-live-panel {
+  position: sticky;
+  top: 0.75rem;
+}
+
 .m3-responsibility-map-panel,
 .m3-power-map-panel {
   min-width: 0;
@@ -9886,6 +9896,116 @@
 .m3-power-map-actor-option:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+.m3-responsibility-map-step {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.m3-responsibility-map-step.is-disabled {
+  opacity: 0.78;
+}
+
+.m3-responsibility-map-barrier-tiles {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.m3-responsibility-map-barrier-tiles .m3-responsibility-map-option {
+  align-content: start;
+  min-height: 112px;
+}
+
+.m3-responsibility-map-role-rows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.m3-responsibility-map-role-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.9fr) repeat(2, minmax(190px, 1fr));
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(183, 221, 238, 0.82);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.m3-responsibility-map-row-barrier,
+.m3-responsibility-map-row-field {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.m3-responsibility-map-row-barrier {
+  padding: 0.62rem;
+  border: 1px solid rgba(15, 79, 118, 0.18);
+  border-radius: 12px;
+  background: #f5f9fc;
+}
+
+.m3-responsibility-map-row-barrier span,
+.m3-responsibility-map-review-row span {
+  color: #0f4f76;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.m3-responsibility-map-row-barrier strong {
+  color: #071c33;
+  line-height: 1.2;
+}
+
+.m3-responsibility-map-row-barrier small,
+.m3-responsibility-map-row-field small {
+  color: #42566c;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.m3-responsibility-map-row-field label {
+  display: grid;
+  gap: 0.32rem;
+  color: #071c33;
+  font-weight: 850;
+}
+
+.m3-responsibility-map-row-field select {
+  width: 100%;
+  min-height: 42px;
+  border: 2px solid rgba(15, 99, 216, 0.34);
+  border-radius: 12px;
+  padding: 0.55rem 2.2rem 0.55rem 0.65rem;
+  background-color: #ffffff;
+  color: #071c33;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.m3-responsibility-map-row-field p {
+  font-size: 0.9rem;
+  line-height: 1.38;
+}
+
+.m3-responsibility-map-role-row .m3-responsibility-map-actions-mini {
+  gap: 0.32rem;
+}
+
+.m3-responsibility-map-role-row .m3-responsibility-map-action-chip {
+  min-height: 34px;
+  padding: 0.34rem 0.55rem;
+  font-size: 0.82rem;
+}
+
+.m3-responsibility-map-match-hint {
+  grid-column: 1 / -1;
+  padding: 0.58rem 0.68rem;
+  border: 1px solid rgba(145, 200, 82, 0.5);
+  border-radius: 12px;
+  background: rgba(245, 252, 237, 0.92);
 }
 
 .m3-responsibility-map-mapping-panel,
@@ -10482,6 +10602,30 @@
   font-weight: 740;
 }
 
+.m3-responsibility-map-review-rows {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.m3-responsibility-map-review-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(183, 221, 238, 0.82);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(238, 247, 252, 0.68), rgba(255, 255, 255, 0.96));
+}
+
+.m3-responsibility-map-review-row div {
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.62rem;
+  border: 1px solid rgba(183, 221, 238, 0.62);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
 .m3-responsibility-map-output-safe {
   padding: 0.62rem 0.72rem;
   border: 1px solid rgba(230, 126, 34, 0.35);
@@ -10794,6 +10938,7 @@
 .m3-responsibility-map-submit-button:focus-visible,
 .m3-responsibility-map-custom input:focus-visible,
 .m3-responsibility-map-custom select:focus-visible,
+.m3-responsibility-map-row-field select:focus-visible,
 .m3-responsibility-map-reflection textarea:focus-visible,
 .m3-responsibility-map-own-grid textarea:focus-visible,
 .m3-responsibility-map-actions .m3-primary-button:focus-visible,
@@ -10815,14 +10960,20 @@
 @media (max-width: 1120px) {
   .m3-responsibility-map-builder--empty,
   .m3-responsibility-map-builder--active,
+  .m3-responsibility-map-builder--guided,
   .m3-power-map-builder--empty,
   .m3-power-map-builder--active {
     grid-template-columns: 1fr;
   }
 
   .m3-responsibility-map-preview,
+  .m3-responsibility-map-builder--guided .m3-guided-live-panel,
   .m3-power-map-preview {
     position: static;
+  }
+
+  .m3-responsibility-map-role-row {
+    grid-template-columns: 1fr;
   }
 }
 

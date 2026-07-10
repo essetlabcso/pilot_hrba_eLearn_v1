@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 import {
@@ -2328,21 +2328,6 @@ type Screen9Submission = {
   };
 };
 
-const module3ActorAnalysisAssets = {
-  screen8Hero: {
-    src: '/assets/hrba/modules/module-3/m3-s08-duty-bearers-roles-jiru-amba.webp',
-    alt: 'Illustration of Jiru Amba actors mapping responsibilities, supporting roles, and rights-holder voice around a local plan.',
-  },
-  screen9Hero: {
-    src: '/assets/hrba/modules/module-3/m3-s09-power-influence-jiru-amba.webp',
-    alt: 'Illustration of Jiru Amba actors using a local map to examine power, influence, responsibility, and lived knowledge.',
-  },
-  screen9Grid: {
-    src: '/assets/hrba/modules/module-3/m3-s09-power-influence-grid.svg',
-    alt: 'Support visual showing a power and influence grid for actor analysis.',
-  },
-};
-
 const module3RootCauseAssets = {
   hero: {
     src: '/assets/hrba/modules/module-3/m3-s10-root-cause-capacity-jiru-amba.webp',
@@ -3767,16 +3752,12 @@ const screen8ActorsByLane: Record<'public' | 'service' | 'voice' | 'cso', Screen
     },
   ],
   cso: [
-    { id: 'convene_safely', label: 'Convene safely', category: 'cso_role' },
-    { id: 'facilitate_dialogue', label: 'Facilitate dialogue', category: 'cso_role' },
-    { id: 'support_evidence_use', label: 'Support evidence use', category: 'cso_role' },
-    { id: 'strengthen_rights_holder_voice', label: 'Strengthen rights-holder voice', category: 'cso_role' },
-    { id: 'advocate_constructively', label: 'Advocate constructively', category: 'cso_role' },
-    { id: 'monitor_commitments', label: 'Monitor commitments', category: 'cso_role' },
-    { id: 'support_accessibility_planning', label: 'Support accessibility planning', category: 'cso_role' },
-    { id: 'explain_information_accessibly', label: 'Explain information in accessible ways', category: 'cso_role' },
-    { id: 'document_learning_safely', label: 'Document learning without exposing people', category: 'cso_role' },
-    { id: 'track_response_safely', label: 'Track whether response reached rights-holders', category: 'cso_role' },
+    { id: 'facilitate_dialogue', label: 'Facilitate dialogue', category: 'cso_role', useFor: 'facilitate dialogue between rights-holders, service actors, and duty-bearers.' },
+    { id: 'support_accessible_participation', label: 'Support accessible participation', category: 'cso_role', useFor: 'support accessible participation so different groups can shape decisions.' },
+    { id: 'document_patterns', label: 'Document patterns', category: 'cso_role', useFor: 'document patterns that help actors understand barriers and follow-up needs.' },
+    { id: 'connect_actors', label: 'Connect actors', category: 'cso_role', useFor: 'connect actors who need to coordinate around responsibility and support.' },
+    { id: 'support_follow_up', label: 'Support follow-up', category: 'cso_role', useFor: 'support follow-up on agreed actions without taking over responsibility.' },
+    { id: 'strengthen_feedback_use', label: 'Strengthen feedback use', category: 'cso_role', useFor: 'strengthen how feedback is reviewed, shared, and used for improvement.' },
   ],
 };
 
@@ -3811,14 +3792,6 @@ const responsibilityMapExplainCards = [
   },
 ];
 
-const responsibilityMapModelCards = [
-  { title: 'Rights-holder barrier', text: 'What needs to change?' },
-  { title: 'Duty-bearer responsibility', text: 'Who has a public or mandated responsibility?' },
-  { title: 'Supporting actors', text: 'Who can help enable access, voice, referral, or follow-up?' },
-  { title: 'CSO role', text: 'What can the CSO appropriately support without replacing duty-bearers?' },
-  { title: 'Design action', text: 'What should be built into the project design?' },
-];
-
 const screen8CommunityInfluenceActors: Screen8ActorOption[] = [
   { id: 'kebele_structure', label: 'Kebele structure', category: 'community_influence_actor', useFor: 'information flow, local trust, participation, and follow-up.' },
   { id: 'committee_leaders', label: 'Committee leaders', category: 'community_influence_actor', useFor: 'who is invited, who is heard, and how decisions are explained.' },
@@ -3844,58 +3817,6 @@ const screen8CarefulActors: Screen8ActorOption[] = [
   { id: 'information_gatekeeper', label: 'Actor who controls information', category: 'careful_engagement_actor', useFor: 'may enable transparency or limit who receives information.' },
   { id: 'high_influence_committee_leader', label: 'High-influence committee leader', category: 'careful_engagement_actor', useFor: 'may support change or resist transparency.' },
   { id: 'informal_broker_careful', label: 'Informal broker', category: 'careful_engagement_actor', useFor: 'may shape access, trust, or participation risks.' },
-];
-
-const screen8ActorCategories = [
-  {
-    lane: 'public' as const,
-    title: 'Primary duty-bearer / public responsibility',
-    meaning: 'Public actor or institution with formal responsibility connected to the issue.',
-    examples: 'Woreda planning office; relevant sector office; local public authority.',
-    prompt: 'Which public actor has responsibility connected to this barrier?',
-  },
-  {
-    lane: 'service' as const,
-    title: 'Service or sector actor',
-    meaning: 'Actor connected to service access, quality, information, standards, or follow-up.',
-    examples: 'Water committee; health post staff; market committee; service office; training provider.',
-    prompt: 'Which actor controls or supports the service, information, or practical pathway affected by the barrier?',
-  },
-  {
-    lane: 'community' as const,
-    title: 'Community structure or influence actor',
-    meaning: 'Local actor that may influence information flow, trust, participation, gatekeeping, or who is heard.',
-    examples: 'Kebele structure; committee leaders; community representatives; elders; informal brokers.',
-    prompt: 'Who influences whether this group receives information, is trusted, participates, or is heard?',
-  },
-  {
-    lane: 'participation' as const,
-    title: 'Rights-holder representative or participation actor',
-    meaning: 'Group or representative that can help voice priorities safely, without replacing the affected group’s own participation.',
-    examples: 'Women’s group representative; youth representative; disability inclusion focal person; market group representative.',
-    prompt: 'Who could help make participation safer, more specific, or more accessible?',
-  },
-  {
-    lane: 'cso' as const,
-    title: 'CSO role',
-    meaning: 'What Awra can realistically do without replacing public or service responsibility.',
-    examples: 'Facilitate participation; support accessible information; document non-sensitive barriers; connect actors; monitor commitments.',
-    prompt: 'What can Awra realistically do without taking over the duty-bearer role?',
-  },
-  {
-    lane: 'support' as const,
-    title: 'Support or ally actor',
-    meaning: 'Actor that can provide technical support, resources, training, coordination, or accompaniment.',
-    examples: 'DEC/partner support organization; technical adviser; peer CSO network; inclusion resource person.',
-    prompt: 'Who can support the response without becoming the main responsible actor?',
-  },
-  {
-    lane: 'careful' as const,
-    title: 'Actor to handle carefully',
-    meaning: 'Actor with influence, gatekeeping power, possible resistance, or risk.',
-    examples: 'Informal brokers; committee leaders with strong influence; actors who control information.',
-    prompt: 'Which actor may need careful, constructive, risk-aware engagement?',
-  },
 ];
 
 const screen8CapacityGapHints: Array<{ id: CapacityGapHintId; label: string }> = [
@@ -10095,9 +10016,6 @@ function ResponsibilityMapScreen({
   const barrierOptions = getScreen8BarrierOptions(state);
   const [selectedBarrierIds, setSelectedBarrierIds] = useState<Screen8BarrierId[]>([]);
   const [mappings, setMappings] = useState<Record<string, Screen8BarrierMapping>>({});
-  const [customActorLabel, setCustomActorLabel] = useState('');
-  const [customActorCategory, setCustomActorCategory] = useState<ActorCategory>('service_or_local_implementation');
-  const [customActors, setCustomActors] = useState<Screen8ActorOption[]>([]);
   const [optionalReflection, setOptionalReflection] = useState('');
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen8OwnCsoOutput>({
     projectIssueOrBarrier: '',
@@ -10113,16 +10031,13 @@ function ResponsibilityMapScreen({
   const [ownCsoError, setOwnCsoError] = useState('');
   const [submittedOutput, setSubmittedOutput] = useState<Screen8Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [showHeroImage, setShowHeroImage] = useState(true);
   const [activeStage, setActiveStage] = useState(1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
   const taskId = `${screen.id}-task`;
-  const customValidation = validateGeneralActorLabel(customActorLabel);
-  const allActors = getAllScreen8Actors(customActors);
-  const hasUnsafeLabel = Boolean(customActorLabel.trim() && !customValidation.isValid);
-  const feedbackDraft = deriveScreen8Feedback(selectedBarrierIds, mappings, hasUnsafeLabel);
+  const allActors = getAllScreen8Actors();
+  const feedbackDraft = deriveScreen8Feedback(selectedBarrierIds, mappings, false);
   const hasSelectedBarrier = selectedBarrierIds.length > 0;
   const selectedMappings = selectedBarrierIds.map((barrierId) => getScreen8Mapping(mappings, barrierId));
   const allSelectedBarriersHavePublicResponsibility =
@@ -10143,12 +10058,10 @@ function ResponsibilityMapScreen({
     hasSupportingOrServiceActor &&
     feedbackDraft.hasCsoRole &&
     allSelectedBarriersHaveCapacityHint &&
-    !feedbackDraft.overloadWarning &&
-    !hasUnsafeLabel;
+    !feedbackDraft.overloadWarning;
   const currentSignature = JSON.stringify({
     selectedBarrierIds,
     mappings: selectedBarrierIds.map((barrierId) => [barrierId, getScreen8Mapping(mappings, barrierId)]),
-    customActors,
   });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
   const canContinue = Boolean(submittedOutput && !formChanged && submittedOutput.hasPublicResponsibility);
@@ -10199,43 +10112,6 @@ function ResponsibilityMapScreen({
     }));
   };
 
-  const toggleActor = (
-    barrierId: Screen8BarrierId,
-    lane: 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso',
-    actorId: string,
-  ) => {
-    const laneKey =
-      lane === 'public'
-        ? 'publicActorIds'
-        : lane === 'service'
-          ? 'serviceActorIds'
-          : lane === 'community'
-            ? 'communityActorIds'
-            : lane === 'participation'
-              ? 'participationActorIds'
-              : lane === 'voice'
-                ? 'voiceActorIds'
-                : lane === 'support'
-                  ? 'supportActorIds'
-                  : lane === 'careful'
-                    ? 'carefulActorIds'
-                    : 'csoRoleIds';
-
-    updateBarrierMapping(barrierId, (mapping) => {
-      const currentIds = mapping[laneKey];
-      const selected = currentIds.includes(actorId);
-      const nextIds = selected ? currentIds.filter((id) => id !== actorId) : [...currentIds, actorId];
-      const actionIdsByActor = { ...mapping.actionIdsByActor };
-      if (selected) delete actionIdsByActor[actorId];
-
-      return {
-        ...mapping,
-        [laneKey]: nextIds,
-        actionIdsByActor,
-      };
-    });
-  };
-
   const toggleAction = (barrierId: Screen8BarrierId, actorId: string, action: string) => {
     updateBarrierMapping(barrierId, (mapping) => {
       const currentActions = mapping.actionIdsByActor[actorId] || [];
@@ -10263,24 +10139,9 @@ function ResponsibilityMapScreen({
     }));
   };
 
-  const addCustomActor = () => {
-    if (!customValidation.isValid) return;
-    const actorId = `custom_actor_${customValidation.trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
-    if (customActors.some((actor) => actor.id === actorId)) return;
-    setCustomActors((current) => [
-      ...current,
-      {
-        id: actorId,
-        label: customValidation.trimmed,
-        category: customActorCategory,
-        useFor: 'general actor role added for safe practice.',
-      },
-    ]);
-  };
-
   const buildSubmission = (): Screen8Submission => {
     const generatedResponsibilityRows = generateScreen8Rows(selectedBarrierIds, mappings, allActors);
-    const feedback = deriveScreen8Feedback(selectedBarrierIds, mappings, hasUnsafeLabel);
+    const feedback = deriveScreen8Feedback(selectedBarrierIds, mappings, false);
     const barrierActorLinks = buildScreen8ActorLinks(selectedBarrierIds, mappings, allActors);
     const exportedActorsForScreen9 = buildExportedActorsForScreen9(selectedBarrierIds, mappings, allActors);
     const selectedActorCategories = Array.from(new Set(barrierActorLinks.flatMap((link) => link.actorSelections.map((selection) => selection.category))));
@@ -10398,82 +10259,158 @@ function ResponsibilityMapScreen({
     });
   };
 
-  const renderActorLane = (
-    barrierId: Screen8BarrierId,
-    title: string,
-    explanation: string,
-    lane: 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso',
-    actors: Screen8ActorOption[],
-    prompt?: string,
-  ) => {
-    const mapping = getScreen8Mapping(mappings, barrierId);
-    const selectedIds =
-      lane === 'public'
-        ? mapping.publicActorIds
-        : lane === 'service'
-          ? mapping.serviceActorIds
-          : lane === 'community'
-            ? mapping.communityActorIds
-            : lane === 'participation'
-              ? mapping.participationActorIds
-              : lane === 'voice'
-                ? mapping.voiceActorIds
-                : lane === 'support'
-                  ? mapping.supportActorIds
-                  : lane === 'careful'
-                    ? mapping.carefulActorIds
-                    : mapping.csoRoleIds;
+  const actorRoleTypeLabels: Record<ActorCategory, string> = {
+    primary_public_responsibility: 'Formal public responsibility',
+    service_or_local_implementation: 'Service or sector actor',
+    community_influence_actor: 'Community influence actor',
+    participation_actor: 'Participation actor',
+    rights_holder_voice_support: 'Rights-holder voice support',
+    support_ally_actor: 'Support or ally actor',
+    careful_engagement_actor: 'Careful-engagement actor',
+    cso_role: 'Bounded CSO role',
+    rights_holder_group: 'Rights-holder group',
+    generalized_custom_actor: 'Generalized actor role',
+  };
+  const actorLanes: Array<{
+    lane: 'public' | 'service' | 'community' | 'cso';
+    title: string;
+    actorOptions: Screen8ActorOption[];
+    required?: boolean;
+  }> = [
+    {
+      lane: 'public',
+      title: 'Relevant actor with formal responsibility',
+      actorOptions: screen8ActorsByLane.public,
+      required: true,
+    },
+    {
+      lane: 'service',
+      title: 'Supporting or implementation actor',
+      actorOptions: [
+        ...screen8ActorsByLane.service,
+        ...screen8CommunityInfluenceActors,
+        ...screen8ParticipationActors,
+        ...screen8ActorsByLane.voice,
+        ...screen8SupportActors,
+        ...screen8CarefulActors,
+      ],
+      required: true,
+    },
+    {
+      lane: 'cso',
+      title: 'Bounded CSO role',
+      actorOptions: screen8ActorsByLane.cso,
+      required: true,
+    },
+    {
+      lane: 'community',
+      title: 'Optional community or voice actor',
+      actorOptions: [...screen8CommunityInfluenceActors, ...screen8ParticipationActors, ...screen8ActorsByLane.voice],
+    },
+  ];
 
+  const getLaneKey = (
+    lane: 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso',
+  ): keyof Pick<
+    Screen8BarrierMapping,
+    | 'publicActorIds'
+    | 'serviceActorIds'
+    | 'communityActorIds'
+    | 'participationActorIds'
+    | 'voiceActorIds'
+    | 'supportActorIds'
+    | 'carefulActorIds'
+    | 'csoRoleIds'
+  > =>
+    lane === 'public'
+      ? 'publicActorIds'
+      : lane === 'service'
+        ? 'serviceActorIds'
+        : lane === 'community'
+          ? 'communityActorIds'
+          : lane === 'participation'
+            ? 'participationActorIds'
+            : lane === 'voice'
+              ? 'voiceActorIds'
+              : lane === 'support'
+                ? 'supportActorIds'
+                : lane === 'careful'
+                  ? 'carefulActorIds'
+                  : 'csoRoleIds';
+
+  const getLaneActorIds = (
+    mapping: Screen8BarrierMapping,
+    lane: 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso',
+  ) => mapping[getLaneKey(lane)];
+
+  const setSingleActor = (
+    barrierId: Screen8BarrierId,
+    lane: 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso',
+    actorId: string,
+  ) => {
+    updateBarrierMapping(barrierId, (mapping) => {
+      const laneKey = getLaneKey(lane);
+      const actionIdsByActor = { ...mapping.actionIdsByActor };
+      Object.keys(actionIdsByActor).forEach((id) => {
+        if (mapping[laneKey].includes(id) && id !== actorId) delete actionIdsByActor[id];
+      });
+      return {
+        ...mapping,
+        [laneKey]: actorId ? [actorId] : [],
+        actionIdsByActor,
+      };
+    });
+  };
+
+  const getSelectedActor = (
+    mapping: Screen8BarrierMapping,
+    lane: 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso',
+  ) => {
+    const selectedId = getLaneActorIds(mapping, lane)[0];
+    return selectedId ? allActors.find((actor) => actor.id === selectedId) : undefined;
+  };
+
+  const getActorContribution = (actor?: Screen8ActorOption) =>
+    actor?.useFor ? compactPolicyMapLine(actor.useFor, 110) : 'Choose an actor to show the responsibility or contribution.';
+  const csoRoleHelper =
+    'Choose how the CSO can support, facilitate, connect, document, or follow up without replacing duty-bearers.';
+  const practiceDesignImplication =
+    'Clarify who must act, who can support, what gap needs attention, and what the CSO can realistically enable before implementation.';
+
+  const getActorActions = (mapping: Screen8BarrierMapping, actor?: Screen8ActorOption) =>
+    actor ? mapping.actionIdsByActor[actor.id] || [] : [];
+
+  const getDesignImplication = (_barrierId: Screen8BarrierId, mapping: Screen8BarrierMapping) => {
+    const publicActor = getSelectedActor(mapping, 'public');
+    const csoActor = getSelectedActor(mapping, 'cso');
+    if (publicActor && csoActor && mapping.capacityGapHintIds.length > 0) {
+      return `Keep ${publicActor.label} visible for responsibility while the CSO supports ${getActorContribution(csoActor).replace(/\.$/, '')}.`;
+    }
+    return practiceDesignImplication;
+  };
+
+  const renderActorActionChips = (barrierId: Screen8BarrierId, mapping: Screen8BarrierMapping, actor?: Screen8ActorOption) => {
+    if (!actor) return null;
+    const actionChips = screen8ActionChipsByCategory[actor.category] || [];
+    const selectedActions = getActorActions(mapping, actor);
     return (
-      <section className="m3-responsibility-map-lane" aria-labelledby={`${screen.id}-${barrierId}-${lane}`}>
-        <h4 id={`${screen.id}-${barrierId}-${lane}`}>{title}</h4>
-        <p>{explanation}</p>
-        {prompt && <p className="m3-responsibility-map-lane-prompt">{prompt}</p>}
-        <div className="m3-responsibility-map-chip-grid" role="group" aria-labelledby={`${screen.id}-${barrierId}-${lane}`}>
-          {actors.map((actor) => {
-            const selected = selectedIds.includes(actor.id);
-            const actionChips = screen8ActionChipsByCategory[actor.category];
-            return (
-              <div key={actor.id} className={`m3-responsibility-map-actor-wrap ${selected ? 'is-selected' : ''}`}>
-                <button
-                  type="button"
-                  className={`m3-responsibility-map-chip ${selected ? 'is-selected' : ''}`}
-                  aria-pressed={selected}
-                  data-testid={selected ? 'm3-s08-selected-actor' : 'm3-s08-selectable-actor'}
-                  onClick={() => toggleActor(barrierId, lane, actor.id)}
-                >
-                  <span aria-hidden="true">{selected ? '✓' : '+'}</span>
-                  <span>
-                    <strong>{actor.label}</strong>
-                    {actor.useFor && <small>Use for: {actor.useFor}</small>}
-                    {actor.safeNote && <small>{actor.safeNote}</small>}
-                    {selected && <em>Selected</em>}
-                  </span>
-                </button>
-                {selected && (
-                  <div className="m3-responsibility-map-actions-mini" aria-label={`Actions for ${actor.label}`}>
-                    {actionChips.map((action) => {
-                      const actionSelected = (mapping.actionIdsByActor[actor.id] || []).includes(action);
-                      return (
-                        <button
-                          key={action}
-                          type="button"
-                          className={`m3-responsibility-map-action-chip ${actionSelected ? 'is-selected' : ''}`}
-                          aria-pressed={actionSelected}
-                          data-testid={actionSelected ? 'm3-s08-selected-role' : undefined}
-                          onClick={() => toggleAction(barrierId, actor.id, action)}
-                        >
-                          {actionSelected ? '✓ ' : ''}{action}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <div className="m3-responsibility-map-actions-mini" aria-label={`Actions for ${actor.label}`}>
+        {actionChips.slice(0, 4).map((action) => {
+          const actionSelected = selectedActions.includes(action);
+          return (
+            <button
+              key={action}
+              type="button"
+              className={`m3-responsibility-map-action-chip ${actionSelected ? 'is-selected' : ''}`}
+              aria-pressed={actionSelected}
+              data-testid={actionSelected ? 'm3-s08-selected-role' : undefined}
+              onClick={() => toggleAction(barrierId, actor.id, action)}
+            >
+              {actionSelected ? '✓ ' : ''}{action}
+            </button>
+          );
+        })}
+      </div>
     );
   };
 
@@ -10497,33 +10434,16 @@ function ResponsibilityMapScreen({
       .flatMap((selection) => selection.actionIds);
     return Array.from(new Set(actions)).slice(0, 4);
   };
-  const renderResponsibilityLaneItems = (
-    selections: Screen8BarrierActorLink['actorSelections'],
-    emptyText: string,
-  ) => {
-    if (selections.length === 0) return <p className="m3-responsibility-map-lane-empty">{emptyText}</p>;
-    return (
-      <ul>
-        {selections.map((selection, index) => (
-          <li key={`${selection.actorId}-${selection.category}-${index}`}>
-            <strong>{selection.actorLabel}</strong>
-            {selection.actionIds.length > 0 && <span>{selection.actionIds.join(', ')}</span>}
-          </li>
-        ))}
-      </ul>
-    );
-  };
   const responsibilityStages: GuidedWorkspaceStage[] = [
     { id: 1, label: 'Understand', complete: activeStage > 1, testId: 'm3-s08-stage-understand' },
-    { id: 2, label: 'Example', complete: activeStage > 2 },
-    { id: 3, label: 'Select barriers', complete: selectedBarrierIds.length > 0 || activeStage > 3, testId: 'm3-s08-stage-practice' },
-    { id: 4, label: 'Map roles', complete: Boolean(submittedOutput) || activeStage > 4, unlocked: selectedBarrierIds.length > 0 },
-    { id: 5, label: 'Review map', complete: Boolean(submittedOutput) && activeStage > 5, unlocked: Boolean(submittedOutput), testId: 'm3-s08-stage-review' },
-    { id: 6, label: 'Apply/Download', complete: canContinue, unlocked: Boolean(submittedOutput), testId: 'm3-s08-stage-apply' },
+    { id: 2, label: 'Example', complete: activeStage > 2, testId: 'm3-s08-stage-example' },
+    { id: 3, label: 'Practice', complete: Boolean(submittedOutput), testId: 'm3-s08-stage-practice' },
+    { id: 4, label: 'Review role map', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput), testId: 'm3-s08-stage-review' },
+    { id: 5, label: 'Apply/Download', complete: canContinue, unlocked: Boolean(submittedOutput), testId: 'm3-s08-stage-apply' },
   ];
   const generateResponsibilityMapFromStage = () => {
     submitMap();
-    if (canSubmit) setActiveStage(5);
+    if (canSubmit) setActiveStage(4);
   };
   const selectedBarrierSummaries = selectedBarrierIds.map((barrierId) => {
     const mapping = getScreen8Mapping(mappings, barrierId);
@@ -10536,6 +10456,41 @@ function ResponsibilityMapScreen({
       capacityHints: mapping.capacityGapHintIds.length,
     };
   });
+  const mappedActorCount = selectedMappings.reduce((total, mapping) => (
+    total +
+    mapping.publicActorIds.length +
+    mapping.serviceActorIds.length +
+    mapping.communityActorIds.length +
+    mapping.participationActorIds.length +
+    mapping.voiceActorIds.length +
+    mapping.supportActorIds.length +
+    mapping.carefulActorIds.length +
+    mapping.csoRoleIds.length
+  ), 0);
+  const renderRoleMapPanel = () => (
+    <aside className="m3-guided-live-panel m3-responsibility-map-live-panel" aria-labelledby={`${screen.id}-live-role-map`}>
+      <h2 id={`${screen.id}-live-role-map`}>Role map so far</h2>
+      <div className="m3-policy-map-live-counts" aria-live="polite">
+        <span><strong>{selectedBarrierIds.length}</strong> barriers selected</span>
+        <span><strong>{mappedActorCount}</strong> actors mapped</span>
+      </div>
+      <div className="m3-guided-chip-list" aria-label="Selected priority barriers">
+        {selectedBarrierSummaries.length > 0 ? selectedBarrierSummaries.map((barrier) => (
+          <span key={barrier.id} className="m3-guided-selected-chip">✓ {barrier.label}</span>
+        )) : <span className="m3-guided-muted">Select one or two priority barriers.</span>}
+      </div>
+      <p className="m3-guided-helper" aria-live="polite">{submitHelper}</p>
+      <button
+        type="button"
+        className="m3-responsibility-map-submit-button"
+        disabled={!canSubmit}
+        onClick={generateResponsibilityMapFromStage}
+        data-testid="m3-s08-generate-map"
+      >
+        {submittedOutput ? 'Update role map' : 'Generate role map'}
+      </button>
+    </aside>
+  );
 
   return (
     <main className="m3-screen m3-responsibility-map-screen" aria-labelledby={titleId}>
@@ -10556,7 +10511,7 @@ function ResponsibilityMapScreen({
           className="m3-context-stage-nav"
         />
 
-        {activeStage <= 2 && (
+        {activeStage === 1 && (
         <section className="m3-responsibility-map-orientation m3-guided-stage-card" aria-label="Responsibility mapping orientation">
           <section className="m3-responsibility-map-understand-card" aria-labelledby={`${screen.id}-purpose`}>
             <p className="m3-responsibility-map-kicker">Responsibility before action</p>
@@ -10575,33 +10530,26 @@ function ResponsibilityMapScreen({
               </article>
             ))}
           </section>
+          <div className="m3-guided-stage-actions">
+            <button type="button" className="m3-responsibility-map-submit-button" onClick={() => setActiveStage(2)}>See worked example</button>
+          </div>
+        </section>
+        )}
 
-          <section className="m3-responsibility-map-model-card" aria-labelledby={`${screen.id}-method`}>
-            <h2 id={`${screen.id}-method`}>From barriers to responsibility and support</h2>
-            <p>Use this flow to connect rights-holder barriers to actor roles and practical design actions.</p>
-            <div className="m3-responsibility-map-model-flow" aria-label="Responsibility map model">
-              {responsibilityMapModelCards.map((card, index) => (
-                <article key={`${card.title}-${index}`}>
-                  <span aria-hidden="true">{index + 1}</span>
-                  <h3>{card.title}</h3>
-                  <p>{card.text}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-
+        {activeStage === 2 && (
+        <section className="m3-responsibility-map-orientation m3-guided-stage-card" aria-label="Responsibility mapping worked example">
           <section className="m3-responsibility-map-card" aria-labelledby={`${screen.id}-example`}>
             <h2 id={`${screen.id}-example`}>Worked example</h2>
             <p>Here is how one barrier can become a clearer responsibility question.</p>
-            <div className="m3-responsibility-map-example">
+            <div className="m3-responsibility-map-example m3-responsibility-map-example--compact">
               {[
-                ['Barrier from Screen 7', 'Persons with disabilities face accessibility or accommodation barriers.'],
-                ['Primary duty-bearer / public responsibility', 'The woreda planning office or relevant sector office should ensure planning and service arrangements do not exclude persons with disabilities.'],
-                ['Service or sector actor', 'The health post, water committee, market committee, or relevant service office may need to adjust venues, information formats, service access, or feedback channels.'],
-                ['Community influence actor', 'Kebele structures, committee leaders, or community representatives may influence who receives information and who is invited into decision spaces.'],
-                ['Realistic CSO role', 'Awra can facilitate accessibility checks, support inclusive consultation, document non-sensitive barriers, and help connect rights-holders with responsible actors.'],
-                ['Capacity gap to check', 'Actors may lack accessibility knowledge, budget, clear standards, coordination, or a feedback procedure.'],
-                ['Next question for Screen 9', 'Which actor has enough influence and capacity to respond, and who may resist or delay change?'],
+                ['Selected barrier', 'Accessibility or accommodation barrier.'],
+                ['Relevant actor', 'Woreda planning office or relevant sector office.'],
+                ['Actor role type', 'Formal public responsibility.'],
+                ['Responsibility or contribution', 'Ensure planning and service arrangements do not exclude persons with disabilities.'],
+                ['Capacity or support gap', 'Limited accessibility knowledge, budget, standards, coordination, or feedback procedure.'],
+                ['Appropriate CSO role', 'Facilitate accessibility checks, support inclusive consultation, document patterns, and connect actors.'],
+                ['Design implication', 'Keep the public actor responsible while the CSO supports participation, evidence, connection, and follow-up.'],
               ].map(([label, text], index) => (
                 <div key={`${label}-${index}`}>
                   <span>{label}</span>
@@ -10612,14 +10560,14 @@ function ResponsibilityMapScreen({
             <p><strong>Notice:</strong> Awra has an important role, but it is not replacing the public or service actor. The map keeps responsibility visible.</p>
           </section>
 
-          <section className="m3-responsibility-map-safe-note" aria-labelledby={`${screen.id}-safe`} data-testid="m3-s08-safety-note">
-            <h2 id={`${screen.id}-safe`}>Safe practice</h2>
-            <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
-          </section>
+          <div className="m3-guided-stage-actions">
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(1)}>Back to Understand</button>
+            <button type="button" className="m3-responsibility-map-submit-button" onClick={() => setActiveStage(3)}>Practice with Jiru Amba</button>
+          </div>
         </section>
         )}
 
-        {(activeStage === 3 || activeStage === 4) && (
+        {activeStage === 3 && (
         <section className="m3-responsibility-map-builder-section m3-guided-stage-card" aria-labelledby={taskId} data-testid="m3-s08-practice">
           <div className="m3-responsibility-map-task-header">
             <div>
@@ -10642,11 +10590,11 @@ function ResponsibilityMapScreen({
                 : 'Good range for this practice map.'}
           </p>
 
-          <section className={`m3-responsibility-map-builder ${hasSelectedBarrier ? 'm3-responsibility-map-builder--active' : 'm3-responsibility-map-builder--empty'}`}>
-            <section className="m3-responsibility-map-panel m3-responsibility-map-barrier-panel" aria-labelledby={`${screen.id}-barriers`}>
-              <h3 id={`${screen.id}-barriers`}>Step 1: Choose priority barriers to map first.</h3>
-              <p>Select barriers that most affect participation, access, benefit, safety, information, or follow-up.</p>
-              <div className="m3-responsibility-map-option-grid" role="group" aria-labelledby={`${screen.id}-barriers`}>
+          <section className="m3-responsibility-map-builder m3-responsibility-map-builder--guided">
+            <section className="m3-responsibility-map-panel m3-responsibility-map-barrier-panel m3-responsibility-map-step" aria-labelledby={`${screen.id}-barriers`}>
+              <h3 id={`${screen.id}-barriers`}>Step 1: Select priority barriers</h3>
+              <p>Select one or two barriers that most need clear responsibility, support, and follow-up.</p>
+              <div className="m3-responsibility-map-option-grid m3-responsibility-map-barrier-tiles" role="group" aria-labelledby={`${screen.id}-barriers`}>
                 {barrierOptions.map((barrier, index) => {
                   const selected = selectedBarrierIds.includes(barrier.id);
                   const disabled = !selected && selectedBarrierIds.length >= 2;
@@ -10662,9 +10610,8 @@ function ResponsibilityMapScreen({
                       <span aria-hidden="true">{selected ? '✓' : '+'}</span>
                       <span>
                         <strong>{barrier.label}</strong>
-                        <small>{barrier.description}</small>
-                        {barrier.sourceGroupLabels?.length ? <em>From Screen 7: {barrier.sourceGroupLabels.join(', ')}</em> : null}
-                        {selected && <em>Selected barrier</em>}
+                        <small>{compactPolicyMapLine(barrier.description, 112)}</small>
+                        {selected && <em>Selected</em>}
                       </span>
                     </button>
                   );
@@ -10672,177 +10619,78 @@ function ResponsibilityMapScreen({
               </div>
             </section>
 
-            {activeStage === 3 ? (
-              <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-live-responsibility-select`}>
-                <h2 id={`${screen.id}-live-responsibility-select`}>Responsibility map so far</h2>
-                <p aria-live="polite">{selectedCountLabel}</p>
-                <div className="m3-guided-chip-list" aria-label="Selected barriers">
-                  {selectedBarrierSummaries.length > 0 ? selectedBarrierSummaries.map((barrier, index) => (
-                    <span key={`${barrier.id}-${index}`} className="m3-guided-selected-chip">✓ {barrier.label}</span>
-                  )) : <span className="m3-guided-muted">Select one or two priority barriers.</span>}
-                </div>
-                <p className="m3-guided-helper">
-                  {hasSelectedBarrier ? 'Next, map responsibility roles for each selected barrier.' : submitHelper}
-                </p>
-                <button
-                  type="button"
-                  className="m3-responsibility-map-submit-button"
-                  disabled={!hasSelectedBarrier}
-                  onClick={() => setActiveStage(4)}
-                >
-                  Continue to responsibility-role mapping
-                </button>
-              </aside>
-            ) : !hasSelectedBarrier ? (
-              <section className="m3-responsibility-map-empty-hero" aria-label="Responsibility map orientation">
-                {showHeroImage && (
-                  <img
-                    src={module3ActorAnalysisAssets.screen8Hero.src}
-                    alt={module3ActorAnalysisAssets.screen8Hero.alt}
-                    onError={() => setShowHeroImage(false)}
-                  />
-                )}
-                <div className="m3-responsibility-map-empty-card">
-                  <p className="m3-responsibility-map-kicker">Start with responsibility</p>
-                  <h3>Start with responsibility, not only activities</h3>
-                  <p>
-                    A rights-based design asks who must act, who can support, and what role the
-                    CSO can realistically play. Select one or two barriers from the Jiru Amba
-                    case. Your draft responsibility map will appear here.
-                  </p>
-                  <ul>
-                    <li>Public responsibility</li>
-                    <li>Supporting actors</li>
-                    <li>CSO role</li>
-                    <li>Capacity-gap hint</li>
-                  </ul>
-                </div>
-              </section>
-            ) : (
-              <>
-                <section className="m3-responsibility-map-panel m3-responsibility-map-mapping-panel" aria-label="Actor mapping cards">
-                  {selectedBarrierIds.map((barrierId, barrierIndex) => {
+            <section className={`m3-responsibility-map-panel m3-responsibility-map-mapping-panel m3-responsibility-map-step ${!hasSelectedBarrier ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-actor-rows`}>
+              <h3 id={`${screen.id}-actor-rows`}>Step 2: Map actors and roles</h3>
+              {!hasSelectedBarrier ? (
+                <p className="m3-rights-map-empty-note">Select at least one priority barrier before mapping actors and roles.</p>
+              ) : (
+                <div className="m3-responsibility-map-role-rows">
+                  {selectedBarrierIds.map((barrierId) => {
                     const mapping = getScreen8Mapping(mappings, barrierId);
-                    const customActorsForLane = customActors;
                     return (
-                      <article key={`${barrierId}-${barrierIndex}`} className="m3-responsibility-map-mapping-card">
-                        <h3>Map responsibility for: {getBarrierLabel(barrierId)}</h3>
-                        <p>For each barrier, identify public or service responsibility, influence actors, Awra’s realistic role, and one capacity gap.</p>
-                        {screen8ActorCategories.map((category, categoryIndex) => {
-                          const actorsForLane =
-                            category.lane === 'public'
-                              ? [...screen8ActorsByLane.public, ...customActorsForLane.filter((actor) => actor.category === 'primary_public_responsibility')]
-                              : category.lane === 'service'
-                                ? [...screen8ActorsByLane.service, ...customActorsForLane.filter((actor) => actor.category === 'service_or_local_implementation')]
-                                : category.lane === 'community'
-                                  ? [...screen8CommunityInfluenceActors, ...customActorsForLane.filter((actor) => actor.category === 'community_influence_actor')]
-                                  : category.lane === 'participation'
-                                    ? [...screen8ParticipationActors, ...screen8ActorsByLane.voice, ...customActorsForLane.filter((actor) => actor.category === 'participation_actor' || actor.category === 'rights_holder_voice_support')]
-                                    : category.lane === 'support'
-                                      ? [...screen8SupportActors, ...customActorsForLane.filter((actor) => actor.category === 'support_ally_actor')]
-                                      : category.lane === 'careful'
-                                        ? [...screen8CarefulActors, ...customActorsForLane.filter((actor) => actor.category === 'careful_engagement_actor')]
-                                        : [...screen8ActorsByLane.cso, ...customActorsForLane.filter((actor) => actor.category === 'cso_role')];
+                      <article key={barrierId} className="m3-responsibility-map-role-row" data-testid="m3-s08-actor-mapping-row">
+                        <div className="m3-responsibility-map-row-barrier">
+                          <span>Selected barrier</span>
+                          <strong>{getBarrierLabel(barrierId)}</strong>
+                          <small>{compactPolicyMapLine(screen8GeneratedDefaults[barrierId].rightsHolderGroupAffected, 118)}</small>
+                        </div>
+                        {actorLanes.map((lane) => {
+                          const selectedActor = getSelectedActor(mapping, lane.lane);
+                          const isCsoLane = lane.lane === 'cso';
                           return (
-                            <Fragment key={`${barrierId}-${category.lane}-${categoryIndex}`}>
-                              {renderActorLane(barrierId, category.title, `${category.meaning} Examples: ${category.examples}`, category.lane, actorsForLane, category.prompt)}
-                            </Fragment>
+                            <div key={`${barrierId}-${lane.lane}`} className="m3-responsibility-map-row-field">
+                              <label>
+                                <span>{lane.title}{lane.required ? ' *' : ''}</span>
+                                <select
+                                  value={selectedActor?.id || ''}
+                                  onChange={(event) => setSingleActor(barrierId, lane.lane, event.target.value)}
+                                  data-testid={`m3-s08-${lane.lane}-selector`}
+                                >
+                                  <option value="">{isCsoLane ? 'Choose CSO role' : 'Choose actor'}</option>
+                                  {lane.actorOptions.map((actor) => (
+                                    <option key={`${lane.lane}-${actor.id}`} value={actor.id}>{actor.label}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              {!isCsoLane && <small>{selectedActor ? actorRoleTypeLabels[selectedActor.category] : 'Actor role type appears here.'}</small>}
+                              <p>{isCsoLane ? csoRoleHelper : getActorContribution(selectedActor)}</p>
+                              {renderActorActionChips(barrierId, mapping, selectedActor)}
+                            </div>
                           );
                         })}
-                        <section className="m3-responsibility-map-lane" aria-labelledby={`${screen.id}-${barrierId}-capacity`}>
-                          <h4 id={`${screen.id}-${barrierId}-capacity`}>Capacity gap</h4>
-                          <p>What may prevent the responsible actor from responding well?</p>
-                          <p className="m3-responsibility-map-lane-prompt">Choose one likely capacity gap to carry forward.</p>
-                          <div className="m3-responsibility-map-chip-grid">
-                            {screen8CapacityGapHints.map((hint, hintIndex) => {
-                              const selected = mapping.capacityGapHintIds.includes(hint.id);
-                              return (
-                                <button
-                                  key={`${hint.id}-${hintIndex}`}
-                                  type="button"
-                                  className={`m3-responsibility-map-action-chip ${selected ? 'is-selected' : ''}`}
-                                  aria-pressed={selected}
-                                  onClick={() => toggleCapacityHint(barrierId, hint.id)}
-                                >
-                                  {selected ? '✓ ' : ''}{hint.label}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </section>
+                        <div className="m3-responsibility-map-row-field">
+                          <label>
+                            <span>Capacity or support gap *</span>
+                            <select
+                              value={mapping.capacityGapHintIds[0] || ''}
+                              onChange={(event) => event.target.value && toggleCapacityHint(barrierId, event.target.value as CapacityGapHintId)}
+                              data-testid="m3-s08-capacity-selector"
+                            >
+                              <option value="">Choose capacity gap</option>
+                              {screen8CapacityGapHints.map((hint) => (
+                                <option key={hint.id} value={hint.id}>{hint.label}</option>
+                              ))}
+                            </select>
+                          </label>
+                          <small>{mapping.capacityGapHintIds.length ? getCapacityGapLabel(mapping.capacityGapHintIds[0]) : 'Capacity gap appears here.'}</small>
+                        </div>
+                        <p className="m3-responsibility-map-match-hint">
+                          <strong>Design implication:</strong> {getDesignImplication(barrierId, mapping)}
+                        </p>
                       </article>
                     );
                   })}
+                </div>
+              )}
 
-                  <section className="m3-responsibility-map-custom" aria-labelledby={`${screen.id}-custom-actor`}>
-                    <h3 id={`${screen.id}-custom-actor`}>+ Another generalized actor role</h3>
-                    <label>
-                      <span>Use a general actor role only</span>
-                      <input
-                        value={customActorLabel}
-                        onChange={(event) => setCustomActorLabel(event.target.value)}
-                        placeholder="Example: local service committee"
-                        aria-invalid={hasUnsafeLabel}
-                        aria-describedby={`${screen.id}-custom-help`}
-                      />
-                    </label>
-                    <label>
-                      <span>Actor category</span>
-                      <select
-                        value={customActorCategory}
-                        onChange={(event) => setCustomActorCategory(event.target.value as ActorCategory)}
-                      >
-                        <option value="primary_public_responsibility">Public responsibility</option>
-                        <option value="service_or_local_implementation">Service or local implementation</option>
-                        <option value="community_influence_actor">Community structure or influence actor</option>
-                        <option value="participation_actor">Rights-holder representative or participation actor</option>
-                        <option value="rights_holder_voice_support">Rights-holder voice or supporting actor</option>
-                        <option value="support_ally_actor">Support or ally actor</option>
-                        <option value="careful_engagement_actor">Actor to handle carefully</option>
-                        <option value="cso_role">CSO role</option>
-                      </select>
-                    </label>
-                    <p id={`${screen.id}-custom-help`}>
-                      Use only a broad role. Do not enter names, complaints, exact locations,
-                      or identifying details.
-                    </p>
-                    {hasUnsafeLabel && <p className="m3-responsibility-map-error">{customValidation.error}</p>}
-                    <button type="button" className="m3-responsibility-map-submit-button" onClick={addCustomActor} disabled={!customValidation.isValid}>
-                      Add generalized actor role
-                    </button>
-                  </section>
-                </section>
+            </section>
 
-                <aside className="m3-responsibility-map-panel m3-responsibility-map-preview m3-guided-live-panel" aria-labelledby={`${screen.id}-preview`}>
-                  <h3 id={`${screen.id}-preview`}>Responsibility map so far</h3>
-                  {selectedBarrierIds.map((barrierId, barrierIndex) => {
-                    const mapping = getScreen8Mapping(mappings, barrierId);
-                    return (
-                      <article key={`${barrierId}-${barrierIndex}`} className="m3-responsibility-map-preview-card">
-                        <h4>Barrier: {getBarrierLabel(barrierId)}</h4>
-                        <p><strong>Public responsibility:</strong> {mapping.publicActorIds.length ? mapping.publicActorIds.map((id) => getActorLabel(id, allActors)).join(', ') : 'No public responsibility actor yet'}</p>
-                        <p><strong>Service or influence actors:</strong> {[...mapping.serviceActorIds, ...mapping.communityActorIds, ...mapping.participationActorIds, ...mapping.voiceActorIds, ...mapping.supportActorIds, ...mapping.carefulActorIds].length ? [...mapping.serviceActorIds, ...mapping.communityActorIds, ...mapping.participationActorIds, ...mapping.voiceActorIds, ...mapping.supportActorIds, ...mapping.carefulActorIds].map((id) => getActorLabel(id, allActors)).join(', ') : 'No service or influence actor yet'}</p>
-                        <p><strong>CSO role:</strong> {mapping.csoRoleIds.length ? mapping.csoRoleIds.map((id) => getActorLabel(id, allActors)).join(', ') : 'No CSO role yet'}</p>
-                        <p><strong>Capacity-gap hint:</strong> {mapping.capacityGapHintIds.length ? mapping.capacityGapHintIds.map(getCapacityGapLabel).join(', ') : 'Capacity-gap hint missing'}</p>
-                        <span>{getScreen8PreviewStatus(mapping)}</span>
-                      </article>
-                    );
-                  })}
-                </aside>
-              </>
-            )}
+            {renderRoleMapPanel()}
           </section>
-
-          <div className="m3-responsibility-map-submit-row">
-            <button type="button" className="m3-responsibility-map-submit-button" disabled={!canSubmit} onClick={generateResponsibilityMapFromStage} data-testid="m3-s08-generate-map">
-              {submittedOutput ? 'Update responsibility map' : 'Generate responsibility map'}
-            </button>
-            <p aria-live="polite">{submitHelper}</p>
-          </div>
         </section>
         )}
 
-        {activeStage === 5 && submittedOutput && (
+        {activeStage === 4 && submittedOutput && (
           <section className="m3-responsibility-map-output" aria-live="polite" aria-labelledby={`${screen.id}-output`}>
             <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Actor Responsibility Map</h2>
             <p>
@@ -10851,81 +10699,45 @@ function ResponsibilityMapScreen({
             <p className="m3-responsibility-map-carry-note">
               Use this map in the next screen to examine power and influence. Some actors may have formal responsibility but limited influence, while others may influence decisions without formal authority.
             </p>
-            <div className="m3-responsibility-map-swimlane-legend" aria-label="Responsibility swimlane legend">
-              {[
-                ['Public responsibility', 'public'],
-                ['Service/supporting actor', 'service'],
-                ['Rights-holder voice', 'voice'],
-                ['CSO role', 'cso'],
-                ['Capacity-gap hint', 'capacity'],
-                ['Design action', 'action'],
-                ['Next question', 'question'],
-              ].map(([label, tone], index) => (
-                <span key={`${label}-${index}`} className={`m3-responsibility-map-legend-chip m3-responsibility-map-legend-chip--${tone}`}>{label}</span>
-              ))}
-            </div>
-            <div className="m3-responsibility-map-swimlane" aria-label="Draft responsibility swimlane map">
+            <div className="m3-responsibility-map-review-rows" aria-label="Draft responsibility role map">
               {generatedRows.map((row, index) => (
-                <article key={`${row.barrierId}-${index}`} className="m3-responsibility-map-swimlane-card" data-testid="m3-s08-generated-map-row">
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--barrier">
-                    <span className="m3-responsibility-map-lane-badge">Barrier selected</span>
-                    <h3>{row.barrierLabel}</h3>
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane">
-                    <span className="m3-responsibility-map-lane-badge">Rights-holder group affected</span>
-                    <p>{row.rightsHolderGroupAffected}</p>
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--public">
-                    <span className="m3-responsibility-map-lane-badge">Primary duty-bearer / public responsibility</span>
-                    {renderResponsibilityLaneItems(
-                      getSubmittedSelections(row, ['primary_public_responsibility']),
-                      screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].primaryPublicResponsibility,
-                    )}
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--service">
-                    <span className="m3-responsibility-map-lane-badge">Service or sector actor</span>
-                    {renderResponsibilityLaneItems(
-                      getSubmittedSelections(row, ['service_or_local_implementation']),
-                      screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].serviceOrSectorActor,
-                    )}
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--voice">
-                    <span className="m3-responsibility-map-lane-badge">Community or influence actor</span>
-                    {renderResponsibilityLaneItems(
-                      getSubmittedSelections(row, ['community_influence_actor', 'participation_actor', 'rights_holder_voice_support', 'careful_engagement_actor']),
-                      screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].communityOrInfluenceActor,
-                    )}
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--cso">
-                    <span className="m3-responsibility-map-lane-badge">Realistic CSO role</span>
-                    {renderResponsibilityLaneItems(
-                      getSubmittedSelections(row, ['cso_role']),
-                      screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].realisticCsoRole,
-                    )}
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane">
-                    <span className="m3-responsibility-map-lane-badge">Support or ally actor</span>
-                    {renderResponsibilityLaneItems(
-                      getSubmittedSelections(row, ['support_ally_actor']),
-                      screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].supportOrAllyActor,
-                    )}
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--capacity">
-                    <span className="m3-responsibility-map-lane-badge">Capacity gap to check</span>
+                <article key={`${row.barrierId}-${index}`} className="m3-responsibility-map-review-row" data-testid="m3-s08-generated-map-row">
+                  <div>
+                    <span>Priority barrier</span>
+                    <p>{row.barrierLabel}</p>
+                  </div>
+                  <div>
+                    <span>Relevant actor</span>
+                    <p>{[
+                      ...row.primaryPublicResponsibility,
+                      ...row.serviceOrSectorActors,
+                      ...row.communityOrInfluenceActors,
+                    ].filter(Boolean).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].primaryPublicResponsibility}</p>
+                  </div>
+                  <div>
+                    <span>Actor role type</span>
+                    <p>{getSubmittedSelections(row, ['primary_public_responsibility', 'service_or_local_implementation', 'community_influence_actor', 'participation_actor', 'rights_holder_voice_support', 'support_ally_actor', 'careful_engagement_actor']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Public or service responsibility to clarify'}</p>
+                  </div>
+                  <div>
+                    <span>Responsibility or contribution</span>
+                    <p>{getSubmittedActions(row).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].serviceOrSectorActor}</p>
+                  </div>
+                  <div>
+                    <span>Capacity or support gap</span>
                     <p>{row.capacityGapHints.map(getCapacityGapLabel).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].capacityGapToCheck}</p>
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane">
-                    <span className="m3-responsibility-map-lane-badge">Safe engagement question</span>
-                    <p>{row.safeEngagementQuestion}</p>
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--action">
-                    <span className="m3-responsibility-map-lane-badge">Design action or follow-up measure</span>
-                    <p>{getSubmittedActions(row).join(', ') || 'Clarify the actor role, response step, and follow-up measure before implementation.'}</p>
-                  </section>
-                  <section className="m3-responsibility-map-swimlane-lane m3-responsibility-map-swimlane-lane--question">
-                    <span className="m3-responsibility-map-lane-badge">Next question for Screen 9</span>
+                  </div>
+                  <div>
+                    <span>Appropriate CSO role</span>
+                    <p>{row.csoRoles.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].realisticCsoRole}</p>
+                  </div>
+                  <div>
+                    <span>Design implication</span>
+                    <p>{getSubmittedActions(row).length > 0 ? getSubmittedActions(row).join(', ') : 'Clarify the actor role, response step, and follow-up measure before implementation.'}</p>
+                  </div>
+                  <div>
+                    <span>Carry forward to power and influence analysis</span>
                     <p>{row.nextQuestion}</p>
-                  </section>
+                  </div>
                 </article>
               ))}
             </div>
@@ -10946,14 +10758,14 @@ function ResponsibilityMapScreen({
           </section>
         )}
 
-        {activeStage === 5 && submittedOutput && (
+        {activeStage === 4 && submittedOutput && (
           <section className={`m3-responsibility-map-feedback m3-responsibility-map-feedback--${submittedOutput.feedbackLevel}`} aria-live="polite">
             <h2>Feedback and warnings</h2>
             <p>{feedbackCopy}</p>
           </section>
         )}
 
-        {activeStage === 5 && submittedOutput && (
+        {activeStage === 4 && submittedOutput && (
           <section className="m3-responsibility-map-reflection">
             <h2>Optional reflection for your own CSO context</h2>
             <label>
@@ -10969,7 +10781,7 @@ function ResponsibilityMapScreen({
           </section>
         )}
 
-        {activeStage === 5 && submittedOutput && (
+        {activeStage === 4 && submittedOutput && (
           <section className="m3-responsibility-map-carry-forward">
             <h2>Case-study learning to carry forward</h2>
             <div className="m3-responsibility-map-carry-grid">
@@ -10980,14 +10792,14 @@ function ResponsibilityMapScreen({
           </section>
         )}
 
-        {activeStage === 5 && submittedOutput && (
+        {activeStage === 4 && submittedOutput && (
           <div className="m3-guided-stage-actions">
-            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(4)}>Edit responsibility roles</button>
-            <button type="button" className="m3-responsibility-map-submit-button" onClick={() => setActiveStage(6)}>Go to Apply/Download</button>
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(3)}>Edit responsibility roles</button>
+            <button type="button" className="m3-responsibility-map-submit-button" onClick={() => setActiveStage(5)}>Go to Apply/Download</button>
           </div>
         )}
 
-        {activeStage === 6 && (
+        {activeStage === 5 && (
         <section className="m3-responsibility-map-own-cso m3-guided-stage-card" aria-labelledby={`${screen.id}-own-cso`}>
           <div className="m3-guided-tabs" role="tablist" aria-label="Apply or download">
             <button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
@@ -11061,7 +10873,7 @@ function ResponsibilityMapScreen({
         </section>
         )}
 
-        {activeStage === 6 && applyTab === 'downloads' && (
+        {activeStage === 5 && applyTab === 'downloads' && (
         <section className="m3-responsibility-map-template m3-guided-stage-card" aria-labelledby={`${screen.id}-template`}>
           <div>
             <p className="m3-responsibility-map-kicker">Downloadable template</p>
