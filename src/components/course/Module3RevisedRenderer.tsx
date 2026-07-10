@@ -9002,7 +9002,6 @@ function PolicyStandardsMapScreen({
               </div>
             )}
             <p className="m3-guided-helper" aria-live="polite">{formChanged ? 'Update your draft map before continuing so the saved output matches your latest choices.' : mapProgressMessage}</p>
-            <p className="m3-guided-safe-note">Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
             <button
               type="button"
               className="m3-policy-map-submit-button"
@@ -9086,9 +9085,6 @@ function PolicyStandardsMapScreen({
               </section>
             )}
 
-            <p className="m3-policy-map-output-safe">
-              Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.
-            </p>
           </section>
         )}
 
@@ -9787,7 +9783,6 @@ function RightsHolderBarrierMapScreen({
             </div>
             <p><strong>{priorityBarrierLinkCount}</strong> priority barrier links added.</p>
             <p className="m3-guided-helper" aria-live="polite">{submitHelper}</p>
-            <p className="m3-guided-safe-note">Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
             <button
               type="button"
               className="m3-rights-map-submit-button"
@@ -9869,9 +9864,6 @@ function RightsHolderBarrierMapScreen({
               ))}
             </div>
 
-            <p className="m3-rights-map-output-safe" data-testid="m3-s07-safety-note">
-              Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.
-            </p>
 
             <section className="m3-rights-map-insight" aria-labelledby={`${screen.id}-insight`}>
               <h3 id={`${screen.id}-insight`}>What your selections suggest</h3>
@@ -10700,7 +10692,6 @@ function ResponsibilityMapScreen({
                 >
                   Continue to responsibility-role mapping
                 </button>
-                <p className="m3-guided-safe-note">Use generalized actor roles. Do not enter names, complaints, exact locations, or identifying details.</p>
               </aside>
             ) : !hasSelectedBarrier ? (
               <section className="m3-responsibility-map-empty-hero" aria-label="Responsibility map orientation">
@@ -10859,9 +10850,6 @@ function ResponsibilityMapScreen({
             </p>
             <p className="m3-responsibility-map-carry-note">
               Use this map in the next screen to examine power and influence. Some actors may have formal responsibility but limited influence, while others may influence decisions without formal authority.
-            </p>
-            <p className="m3-responsibility-map-output-safe" data-testid="m3-s08-safety-note">
-              Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.
             </p>
             <div className="m3-responsibility-map-swimlane-legend" aria-label="Responsibility swimlane legend">
               {[
