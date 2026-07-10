@@ -2155,6 +2155,7 @@ type Screen10Submission = {
     directCause: string;
     deeperRootCause: string;
     capacityGap: string;
+    responsibilityGap?: string;
     designImplication: string;
     questionForLaterDesignRepair: string;
   }>;
@@ -2181,6 +2182,14 @@ type Screen10Submission = {
     issue: string;
     nextUse: string;
   };
+};
+
+type Screen10CauseMapDraft = {
+  directCause: string;
+  deeperRootCause: string;
+  capacityGap: string;
+  responsibilityGap: string;
+  designImplication: string;
 };
 
 type InclusionStatus = 'missing' | 'mentioned' | 'built';
@@ -3305,6 +3314,24 @@ const screen10GeneratedPatterns: Screen10Submission['generatedProblemLayersCanva
     questionForLaterDesignRepair: 'Which participation and accountability design features must change to strengthen rights-holder influence?',
   },
 ];
+
+const screen10ResponsibilityGapOptions = [
+  'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.',
+  'Assign response roles, timelines, and a way to communicate what changed back to rights-holders.',
+  'Name the actor responsible for turning evidence into design decisions, budget choices, indicators, and follow-up.',
+  'Identify who must check accessibility, participation, feedback, and accountability before implementation.',
+  'Clarify which actor owns the barrier response and which actors can support safe rights-holder influence.',
+];
+
+function getEmptyScreen10CauseMapDraft(): Screen10CauseMapDraft {
+  return {
+    directCause: '',
+    deeperRootCause: '',
+    capacityGap: '',
+    responsibilityGap: '',
+    designImplication: '',
+  };
+}
 
 function getEmptyScreen10OwnCsoDraft(): Screen10OwnCsoDraft {
   return {
@@ -4793,35 +4820,16 @@ function getScreen10RootCauseSummary(feedbackState: Screen10FeedbackState) {
   return screen10FeedbackText[feedbackState];
 }
 
-function getScreen10ValidationMessages(selections: Record<string, ProblemLayerId | undefined>) {
-  const classifiedCount = screen10Statements.filter((statement) => selections[statement.id]).length;
-  const { visibleCount, directCount, rootCount, capacityCount } = getScreen10LayerCounts(selections);
-  const messages: string[] = [];
-  if (classifiedCount < screen10Statements.length) {
-    messages.push('Please classify the Jiru Amba statements before generating the problem layers canvas. A useful diagnosis needs visible signs, direct causes, root causes, and capacity gaps.');
-    return messages;
-  }
-  if (visibleCount === 0 || directCount === 0 || rootCount === 0 || capacityCount === 0) {
-    messages.push('Your map is missing one layer. Check whether you have included at least one visible sign, one direct cause, one deeper/root cause, and one capacity gap.');
-  }
-  if (rootCount >= 7) {
-    messages.push('Not everything is a root cause. Separate what is visible, what directly caused the problem, what keeps it in place, and what capacity must be strengthened.');
-  }
-  if (capacityCount === 0) {
-    messages.push('Add a capacity gap. Ask who needs what capacity: rights-holders, duty-bearers, service actors, CSO facilitators, or coordination systems.');
-  }
-  return messages;
-}
-
 function buildScreen10Submission(
   selections: Record<string, ProblemLayerId | undefined>,
   ownCsoOutput: Screen10OwnCsoOutput | null,
+  generatedProblemLayersCanvas = screen10GeneratedPatterns,
 ): Screen10Submission {
   const grouped = getScreen10GroupedStatements(selections);
   const feedbackState = getScreen10FeedbackState(selections);
   const diagnosisInterpretation = screen10SuggestionText[feedbackState];
-  const designImplications = screen10GeneratedPatterns.map((pattern) => pattern.designImplication);
-  const questionsForLaterDesignRepair = screen10GeneratedPatterns.map((pattern) => pattern.questionForLaterDesignRepair);
+  const designImplications = generatedProblemLayersCanvas.map((pattern) => pattern.designImplication);
+  const questionsForLaterDesignRepair = generatedProblemLayersCanvas.map((pattern) => pattern.questionForLaterDesignRepair);
   return {
     screenId: 'M3-R10',
     completed: true,
@@ -4839,7 +4847,7 @@ function buildScreen10Submission(
       deeperRootCauses: grouped.root.map((statement) => statement.statement),
       capacityGaps: grouped.capacity.map((statement) => statement.statement),
     },
-    generatedProblemLayersCanvas: screen10GeneratedPatterns,
+    generatedProblemLayersCanvas,
     rootCauseCapacityGapMap: {
       learnerClassifications: screen10Statements.map((statement) => ({
         statementId: statement.id,
@@ -4852,7 +4860,7 @@ function buildScreen10Submission(
       directCauses: grouped.direct.map((statement) => statement.statement),
       deeperRootCauses: grouped.root.map((statement) => statement.statement),
       capacityGaps: grouped.capacity.map((statement) => statement.statement),
-      generatedProblemLayersCanvas: screen10GeneratedPatterns,
+      generatedProblemLayersCanvas,
       designImplications,
       questionsForLaterDesignRepair,
       diagnosisInterpretation,
@@ -15213,13 +15221,14 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   const [selections, setSelections] = useState<Record<string, ProblemLayerId | undefined>>({});
+  const [selectedBarrierId, setSelectedBarrierId] = useState('');
+  const [causeMapDraft, setCauseMapDraft] = useState<Screen10CauseMapDraft>(getEmptyScreen10CauseMapDraft());
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen10OwnCsoDraft>(getEmptyScreen10OwnCsoDraft());
   const [ownCsoOutput, setOwnCsoOutput] = useState<Screen10OwnCsoOutput | null>(null);
   const [ownCsoError, setOwnCsoError] = useState('');
   const [submittedOutput, setSubmittedOutput] = useState<Screen10Submission | null>(null);
   const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
   const [showHeroImage, setShowHeroImage] = useState(true);
-  const [showTemplateVisual, setShowTemplateVisual] = useState(true);
   const [showWorkedFlow, setShowWorkedFlow] = useState(true);
   const [activeStage, setActiveStage] = useState(1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
@@ -15229,36 +15238,56 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
   const layerOrder: ProblemLayerId[] = ['visible', 'direct', 'root', 'capacity'];
   const classifiedCount = screen10Statements.filter((statement) => selections[statement.id]).length;
   const allClassified = classifiedCount === screen10Statements.length;
-  const validationMessages = getScreen10ValidationMessages(selections);
-  const currentSignature = JSON.stringify({ selections, ownCsoOutput });
+  const selectedPattern = screen10GeneratedPatterns.find((pattern) => pattern.problemPattern === selectedBarrierId);
+  const completedRequiredFields = Object.values(causeMapDraft).filter(Boolean).length;
+  const causeMapComplete = Boolean(selectedPattern && completedRequiredFields === 5);
+  const completedCauseMapRowCount = causeMapComplete ? 1 : 0;
+  const currentSignature = JSON.stringify({ selectedBarrierId, causeMapDraft, selections, ownCsoOutput });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
-  const previewGroups = getScreen10GroupedStatements(selections);
-  const canGenerate = allClassified;
+  const canGenerate = causeMapComplete;
   const canContinue = Boolean(submittedOutput && allClassified && !formChanged);
-  const submitLabel = submittedOutput && formChanged ? 'Update problem layers canvas' : 'Generate problem layers canvas';
-  const helperText = !allClassified
-    ? classifiedCount === 0
-      ? 'Please classify the Jiru Amba statements before generating the problem layers canvas. A useful diagnosis needs visible signs, direct causes, root causes, and capacity gaps.'
-      : `${classifiedCount} of ${screen10Statements.length} statements classified. Continue until all statements have a layer.`
+  const submitLabel = submittedOutput && formChanged ? 'Update cause map' : 'Generate cause map';
+  const helperText = !selectedPattern
+    ? 'Select one barrier and complete the cause, capacity gap, responsibility gap, and design implication fields.'
+    : !causeMapComplete
+      ? 'Select one barrier and complete the cause, capacity gap, responsibility gap, and design implication fields.'
     : submittedOutput && formChanged
-      ? 'Update your problem layers canvas before saving this screen.'
+      ? 'Update your cause map before saving this screen.'
     : submittedOutput && !formChanged
-      ? 'Your problem layers canvas is ready to save.'
-      : validationMessages[0] || 'Ready to generate your problem layers canvas.';
+      ? 'Your cause map is ready to save.'
+      : 'Ready to generate your cause-and-capacity map.';
   const outputSelections = submittedOutput?.problemLayerSelections || [];
   const warnings = submittedOutput
     ? getScreen10Warnings(Object.fromEntries(submittedOutput.problemLayerSelections.map((selection) => [selection.statementId, selection.selectedLayer])))
     : [];
 
-  const selectLayer = (statementId: string, layer: ProblemLayerId) => {
-    setSelections((current) => ({ ...current, [statementId]: layer }));
+  const selectPriorityBarrier = (pattern: Screen10Submission['generatedProblemLayersCanvas'][number]) => {
+    setSelectedBarrierId((current) => current === pattern.problemPattern ? '' : pattern.problemPattern);
+    setCauseMapDraft(getEmptyScreen10CauseMapDraft());
+    setSelections(Object.fromEntries(screen10Statements.map((statement) => [statement.id, statement.suggestedLayer])) as Record<string, ProblemLayerId>);
+  };
+
+  const updateCauseMapDraft = (field: keyof Screen10CauseMapDraft, value: string) => {
+    setCauseMapDraft((current) => ({ ...current, [field]: value }));
   };
 
   const submitCanvas = () => {
-    if (!canGenerate) return;
-    const submission = buildScreen10Submission(selections, ownCsoOutput);
+    if (!canGenerate || !selectedPattern) return;
+    const generatedSelections = Object.fromEntries(screen10Statements.map((statement) => [statement.id, statement.suggestedLayer])) as Record<string, ProblemLayerId>;
+    const learnerCauseMap: Screen10Submission['generatedProblemLayersCanvas'] = [{
+      problemPattern: selectedPattern.problemPattern,
+      visibleSign: selectedPattern.visibleSign,
+      directCause: causeMapDraft.directCause,
+      deeperRootCause: causeMapDraft.deeperRootCause,
+      capacityGap: causeMapDraft.capacityGap,
+      responsibilityGap: causeMapDraft.responsibilityGap,
+      designImplication: causeMapDraft.designImplication,
+      questionForLaterDesignRepair: selectedPattern.questionForLaterDesignRepair,
+    }];
+    setSelections(generatedSelections);
+    const submission = buildScreen10Submission(generatedSelections, ownCsoOutput, learnerCauseMap);
     setSubmittedOutput(submission);
-    setSubmittedSignature(currentSignature);
+    setSubmittedSignature(JSON.stringify({ selectedBarrierId, causeMapDraft, selections: generatedSelections, ownCsoOutput }));
     setActiveStage(4);
     if (typeof window !== 'undefined') {
       window.setTimeout(() => outputRef.current?.focus(), 0);
@@ -15328,14 +15357,9 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
     { id: 1, label: 'Understand', complete: activeStage > 1 },
     { id: 2, label: 'Example', complete: activeStage > 2 },
     { id: 3, label: 'Practice', complete: Boolean(submittedOutput) || activeStage > 3 },
-    { id: 4, label: 'Review canvas', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput) },
+    { id: 4, label: 'Review cause map', complete: Boolean(submittedOutput) && activeStage > 4, unlocked: Boolean(submittedOutput) },
     { id: 5, label: 'Apply/Download', complete: canContinue, unlocked: Boolean(submittedOutput) },
   ];
-  const selectedLayerSummaries = layerOrder.map((layer) => ({
-    layer,
-    label: problemLayerLabels[layer],
-    count: previewGroups[layer].length,
-  }));
   const rootCauseStageTestIds: Record<number, string> = {
     1: 'm3-s10-stage-understand',
     2: 'm3-s10-stage-example',
@@ -15343,6 +15367,17 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
     4: 'm3-s10-stage-review',
     5: 'm3-s10-stage-apply',
   };
+  const causeMapFieldGroups: Array<{
+    field: keyof Screen10CauseMapDraft;
+    label: string;
+    options: string[];
+  }> = [
+    { field: 'directCause', label: 'Immediate cause', options: screen10GeneratedPatterns.map((pattern) => pattern.directCause) },
+    { field: 'deeperRootCause', label: 'Deeper/root cause', options: screen10GeneratedPatterns.map((pattern) => pattern.deeperRootCause) },
+    { field: 'capacityGap', label: 'Capacity or support gap', options: screen10GeneratedPatterns.map((pattern) => pattern.capacityGap) },
+    { field: 'responsibilityGap', label: 'Responsibility gap', options: screen10ResponsibilityGapOptions },
+    { field: 'designImplication', label: 'Design implication', options: screen10GeneratedPatterns.map((pattern) => pattern.designImplication) },
+  ];
 
   return (
     <main className="m3-screen m3-root-cause-map-screen" aria-labelledby={titleId}>
@@ -15440,85 +15475,99 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
 
         {activeStage === 3 && (
         <section className="m3-root-cause-map-builder-section m3-guided-stage-card" aria-labelledby={taskId}>
-          <div className="m3-guided-practice-layout">
+          <div className="m3-guided-practice-layout m3-root-cause-map-practice-layout">
             <div className="m3-guided-stage-main">
           <div className="m3-root-cause-map-task-header">
             <div>
-              <p className="m3-root-cause-map-kicker">PROBLEM LAYERS CANVAS</p>
-              <h2 id={taskId}>Practice a problem layers map using the Jiru Amba case</h2>
-              <p>Classify each Jiru Amba statement into the layer where it fits best. A useful diagnosis separates what is visible, what directly caused it, what keeps it in place, and what capacity must be strengthened.</p>
+              <p className="m3-root-cause-map-kicker">CAUSE AND CAPACITY MAP</p>
+              <h2 id={taskId}>Practice a cause-and-capacity map using the Jiru Amba case</h2>
+              <p>Select one priority barrier, then complete the cause chain from immediate cause to design implication.</p>
             </div>
-            <span className="m3-root-cause-map-count" aria-live="polite">{classifiedCount} of {screen10Statements.length} classified</span>
+            <span className="m3-root-cause-map-count" aria-live="polite">{selectedPattern ? '1 barrier selected' : '0 barriers selected'}</span>
           </div>
 
-          <div className="m3-root-cause-map-definitions" aria-label="Layer definitions">
-            {layerOrder.map((layer) => (
-              <article key={layer} className={`m3-root-cause-map-definition m3-root-cause-map-layer--${layer}`}>
-                {renderLayerHeading(layer, problemLayerLabels[layer])}
-                <p>{problemLayerDefinitions[layer]}</p>
-              </article>
-            ))}
-          </div>
+          <section className="m3-root-cause-map-practice-step" aria-labelledby={`${screen.id}-barrier-step`}>
+            <h3 id={`${screen.id}-barrier-step`}>Step 1: Select a priority barrier</h3>
+            <div className="m3-root-cause-map-barrier-tiles" role="group" aria-label="Priority barrier options">
+              {screen10GeneratedPatterns.map((pattern) => {
+                const selected = selectedBarrierId === pattern.problemPattern;
+                return (
+                  <button
+                    key={pattern.problemPattern}
+                    type="button"
+                    className={`m3-root-cause-map-barrier-tile${selected ? ' is-selected' : ''}`}
+                    aria-pressed={selected}
+                    onClick={() => selectPriorityBarrier(pattern)}
+                    data-testid={selected ? 'm3-s10-selected-barrier' : 'm3-s10-barrier-tile'}
+                  >
+                    <span aria-hidden="true">{selected ? '✓' : '+'}</span>
+                    <strong>{pattern.problemPattern}</strong>
+                    <small>{pattern.visibleSign}</small>
+                    <em>{selected ? 'Selected' : 'Select'}</em>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
 
-          <section className="m3-root-cause-map-builder">
-            <section className="m3-root-cause-map-statements" aria-label="Case-study statements">
-              {screen10Statements.map((statement) => (
-                <fieldset key={statement.id} className="m3-root-cause-map-statement-card" data-testid={selections[statement.id] ? 'm3-s10-classified-statement' : undefined}>
-                  <legend><span>{statement.id}</span>{statement.statement}</legend>
-                  <div className="m3-root-cause-map-options">
-                    {layerOrder.map((layer) => {
-                      const selected = selections[statement.id] === layer;
-                      return (
-                        <label key={layer} className={`m3-root-cause-map-layer-choice m3-root-cause-map-layer-choice--${layer}${selected ? ' is-selected' : ''}`} data-testid="m3-s10-layer-choice">
-                          <input type="radio" name={`${screen.id}-${statement.id}`} value={layer} checked={selected} onChange={() => selectLayer(statement.id, layer)} />
-                          <span>{selected ? '✓ ' : ''}{problemLayerLabels[layer]}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </fieldset>
-              ))}
-            </section>
-
-            <aside className="m3-root-cause-map-preview" aria-labelledby={`${screen.id}-preview`}>
-              <h3 id={`${screen.id}-preview`}>Problem layers preview</h3>
-              <p>Your draft canvas will appear here as you classify the Jiru Amba case-study statements.</p>
-              {showTemplateVisual && <img className="m3-root-cause-map-template" src={module3RootCauseAssets.template.src} alt={module3RootCauseAssets.template.alt} onError={() => setShowTemplateVisual(false)} />}
-              <div className="m3-root-cause-map-preview-layers">
-                {layerOrder.map((layer) => (
-                  <section key={layer} className={`m3-root-cause-map-preview-layer m3-root-cause-map-layer--${layer}`}>
-                    {renderLayerHeading(layer)}
-                    {previewGroups[layer].length > 0 ? (
-                      <ul>{previewGroups[layer].map((statement) => <li key={statement.id}>{statement.id} · {statement.shortLabel}</li>)}</ul>
-                    ) : (
-                      <p>No statements yet.</p>
-                    )}
-                  </section>
+          <section className={`m3-root-cause-map-practice-step ${!selectedPattern ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-cause-row`}>
+            <h3 id={`${screen.id}-cause-row`}>Step 2: Complete a cause-and-capacity mapping row</h3>
+            {selectedPattern ? (
+              <article className="m3-root-cause-map-cause-row" data-testid="m3-s10-cause-map-row">
+                <div>
+                  <span>Selected barrier</span>
+                  <p>{selectedPattern.problemPattern}</p>
+                </div>
+                <div>
+                  <span>Visible problem or symptom</span>
+                  <p>{selectedPattern.visibleSign}</p>
+                </div>
+                {causeMapFieldGroups.map(({ field, label, options }) => (
+                  <label key={field}>
+                    <span>{label}</span>
+                    <select
+                      value={causeMapDraft[field]}
+                      onChange={(event) => updateCauseMapDraft(field, event.target.value)}
+                      data-testid={`m3-s10-${field}-select`}
+                    >
+                      <option value="">Choose {label.toLowerCase()}</option>
+                      {options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </label>
                 ))}
-              </div>
-            </aside>
+              </article>
+            ) : (
+              <p className="m3-root-cause-map-empty-note">Select one priority barrier first. The cause-and-capacity row will appear here.</p>
+            )}
           </section>
 
           <div className="m3-root-cause-map-submit-row">
-            <button type="button" className="m3-root-cause-map-submit-button" disabled={!canGenerate} title={!canGenerate ? 'Classify all statements first.' : undefined} onClick={submitCanvas} data-testid="m3-s10-generate-canvas">
+            <button type="button" className="m3-root-cause-map-submit-button" disabled={!canGenerate} title={!canGenerate ? 'Select one barrier and complete the cause, capacity gap, responsibility gap, and design implication fields.' : undefined} onClick={submitCanvas} data-testid="m3-s10-generate-canvas">
               {submitLabel}
             </button>
             <div aria-live="polite">
               <p>{helperText}</p>
-              {allClassified && validationMessages.length > 0 && <ul>{validationMessages.map((message) => <li key={message}>{message}</li>)}</ul>}
             </div>
           </div>
             </div>
             <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-problem-live`}>
-              <h2 id={`${screen.id}-problem-live`}>Problem layers so far</h2>
-              <p aria-live="polite">{classifiedCount} of {screen10Statements.length} statements classified.</p>
+              <h2 id={`${screen.id}-problem-live`}>Cause map so far</h2>
+              <p aria-live="polite">{selectedPattern ? '1 selected barrier' : 'No barrier selected yet'}</p>
               <div className="m3-guided-chip-list">
-                {selectedLayerSummaries.map((summary) => (
-                  <span key={summary.layer} className="m3-guided-selected-chip">{summary.label}: {summary.count}</span>
-                ))}
+                {selectedPattern ? (
+                  <span className="m3-guided-selected-chip">{selectedPattern.problemPattern}</span>
+                ) : (
+                  <span className="m3-guided-muted">Select one priority barrier.</span>
+                )}
               </div>
+              <p className="m3-guided-helper">Completed fields: {completedRequiredFields} of 5</p>
+              <p className="m3-guided-helper">Completed cause-map rows: {completedCauseMapRowCount}</p>
               <p className="m3-guided-helper">{helperText}</p>
-              <p className="m3-guided-safe-note">Use generalized problem patterns. Do not enter names, exact sensitive locations, complaint details, accusations, or identifiable information.</p>
+              <button type="button" className="m3-root-cause-map-submit-button" disabled={!canGenerate} onClick={submitCanvas}>
+                {submitLabel}
+              </button>
             </aside>
           </div>
         </section>
@@ -15534,13 +15583,14 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
                 <article key={pattern.problemPattern} className="m3-root-cause-map-pattern" data-testid="m3-s10-generated-row">
                   <h4>{pattern.problemPattern}</h4>
                   {[
-                    ['Problem pattern', pattern.problemPattern],
-                    ['Visible sign / symptom', pattern.visibleSign],
-                    ['Direct cause', pattern.directCause],
+                    ['Priority barrier', pattern.problemPattern],
+                    ['Visible problem', pattern.visibleSign],
+                    ['Immediate cause', pattern.directCause],
                     ['Deeper/root cause', pattern.deeperRootCause],
-                    ['Capacity gap', pattern.capacityGap],
+                    ['Capacity or support gap', pattern.capacityGap],
+                    ['Responsibility gap', pattern.responsibilityGap || 'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.'],
                     ['Design implication', pattern.designImplication],
-                    ['Question for later design repair', pattern.questionForLaterDesignRepair],
+                    ['Carry forward to gender, disability, participation, and risk checks', pattern.questionForLaterDesignRepair],
                   ].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}
                 </article>
               ))}
