@@ -19990,6 +19990,25 @@
   gap: 0.8rem;
 }
 
+.m3-closing-completeness {
+  display: grid;
+  gap: 0.45rem;
+  border: 1px solid rgba(14, 116, 144, 0.16);
+  border-radius: 14px;
+  background: #f8ffff;
+  padding: 0.75rem;
+}
+
+.m3-closing-completeness h3,
+.m3-closing-completeness p,
+.m3-closing-completeness ul {
+  margin: 0;
+}
+
+.m3-closing-completeness ul {
+  padding-left: 1.1rem;
+}
+
 .m3-closing-accordion {
   display: grid;
   gap: 0.8rem;

@@ -6208,20 +6208,19 @@ type Screen20Submission = {
   generatedAt: string;
 };
 type SnapshotFieldId =
-  | 'projectIssueOrSection'
-  | 'rightsStandards'
-  | 'specificRightsHolders'
-  | 'keyBarriers'
-  | 'dutyBearersSupportingActors'
-  | 'csoRole'
-  | 'powerCapacityGaps'
-  | 'genderDisabilityConsiderations'
-  | 'participationAccountabilityImprovement'
-  | 'riskDoNoHarmCheck'
-  | 'objectiveActivityRepair'
-  | 'evidenceIndicatorImprovement'
-  | 'safeFirstDesignChange'
-  | 'implementationWatchPoint';
+  | 'contextInequalityFocus'
+  | 'policyStandardsSources'
+  | 'rightsHolderBarrierFocus'
+  | 'dutyBearersSupportingActorsCsoRole'
+  | 'powerCapacityResponsibilityIssue'
+  | 'inclusionAccessibilityWatchPoint'
+  | 'participationAccountabilityPathway'
+  | 'riskDoNoHarmWatchPoint'
+  | 'repairedDesignDecision'
+  | 'activityDraftPlanRepair'
+  | 'interventionLogicIndicatorFocus'
+  | 'draftPlanReviewNote'
+  | 'module4ImplementationWatchPoint';
 type SnapshotField = {
   id: SnapshotFieldId;
   label: string;
@@ -6237,6 +6236,7 @@ type SnapshotSection = {
   fields: SnapshotField[];
 };
 type M3PortfolioSnapshot = Record<SnapshotFieldId, string> & {
+  implementationWatchPoint: string;
   knowledgeCheckReviewFlags: string[];
   sourceScreensUsed: string[];
   learnerEditedFields: string[];
@@ -6900,163 +6900,148 @@ const implementationWatchPointOptions = [
 
 const snapshotSections: SnapshotSection[] = [
   {
-    id: 'issue-standards',
-    title: 'Section 1 — Issue and standards',
+    id: 'review-work',
+    title: '1. Review your Module 3 work',
     fields: [
       {
-        id: 'projectIssueOrSection',
-        label: 'Project issue or proposal section reviewed',
-        prompt: 'What project issue or proposal section did you improve?',
-        placeholder: 'Example: “Participation, accountability, and risk section of a local development proposal.”',
-        source: 'From your proposal repair',
-        sourceNotes: 'This can draw from your repaired proposal section, context scan, or gap-map repair priority.',
-        maxLength: 320,
+        id: 'contextInequalityFocus',
+        label: 'Context and inequality focus',
+        prompt: 'What context signal, affected group, barrier, or safe evidence issue shaped your design review?',
+        placeholder: 'Not yet saved: complete the Context and Inequality Scan.',
+        source: 'From Screen 5',
+        sourceNotes: 'Uses the saved Context and Inequality Scan. If Screen 5 is missing, this field should stay marked as not yet saved.',
+        maxLength: 420,
       },
       {
-        id: 'rightsStandards',
-        label: 'Rights or standards connected to the issue',
-        prompt: 'Which rights, standards, policies, or public commitments help explain why this issue matters?',
-        placeholder: 'Example: “Participation in public decision-making, equality and non-discrimination, access to information, and accountable public service response.”',
-        source: 'From your standards map',
-        sourceNotes: 'This can draw from your policy and standards map and any knowledge-check review flags.',
+        id: 'policyStandardsSources',
+        label: 'Policy/standards sources to check',
+        prompt: 'Which rights, standards, policy commitments, or service responsibilities should guide implementation?',
+        placeholder: 'Not yet saved: complete the Policy and Standards Map.',
+        source: 'From Screen 6',
+        sourceNotes: 'Uses selected references and generated map rows from the Policy and Standards Map.',
         maxLength: 420,
       },
     ],
   },
   {
-    id: 'rights-barriers',
-    title: 'Section 2 — Rights-holders and barriers',
+    id: 'final-snapshot',
+    title: '2. Final HRBA design snapshot',
     fields: [
       {
-        id: 'specificRightsHolders',
-        label: 'Specific rights-holders',
-        prompt: 'Which groups should the design understand more specifically?',
-        placeholder: 'Example: “Women market users, youth seeking livelihood opportunities, persons with disabilities, low-income residents, and grassroots CSO members.”',
-        source: 'From your barrier map',
-        sourceNotes: 'This can draw from your rights-holder and barrier map, target-group review, and proposal gap map.',
-        maxLength: 420,
-      },
-      {
-        id: 'keyBarriers',
-        label: 'Key barriers',
-        prompt: 'What barriers affect access, participation, benefit, safety, voice, or influence?',
-        placeholder: 'Example: “Information gaps, inaccessible meeting formats, care-work timing barriers, unclear selection criteria, gatekeeper influence, and weak feedback response.”',
-        source: 'From your barrier map',
-        sourceNotes: 'This can draw from your barrier map, root-cause canvas, and gender/disability design check.',
-        maxLength: 460,
-      },
-    ],
-  },
-  {
-    id: 'actors-power',
-    title: 'Section 3 — Actors, responsibilities, power, and CSO role',
-    fields: [
-      {
-        id: 'dutyBearersSupportingActors',
-        label: 'Duty-bearers and supporting actors',
-        prompt: 'Who has responsibilities or influence in this design?',
-        placeholder: 'Example: “Relevant local public offices, service providers, local committees, community representatives, grassroots CSOs, and project partners.”',
-        source: 'From your responsibility map',
-        sourceNotes: 'This can draw from your actor/responsibility map, proposal review, and proposal repair.',
-        maxLength: 420,
-      },
-      {
-        id: 'csoRole',
-        label: 'CSO role',
-        prompt: 'What is the realistic CSO role?',
-        placeholder: 'Example: “Facilitate safe participation, support evidence use, connect rights-holders and duty-bearers, monitor barriers, and help communicate follow-up without replacing public responsibilities.”',
-        source: 'From your responsibility map',
-        sourceNotes: 'This can draw from your CSO role analysis, repair moves, and Screen 20 review flags.',
-        maxLength: 460,
-      },
-      {
-        id: 'powerCapacityGaps',
-        label: 'Power or capacity gaps',
-        prompt: 'What power or capacity gap must the design watch?',
-        placeholder: 'Example: “Some formal representatives have more influence than women, youth, and persons with disabilities; duty-bearers may also need clearer evidence, resources, or routines to respond.”',
-        source: 'From your power and root-cause work',
-        sourceNotes: 'This can draw from your power map and root-cause/capacity-gap screen.',
-        maxLength: 460,
-      },
-    ],
-  },
-  {
-    id: 'inclusion-accountability-risk',
-    title: 'Section 4 — Inclusion, participation, accountability, and risk',
-    fields: [
-      {
-        id: 'genderDisabilityConsiderations',
-        label: 'Gender and disability considerations',
-        prompt: 'How should gender and disability be built into the design, not only mentioned?',
-        placeholder: 'Example: “Plan accessible information, meeting timing, transport or accommodation support, safe facilitation, disaggregated review, and budget lines for inclusion.”',
-        source: 'From your inclusion check',
-        sourceNotes: 'This can draw from your gender and disability design check and proposal gap map.',
-        maxLength: 460,
-      },
-      {
-        id: 'participationAccountabilityImprovement',
-        label: 'Participation and accountability improvement',
-        prompt: 'How will rights-holders influence decisions and receive follow-up?',
-        placeholder: 'Example: “Share accessible information before meetings, create safe ways to contribute, record how inputs influence decisions, and report back on what changed and why.”',
-        source: 'From your participation pathway',
-        sourceNotes: 'This can draw from your participation/accountability pathway, proposal repair, and Screen 20 review flags.',
-        maxLength: 460,
-      },
-      {
-        id: 'riskDoNoHarmCheck',
-        label: 'Risk and do-no-harm check',
-        prompt: 'What risk needs mitigation before implementation?',
-        placeholder: 'Example: “Avoid exposing sensitive feedback, prevent elite capture of selection, protect people who raise concerns, and use anonymized or aggregate evidence.”',
-        source: 'From your risk board',
-        sourceNotes: 'This can draw from your risk board, proposal review, and Screen 20 safe-evidence review flag.',
-        maxLength: 460,
-      },
-    ],
-  },
-  {
-    id: 'design-logic',
-    title: 'Section 5 — Repaired design logic',
-    fields: [
-      {
-        id: 'objectiveActivityRepair',
-        label: 'Objective or activity repair',
-        prompt: 'What is one concrete design repair you made?',
-        placeholder: 'Example: “Shift from general awareness sessions to a participation pathway where specific rights-holders identify barriers, duty-bearers review evidence, and the project tracks response.”',
-        source: 'From your proposal repair',
-        sourceNotes: 'This can draw from your objective repair, activity package repair, and proposal section repair.',
+        id: 'rightsHolderBarrierFocus',
+        label: 'Rights-holder and barrier focus',
+        prompt: 'Which rights-holder groups and barriers must the final design respond to?',
+        placeholder: 'Not yet saved: complete the Rights-Holders and Barriers map.',
+        source: 'From Screen 7',
+        sourceNotes: 'Uses saved rights-holder groups, barriers, and generated barrier map rows.',
         maxLength: 520,
       },
       {
-        id: 'evidenceIndicatorImprovement',
-        label: 'Evidence or indicator improvement',
-        prompt: 'What indicator or evidence improvement will show rights-based change?',
-        placeholder: 'Example: “Track whether participation changed decisions, whether feedback received response, and whether access barriers were removed.”',
-        source: 'From your intervention logic',
-        sourceNotes: 'This can draw from your intervention logic and indicators screen and Screen 20 review flags.',
-        maxLength: 420,
+        id: 'dutyBearersSupportingActorsCsoRole',
+        label: 'Duty-bearers, supporting actors, and CSO role',
+        prompt: 'Who must act, who can support, and what can the CSO realistically enable?',
+        placeholder: 'Not yet saved: complete the Duty-Bearers, Supporting Actors, and CSO Roles map.',
+        source: 'From Screen 8',
+        sourceNotes: 'Uses saved actor/responsibility rows and CSO role choices.',
+        maxLength: 520,
+      },
+      {
+        id: 'powerCapacityResponsibilityIssue',
+        label: 'Power, capacity, or responsibility issue',
+        prompt: 'What power, capacity, root-cause, or responsibility issue must the design watch?',
+        placeholder: 'Not yet saved: complete the Power and Influence Map and Root-Cause and Capacity-Gap Map.',
+        source: 'From Screens 9-10',
+        sourceNotes: 'Uses saved power-map rows and root-cause/capacity-gap outputs.',
+        maxLength: 520,
       },
     ],
   },
   {
-    id: 'module-4-carry',
-    title: 'Section 6 — Carry forward to Module 4',
+    id: 'check-completeness',
+    title: '3. Check completeness',
     fields: [
       {
-        id: 'safeFirstDesignChange',
-        label: 'One safe first design change',
-        prompt: 'What is the first safe design change this project should make before implementation?',
-        placeholder: 'Example: “Revise the participation and feedback plan before activities begin.”',
-        source: 'From your proposal repair',
-        sourceNotes: 'This can draw from the repair priority and the first change implied by your repaired section.',
-        maxLength: 360,
+        id: 'inclusionAccessibilityWatchPoint',
+        label: 'Inclusion and accessibility watch-point',
+        prompt: 'What gender, disability, accessibility, or inclusion issue must stay visible?',
+        placeholder: 'Not yet saved: complete the Gender and Disability Design Check.',
+        source: 'From Screen 11',
+        sourceNotes: 'Uses the saved inclusion check rows and carry-forward question.',
+        maxLength: 460,
       },
       {
-        id: 'implementationWatchPoint',
-        label: 'One implementation watch-point for Module 4',
-        prompt: 'What should you watch during implementation to make sure the design stays rights-based?',
-        placeholder: 'Example: “Check whether the people who faced barriers are actually receiving information, influencing decisions, and hearing follow-up.”',
-        source: 'From your implementation watch-point',
-        sourceNotes: 'This can draw from Screen 19, the risk board, and the participation/accountability pathway.',
+        id: 'participationAccountabilityPathway',
+        label: 'Participation/accountability pathway',
+        prompt: 'How will people receive information, participate, provide feedback, receive response, and see what changed?',
+        placeholder: 'Not yet saved: complete the Participation and Accountability Pathway.',
+        source: 'From Screen 12',
+        sourceNotes: 'Uses the saved participation and accountability pathway row.',
+        maxLength: 460,
+      },
+      {
+        id: 'riskDoNoHarmWatchPoint',
+        label: 'Risk or do-no-harm watch-point',
+        prompt: 'What possible harm, exclusion, unsafe feedback, or risk must be mitigated?',
+        placeholder: 'Not yet saved: complete the Risk and Do-No-Harm Check.',
+        source: 'From Screen 13',
+        sourceNotes: 'Uses the saved risk and do-no-harm check.',
+        maxLength: 460,
+      },
+    ],
+  },
+  {
+    id: 'save-download',
+    title: '4. Save / Download',
+    fields: [
+      {
+        id: 'repairedDesignDecision',
+        label: 'Repaired design decision',
+        prompt: 'What design decision was repaired before implementation?',
+        placeholder: 'Not yet saved: complete HRBA Project Design Repair.',
+        source: 'From Screen 14',
+        sourceNotes: 'Uses the saved repaired design package.',
+        maxLength: 520,
+      },
+      {
+        id: 'activityDraftPlanRepair',
+        label: 'Activity or draft plan repair',
+        prompt: 'What activity package or draft plan repair should carry into implementation?',
+        placeholder: 'Not yet saved: complete Draft Plan Review and Repair.',
+        source: 'From Screen 15',
+        sourceNotes: 'Uses the saved draft plan review note and, where available, repaired activity/design outputs.',
+        maxLength: 520,
+      },
+      {
+        id: 'interventionLogicIndicatorFocus',
+        label: 'Intervention logic and indicator focus',
+        prompt: 'What outcome, activity/output, indicator, evidence source, or assumption must stay visible?',
+        placeholder: 'Not yet saved: use the intervention logic output from HRBA Project Design Repair.',
+        source: 'From Screen 14',
+        sourceNotes: 'Uses intervention logic and indicator output carried by the design repair package.',
+        maxLength: 520,
+      },
+    ],
+  },
+  {
+    id: 'continue-closure',
+    title: '5. Continue to Module 3 Closure',
+    fields: [
+      {
+        id: 'draftPlanReviewNote',
+        label: 'Draft plan review note',
+        prompt: 'What final draft plan review note should be carried forward?',
+        placeholder: 'Not yet saved: complete Draft Plan Review and Repair.',
+        source: 'From Screen 15',
+        sourceNotes: 'Uses the saved draft plan review note from M3-R17, the visible Screen 15.',
+        maxLength: 420,
+      },
+      {
+        id: 'module4ImplementationWatchPoint',
+        label: 'Module 4 implementation watch-point',
+        prompt: 'What should be watched in Module 4 so the design stays rights-based during implementation?',
+        placeholder: 'Select or edit one implementation watch-point before saving.',
+        source: 'From your final watch-point',
+        sourceNotes: 'Uses the watch-point selected on this screen and saved outputs from participation, risk, and design repair screens.',
         maxLength: 420,
       },
     ],
@@ -7103,62 +7088,164 @@ function flattenSnapshotFields() {
   return snapshotSections.flatMap((section) => section.fields);
 }
 
+function notYetSaved(label: string) {
+  return `${label} not yet saved.`;
+}
+
+function compactSnapshotText(values: Array<string | null | undefined>, fallback: string) {
+  const cleaned = values
+    .flatMap((value) => String(value || '').split(/\n+/))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const unique = Array.from(new Set(cleaned));
+  return unique.length > 0 ? unique.slice(0, 4).join(' ') : fallback;
+}
+
 function getDefaultSnapshotValues(state: LearningState): Record<SnapshotFieldId, string> {
-  const screen18 = getScreen18SavedOutput(state);
-  const screen19 = (() => {
-    const record = getPracticeState(state, 'M3-R19');
-    const nested = record.screen19;
-    if (nested && typeof nested === 'object' && (nested as Screen19Submission).screenId === 'M3-R19') return nested as Screen19Submission;
-    if (record.screenId === 'M3-R19') return record as Screen19Submission;
-    return null;
-  })();
-  const prioritySection = screen18 ? getProposalSection(screen18.proposalGapMap.repairPriority).title : '';
-  const repairedSection = screen19 ? getProposalSection(screen19.proposalSectionRepair.selectedSection).title : '';
-  const repairedMoves = screen19
-    ? screen19.proposalSectionRepair.selectedRepairMoves.map((moveId) => getRepairMove(moveId).label).join(', ')
-    : '';
-  const selectedGaps = screen19 && screen19.proposalSectionRepair.selectedGaps.length > 0
-    ? screen19.proposalSectionRepair.selectedGaps.map((gapId) => getProposalGap(gapId).label).join(', ')
-    : '';
+  const screen5Record = getPracticeState(state, 'M3-R05');
+  const screen5Scan = screen5Record.contextInequalityScan as {
+    selectedJiruAmbaAffectedGroups?: string[];
+    selectedBarriers?: string[];
+    safeEvidenceToVerify?: string[];
+    generatedDesignImplications?: string;
+    portfolioSummaryText?: string;
+  } | undefined;
+  const screen5Signals = getScreen5Signals(state).map((id) => getSignalById(id)?.label).filter(Boolean) as string[];
+  const screen6Record = getPracticeState(state, 'M3-R06');
+  const selectedAnchorIds = Array.isArray(screen6Record.selectedAnchorIds) ? screen6Record.selectedAnchorIds as PolicyAnchorId[] : [];
+  const screen6Rows = Array.isArray(screen6Record.generatedMapRows) ? screen6Record.generatedMapRows as GeneratedStandardsMapRow[] : [];
+  const screen7 = getScreen7SavedOutput(state);
+  const screen8 = getScreen8SavedOutput(state);
+  const screen9 = getPracticeState(state, 'M3-R09') as Partial<Screen9Submission>;
+  const screen10 = getPracticeState(state, 'M3-R10') as Partial<Screen10Submission>;
+  const screen11 = getPracticeState(state, 'M3-R11') as Partial<Screen11Submission>;
+  const screen12 = getPracticeState(state, 'M3-R12') as Partial<Screen12Submission>;
+  const screen13 = getPracticeState(state, 'M3-R13') as Partial<Screen13Submission>;
+  const screen14 = getScreen14SavedOutput(state);
+  const screen17 = getScreen17SavedOutput(state);
+  const screen20 = getScreen20SavedOutput(state);
 
   return {
-    projectIssueOrSection: repairedSection || prioritySection || 'Participation, accountability, and risk section of a local development proposal.',
-    rightsStandards:
-      'Participation in public decision-making, equality and non-discrimination, access to information, and accountable public service response.',
-    specificRightsHolders:
-      'Women market users, youth seeking livelihood opportunities, persons with disabilities, low-income residents, and grassroots CSO members.',
-    keyBarriers:
-      selectedGaps || 'Information gaps, inaccessible meeting formats, care-work timing barriers, unclear selection criteria, gatekeeper influence, and weak feedback response.',
-    dutyBearersSupportingActors:
-      'Relevant local public offices, service providers, local committees, community representatives, grassroots CSOs, and project partners.',
-    csoRole:
-      'Facilitate safe participation, support evidence use, connect rights-holders and duty-bearers, monitor barriers, and help communicate follow-up without replacing public responsibilities.',
-    powerCapacityGaps:
-      'Some formal representatives have more influence than women, youth, and persons with disabilities; duty-bearers may also need clearer evidence, resources, or routines to respond.',
-    genderDisabilityConsiderations:
-      'Plan accessible information, meeting timing, transport or accommodation support, safe facilitation, disaggregated review, and budget lines for inclusion.',
-    participationAccountabilityImprovement:
-      'Share accessible information before meetings, create safe ways to contribute, record how inputs influence decisions, and report back on what changed and why.',
-    riskDoNoHarmCheck:
-      'Avoid exposing sensitive feedback, prevent elite capture of selection, protect people who raise concerns, and use anonymized or aggregate evidence.',
-    objectiveActivityRepair:
-      screen19?.proposalSectionRepair.repairedText ||
-      (repairedMoves
-        ? `Use these repair moves in the selected section: ${repairedMoves}.`
-        : 'Shift from general awareness sessions to a participation pathway where specific rights-holders identify barriers, duty-bearers review evidence, and the project tracks response.'),
-    evidenceIndicatorImprovement:
-      'Track whether participation changed decisions, whether feedback received response, and whether access barriers were removed.',
-    safeFirstDesignChange:
-      prioritySection ? `Revise the ${prioritySection.toLowerCase()} before activities begin.` : 'Revise the participation and feedback plan before activities begin.',
-    implementationWatchPoint:
-      screen19?.proposalSectionRepair.implementationWatchPoint ||
-      'Check whether the people who faced barriers are actually receiving information, influencing decisions, and hearing follow-up.',
+    contextInequalityFocus: compactSnapshotText(
+      [
+        screen5Scan?.portfolioSummaryText,
+        screen5Scan?.generatedDesignImplications,
+        screen5Scan?.selectedJiruAmbaAffectedGroups?.join(', '),
+        screen5Scan?.selectedBarriers?.join(', '),
+        screen5Signals.join(', '),
+      ],
+      notYetSaved('Context and Inequality Scan'),
+    ),
+    policyStandardsSources: compactSnapshotText(
+      [
+        selectedAnchorIds.map((id) => getAnchorById(id)?.title).filter(Boolean).join(', '),
+        screen6Rows.map((row) => row.anchorTitle).join(', '),
+        (screen6Record.policyStandardsMap as { standardsMapSummary?: string } | undefined)?.standardsMapSummary,
+      ],
+      notYetSaved('Policy and Standards Map'),
+    ),
+    rightsHolderBarrierFocus: compactSnapshotText(
+      [
+        screen7?.generatedMapRows.map((row) => `${row.groupLabel}: ${row.barrierLabels.join(', ')}`).join(' '),
+        screen7?.rightsHolderBarrierSummary,
+      ],
+      notYetSaved('Rights-Holders and Barriers map'),
+    ),
+    dutyBearersSupportingActorsCsoRole: compactSnapshotText(
+      [
+        screen8?.generatedResponsibilityRows.map((row) => [
+          ...row.primaryPublicResponsibility,
+          ...row.serviceOrSectorActors,
+          ...row.csoRoles,
+        ].join(', ')).join(' '),
+        screen8?.responsibilitySummary,
+      ],
+      notYetSaved('Duty-Bearers, Supporting Actors, and CSO Roles map'),
+    ),
+    powerCapacityResponsibilityIssue: compactSnapshotText(
+      [
+        screen9.generatedActorRows?.map((row) => `${row.actor}: ${row.designImplication}`).join(' '),
+        screen9.powerMapSummary,
+        screen10.rootCauseSummary,
+        screen10.rootCauseCapacityGapMap?.designImplications?.join(' '),
+      ],
+      notYetSaved('Power and root-cause/capacity outputs'),
+    ),
+    inclusionAccessibilityWatchPoint: compactSnapshotText(
+      [
+        screen11.portfolioSummary,
+        screen11.carryForwardQuestion,
+        screen11.markerLiteDashboard?.selectedRepairRows?.map((row) => row.repairSelected).join(', '),
+      ],
+      notYetSaved('Gender and Disability Design Check'),
+    ),
+    participationAccountabilityPathway: compactSnapshotText(
+      [
+        screen12.participationAccountabilityPathway?.participationMethod,
+        screen12.participationAccountabilityPathway?.responseChannel,
+        screen12.participationAccountabilityPathway?.followUpMethod,
+        screen12.participationAccountabilityPathway?.indicatorEvidenceQuestion,
+      ],
+      notYetSaved('Participation and Accountability Pathway'),
+    ),
+    riskDoNoHarmWatchPoint: compactSnapshotText(
+      [
+        screen13.riskDoNoHarmBoard?.generatedBoard.riskSituation,
+        screen13.riskDoNoHarmBoard?.generatedBoard.mitigationAction,
+        screen13.riskDoNoHarmBoard?.generatedBoard.watchSign,
+        screen13.portfolioSummary,
+      ],
+      notYetSaved('Risk and Do-No-Harm Check'),
+    ),
+    repairedDesignDecision: compactSnapshotText(
+      [
+        screen14?.repairedObjective.repairedHrbaObjective,
+        screen14?.designRepairPackage?.carryForwardNote,
+        screen14?.repairedObjective.hrbaDesignLogic,
+      ],
+      notYetSaved('HRBA Project Design Repair'),
+    ),
+    activityDraftPlanRepair: compactSnapshotText(
+      [
+        screen17?.appliedCheckReview?.correctionOrImprovementDecision,
+        screen17?.appliedCheckReview?.implementationWatchPoint,
+        screen17?.draftPlanReviewPreview?.whatToDoNext,
+        screen14?.repairedActivityPackage?.repairedActivities.map((activity) => activity.repairedActivity).join(' '),
+      ],
+      notYetSaved('Draft Plan Review and Repair'),
+    ),
+    interventionLogicIndicatorFocus: compactSnapshotText(
+      [
+        screen14?.interventionLogicIndicators?.indicator,
+        screen14?.interventionLogicIndicators?.outcome,
+        screen14?.interventionLogicIndicators?.safeEvidenceSource,
+      ],
+      notYetSaved('Intervention logic and indicator output'),
+    ),
+    draftPlanReviewNote: compactSnapshotText(
+      [
+        screen17?.appliedCheckReview?.correctionOrImprovementDecision,
+        screen17?.appliedCheckReview?.confidenceCheck,
+        screen17?.draftPlanReviewPreview?.feedbackMessage,
+        screen20 ? `Applied knowledge check score: ${screen20.score} of ${screen20Questions.length}. ${screen20.reviewFlags.length ? `Review: ${screen20.reviewFlags.join(', ')}.` : 'No review flags.'}` : '',
+      ],
+      notYetSaved('Draft Plan Review and Applied Knowledge Check'),
+    ),
+    module4ImplementationWatchPoint: compactSnapshotText(
+      [
+        screen17?.appliedCheckReview?.implementationWatchPoint,
+        screen14?.designRepairPackage?.implementationWatchPoint,
+        screen13.riskDoNoHarmBoard?.generatedBoard.watchSign,
+        screen12.participationAccountabilityPathway?.followUpMethod,
+      ],
+      'Select one implementation watch-point before saving.',
+    ),
   };
 }
 
 function getSnapshotSourceScreensUsed(state: LearningState) {
   const sources: string[] = [];
-  ['M3-R07', 'M3-R08', 'M3-R09', 'M3-R10', 'M3-R11', 'M3-R12', 'M3-R13', 'M3-R14', 'M3-R15', 'M3-R16', 'M3-R18', 'M3-R19', 'M3-R20'].forEach((screenId) => {
+  ['M3-R05', 'M3-R06', 'M3-R07', 'M3-R08', 'M3-R09', 'M3-R10', 'M3-R11', 'M3-R12', 'M3-R13', 'M3-R14', 'M3-R17', 'M3-R20'].forEach((screenId) => {
     if (Object.keys(getPracticeState(state, screenId)).length > 0) sources.push(screenId);
   });
   return sources;
@@ -16255,6 +16342,9 @@ function PortfolioSnapshotScreen({
   const canContinue = allSectionsReviewed && Boolean(implementationWatchPoint) && isSavedCurrent;
   const staleAfterSave = Boolean(lastSavedSignature && lastSavedSignature !== currentSignature);
   const reviewFlags = knowledgeCheck?.reviewFlags || savedSnapshot?.knowledgeCheckReviewFlags || [];
+  const snapshotFieldsList = flattenSnapshotFields();
+  const missingFields = snapshotFieldsList.filter((field) => /not yet saved|Select one implementation watch-point/i.test(values[field.id]));
+  const completedFieldCount = snapshotFieldsList.length - missingFields.length;
 
   const markReviewed = (sectionId: string) => {
     setReviewedSections((current) => current.includes(sectionId) ? current : [...current, sectionId]);
@@ -16273,19 +16363,8 @@ function PortfolioSnapshotScreen({
 
   const saveSnapshot = () => {
     const snapshot: M3PortfolioSnapshot = {
-      projectIssueOrSection: values.projectIssueOrSection,
-      rightsStandards: values.rightsStandards,
-      specificRightsHolders: values.specificRightsHolders,
-      keyBarriers: values.keyBarriers,
-      dutyBearersSupportingActors: values.dutyBearersSupportingActors,
-      csoRole: values.csoRole,
-      powerCapacityGaps: values.powerCapacityGaps,
-      genderDisabilityConsiderations: values.genderDisabilityConsiderations,
-      participationAccountabilityImprovement: values.participationAccountabilityImprovement,
-      riskDoNoHarmCheck: values.riskDoNoHarmCheck,
-      objectiveActivityRepair: values.objectiveActivityRepair,
-      evidenceIndicatorImprovement: values.evidenceIndicatorImprovement,
-      safeFirstDesignChange: values.safeFirstDesignChange,
+      ...values,
+      module4ImplementationWatchPoint: implementationWatchPoint || values.module4ImplementationWatchPoint,
       implementationWatchPoint,
       knowledgeCheckReviewFlags: reviewFlags,
       sourceScreensUsed: getSnapshotSourceScreensUsed(state),
@@ -16317,8 +16396,20 @@ function PortfolioSnapshotScreen({
         <div className="m3-closing-snapshot-layout">
           <aside className="m3-closing-snapshot-side">
             <h2>Snapshot progress</h2>
-            <p><strong>{reviewedSections.length} of 6</strong> sections reviewed</p>
+            <p><strong>{reviewedSections.length} of {snapshotSections.length}</strong> sections reviewed</p>
+            <p><strong>{completedFieldCount} of {snapshotFieldsList.length}</strong> snapshot areas have saved source content or learner edits.</p>
             <p className={isSavedCurrent ? 'm3-closing-status is-saved' : 'm3-closing-status'}>{isSavedCurrent ? '✓ Saved' : staleAfterSave ? '• Needs save' : '• Needs review'}</p>
+            <section className="m3-closing-completeness" aria-label="Snapshot completeness summary">
+              <h3>Completeness check</h3>
+              {missingFields.length > 0 ? (
+                <>
+                  <p>{missingFields.length} snapshot area{missingFields.length === 1 ? '' : 's'} still show missing source content.</p>
+                  <ul>{missingFields.slice(0, 5).map((field) => <li key={field.id}>{field.label}</li>)}</ul>
+                </>
+              ) : (
+                <p>All snapshot areas have content. Review, choose a Module 4 watch-point, save, and continue.</p>
+              )}
+            </section>
             {reviewFlags.length > 0 && (
               <section>
                 <h3>Your knowledge check suggested paying attention to...</h3>
@@ -16390,6 +16481,7 @@ function PortfolioSnapshotScreen({
                     checked={implementationWatchPoint === option}
                     onChange={() => {
                       setImplementationWatchPoint(option);
+                      setValues((current) => ({ ...current, module4ImplementationWatchPoint: option }));
                       if (lastSavedSignature) setSaveMessage('Your snapshot changed. Save the updated version before continuing.');
                     }}
                   />
@@ -16405,7 +16497,7 @@ function PortfolioSnapshotScreen({
               Save to My Portfolio
             </button>
             <p ref={saveRef} tabIndex={-1} className="m3-closing-save-message" aria-live="polite">
-              {saveMessage || (!allSectionsReviewed ? 'Open and review all six sections before saving.' : !implementationWatchPoint ? 'Select one implementation watch-point before saving.' : 'Ready to save your snapshot.')}
+              {saveMessage || (!allSectionsReviewed ? `Open and review all ${snapshotSections.length} sections before saving.` : !implementationWatchPoint ? 'Select one implementation watch-point before saving.' : 'Ready to save your snapshot.')}
             </p>
           </aside>
         </div>
@@ -16417,6 +16509,7 @@ function PortfolioSnapshotScreen({
               onComplete({
                 module3PortfolioSnapshot: localSavedSnapshot || {
                   ...values,
+                  module4ImplementationWatchPoint: implementationWatchPoint || values.module4ImplementationWatchPoint,
                   implementationWatchPoint,
                   knowledgeCheckReviewFlags: reviewFlags,
                   sourceScreensUsed: getSnapshotSourceScreensUsed(state),
