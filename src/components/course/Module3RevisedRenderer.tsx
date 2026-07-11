@@ -6117,6 +6117,16 @@ type Screen17Submission = {
     whatToDoNext: string;
     feedbackMessage: string;
   };
+  appliedCheckReview?: {
+    designAreaTested: string;
+    issueOrDesignWeaknessFound: string;
+    hrbaPrincipleOrDesignLens: string;
+    evidenceOrOutputUsed: string;
+    correctionOrImprovementDecision: string;
+    implementationWatchPoint: string;
+    confidenceCheck: string;
+    carryForwardNote: string;
+  };
   ownCsoPracticeOutput?: Screen17OwnCsoOutput;
   safetyConfirmation: string;
   portfolioSummary: string;
@@ -14877,6 +14887,396 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
 
 void ProposalReviewScreen;
 
+void IntegratedDraftPlanReviewScreen;
+
+function AppliedDesignCheckScreen({ screen, onComplete }: {
+  screen: Module3RevisedScreen;
+  onComplete: (value?: Record<string, unknown>) => void;
+}) {
+  const titleId = `${screen.id}-title`;
+  type Screen17Stage = 1 | 2 | 3 | 4 | 5;
+  type Screen17AppliedField = 'issue' | 'lens' | 'evidence' | 'decision' | 'watchPoint' | 'confidence';
+  type Screen17AppliedDraft = Record<Screen17AppliedField, string>;
+
+  const stages: Array<{ id: Screen17Stage; label: string }> = [
+    { id: 1, label: 'Understand' },
+    { id: 2, label: 'Example' },
+    { id: 3, label: 'Practice' },
+    { id: 4, label: 'Review draft plan note' },
+    { id: 5, label: 'Apply/Download' },
+  ];
+  const designAreas: Array<{ id: string; label: string; context: string; proposalSections: ProposalSectionId[] }> = [
+    { id: 'rightsHolderBarriers', label: 'Rights-holder barriers', context: 'Check whether affected groups and barriers shape the design.', proposalSections: ['problem', 'rightsHolders', 'objectiveLogic'] },
+    { id: 'dutyBearerResponsibility', label: 'Duty-bearer responsibility', context: 'Check who must act, who supports, and what the CSO can realistically enable.', proposalSections: ['actors', 'activities', 'participationAccountabilityRisk'] },
+    { id: 'participationFeedback', label: 'Participation and feedback', context: 'Check how people influence decisions and receive a response.', proposalSections: ['participationAccountabilityRisk', 'activities', 'monitoringEvidence'] },
+    { id: 'inclusionAccessibility', label: 'Inclusion and accessibility', context: 'Check whether gender and disability adaptations are practical.', proposalSections: ['inclusion', 'rightsHolders', 'activities'] },
+    { id: 'riskDoNoHarm', label: 'Risk and do-no-harm', context: 'Check exclusion, no-response, privacy, backlash, and implementation risks.', proposalSections: ['participationAccountabilityRisk', 'activities', 'monitoringEvidence'] },
+    { id: 'logicIndicators', label: 'Intervention logic and indicators', context: 'Check whether logic, indicator, evidence, and watch-point show change.', proposalSections: ['objectiveLogic', 'monitoringEvidence', 'activities'] },
+  ];
+  const emptyDraft: Screen17AppliedDraft = {
+    issue: '',
+    lens: '',
+    evidence: '',
+    decision: '',
+    watchPoint: '',
+    confidence: '',
+  };
+  const appliedFields: Array<{ field: Screen17AppliedField; label: string; options: string[]; testId: string }> = [
+    {
+      field: 'issue',
+      label: 'Issue or design weakness found',
+      testId: 'm3-s17-issue-select',
+      options: [
+        'Affected groups are named broadly but barriers are not clear',
+        'Responsible actor response is unclear',
+        'Participation happens but influence is not visible',
+        'Inclusion is treated as attendance rather than design adaptation',
+        'Risk and follow-up are too general',
+        'Indicator counts delivery but not change',
+      ],
+    },
+    {
+      field: 'lens',
+      label: 'HRBA principle or design lens',
+      testId: 'm3-s17-lens-select',
+      options: [
+        'Non-discrimination and equality',
+        'Participation and influence',
+        'Accountability and response',
+        'Accessibility and reasonable accommodation',
+        'Do-no-harm and risk monitoring',
+        'Rights-based indicators and safe evidence',
+      ],
+    },
+    {
+      field: 'evidence',
+      label: 'Evidence or output used from earlier screens',
+      testId: 'm3-s17-evidence-select',
+      options: [
+        'Rights-holder and barrier map',
+        'Responsibility and CSO role map',
+        'Participation and accountability pathway',
+        'Gender and disability inclusion check',
+        'Risk and do-no-harm check',
+        'Intervention logic and indicators row',
+      ],
+    },
+    {
+      field: 'decision',
+      label: 'Correction or improvement decision',
+      testId: 'm3-s17-decision-select',
+      options: [
+        'Revise the design so one activity directly responds to a priority barrier',
+        'Name the responsible actor and keep the CSO role facilitative',
+        'Move participation earlier and show how feedback changes decisions',
+        'Add accessibility, timing, information, or accommodation measures',
+        'Add a mitigation, response route, and implementation watch-point',
+        'Replace delivery-only indicators with influence, access, response, or benefit evidence',
+      ],
+    },
+    {
+      field: 'watchPoint',
+      label: 'Implementation watch-point',
+      testId: 'm3-s17-watch-point-select',
+      options: [
+        'One affected group is absent or silent during implementation',
+        'Responsible actor response remains delayed or unclear',
+        'Feedback is collected but not answered',
+        'Accessibility support is not budgeted or provided',
+        'Activities drift back to generic meetings or training',
+        'Indicators count outputs but not practical change',
+      ],
+    },
+    {
+      field: 'confidence',
+      label: 'Confidence check',
+      testId: 'm3-s17-confidence-select',
+      options: [
+        'Strong enough to carry into the final snapshot',
+        'Usable, but one role or evidence source needs follow-up',
+        'Needs a clearer design change before implementation',
+      ],
+    },
+  ];
+
+  const [stage, setStage] = useState<Screen17Stage>(1);
+  const [selectedAreaId, setSelectedAreaId] = useState('');
+  const [draft, setDraft] = useState<Screen17AppliedDraft>(emptyDraft);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen17Submission | null>(null);
+  const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
+  const [ownCsoDraft, setOwnCsoDraft] = useState<Screen17OwnCsoDraft>(getEmptyScreen17OwnCsoDraft());
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen17OwnCsoOutput | undefined>();
+  const [ownCsoError, setOwnCsoError] = useState('');
+
+  const selectedArea = designAreas.find((area) => area.id === selectedAreaId) || null;
+  const completedFields = appliedFields.filter(({ field }) => draft[field]).length;
+  const checkComplete = Boolean(selectedArea && completedFields === appliedFields.length);
+  const helperText = checkComplete
+    ? 'Ready to generate your draft plan review note.'
+    : 'Select one design area and complete the issue, lens, evidence, decision, watch-point, and confidence fields.';
+  const finalReview = submittedOutput?.appliedCheckReview || null;
+
+  const updateDraft = (field: Screen17AppliedField, value: string) => {
+    setDraft((current) => ({ ...current, [field]: value }));
+    setSubmittedOutput(null);
+  };
+  const selectArea = (areaId: string) => {
+    setSelectedAreaId(areaId);
+    setDraft(emptyDraft);
+    setSubmittedOutput(null);
+  };
+  const buildLegacyReview = () => {
+    const needs = new Set<ProposalSectionId>(selectedArea?.proposalSections || []);
+    return Object.fromEntries(proposalSections.map((section) => [
+      section.id,
+      needs.has(section.id) ? 'needsHrbaCheck' : 'readyForNow',
+    ])) as Record<ProposalSectionId, ProposalReviewStatus>;
+  };
+  const generateAppliedCheck = () => {
+    if (!checkComplete || !selectedArea) return;
+    const baseOutput = buildScreen17Submission(buildLegacyReview());
+    const appliedCheckReview = {
+      designAreaTested: selectedArea.label,
+      issueOrDesignWeaknessFound: draft.issue,
+      hrbaPrincipleOrDesignLens: draft.lens,
+      evidenceOrOutputUsed: draft.evidence,
+      correctionOrImprovementDecision: draft.decision,
+      implementationWatchPoint: draft.watchPoint,
+      confidenceCheck: draft.confidence,
+      carryForwardNote: 'Use this draft plan review note to prepare the final Module 3 snapshot.',
+    };
+    setSubmittedOutput({
+      ...baseOutput,
+      appliedCheckReview,
+      draftPlanReviewPreview: {
+        ...baseOutput.draftPlanReviewPreview,
+        whyTheseSectionsNeedAttention: `${selectedArea.label} needs attention because: ${draft.issue}.`,
+        whatToDoNext: draft.decision,
+        feedbackMessage: 'Strong draft review. You used earlier Module 3 outputs to make a practical design judgment before the final snapshot.',
+      },
+      portfolioSummary: `You completed a draft plan review note for ${selectedArea.label}.`,
+    });
+    setStage(4);
+  };
+  const updateOwnCso = (field: keyof Screen17OwnCsoDraft, value: string) => {
+    setOwnCsoDraft((current) => ({ ...current, [field]: value }));
+    setOwnCsoError('');
+  };
+  const generateOwnCsoReview = () => {
+    const values = [ownCsoDraft.planSection, ownCsoDraft.summary, ownCsoDraft.why];
+    if (!ownCsoDraft.planSection.trim() || !ownCsoDraft.summary.trim() || !ownCsoDraft.decision || !ownCsoDraft.why.trim() || hasUnsafeProposalPracticeDetail(values)) {
+      setOwnCsoError('Use a safe generalized summary only. Do not paste sensitive proposal text, names, exact locations, complaint details, or identifiable information.');
+      return;
+    }
+    setOwnCsoOutput({
+      ...ownCsoDraft,
+      generatedNote: ownCsoDraft.decision === 'needsHrbaCheck'
+        ? 'This section needs HRBA checking because the visible design logic is not yet strong enough.'
+        : 'This section may be ready for now, but keep checking whether rights-holder focus, barriers, responsibility, and evidence are visible.',
+    });
+    setOwnCsoError('');
+  };
+  const continueWithScreen17 = () => {
+    if (!submittedOutput) return;
+    const finalOutput = ownCsoOutput
+      ? { ...submittedOutput, ownCsoPracticeOutput: ownCsoOutput }
+      : submittedOutput;
+    onComplete({
+      draftPlanReviewPreview: finalOutput.draftPlanReviewPreview,
+      proposalReviewSections: finalOutput.proposalReviewSections,
+      screen17: finalOutput,
+      screen18: { hiddenIntegratedInto: 'M3-R17' },
+      screen19: { hiddenIntegratedInto: 'M3-R17' },
+    });
+  };
+
+  return (
+    <main className="m3-screen m3-proposal-screen m3-s17-screen m3-s17-applied-screen" aria-labelledby={titleId} data-qa="m3-s17-applied-screen">
+      <article className="m3-proposal-shell m3-s17-shell">
+        <header className="m3-proposal-header m3-s17-header">
+          <ProgressChip>{screen.phase}</ProgressChip>
+          <p className="m3-proposal-eyebrow">{screen.eyebrow}</p>
+          <h1 id={titleId}>{screen.title}</h1>
+          <p>Use the full Module 3 design logic to make one final HRBA design judgment before the final snapshot.</p>
+        </header>
+
+        <nav className="m3-integrated-repair-stage-nav" aria-label="Screen 17 stages">
+          {stages.map((item) => {
+            const locked = item.id > 3 && !submittedOutput;
+            return (
+              <button key={item.id} type="button" className={`${stage === item.id ? 'is-active' : ''} ${submittedOutput && item.id < stage ? 'is-complete' : ''} ${locked ? 'is-locked' : ''}`} disabled={locked} onClick={() => setStage(item.id)}>
+                <span>{item.id}</span>
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {stage === 1 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-understand`}>
+            <div className="m3-s17-applied-hero">
+              <div>
+                <h2 id={`${screen.id}-understand`}>Make one final HRBA design judgment</h2>
+                <p>You have built context, standards, rights-holder, responsibility, power, root-cause, inclusion, participation, risk, repair, activity, and indicator outputs. Now test one design area and decide what must improve before the final snapshot.</p>
+              </div>
+              <aside>Output: a concise draft plan review note for your portfolio.</aside>
+            </div>
+            <div className="m3-integrated-explain-grid">
+              <article><h2>What this section is about</h2><p>Use earlier Module 3 outputs to test one project design area.</p></article>
+              <article><h2>Why this matters</h2><p>Final design quality depends on applying the analysis, not only completing the tools.</p></article>
+              <article><h2>What you will do</h2><p>Select a design area, identify the weakness, choose the HRBA lens, and decide the correction.</p></article>
+              <article><h2>What you will produce</h2><p>A portfolio-ready draft plan review note that carries into the final Module 3 snapshot.</p></article>
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>See example</button></div>
+          </section>
+        )}
+
+        {stage === 2 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-example`}>
+            <h2 id={`${screen.id}-example`}>Worked example: test participation and feedback</h2>
+            <div className="m3-s17-applied-review-grid">
+              {[
+                ['Draft area reviewed', 'Participation and feedback'],
+                ['Issue or design weakness found', 'Participation happens but influence is not visible'],
+                ['HRBA principle or design lens', 'Participation and influence'],
+                ['Evidence or output used', 'Participation and accountability pathway'],
+                ['Correction or improvement decision', 'Move participation earlier and show how feedback changes decisions'],
+                ['Implementation watch-point', 'Feedback is collected but not answered'],
+                ['Confidence check', 'Usable, but one role or evidence source needs follow-up'],
+                ['Carry forward to final Module 3 snapshot', 'Use this draft plan review note to prepare the final Module 3 snapshot.'],
+              ].map(([label, value]) => <article key={label}><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Start practice</button></div>
+          </section>
+        )}
+
+        {stage === 3 && (
+          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-practice`}>
+            <div className="m3-s17-applied-practice-layout">
+              <div className="m3-guided-stage-main">
+                <h2 id={`${screen.id}-practice`}>Practice: complete one draft review</h2>
+                <p className="m3-integrated-info">Select one design area, then complete the compact draft-review row. Generate stays disabled until every required field is complete.</p>
+                <section className="m3-s17-applied-step" aria-labelledby={`${screen.id}-area-step`}>
+                  <p className="m3-risk-step-label">Step 1</p>
+                  <h3 id={`${screen.id}-area-step`}>Select the design area to test</h3>
+                  <div className="m3-s17-area-tiles">
+                    {designAreas.map((area) => {
+                      const selected = selectedAreaId === area.id;
+                      return (
+                        <button key={area.id} type="button" className={`m3-s17-area-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => selectArea(area.id)} data-testid="m3-s17-design-area-tile">
+                          <span>{selected ? 'Selected' : 'Select'}</span>
+                          <strong>{area.label}</strong>
+                          <small>{area.context}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+                <section className={`m3-s17-applied-step ${selectedArea ? '' : 'is-disabled'}`} aria-labelledby={`${screen.id}-row-step`}>
+                  <p className="m3-risk-step-label">Step 2</p>
+                  <h3 id={`${screen.id}-row-step`}>Complete the draft-review row</h3>
+                  {selectedArea ? (
+                    <div className="m3-s17-applied-row" data-testid="m3-s17-applied-check-row">
+                      <div><span>Selected design area</span><p>{selectedArea.label}</p></div>
+                      {appliedFields.map(({ field, label, options, testId }) => (
+                        <label key={field}>
+                          <span>{label}</span>
+                          <select value={draft[field]} onChange={(event) => updateDraft(field, event.target.value)} data-testid={testId}>
+                            <option value="">Choose one</option>
+                            {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                          </select>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="m3-risk-empty-note">Select one design area first. The draft-review row will appear here.</p>
+                  )}
+                </section>
+                <div className="m3-risk-submit-row">
+                  <button type="button" className="m3-design-repair-submit" disabled={!checkComplete} onClick={generateAppliedCheck} data-testid="m3-s17-generate-applied-check">{submittedOutput ? 'Update draft plan note' : 'Generate draft plan note'}</button>
+                  <p aria-live="polite">{helperText}</p>
+                </div>
+              </div>
+              <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-live`}>
+                <h2 id={`${screen.id}-live`}>Draft review so far</h2>
+                <p>{selectedArea ? '1 selected design area' : 'No design area selected yet'}</p>
+                <div className="m3-guided-chip-list">
+                  <span className={selectedArea ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Area: {selectedArea?.label || 'Not selected'}</span>
+                  <span className={draft.issue ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Issue: {draft.issue || 'Not selected'}</span>
+                  <span className={draft.lens ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Lens: {draft.lens || 'Not selected'}</span>
+                  <span className={draft.evidence ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Evidence: {draft.evidence || 'Not selected'}</span>
+                  <span className={draft.decision ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Decision: {draft.decision || 'Not selected'}</span>
+                </div>
+                <p className="m3-guided-helper">Completed check rows: {checkComplete ? 1 : 0}</p>
+                <p className="m3-guided-helper">Completed fields: {completedFields} of 6</p>
+                <p className="m3-guided-helper">{helperText}</p>
+                <button type="button" className="m3-design-repair-submit" disabled={!checkComplete} onClick={generateAppliedCheck}>{submittedOutput ? 'Update draft plan note' : 'Generate draft plan note'}</button>
+              </aside>
+            </div>
+          </section>
+        )}
+
+        {stage === 4 && finalReview && (
+          <section className="m3-integrated-section-card" data-qa="m3-s17-generated-applied-check">
+            <h2>Draft plan review note</h2>
+            <p>This draft plan review note shows how one final design judgment uses the full Module 3 logic before the final snapshot.</p>
+            <div className="m3-s17-applied-review-grid">
+              {[
+                ['Draft area reviewed', finalReview.designAreaTested],
+                ['Issue or design weakness found', finalReview.issueOrDesignWeaknessFound],
+                ['HRBA principle or design lens', finalReview.hrbaPrincipleOrDesignLens],
+                ['Evidence or output used', finalReview.evidenceOrOutputUsed],
+                ['Correction or improvement decision', finalReview.correctionOrImprovementDecision],
+                ['Implementation watch-point', finalReview.implementationWatchPoint],
+                ['Confidence check', finalReview.confidenceCheck],
+                ['Carry forward to final Module 3 snapshot', finalReview.carryForwardNote],
+              ].map(([label, value]) => <article key={label} data-testid="m3-s17-generated-applied-check-row"><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit draft review</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(5)}>Go to Apply/Download</button></div>
+          </section>
+        )}
+
+        {stage === 5 && submittedOutput && (
+          <section className="m3-integrated-section-card">
+            <article className="m3-integrated-continue-card">
+              <div><h3>Draft plan review note ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
+              <button type="button" className="m3-primary-button" data-qa="m3-s17-final-continue" onClick={continueWithScreen17}>{screen.continueLabel}</button>
+            </article>
+            <div className="m3-guided-tabs m3-s17-tabs" role="tablist" aria-label="Apply or download" data-qa="m3-s17-apply-tabs">
+              <button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
+              <button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s17-download-tools">Download tools</button>
+            </div>
+            {applyTab === 'own' && (
+              <section className="m3-proposal-card m3-proposal-own-cso">
+                <h3>Try with my CSO context <span>Optional</span></h3>
+                <div className="m3-proposal-own-grid">
+                  <label>Plan section<input value={ownCsoDraft.planSection} onChange={(event) => updateOwnCso('planSection', event.target.value)} placeholder="Example: activity package or indicator section." /></label>
+                  <label>Decision<select value={ownCsoDraft.decision} onChange={(event) => updateOwnCso('decision', event.target.value as ProposalReviewStatus)}><option value="">Choose one</option><option value="readyForNow">Ready for now</option><option value="needsHrbaCheck">Needs HRBA check</option></select></label>
+                  <label>Short generalized summary<textarea value={ownCsoDraft.summary} onChange={(event) => updateOwnCso('summary', event.target.value)} /></label>
+                  <label>Why?<textarea value={ownCsoDraft.why} onChange={(event) => updateOwnCso('why', event.target.value)} /></label>
+                </div>
+                {ownCsoError && <p className="m3-proposal-error" role="alert">{ownCsoError}</p>}
+                <button type="button" className="m3-proposal-submit" onClick={generateOwnCsoReview}>Generate my draft section review</button>
+                {ownCsoOutput && <div className="m3-proposal-own-output"><h3>My draft section review</h3><p><strong>{ownCsoOutput.planSection}:</strong> {ownCsoOutput.generatedNote}</p><p>{ownCsoOutput.why}</p></div>}
+              </section>
+            )}
+            {applyTab === 'downloads' && (
+              <section className="m3-proposal-card m3-proposal-template">
+                <h3>Download tools</h3>
+                <div className="m3-proposal-template-actions">
+                  <button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'docx')}>Download Draft Plan Review Note Template</button>
+                  <button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'md')}>Download markdown copy</button>
+                  <button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate('', 'draft-plan-review-blank-worksheet', 'md')}>Download blank worksheet</button>
+                </div>
+              </section>
+            )}
+          </section>
+        )}
+      </article>
+    </main>
+  );
+}
+
 function ProposalReviewScreen({ screen, onComplete }: {
   screen: Module3RevisedScreen;
   onComplete: (value?: Record<string, unknown>) => void;
@@ -16660,7 +17060,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R17') {
-    return <IntegratedDraftPlanReviewScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <AppliedDesignCheckScreen screen={screen} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R18') {

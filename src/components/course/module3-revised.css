@@ -16199,6 +16199,217 @@
   margin: 0;
 }
 
+.m3-s17-applied-screen,
+.m3-s17-applied-screen * {
+  min-width: 0;
+}
+
+.m3-s17-applied-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.35fr);
+  gap: 1rem;
+  align-items: stretch;
+  border: 1px solid rgba(183, 221, 238, 0.78);
+  border-radius: 16px;
+  padding: 1rem;
+  background: linear-gradient(135deg, #ffffff, #f4fbfd);
+}
+
+.m3-s17-applied-hero h2,
+.m3-s17-applied-hero p,
+.m3-s17-applied-hero aside {
+  margin: 0;
+}
+
+.m3-s17-applied-hero aside {
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  padding: 0.85rem;
+  background: #071c33;
+  color: #ffffff;
+  font-weight: 850;
+  text-align: center;
+}
+
+.m3-s17-applied-practice-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  max-width: 100%;
+}
+
+.m3-s17-applied-practice-layout > *,
+.m3-s17-applied-practice-layout .m3-guided-stage-main,
+.m3-s17-applied-practice-layout .m3-guided-live-panel {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.m3-s17-applied-practice-layout .m3-guided-live-panel {
+  position: static;
+  width: 100%;
+}
+
+.m3-s17-applied-step {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid rgba(183, 221, 238, 0.78);
+  border-radius: 16px;
+  padding: 0.9rem;
+  background: #ffffff;
+}
+
+.m3-s17-applied-step + .m3-s17-applied-step {
+  margin-top: 0.9rem;
+}
+
+.m3-s17-applied-step.is-disabled {
+  background: #f8fbfd;
+}
+
+.m3-s17-applied-step h3 {
+  margin: 0;
+  color: #071c33;
+}
+
+.m3-s17-area-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.m3-s17-area-tile {
+  display: grid;
+  gap: 0.45rem;
+  min-height: 8rem;
+  border: 1px solid rgba(183, 221, 238, 0.82);
+  border-radius: 14px;
+  padding: 0.8rem;
+  background: #ffffff;
+  color: #071c33;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.m3-s17-area-tile span {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  background: #eef7fc;
+  color: #0f4f76;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.m3-s17-area-tile strong {
+  line-height: 1.25;
+}
+
+.m3-s17-area-tile small {
+  color: #33506d;
+  line-height: 1.35;
+}
+
+.m3-s17-area-tile:hover,
+.m3-s17-area-tile:focus-visible {
+  border-color: rgba(27, 116, 216, 0.55);
+  box-shadow: 0 0 0 3px rgba(27, 116, 216, 0.12);
+}
+
+.m3-s17-area-tile.is-selected {
+  border-color: rgba(15, 142, 82, 0.6);
+  background: #eefaf0;
+  box-shadow: inset 0 0 0 2px rgba(15, 142, 82, 0.1);
+}
+
+.m3-s17-area-tile.is-selected span {
+  background: #0f8e52;
+  color: #ffffff;
+}
+
+.m3-s17-applied-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.m3-s17-applied-row > div,
+.m3-s17-applied-row label {
+  display: grid;
+  gap: 0.4rem;
+  border: 1px solid rgba(183, 221, 238, 0.72);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: #fafdff;
+}
+
+.m3-s17-applied-row > div {
+  grid-column: 1 / -1;
+  background: #f2fbf7;
+}
+
+.m3-s17-applied-row span {
+  color: #0f4f76;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.m3-s17-applied-row p {
+  margin: 0;
+  color: #071c33;
+  font-weight: 820;
+}
+
+.m3-s17-applied-row select {
+  width: 100%;
+  border: 1px solid rgba(27, 116, 216, 0.34);
+  border-radius: 10px;
+  padding: 0.65rem 2.25rem 0.65rem 0.75rem;
+  background: #ffffff;
+  color: #071c33;
+  font: inherit;
+  font-weight: 760;
+}
+
+.m3-s17-applied-row select:focus {
+  outline: 3px solid rgba(27, 116, 216, 0.2);
+  border-color: #1b74d8;
+}
+
+.m3-s17-applied-review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.m3-s17-applied-review-grid article {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid rgba(183, 221, 238, 0.78);
+  border-radius: 14px;
+  padding: 0.8rem;
+  background: #ffffff;
+}
+
+.m3-s17-applied-review-grid article:last-child {
+  border-color: rgba(15, 142, 82, 0.28);
+  background: #f2fbf7;
+}
+
+.m3-s17-applied-review-grid h3,
+.m3-s17-applied-review-grid p {
+  margin: 0;
+}
+
+.m3-s17-applied-review-grid h3 {
+  color: #0f4f76;
+  font-size: 0.95rem;
+}
+
 .m3-analysis-forward,
 .m3-used-step-panel,
 .m3-analysis-audit {
