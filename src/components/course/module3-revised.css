@@ -20109,6 +20109,37 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.m3-closing-achievements > h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.m3-closing-snapshot-highlights {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1rem 0 0;
+}
+
+.m3-closing-snapshot-highlights div {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid rgba(14, 116, 144, 0.16);
+  border-radius: 14px;
+  background: #f8ffff;
+  padding: 0.75rem;
+}
+
+.m3-closing-snapshot-highlights dt {
+  color: #0f766e;
+  font-weight: 900;
+}
+
+.m3-closing-snapshot-highlights dd {
+  margin: 0;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
 .m3-closing-transition ul {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -16540,6 +16540,12 @@ function Module3ClosureScreen({
 }) {
   const snapshot = getScreen21SavedSnapshot(state);
   const saved = Boolean(snapshot);
+  const snapshotHighlights = saved && snapshot ? [
+    ['Repaired design decision', snapshot.repairedDesignDecision],
+    ['Activity or draft plan repair', snapshot.activityDraftPlanRepair],
+    ['Intervention logic and indicator focus', snapshot.interventionLogicIndicatorFocus],
+    ['Module 4 implementation watch-point', snapshot.module4ImplementationWatchPoint || snapshot.implementationWatchPoint],
+  ].filter(([, value]) => value && !/not yet saved/i.test(value)) : [];
 
   return (
     <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
@@ -16547,7 +16553,7 @@ function Module3ClosureScreen({
         <header className="m3-closing-header m3-closing-complete-header">
           <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>Module 3 complete: ready to move from design to implementation</h1>
+          <h1 id={`${screen.id}-title`}>Module 3 completed</h1>
           <p>You have completed Module 3. You practiced reviewing a project design before implementation, finding hidden HRBA gaps, and repairing one section using rights-holders, barriers, responsibilities, participation, accountability, inclusion, risk, and evidence.</p>
           {saved ? (
             <div className="m3-closing-badges" aria-label="Module completion badges">
@@ -16562,6 +16568,7 @@ function Module3ClosureScreen({
         </header>
 
         <section className="m3-closing-achievements" aria-label="Module 3 achievements">
+          <h2>What you can now do</h2>
           {[
             ['You analyzed before activities', 'You looked beyond activities and asked who holds rights, who may be excluded, and what barriers shape the issue.'],
             ['You clarified responsibilities and risks', 'You checked duty-bearers, supporting actors, CSO role, power, capacity gaps, gender, disability, accountability, and do-no-harm.'],
@@ -16574,8 +16581,29 @@ function Module3ClosureScreen({
           ))}
         </section>
 
+        <section className="m3-closing-transition m3-closing-snapshot-confirm" aria-label="Saved Module 3 design snapshot">
+          <h2>Your saved design snapshot</h2>
+          {saved && snapshot ? (
+            <>
+              <p>Your final HRBA Project Design Improvement Snapshot is saved. It can support Module 4 implementation planning and help you keep the repaired design logic visible during delivery.</p>
+              {snapshotHighlights.length > 0 && (
+                <dl className="m3-closing-snapshot-highlights">
+                  {snapshotHighlights.map(([label, value]) => (
+                    <div key={label}>
+                      <dt>{label}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </>
+          ) : (
+            <p>Your final snapshot is not saved yet. Return to the snapshot screen, save it, and then come back here to complete Module 3.</p>
+          )}
+        </section>
+
         <section className="m3-closing-transition">
-          <h2>Module 4 transition</h2>
+          <h2>What carries forward to Module 4</h2>
           <p>A rights-based design is only useful if it stays alive during implementation.</p>
           <p>In Module 4, you will use your design snapshot to check whether participation, accountability, inclusion, risk management, and duty-bearer engagement are actually happening during delivery.</p>
           <h3>Carry these into Module 4:</h3>
