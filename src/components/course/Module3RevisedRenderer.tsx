@@ -16072,6 +16072,39 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
           <p>Choose the strongest rights-based response. Use what you practiced in Module 3: context analysis, standards, rights-holders, responsibilities, power, indicators, accountability, and draft plan repair.</p>
         </header>
 
+        <ol className="m3-s20-stage-cues" aria-label="Applied knowledge check stages">
+          {[
+            ['Understand', 'Use the full Module 3 design logic.'],
+            ['Practice', `${answeredCount} of ${screen20Questions.length} questions answered.`],
+            ['Review answers', summary ? 'Summary ready.' : 'Available after all questions.'],
+            ['Save / Continue', canContinue ? 'Ready for snapshot.' : 'Complete the check first.'],
+          ].map(([label, description], index) => {
+            const active = (!summary && index === 1) || (summary && (index === 2 || index === 3));
+            return (
+              <li key={label} className={active ? 'is-active' : ''}>
+                <span>{index + 1}</span>
+                <strong>{label}</strong>
+                <small>{description}</small>
+              </li>
+            );
+          })}
+        </ol>
+
+        <section className="m3-s20-check-overview" aria-label="Knowledge check overview">
+          <article>
+            <h2>Understand</h2>
+            <p>Each question asks for the strongest HRBA design judgment, not the longest activity list.</p>
+          </article>
+          <article>
+            <h2>Practice</h2>
+            <p>Choose one answer per scenario. Feedback appears immediately so you can keep the reasoning fresh.</p>
+          </article>
+          <article>
+            <h2>Carry forward</h2>
+            <p>Your score and review flags move into the final Module 3 snapshot.</p>
+          </article>
+        </section>
+
         {!summary && (
           <section className="m3-closing-quiz-card" aria-labelledby={`${screen.id}-${question.id}`}>
             <div className="m3-closing-quiz-progress" aria-live="polite">
@@ -16124,6 +16157,30 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
             <p className="m3-closing-score">Score: {summary.score} of {screen20Questions.length}</p>
             <p>{getScreen20ScoreMessage(summary.score)}</p>
             <div className="m3-s20-category-chip-row">{categorySummary.map((item) => <span key={item}>{item}</span>)}</div>
+            <section className="m3-s20-answer-review" aria-labelledby={`${screen.id}-answer-review`}>
+              <h3 id={`${screen.id}-answer-review`}>Review answers</h3>
+              {screen20Questions.map((item) => {
+                const learnerAnswer = item.options.find((option) => option.id === answers[item.id]);
+                const correctAnswer = item.options.find((option) => option.id === item.correctAnswer);
+                const answeredCorrectly = answers[item.id] === item.correctAnswer;
+                return (
+                  <details key={item.id}>
+                    <summary>
+                      <span>{item.id}</span>
+                      <strong>{item.title}</strong>
+                      <em>{answeredCorrectly ? 'Correct' : 'Review'}</em>
+                    </summary>
+                    <div>
+                      <p><strong>Question or design challenge:</strong> {item.prompt}</p>
+                      <p><strong>Learner answer:</strong> {learnerAnswer ? learnerAnswer.text : 'Not answered'}</p>
+                      <p><strong>Feedback:</strong> {answeredCorrectly ? item.feedback : item.incorrectFeedback}</p>
+                      <p><strong>Corrected HRBA reasoning:</strong> {correctAnswer?.text}</p>
+                      <p><strong>Carry forward to final Module 3 snapshot:</strong> {item.designReminder}</p>
+                    </div>
+                  </details>
+                );
+              })}
+            </section>
             <div className="m3-closing-summary-grid">
               <article>
                 <h3>{summary.score >= 6 ? 'Strong progress' : 'Strong choices'}</h3>
