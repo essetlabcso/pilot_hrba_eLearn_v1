@@ -2858,9 +2858,14 @@ type Screen12PathwaySelection = {
   gap: string;
   decision: string;
   participationMethod?: string;
+  informationMethod?: string;
   supports: string[];
   responseChannel: string;
   responsibleActor: string;
+  responseMethod?: string;
+  explanationFollowUp?: string;
+  accessibilityRiskCheck?: string;
+  alternativeChannel?: string;
   designAdjustment: string;
   implementationWatchPoint?: string;
   customGroup?: string;
@@ -2923,10 +2928,13 @@ type Screen13RiskBoardSelection = {
   riskSituation: string;
   riskCategories: string[];
   affectedGroups: string[];
+  likelyCause: string;
   impactLevel: Screen13ImpactLevel | '';
   mitigationActions: string[];
   responsibleActor: string;
   watchSign: string;
+  alternativeChannel: string;
+  pauseStopReferralCondition: string;
   designAdjustment: string;
 };
 
@@ -2957,10 +2965,13 @@ type Screen13Submission = {
       riskSituation: string;
       riskCategory: string;
       whoMayBeAffected: string;
+      likelyCause: string;
       impactLevel: string;
       mitigationAction: string;
       responsibleActor: string;
       watchSign: string;
+      alternativeChannel: string;
+      pauseStopReferralCondition: string;
       designAdjustment: string;
       carryForwardUse: string;
     };
@@ -3890,6 +3901,55 @@ const responsibilityMapIntroParagraphs = [
   'Responsibility and support are not the same. Not every public actor has the same mandate, not every gap results from unwillingness, and capacity is broader than training: authority, resources, coordination, incentives, willingness, and accountability may matter.',
 ];
 
+const screen13LikelyCauses = [
+  'Information, timing, location, format, or communication does not match the barriers identified',
+  'Responsibility, review, response, or follow-up is unclear',
+  'One participation or feedback channel reinforces an existing power imbalance',
+  'The design collects more information than is necessary or assigns it outside an appropriate role',
+  'Agreed accessibility, mitigation, resources, or coordination are absent or not functioning',
+];
+
+const screen13AlternativeChannels = [
+  'Use an accessible individual or confidential channel instead of public discussion',
+  'Use local or remote outreach where the main venue excludes people',
+  'Use more than one information, participation, or feedback channel',
+  'Use the established appropriate institutional route where the issue is outside the project team’s role',
+];
+
+const screen13PauseStopReferralConditions = [
+  'Pause the method if participation appears to increase exposure or retaliation risk, pending responsible review',
+  'Stop collecting information that is unnecessary or cannot be appropriately protected',
+  'Use an alternative channel if the main channel excludes or exposes participants',
+  'Pause implementation where agreed mitigation is absent or not functioning',
+  'Refer through an established appropriate safeguarding, protection, service, or institutional route where relevant',
+];
+
+const screen12ResponseMethods = [
+  'Acknowledge receipt and review the issue against the relevant decision or service responsibility',
+  'Provide a direct response through the selected accessible channel',
+  'Publish a generalized response summary without identifying participants',
+  'Refer the issue to the appropriate responsible actor and track response',
+];
+
+const screen12ExplanationFollowUps = [
+  'Explain what changed, what did not change, why, and what happens next',
+  'Share an accessible decision note and follow-up date',
+  'Review whether the adaptation worked and revise the pathway where needed',
+];
+
+const screen12AccessibilityRiskChecks = [
+  'Check language, disability access, distance, cost, privacy, and power imbalance; provide another channel where needed',
+  'Check who may be excluded or exposed by the selected channel before use',
+  'Verify that information, participation, feedback, and response are accessible in practice',
+];
+
+const screen12AlternativeChannels = [
+  'Accessible individual or confidential channel',
+  'Local or remote outreach option',
+  'Phone or digital option where feasible and appropriate',
+  'Second facilitated channel that does not rely on one representative structure',
+];
+
 const responsibilityMapKeyIdea =
   'Do not make the CSO responsible for everything. Clarify duty-bearer responsibilities, supporting actor contributions, and the CSO’s enabling role.';
 
@@ -4145,6 +4205,30 @@ function getScreen10SavedOutput(state: LearningState): Screen10Submission | null
     return nested as Screen10Submission;
   }
   if (record.screenId === 'M3-R10') return record as Screen10Submission;
+  return null;
+}
+
+function getScreen11SavedOutput(state: LearningState): Screen11Submission | null {
+  const record = getPracticeState(state, 'M3-R11');
+  const nested = record.screen11;
+  if (nested && typeof nested === 'object' && (nested as Screen11Submission).screenId === 'M3-R11') return nested as Screen11Submission;
+  if (record.screenId === 'M3-R11') return record as Screen11Submission;
+  return null;
+}
+
+function getScreen12SavedOutput(state: LearningState): Screen12Submission | null {
+  const record = getPracticeState(state, 'M3-R12');
+  const nested = record.screen12;
+  if (nested && typeof nested === 'object' && (nested as Screen12Submission).screenId === 'M3-R12') return nested as Screen12Submission;
+  if (record.screenId === 'M3-R12') return record as Screen12Submission;
+  return null;
+}
+
+function getScreen13SavedOutput(state: LearningState): Screen13Submission | null {
+  const record = getPracticeState(state, 'M3-R13');
+  const nested = record.screen13;
+  if (nested && typeof nested === 'object' && (nested as Screen13Submission).screenId === 'M3-R13') return nested as Screen13Submission;
+  if (record.screenId === 'M3-R13') return record as Screen13Submission;
   return null;
 }
 
@@ -5155,9 +5239,14 @@ function getScreen12RequiredSignature(selection: Screen12PathwaySelection) {
     gap: selection.gap,
     decision: selection.decision,
     participationMethod: selection.participationMethod || '',
+    informationMethod: selection.informationMethod || '',
     supports: [...selection.supports].sort(),
     responseChannel: selection.responseChannel,
     responsibleActor: selection.responsibleActor,
+    responseMethod: selection.responseMethod || '',
+    explanationFollowUp: selection.explanationFollowUp || '',
+    accessibilityRiskCheck: selection.accessibilityRiskCheck || '',
+    alternativeChannel: selection.alternativeChannel || '',
     designAdjustment: selection.designAdjustment,
     implementationWatchPoint: selection.implementationWatchPoint || '',
     customGroup: selection.customGroup || '',
@@ -5171,9 +5260,14 @@ function isScreen12Valid(selection: Screen12PathwaySelection) {
     selection.gap &&
     selection.decision &&
     selection.participationMethod &&
+    selection.informationMethod &&
     selection.supports.length >= 1 &&
     selection.responseChannel &&
     selection.responsibleActor &&
+    selection.responseMethod &&
+    selection.explanationFollowUp &&
+    selection.accessibilityRiskCheck &&
+    selection.alternativeChannel &&
     selection.designAdjustment &&
     selection.implementationWatchPoint
   );
@@ -5188,8 +5282,8 @@ function getScreen12HelperText(
   if (submitted && formChanged) return 'Update your pathway before saving this screen.';
   if (submitted) return 'Your participation and accountability pathway is ready to save.';
   if (limitMessage) return limitMessage;
-  if (!selection.projectMoment || !selection.participationMethod || selection.supports.length < 1 || !selection.responseChannel || !selection.responsibleActor || !selection.designAdjustment || !selection.implementationWatchPoint) {
-    return 'Select one project moment and complete participation, information access, feedback, response, design adaptation, and watch-point fields.';
+  if (!selection.projectMoment || !selection.participationMethod || !selection.informationMethod || selection.supports.length < 1 || !selection.responseChannel || !selection.responsibleActor || !selection.responseMethod || !selection.explanationFollowUp || !selection.accessibilityRiskCheck || !selection.alternativeChannel || !selection.designAdjustment || !selection.implementationWatchPoint) {
+    return 'Complete information, participation, decision influence, feedback, recipient, response, explanation, follow-up, accessibility, risk, and alternative-channel fields.';
   }
   return 'Ready to generate your participation and accountability pathway.';
 }
@@ -5435,10 +5529,13 @@ function getEmptyRiskBoardSelection(): Screen13RiskBoardSelection {
     riskSituation: '',
     riskCategories: [],
     affectedGroups: [],
+    likelyCause: '',
     impactLevel: '',
     mitigationActions: [],
     responsibleActor: '',
     watchSign: '',
+    alternativeChannel: '',
+    pauseStopReferralCondition: '',
     designAdjustment: '',
   };
 }
@@ -5480,19 +5577,22 @@ function getScreen13ValidationMessages(selection: Screen13RiskBoardSelection) {
   if (!selection.riskSituation) messages.push('Please select one risk situation. A useful risk board starts with what could go wrong because of the design.');
   if (selection.riskCategories.length === 0) messages.push('Select at least one risk category so the board shows what type of harm, exclusion, unrealistic expectation, weak response, or role overload may occur.');
   if (selection.affectedGroups.length === 0) messages.push('Please identify who may be affected. A rights-based risk check should show who may face harm, exclusion, silence, or unrealistic expectations.');
+  if (!selection.likelyCause) messages.push('Identify the likely cause linking this risk to the selected project-design decision.');
   if (!selection.impactLevel) messages.push('Select an impact level. Rate impact from the rights-holder perspective, not only from the project delivery perspective.');
   if (selection.mitigationActions.length === 0) messages.push('Add a mitigation action. A risk check is useful only if it changes how the project will be designed or implemented.');
   if (!selection.responsibleActor) messages.push('Add a responsible actor. The risk board should show who acts, who responds, and who follows up.');
   if (isScreen13CsoOverload(selection)) messages.push('This mitigation gives too much responsibility to the CSO. Awra can facilitate, protect records, and support safe communication, but the public, service, committee, or sector actor connected to the issue should remain visible.');
   if (!selection.watchSign) messages.push('Add a watch sign. The project team needs to know what to monitor during implementation, such as silence from one group, repeated confusion, unsafe feedback, or exclusion from follow-up.');
+  if (!selection.alternativeChannel) messages.push('Add an alternative channel where the main participation, information, or feedback method may exclude or expose people.');
+  if (!selection.pauseStopReferralCondition) messages.push('Add a qualified pause, stop, or referral condition for responsible review where the risk increases or mitigation is absent.');
   return messages;
 }
 
 function getScreen13HelperText(selection: Screen13RiskBoardSelection, submitted: boolean, formChanged: boolean) {
   if (submitted && formChanged) return 'Update risk board before saving this screen.';
   if (submitted) return 'Your risk and do-no-harm board is ready to save.';
-  if (!selection.riskSituation || selection.riskCategories.length === 0 || selection.affectedGroups.length === 0 || !selection.impactLevel || selection.mitigationActions.length === 0 || !selection.responsibleActor || !selection.watchSign) {
-    return 'Select one design decision or activity and complete possible risk, affected group, risk level, mitigation or design adaptation, follow-up actor, and implementation watch-point fields.';
+  if (!selection.riskSituation || selection.riskCategories.length === 0 || selection.affectedGroups.length === 0 || !selection.likelyCause || !selection.impactLevel || selection.mitigationActions.length === 0 || !selection.responsibleActor || !selection.watchSign || !selection.alternativeChannel || !selection.pauseStopReferralCondition) {
+    return 'Complete the risk, affected group, likely cause, mitigation, responsible actor, monitoring sign, alternative channel, and pause, stop, or referral condition.';
   }
   return getScreen13ValidationMessages(selection)[0] || 'Ready to generate your risk and do-no-harm board.';
 }
@@ -5544,10 +5644,13 @@ function buildScreen13Submission(selection: Screen13RiskBoardSelection, ownCsoOu
         riskSituation: selection.riskSituation,
         riskCategory: selection.riskCategories.join('; '),
         whoMayBeAffected: selection.affectedGroups.join('; '),
+        likelyCause: selection.likelyCause,
         impactLevel: getRiskStatusLabel(selection.impactLevel),
         mitigationAction: selection.mitigationActions.join('; '),
         responsibleActor: getScreen13ResponsibleActorOutput(selection),
         watchSign: selection.watchSign,
+        alternativeChannel: selection.alternativeChannel,
+        pauseStopReferralCondition: selection.pauseStopReferralCondition,
         designAdjustment: selection.designAdjustment || selection.mitigationActions.join('; '),
         carryForwardUse: getScreen13CarryForwardUse(),
       },
@@ -12555,22 +12658,42 @@ function PortfolioScaffold({
   );
 }
 
-function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
+function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [classifications, setClassifications] = useState<Partial<Record<M3Screen11SignalId, InclusionStatus>>>({});
-  const [selectedRepairs, setSelectedRepairs] = useState<M3Screen11RepairId[]>([]);
-  const [selectedDesignAreaId, setSelectedDesignAreaId] = useState<M3Screen11SignalId | ''>('');
-  const [inclusionCheckDraft, setInclusionCheckDraft] = useState<Screen11InclusionCheckDraft>(getEmptyScreen11InclusionCheckDraft());
+  const savedOutput = getScreen11SavedOutput(state);
+  const carriedScreen7 = getScreen7SavedOutput(state);
+  const carriedScreen8 = getScreen8SavedOutput(state);
+  const carriedScreen9 = getScreen9SavedOutput(state);
+  const carriedScreen10 = getScreen10SavedOutput(state);
+  const validSignalIds = new Set(screen11Signals.map((signal) => signal.id));
+  const validStatuses = new Set<InclusionStatus>(['missing', 'mentioned', 'built']);
+  const restoredClassifications = Object.fromEntries(Object.entries(savedOutput?.classifications || {}).filter(([id, status]) => validSignalIds.has(id as M3Screen11SignalId) && validStatuses.has(status as InclusionStatus))) as Partial<Record<M3Screen11SignalId, InclusionStatus>>;
+  const restoredRepairs = (savedOutput?.selectedRepairs || []).filter((id) => screen11Repairs.some((repair) => repair.id === id));
+  const restoredRow = savedOutput?.inclusionCheckRows?.[0];
+  const restoredAreaId = restoredRow ? screen11DashboardRows.find((row) => row.designArea === restoredRow.designAreaReviewed)?.signalId || '' : '';
+  const restoredDraft: Screen11InclusionCheckDraft = restoredRow ? {
+    genderConsideration: restoredRow.genderRelatedConsideration,
+    disabilityConsideration: restoredRow.disabilityAccessibilityConsideration,
+    designAdaptation: restoredRow.designAdaptation,
+    responsibleRole: restoredRow.responsibleActorOrRole,
+    watchPoint: restoredRow.implementationWatchPoint,
+  } : getEmptyScreen11InclusionCheckDraft();
+  const restoredSignature = savedOutput ? JSON.stringify({ selectedDesignAreaId: restoredAreaId, inclusionCheckDraft: restoredDraft, classifications: restoredClassifications, selectedRepairs: [...restoredRepairs].sort() }) : null;
+  const [classifications, setClassifications] = useState<Partial<Record<M3Screen11SignalId, InclusionStatus>>>(restoredClassifications);
+  const [selectedRepairs, setSelectedRepairs] = useState<M3Screen11RepairId[]>(restoredRepairs);
+  const [selectedDesignAreaId, setSelectedDesignAreaId] = useState<M3Screen11SignalId | ''>(restoredAreaId);
+  const [inclusionCheckDraft, setInclusionCheckDraft] = useState<Screen11InclusionCheckDraft>(restoredDraft);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen11OwnCsoDraft>(getEmptyScreen11OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen11OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen11OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen11Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen11Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHero, setShowHero] = useState(true);
   const [showScale, setShowScale] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredAreaId ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -12578,8 +12701,9 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
   const selectedDesignArea = screen11DashboardRows.find((row) => row.signalId === selectedDesignAreaId);
   const completedCheckFields = Object.values(inclusionCheckDraft).filter(Boolean).length;
   const checkComplete = Boolean(selectedDesignArea && completedCheckFields === 5);
+  const allRequiredClassificationsComplete = screen11Signals.every((signal) => validStatuses.has(classifications[signal.id] as InclusionStatus));
   const completedCheckCount = checkComplete ? 1 : 0;
-  const canSubmit = checkComplete;
+  const canSubmit = checkComplete && allRequiredClassificationsComplete;
   const currentSignature = JSON.stringify({ selectedDesignAreaId, inclusionCheckDraft, classifications, selectedRepairs: [...selectedRepairs].sort() });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
   const canContinue = Boolean(submittedOutput && !formChanged);
@@ -12589,7 +12713,9 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
       : submittedOutput && !formChanged
         ? 'Your inclusion check is ready to save.'
         : 'Ready to generate your inclusion check.'
-    : 'Select one design area and complete gender, disability/accessibility, adaptation, responsible role, and watch-point fields.';
+    : !allRequiredClassificationsComplete
+      ? `Classify all ${screen11Signals.length} design statements before generating the inclusion check.`
+      : 'Select one design area and complete gender, disability/accessibility, adaptation, responsible role, and watch-point fields.';
   const dashboardClassifications = submittedOutput?.classifications;
   const warnings = dashboardClassifications ? getScreen11Warnings(dashboardClassifications) : [];
 
@@ -12604,9 +12730,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
 
   const submitDashboard = () => {
     if (!canSubmit || !selectedDesignArea) return;
-    const generatedClassifications = Object.fromEntries(
-      screen11DashboardRows.map((row) => [row.signalId, row.signalId === selectedDesignArea.signalId ? 'built' : row.markerResult]),
-    ) as Record<M3Screen11SignalId, InclusionStatus>;
+    const generatedClassifications = Object.fromEntries(screen11Signals.map((signal) => [signal.id, classifications[signal.id]])) as Record<M3Screen11SignalId, InclusionStatus>;
     const selectedAdaptationRepair = screen11Repairs.find((repair) => repair.title === inclusionCheckDraft.designAdaptation);
     const generatedRepairs = Array.from(new Set([
       selectedAdaptationRepair?.id,
@@ -12614,6 +12738,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
       selectedDesignArea.signalId === 'feedbackChannels' ? 'strengthenFeedbackChannels' : undefined,
       selectedDesignArea.signalId === 'disabilityAccessibility' ? 'improveAccessibilityAccommodation' : undefined,
       selectedDesignArea.signalId === 'womensInfluence' ? 'strengthenWomensInfluence' : undefined,
+      ...screen11Signals.filter((signal) => generatedClassifications[signal.id] !== 'built').map((signal) => signal.id === 'disabilityAccessibility' ? 'improveAccessibilityAccommodation' : signal.id === 'womensInfluence' ? 'strengthenWomensInfluence' : signal.id === 'feedbackChannels' ? 'strengthenFeedbackChannels' : signal.id === 'indicatorsFollowUp' ? 'addInfluenceFollowUpIndicators' : 'checkParticipationBarriers'),
     ].filter(Boolean))) as M3Screen11RepairId[];
     const inclusionCheckRows: Screen11InclusionCheckRow[] = [{
       designAreaReviewed: selectedDesignArea.designArea,
@@ -12719,6 +12844,13 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           <h1 id={titleId}>Gender and Disability Design Check</h1>
           <p>Check whether gender and disability are missing, only mentioned, or built into the project design through participation, accessibility, responsibilities, budget, indicators, feedback, and follow-up.</p>
         </header>
+
+        <section className="m3-b5-carried-findings" aria-labelledby={`${screen.id}-carried-findings`}>
+          <h2 id={`${screen.id}-carried-findings`}>Findings carried into this design check</h2>
+          <p><strong>Groups and barriers:</strong> {carriedScreen7?.generatedMapRows?.map((row) => row.groupLabel).join(', ') || 'Review the specific rights-holder groups and barriers identified earlier.'}</p>
+          <p><strong>Responsibility and influence:</strong> {carriedScreen8?.exportedActorsForScreen9?.map((actor) => actor.label).slice(0, 5).join(', ') || carriedScreen9?.powerInfluenceMap?.selectedActors?.slice(0, 5).join(', ') || 'Verify which actors hold responsibility and practical influence.'}</p>
+          <p><strong>Causes and capacity:</strong> {carriedScreen10?.rootCauseCapacityGapMap?.dutyBearerSystemCapacityGaps?.slice(0, 3).join(', ') || 'Check accessibility, participation, response, resources, and monitoring implications.'}</p>
+        </section>
 
         <nav className="m3-s11-stage-nav" aria-label="Gender and disability design check stages">
           {genderDisabilityStages.map((stage) => {
@@ -12845,7 +12977,25 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           </div>
 
           <section className="m3-s11-practice-step" aria-labelledby={`${screen.id}-design-area-step`}>
-            <h3 id={`${screen.id}-design-area-step`}>Step 1: Select design area or activity to check</h3>
+            <h3 id={`${screen.id}-classification-step`}>Step 1: Classify every required design statement</h3>
+            <p>Use Missing, Mentioned but not integrated, or Integrated into design. Gender and disability remain separate considerations even where barriers overlap.</p>
+            <div className="m3-s11-classification-list">
+              {screen11Signals.map((signal) => (
+                <label key={signal.id}>
+                  <span><strong>{signal.title}</strong><small>{signal.text}</small></span>
+                  <select aria-label={`Classification for ${signal.title}`} value={classifications[signal.id] || ''} onChange={(event) => setClassifications((current) => ({ ...current, [signal.id]: event.target.value as InclusionStatus }))}>
+                    <option value="">Choose classification</option>
+                    <option value="missing">Missing</option>
+                    <option value="mentioned">Mentioned but not integrated</option>
+                    <option value="built">Integrated into design</option>
+                  </select>
+                </label>
+              ))}
+            </div>
+          </section>
+
+          <section className="m3-s11-practice-step" aria-labelledby={`${screen.id}-design-area-step`}>
+            <h3 id={`${screen.id}-design-area-step`}>Step 2: Select design area or activity to repair</h3>
             <div className="m3-s11-design-area-tiles" role="group" aria-label="Design area options">
               {screen11DashboardRows.map((row) => {
                 const selected = selectedDesignAreaId === row.signalId;
@@ -12869,7 +13019,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           </section>
 
           <section className={`m3-s11-practice-step ${!selectedDesignArea ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-check-row`}>
-            <h3 id={`${screen.id}-check-row`}>Step 2: Complete inclusion-check row</h3>
+            <h3 id={`${screen.id}-check-row`}>Step 3: Complete inclusion-check row</h3>
             {selectedDesignArea ? (
               <article className="m3-s11-inclusion-row" data-testid="m3-s11-inclusion-check-row">
                 <div>
@@ -13114,30 +13264,50 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
   );
 }
 
-function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
+function ParticipationAccountabilityPathwayScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selection, setSelection] = useState<Screen12PathwaySelection>({
+  const emptySelection: Screen12PathwaySelection = {
     projectMoment: '',
     group: '',
     gap: '',
     decision: '',
     participationMethod: '',
+    informationMethod: '',
     supports: [],
     responseChannel: '',
     responsibleActor: '',
+    responseMethod: '',
+    explanationFollowUp: '',
+    accessibilityRiskCheck: '',
+    alternativeChannel: '',
     designAdjustment: '',
     implementationWatchPoint: '',
     customGroup: '',
-  });
+  };
+  const savedOutput = getScreen12SavedOutput(state);
+  const carriedScreen11 = getScreen11SavedOutput(state);
+  const savedPathway = savedOutput?.participationAccountabilityPathway;
+  const restoredSelection: Screen12PathwaySelection = savedPathway ? {
+    ...emptySelection,
+    ...savedPathway,
+    group: savedPathway.group || savedPathway.rightsHolderGroup || '',
+    gap: savedPathway.gap || savedPathway.participationAccountabilityGap || '',
+    decision: savedPathway.decision || savedPathway.decisionToInfluence || '',
+    supports: Array.isArray(savedPathway.supports) ? savedPathway.supports.filter((value) => screen12Supports.includes(value)) : [],
+    informationMethod: savedPathway.informationMethod || savedPathway.supports?.[0] || '',
+  } : emptySelection;
+  const restoredSignature = savedOutput ? getScreen12RequiredSignature(restoredSelection) : null;
+  const [selection, setSelection] = useState<Screen12PathwaySelection>(restoredSelection);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen12OwnCsoDraft>(getEmptyScreen12OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen12OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen12OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen12Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen12Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHero, setShowHero] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredSelection.projectMoment ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -13149,41 +13319,28 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   const selectedProjectMoment = screen12ProjectMoments.find((moment) => moment.label === selection.projectMoment);
   const completedPathwayFields = [
     selection.participationMethod,
+    selection.informationMethod,
     selection.supports[0],
     selection.responseChannel,
     selection.responsibleActor,
+    selection.responseMethod,
+    selection.explanationFollowUp,
+    selection.accessibilityRiskCheck,
+    selection.alternativeChannel,
     selection.designAdjustment,
     selection.implementationWatchPoint,
   ].filter(Boolean).length;
   const completedPathwayRowCount = isValid ? 1 : 0;
   const selectProjectMoment = (moment: Screen12ProjectMoment) => {
-    setSelection((current) => current.projectMoment === moment.label ? {
-      projectMoment: '',
-      group: '',
-      gap: '',
-      decision: '',
-      participationMethod: '',
-      supports: [],
-      responseChannel: '',
-      responsibleActor: '',
-      designAdjustment: '',
-      implementationWatchPoint: '',
-      customGroup: '',
-    } : {
+    setSelection((current) => current.projectMoment === moment.label ? emptySelection : {
+      ...emptySelection,
       projectMoment: moment.label,
       group: moment.group,
       gap: moment.gap,
       decision: moment.decision,
-      participationMethod: '',
-      supports: [],
-      responseChannel: '',
-      responsibleActor: '',
-      designAdjustment: '',
-      implementationWatchPoint: '',
-      customGroup: '',
     });
   };
-  const updatePathwayField = (field: 'participationMethod' | 'responseChannel' | 'responsibleActor' | 'designAdjustment' | 'implementationWatchPoint', value: string) => {
+  const updatePathwayField = (field: 'participationMethod' | 'informationMethod' | 'responseChannel' | 'responsibleActor' | 'responseMethod' | 'explanationFollowUp' | 'accessibilityRiskCheck' | 'alternativeChannel' | 'designAdjustment' | 'implementationWatchPoint', value: string) => {
     setSelection((current) => ({ ...current, [field]: value }));
   };
   const updateAccessSupport = (value: string) => {
@@ -13261,10 +13418,15 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
     ['Watch-point', selection.implementationWatchPoint || ''],
   ];
   const pathwayRowFields: Array<{ label: string; value: string; onChange: (value: string) => void; options: string[]; testId: string }> = [
+    { label: 'Information method', value: selection.informationMethod || '', onChange: (value) => updatePathwayField('informationMethod', value), options: screen12Supports, testId: 'm3-s12-information-method-select' },
     { label: 'Participation method', value: selection.participationMethod || '', onChange: (value) => updatePathwayField('participationMethod', value), options: screen12ParticipationMethods, testId: 'm3-s12-participation-method-select' },
     { label: 'Information/access measure', value: selection.supports[0] || '', onChange: updateAccessSupport, options: screen12Supports, testId: 'm3-s12-access-measure-select' },
     { label: 'Feedback or concern channel', value: selection.responseChannel, onChange: (value) => updatePathwayField('responseChannel', value), options: screen12ResponseChannels, testId: 'm3-s12-feedback-channel-select' },
     { label: 'Response/follow-up actor or role', value: selection.responsibleActor, onChange: (value) => updatePathwayField('responsibleActor', value), options: screen12ResponsibleActors, testId: 'm3-s12-response-actor-select' },
+    { label: 'Response method', value: selection.responseMethod || '', onChange: (value) => updatePathwayField('responseMethod', value), options: screen12ResponseMethods, testId: 'm3-s12-response-method-select' },
+    { label: 'Explanation and follow-up', value: selection.explanationFollowUp || '', onChange: (value) => updatePathwayField('explanationFollowUp', value), options: screen12ExplanationFollowUps, testId: 'm3-s12-explanation-follow-up-select' },
+    { label: 'Accessibility, inclusion, and risk check', value: selection.accessibilityRiskCheck || '', onChange: (value) => updatePathwayField('accessibilityRiskCheck', value), options: screen12AccessibilityRiskChecks, testId: 'm3-s12-accessibility-risk-select' },
+    { label: 'Alternative channel', value: selection.alternativeChannel || '', onChange: (value) => updatePathwayField('alternativeChannel', value), options: screen12AlternativeChannels, testId: 'm3-s12-alternative-channel-select' },
     { label: 'Design adaptation', value: selection.designAdjustment, onChange: (value) => updatePathwayField('designAdjustment', value), options: screen12DesignAdjustments, testId: 'm3-s12-design-adaptation-select' },
     { label: 'Implementation watch-point', value: selection.implementationWatchPoint || '', onChange: (value) => updatePathwayField('implementationWatchPoint', value), options: screen12ImplementationWatchPoints, testId: 'm3-s12-watch-point-select' },
   ];
@@ -13278,6 +13440,11 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
           <h1 id={titleId}>Participation and Accountability Pathway</h1>
           <p className="m3-participation-subtitle">Design how rights-holders access information, influence decisions, receive response, and see what changed.</p>
         </header>
+
+        <section className="m3-b5-carried-findings" aria-labelledby={`${screen.id}-carried-findings`}>
+          <h2 id={`${screen.id}-carried-findings`}>Inclusion findings carried into the pathway</h2>
+          <p>{carriedScreen11?.selectedRepairs?.map((id) => screen11Repairs.find((repair) => repair.id === id)?.title).filter(Boolean).slice(0, 6).join(', ') || 'Use accessible information, participation, reasonable accommodation, responsibility, and feedback findings from the previous design check.'}</p>
+        </section>
 
         <nav className="m3-participation-stage-nav" aria-label="Participation and accountability stages">
           {participationStages.map((stage) => {
@@ -13596,18 +13763,30 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   );
 }
 
-function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
+function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selection, setSelection] = useState<Screen13RiskBoardSelection>(getEmptyRiskBoardSelection());
+  const savedOutput = getScreen13SavedOutput(state);
+  const carriedScreen12 = getScreen12SavedOutput(state);
+  const savedSelection = savedOutput?.riskDoNoHarmBoard.selection;
+  const restoredSelection: Screen13RiskBoardSelection = savedSelection ? {
+    ...getEmptyRiskBoardSelection(),
+    ...savedSelection,
+    riskCategories: savedSelection.riskCategories.filter((value) => screen13RiskCategories.includes(value)),
+    affectedGroups: savedSelection.affectedGroups.filter((value) => screen13AffectedGroups.some((group) => group.label === value)),
+    mitigationActions: savedSelection.mitigationActions.filter((value) => screen13Mitigations.includes(value)),
+  } : getEmptyRiskBoardSelection();
+  const restoredSignature = savedOutput ? getScreen13RequiredSignature(restoredSelection) : null;
+  const [selection, setSelection] = useState<Screen13RiskBoardSelection>(restoredSelection);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen13OwnCsoDraft>(getEmptyScreen13OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen13OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen13OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen13Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen13Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHero, setShowHero] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredSelection.riskSituation ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -13691,18 +13870,24 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
     ['Decision/activity', selection.riskSituation],
     ['Possible risk', selection.riskCategories.join('; ')],
     ['Affected group', selection.affectedGroups.join('; ')],
+    ['Likely cause', selection.likelyCause],
     ['Risk level', getRiskStatusLabel(selection.impactLevel)],
     ['Mitigation', selection.mitigationActions.join('; ')],
     ['Follow-up actor', selection.responsibleActor],
     ['Watch-point', selection.watchSign],
+    ['Alternative channel', selection.alternativeChannel],
+    ['Pause/stop/referral', selection.pauseStopReferralCondition],
   ];
   const completedRiskFields = [
     selection.riskCategories[0],
     selection.affectedGroups[0],
+    selection.likelyCause,
     selection.impactLevel,
     selection.mitigationActions[0],
     selection.responsibleActor,
     selection.watchSign,
+    selection.alternativeChannel,
+    selection.pauseStopReferralCondition,
   ].filter(Boolean).length;
   const completedRiskRowCount = isValid ? 1 : 0;
   const riskRowFields: Array<{
@@ -13714,10 +13899,13 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
   }> = [
     { key: 'riskCategories', label: 'Possible risk or unintended harm', value: selection.riskCategories[0] || '', options: screen13RiskCategories, testId: 'm3-s13-risk-category-select' },
     { key: 'affectedGroups', label: 'Who may be affected', value: selection.affectedGroups[0] || '', options: screen13AffectedGroups.map((group) => group.label), testId: 'm3-s13-affected-group-select' },
+    { key: 'likelyCause', label: 'Likely cause', value: selection.likelyCause, options: screen13LikelyCauses, testId: 'm3-s13-likely-cause-select' },
     { key: 'impactLevel', label: 'Risk level', value: selection.impactLevel, options: screen13ImpactLevels.map((level) => ({ value: level.value, label: level.label })), testId: 'm3-s13-impact-select' },
     { key: 'mitigationActions', label: 'Mitigation or design adaptation', value: selection.mitigationActions[0] || '', options: screen13Mitigations, testId: 'm3-s13-mitigation-select' },
     { key: 'responsibleActor', label: 'Follow-up actor or role', value: selection.responsibleActor, options: screen13ResponsibleActors, testId: 'm3-s13-responsible-actor-select' },
     { key: 'watchSign', label: 'Implementation watch-point', value: selection.watchSign, options: screen13WatchSigns, testId: 'm3-s13-watch-sign-select' },
+    { key: 'alternativeChannel', label: 'Alternative channel', value: selection.alternativeChannel, options: screen13AlternativeChannels, testId: 'm3-s13-alternative-channel-select' },
+    { key: 'pauseStopReferralCondition', label: 'Pause, stop, or referral condition', value: selection.pauseStopReferralCondition, options: screen13PauseStopReferralConditions, testId: 'm3-s13-pause-stop-referral-select' },
   ];
 
   return (
@@ -13729,6 +13917,12 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
           <h1 id={titleId}>Risk and Do-No-Harm in Project Design</h1>
           <p className="m3-risk-subtitle">Check what could exclude, expose, silence, or harm people before the project is implemented.</p>
         </header>
+
+        <section className="m3-b5-carried-findings" aria-labelledby={`${screen.id}-carried-findings`}>
+          <h2 id={`${screen.id}-carried-findings`}>Pathway findings carried into risk analysis</h2>
+          <p><strong>Participation and feedback:</strong> {carriedScreen12?.participationAccountabilityPathway?.participationMethod || 'Review the selected participation method'}, {carriedScreen12?.participationAccountabilityPathway?.responseChannel || 'feedback channel'}, and {carriedScreen12?.participationAccountabilityPathway?.responsibleActor || 'responsible recipient'}.</p>
+          <p>Check whether the pathway excludes or exposes anyone, whether another channel is needed, and what condition requires pause, stop, referral, or responsible review.</p>
+        </section>
 
         <nav className="m3-risk-stage-nav" aria-label="Risk and do-no-harm stages">
           {riskStages.map((stage) => (
@@ -13889,7 +14083,7 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
                   </span>
                 ))}
               </div>
-              <p className="m3-guided-helper">Completed fields: {completedRiskFields} of 6</p>
+              <p className="m3-guided-helper">Completed fields: {completedRiskFields} of 9</p>
               <p className="m3-guided-helper">{helperText}</p>
               <button type="button" className="m3-risk-submit" disabled={!isValid} onClick={submitBoard}>
                 {submittedOutput ? 'Update risk check' : 'Generate risk check'}
@@ -13909,10 +14103,13 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
                 ['Design decision or activity reviewed', generatedBoard.riskSituation],
                 ['Possible risk or unintended harm', generatedBoard.riskCategory],
                 ['Who may be affected', generatedBoard.whoMayBeAffected],
+                ['Likely cause', generatedBoard.likelyCause],
                 ['Risk level', generatedBoard.impactLevel],
                 ['Mitigation or design adaptation', generatedBoard.mitigationAction],
                 ['Follow-up actor or role', generatedBoard.responsibleActor],
                 ['Implementation watch-point', generatedBoard.watchSign],
+                ['Alternative channel', generatedBoard.alternativeChannel],
+                ['Pause, stop, or referral condition', generatedBoard.pauseStopReferralCondition],
                 ['Carry forward to design repair', generatedBoard.carryForwardUse],
               ].map(([label, value]) => (
                 <article key={label} className="m3-risk-output-card" data-testid="m3-s13-generated-board-row">
@@ -17842,15 +18039,15 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R11') {
-    return <GenderDisabilityDesignCheckScreen screen={screen} onComplete={onComplete} />;
+    return <GenderDisabilityDesignCheckScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R12') {
-    return <ParticipationAccountabilityPathwayScreen screen={screen} onComplete={onComplete} />;
+    return <ParticipationAccountabilityPathwayScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R13') {
-    return <RiskDoNoHarmBoardScreen screen={screen} onComplete={onComplete} />;
+    return <RiskDoNoHarmBoardScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R14') {

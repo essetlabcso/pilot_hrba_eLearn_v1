@@ -20875,3 +20875,34 @@
     grid-template-columns: 1fr;
   }
 }
+/* Batch 5: concise carried findings and accessible classification controls. */
+.m3-b5-carried-findings {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border: 1px solid #bfd3d0;
+  border-inline-start: 0.3rem solid #087f73;
+  border-radius: 0.7rem;
+  background: #f2f8f7;
+}
+
+.m3-b5-carried-findings h2 { margin-block-start: 0; font-size: 1.15rem; }
+.m3-b5-carried-findings p { max-width: 85ch; }
+
+.m3-s11-classification-list { display: grid; gap: 0.65rem; }
+.m3-s11-classification-list label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #c7d8d4;
+  border-radius: 0.6rem;
+  background: #fff;
+}
+.m3-s11-classification-list span,
+.m3-s11-classification-list small { display: block; }
+.m3-s11-classification-list select { width: 100%; min-height: 2.75rem; }
+
+@media (max-width: 480px) {
+  .m3-s11-classification-list label { grid-template-columns: 1fr; }
+}
