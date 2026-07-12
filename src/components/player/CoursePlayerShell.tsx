@@ -988,6 +988,7 @@ export default function CoursePlayerShell({
           menuButtonRef={menuButtonRef}
           helpButtonRef={helpButtonRef}
           accessibilityButtonRef={accessibilityButtonRef}
+          hideMediaControls={screenId === 'M3-R01'}
           transcriptVisible={state.transcriptVisible}
           onToggleTranscript={() => onChangeState(p => ({ ...p, transcriptVisible: !p.transcriptVisible }))}
           soundEnabled={state.soundState}
