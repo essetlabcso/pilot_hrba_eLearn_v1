@@ -9,6 +9,7 @@ import {
   type Module3RevisedScreen,
 } from '../../data/module3/module3RevisedScreens';
 import './module3-revised.css';
+import { Module3Screen3, Module3Screen4 } from './Module3Batch2Screens';
 
 type Module3RevisedRendererProps = {
   screenId: string;
@@ -150,9 +151,9 @@ const module3ContextAudioAsset = {
 };
 
 const module3ContextScanIntro = [
-  'Before a CSO chooses activities, writes objectives, or proposes indicators, it needs to understand what is really happening, who is affected differently, and why.',
-  'A needs-based design may begin with visible problems: a market needs improvement, a health post needs renovation, or a water point needs repair. HRBA asks the design team to look further. Who can access the service? Who is excluded? Who has voice? Who carries responsibility? What barriers are hidden? What evidence still needs to be verified safely?',
-  'In this scan, you will look beyond the first activity idea and examine the context, inequalities, barriers, responsibilities, and evidence that should shape the project design.',
+  'Situation analysis is the starting point for HRBA project design. Before choosing activities, objectives, or indicators, examine what is happening and who may experience the issue differently.',
+  'The same issue may affect groups differently because of inequality, discrimination, access to information, distance, cost, disability, gender, livelihood, influence, or other barriers. These possible patterns are questions for analysis, not confirmed facts.',
+  'In this scan, distinguish what the case shows, a possible explanation, and what information still needs safe verification before the design is finalized.',
 ];
 
 const module3ContextKeyIdea =
@@ -183,7 +184,7 @@ const module3ContextExplainCards = [
 
 const module3ContextEvidence = [
   {
-    label: '1. What is visible?',
+    label: '1. What is happening?',
     items: [
       'A planning meeting took place.',
       'A service improvement plan was drafted.',
@@ -191,7 +192,7 @@ const module3ContextEvidence = [
     ],
   },
   {
-    label: '2. Who may experience this differently?',
+    label: '2. Who is affected differently?',
     items: [
       'Women',
       'Youth',
@@ -201,7 +202,7 @@ const module3ContextEvidence = [
     ],
   },
   {
-    label: '3. What barriers may explain this difference?',
+    label: '3. What barriers may exist?',
     items: [
       'Information does not reach everyone in time.',
       'Meeting times conflict with work or care responsibilities.',
@@ -210,16 +211,9 @@ const module3ContextEvidence = [
     ],
   },
   {
-    label: '4. What is still assumed?',
+    label: '4. What evidence should be verified safely?',
     items: [
-      '“The community participated” may not prove influence.',
-      '“Women were invited” may not prove safe or equal participation.',
-      '“Youth were consulted” may not prove their priorities shaped the final plan.',
-    ],
-  },
-  {
-    label: '5. What should be checked safely before design is finalized?',
-    items: [
+      'Check assumptions such as whether attendance led to influence.',
       'Disaggregated participation information where available.',
       'Facilitation notes and planning records.',
       'Anonymized feedback summaries.',
@@ -616,9 +610,9 @@ const policyAnchorCategories: Record<PolicyAnchorId, Exclude<PolicyAnchorCategor
 };
 
 const policyMapIntroParagraphs = [
-  'A project design should not only respond to visible needs. It should also consider the rights people are entitled to, the responsibilities of duty-bearers, and the policy or service commitments that already exist.',
-  'For a CSO, this does not mean turning the project into a legal document. It means using standards and commitments to ask better design questions: What should people be able to access? Who has responsibility? What should be adjusted so the project supports inclusion, participation, accountability, dignity, and safe follow-up?',
-  'In the Jiru Amba case, the standards and policy map helps you connect the proposed activities to design lenses and sources to check before implementation begins.',
+  'A project design should connect context issues to human rights standards and principles, relevant international or regional instruments, national law or policy, sector or service standards, public responsibilities, and organizational or project commitments.',
+  'Learners are not expected to memorize legal instruments. Use relevant references to ask practical questions about what people should access, who has responsibility, and what should change in the design.',
+  'National policy and service standards can guide local design choices, but they do not replace applicable international human rights standards. Use each source for the question it can help answer, and verify uncertain references before relying on them.',
 ];
 
 const policyMapKeyIdea =
@@ -1205,8 +1199,8 @@ type Screen7Submission = {
 };
 
 const rightsHolderIntroParagraphs = [
-  'A project design should not describe people only as "the community" or "beneficiaries." HRBA asks who is affected differently, what barriers they face, and what must change so people can access, participate, influence, benefit, and receive follow-up.',
-  'In the Jiru Amba case, different groups may experience the same plan differently. Women vendors, youth, persons with disabilities, low-income households, informal workers, and remote kebele residents may face different barriers. A strong design names these differences safely and turns them into practical design decisions.',
+  'Rights-holders are active participants who can express priorities, influence decisions, claim rights, and seek accountability. They should not be treated as passive beneficiaries or described only as “the community.”',
+  'Broad labels may hide meaningful differences. Barriers can affect information, access, participation, influence, benefit, safety, and follow-up. Identifying a priority barrier should therefore lead to a practical, group-specific project-design implication.',
 ];
 
 const rightsHolderKeyIdea =
@@ -7943,7 +7937,7 @@ function CaseReaderScaffold({
   );
 }
 
-function CaseIntroductionScreen({
+export function CaseIntroductionScreen({
   screen,
   onComplete,
 }: {
@@ -8012,7 +8006,7 @@ function CaseIntroductionScreen({
   );
 }
 
-function SnapshotPreviewScreen({
+export function SnapshotPreviewScreen({
   screen,
   onComplete,
 }: {
@@ -8107,40 +8101,64 @@ function SnapshotPreviewScreen({
 
 function ContextInequalityScanScreen({
   screen,
+  state,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   type ContextScanStageId = 1 | 2 | 3 | 4 | 5 | 6;
   type ContextScanFilter = 'influence' | 'access' | 'evidence' | 'accountability' | 'all';
 
-  const [selected, setSelected] = useState<string[]>([]);
-  const [generatedSelected, setGeneratedSelected] = useState<string[]>([]);
-  const [submitted, setSubmitted] = useState(false);
+  const savedScreen5 = getPracticeState(state, screen.id);
+  const savedSelectedContextSignals = Array.isArray(savedScreen5.selectedContextSignals)
+    ? Array.from(new Set((savedScreen5.selectedContextSignals as unknown[])
+      .filter((value): value is string => typeof value === 'string' && module3ContextChoices.some((choice) => choice.id === value))))
+    : [];
+  const hasSavedScan = savedScreen5.submitted === true
+    && savedSelectedContextSignals.length >= 3
+    && Boolean(savedScreen5.contextInequalityScan && typeof savedScreen5.contextInequalityScan === 'object');
+  const savedOwnScan = hasSavedScan
+    && savedScreen5.contextInequalityScan
+    && typeof savedScreen5.contextInequalityScan === 'object'
+    && (savedScreen5.contextInequalityScan as Record<string, unknown>).optionalOwnCsoScan
+    && typeof (savedScreen5.contextInequalityScan as Record<string, unknown>).optionalOwnCsoScan === 'object'
+      ? (savedScreen5.contextInequalityScan as Record<string, unknown>).optionalOwnCsoScan as Record<string, unknown>
+      : null;
+
+  const [selected, setSelected] = useState<string[]>(savedSelectedContextSignals);
+  const [generatedSelected, setGeneratedSelected] = useState<string[]>(hasSavedScan ? savedSelectedContextSignals : []);
+  const [submitted, setSubmitted] = useState(hasSavedScan);
   const [validationMessage, setValidationMessage] = useState('');
-  const [activeStage, setActiveStage] = useState<ContextScanStageId>(1);
-  const [understandComplete, setUnderstandComplete] = useState(false);
+  const [activeStage, setActiveStage] = useState<ContextScanStageId>(hasSavedScan ? 5 : 1);
+  const [understandComplete, setUnderstandComplete] = useState(hasSavedScan);
   const [contextTranscriptOpen, setContextTranscriptOpen] = useState(false);
   const [contextTranscript, setContextTranscript] = useState('');
-  const [exampleComplete, setExampleComplete] = useState(false);
+  const [exampleComplete, setExampleComplete] = useState(hasSavedScan);
   const [activeFilter, setActiveFilter] = useState<ContextScanFilter>('influence');
   const [expandedSignalIds, setExpandedSignalIds] = useState<string[]>([]);
-  const [checkMatches, setCheckMatches] = useState<Record<string, string>>({});
-  const [bestQuestionAnswer, setBestQuestionAnswer] = useState('');
-  const [unsafeEvidenceAnswer, setUnsafeEvidenceAnswer] = useState('');
+  const [checkMatches, setCheckMatches] = useState<Record<string, string>>(hasSavedScan ? {
+    visible: 'What can be seen first',
+    affected: 'Who may experience the issue differently',
+    barrier: 'What blocks access, participation, benefit, influence, or follow-up',
+    assumption: 'What the project believes but has not verified',
+    safe: 'What can be checked without exposing people',
+  } : {});
+  const [bestQuestionAnswer, setBestQuestionAnswer] = useState(hasSavedScan ? 'influence' : '');
+  const [unsafeEvidenceAnswer, setUnsafeEvidenceAnswer] = useState(hasSavedScan ? 'names' : '');
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [copyStatus, setCopyStatus] = useState('');
   const [ownScan, setOwnScan] = useState({
-    projectIdea: '',
-    visible: '',
-    affectedDifferently: '',
-    barriers: '',
-    assumptions: '',
-    safeEvidence: '',
-    designChange: '',
+    projectIdea: typeof savedOwnScan?.projectIdea === 'string' ? savedOwnScan.projectIdea : '',
+    visible: typeof savedOwnScan?.visible === 'string' ? savedOwnScan.visible : '',
+    affectedDifferently: typeof savedOwnScan?.affectedDifferently === 'string' ? savedOwnScan.affectedDifferently : '',
+    barriers: typeof savedOwnScan?.barriers === 'string' ? savedOwnScan.barriers : '',
+    assumptions: typeof savedOwnScan?.assumptions === 'string' ? savedOwnScan.assumptions : '',
+    safeEvidence: typeof savedOwnScan?.safeEvidence === 'string' ? savedOwnScan.safeEvidence : '',
+    designChange: typeof savedOwnScan?.designChange === 'string' ? savedOwnScan.designChange : '',
   });
-  const [ownSubmitted, setOwnSubmitted] = useState(false);
+  const [ownSubmitted, setOwnSubmitted] = useState(Boolean(savedOwnScan));
   const [ownValidationMessage, setOwnValidationMessage] = useState('');
   const outputRef = useRef<HTMLElement>(null);
   const titleId = `${screen.id}-title`;
@@ -8417,7 +8435,7 @@ function ContextInequalityScanScreen({
   const safeEvidenceWarning = (
     <div className="m3-context-scan-safe-inline" role="note">
       <strong>Keep the scan safe.</strong>
-      <span>Do not enter names, exact locations, complaints, survivor stories, political accusations, disability or medical details, or identifiable personal information.</span>
+      <span>Do not enter names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other sensitive identifying information.</span>
     </div>
   );
 
@@ -8501,10 +8519,10 @@ function ContextInequalityScanScreen({
             </div>
             <section className="m3-context-method-card" aria-labelledby={`${screen.id}-questions-title`}>
               <div>
-                <h2 id={`${screen.id}-questions-title`}>Five questions for the scan</h2>
+                <h2 id={`${screen.id}-questions-title`}>Four practical questions for the scan</h2>
                 <p>Use these questions to slow down the design process before selecting activities.</p>
               </div>
-              <div className="m3-context-method-strip" aria-label="Five-step context scan method">
+              <div className="m3-context-method-strip" aria-label="Four-question context scan method">
                 {module3ContextEvidence.map((layer, index) => <article key={layer.label}><span aria-hidden="true">{index + 1}</span><h3>{layer.label.replace(/^\d+\.\s*/, '')}</h3><p>{layer.items[0]}</p></article>)}
               </div>
             </section>
@@ -8725,10 +8743,10 @@ function ContextInequalityScanScreen({
               <strong>{outputIsStale ? 'Scan needs update' : 'Scan generated'}</strong>
             </div>
             <div className="m3-context-review-grid">
-              <article><h3>1. What the plan already shows</h3><p>{selectedVisibleEvidence.length > 0 ? selectedVisibleEvidence.join(' ') : 'The plan includes activities, budget lines, and indicators, but it does not yet show whether lower-influence groups shaped priorities.'}</p></article>
+              <article><h3>1. Observation or case signal</h3><p>{selectedVisibleEvidence.length > 0 ? selectedVisibleEvidence.join(' ') : 'The plan includes activities, budget lines, and indicators, but it does not yet show whether lower-influence groups shaped priorities.'}</p></article>
               <article><h3>2. Who may be affected differently</h3><p>{selectedAffectedGroups.length > 0 ? selectedAffectedGroups.join(', ') : 'Women, persons with disabilities, youth, low-income households, informal workers, and remote residents may face different access, information, timing, livelihood, influence, or feedback barriers.'}</p><p className="m3-context-support-note">Women — in the context of household water responsibilities and water-service decisions.</p></article>
-              <article><h3>3. Barriers to test</h3><ul>{(selectedBarriers.length > 0 ? selectedBarriers : ['Unequal influence', 'Time and care-work barriers', 'Livelihood and information barriers', 'Weak feedback response', 'Safety and confidentiality concerns']).map((item) => <li key={item}>{item}</li>)}</ul></article>
-              <article><h3>4. Evidence to verify safely</h3><ul>{selectedEvidence.map((item) => <li key={item}>{item}</li>)}</ul></article>
+              <article><h3>3. Possible explanation or barrier to test</h3><p>These are possible interpretations of the selected signals, not established facts.</p><ul>{(selectedBarriers.length > 0 ? selectedBarriers : ['Unequal influence', 'Time and care-work barriers', 'Livelihood and information barriers', 'Weak feedback response', 'Safety and confidentiality concerns']).map((item) => <li key={item}>{item}</li>)}</ul></article>
+              <article><h3>4. Information requiring safe verification</h3><ul>{selectedEvidence.map((item) => <li key={item}>{item}</li>)}</ul></article>
               <article><h3>5. Design implications</h3><p>{designImplication}</p></article>
               <article><h3>6. What to carry forward</h3><p>{carryForwardText}</p></article>
             </div>
@@ -8835,8 +8853,25 @@ function PolicyStandardsMapScreen({
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selectedAnchorIds, setSelectedAnchorIds] = useState<PolicyAnchorId[]>([]);
-  const [signalReferenceMatches, setSignalReferenceMatches] = useState<Record<JiruAmbaSignalId, PolicyAnchorId | ''>>({
+  const savedScreen6 = getPracticeState(state, screen.id);
+  const validSavedAnchorIds = Array.isArray(savedScreen6.selectedAnchorIds)
+    ? Array.from(new Set((savedScreen6.selectedAnchorIds as unknown[])
+      .filter((value): value is PolicyAnchorId => typeof value === 'string' && policyAnchors.some((anchor) => anchor.id === value))))
+    : [];
+  const validSavedMatches = Array.isArray(savedScreen6.signalReferenceMatches)
+    ? (savedScreen6.signalReferenceMatches as unknown[]).filter((value): value is SignalReferenceMatch => {
+      if (!value || typeof value !== 'object') return false;
+      const match = value as Record<string, unknown>;
+      return typeof match.signalId === 'string'
+        && screen6ContextSignalIds.includes(match.signalId as JiruAmbaSignalId)
+        && typeof match.anchorId === 'string'
+        && validSavedAnchorIds.includes(match.anchorId as PolicyAnchorId);
+    })
+    : [];
+  const savedMatchRecord = validSavedMatches.reduce<Record<JiruAmbaSignalId, PolicyAnchorId | ''>>((matches, match) => {
+    matches[match.signalId] = match.anchorId;
+    return matches;
+  }, {
     presence_without_influence: '',
     different_barriers_across_groups: '',
     disability_access_barriers: '',
@@ -8845,20 +8880,34 @@ function PolicyStandardsMapScreen({
     unclear_livelihood_pathway: '',
     service_improvement_uncertainty: '',
   });
-  const [submittedOutput, setSubmittedOutput] = useState<Record<string, unknown> | null>(null);
+  const hasSavedPolicyMap = savedScreen6.submitted === true
+    && validSavedAnchorIds.length >= 3
+    && validSavedMatches.length >= 3
+    && Array.isArray(savedScreen6.generatedMapRows)
+    && savedScreen6.generatedMapRows.length >= 3;
+  const savedPolicyMap = savedScreen6.policyStandardsMap && typeof savedScreen6.policyStandardsMap === 'object'
+    ? savedScreen6.policyStandardsMap as Record<string, unknown>
+    : null;
+  const savedOwnMap = savedPolicyMap?.ownCsoPracticeOutput && typeof savedPolicyMap.ownCsoPracticeOutput === 'object'
+    ? savedPolicyMap.ownCsoPracticeOutput as Record<string, unknown>
+    : null;
+
+  const [selectedAnchorIds, setSelectedAnchorIds] = useState<PolicyAnchorId[]>(validSavedAnchorIds);
+  const [signalReferenceMatches, setSignalReferenceMatches] = useState<Record<JiruAmbaSignalId, PolicyAnchorId | ''>>(savedMatchRecord);
+  const [submittedOutput, setSubmittedOutput] = useState<Record<string, unknown> | null>(hasSavedPolicyMap ? savedScreen6 : null);
   const [validationMessage, setValidationMessage] = useState('');
   const [ownMap, setOwnMap] = useState({
-    projectIssue: '',
-    contextSignal: '',
-    referenceSource: '',
-    designQuestion: '',
-    responsibilityQuestion: '',
-    designImplication: '',
-    safeSource: '',
+    projectIssue: typeof savedOwnMap?.projectIssue === 'string' ? savedOwnMap.projectIssue : '',
+    contextSignal: typeof savedOwnMap?.contextSignal === 'string' ? savedOwnMap.contextSignal : '',
+    referenceSource: typeof savedOwnMap?.referenceSource === 'string' ? savedOwnMap.referenceSource : '',
+    designQuestion: typeof savedOwnMap?.designQuestion === 'string' ? savedOwnMap.designQuestion : '',
+    responsibilityQuestion: typeof savedOwnMap?.responsibilityQuestion === 'string' ? savedOwnMap.responsibilityQuestion : '',
+    designImplication: typeof savedOwnMap?.designImplication === 'string' ? savedOwnMap.designImplication : '',
+    safeSource: typeof savedOwnMap?.safeSource === 'string' ? savedOwnMap.safeSource : '',
   });
-  const [ownSubmitted, setOwnSubmitted] = useState(false);
+  const [ownSubmitted, setOwnSubmitted] = useState(Boolean(savedOwnMap));
   const [ownValidationMessage, setOwnValidationMessage] = useState('');
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(hasSavedPolicyMap ? 4 : validSavedAnchorIds.length > 0 ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [activeReferenceFilter, setActiveReferenceFilter] = useState<PolicyAnchorCategory>('all');
   const outputRef = useRef<HTMLHeadingElement>(null);
@@ -9256,7 +9305,7 @@ function PolicyStandardsMapScreen({
 
             <section className="m3-policy-map-safe-note" aria-labelledby={`${screen.id}-safe`}>
               <h2 id={`${screen.id}-safe`}>Safe use of design lenses and sources to check</h2>
-              <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
+              <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other information that could identify people.</p>
             </section>
           </div>
           <div className="m3-guided-stage-actions">
@@ -9316,7 +9365,6 @@ function PolicyStandardsMapScreen({
                     </div>
                     <div className="m3-policy-map-anchor-copy">
                       <strong>{anchor.title}</strong>
-                      <span><strong>Sources to check:</strong> {compactPolicyMapLine(anchor.sourcesToCheck)}</span>
                       <span><strong>Use when:</strong> {compactPolicyMapLine(anchor.useWhen)}</span>
                     </div>
                     <div className="m3-policy-map-anchor-actions">
@@ -9647,29 +9695,65 @@ function PolicyStandardsMapScreen({
 
 function RightsHolderBarrierMapScreen({
   screen,
+  state,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selectedGroupIds, setSelectedGroupIds] = useState<RightsHolderGroupId[]>([]);
-  const [customGroupLabel, setCustomGroupLabel] = useState('');
-  const [groupBarrierLinks, setGroupBarrierLinks] = useState<Record<RightsHolderGroupId, BarrierTagId[]>>(emptyBarrierMap);
-  const [submittedOutput, setSubmittedOutput] = useState<Screen7Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const savedScreen7 = getScreen7SavedOutput(state);
+  const validSavedGroupIds = savedScreen7
+    ? Array.from(new Set(savedScreen7.selectedGroupIds.filter((groupId) => rightsHolderGroups.some((group) => group.id === groupId))))
+    : [];
+  const savedCustomGroupLabel = savedScreen7?.customGroupLabel || '';
+  const savedCustomValidation = validateCustomGroupLabel(savedCustomGroupLabel);
+  const validSavedSpecificGroupIds = getSpecificGroupIds(
+    orderedRightsHolderGroupIds(validSavedGroupIds),
+    savedCustomValidation.isValid,
+  );
+  const validBarrierIds = new Set(barrierTags.map((barrier) => barrier.id));
+  const restoredBarrierLinks = savedScreen7?.groupBarrierLinks.reduce<Record<RightsHolderGroupId, BarrierTagId[]>>((links, link) => {
+    if (!validSavedSpecificGroupIds.includes(link.groupId)) return links;
+    links[link.groupId] = Array.from(new Set(link.barrierIds.filter((barrierId) => validBarrierIds.has(barrierId))));
+    return links;
+  }, { ...emptyBarrierMap }) || { ...emptyBarrierMap };
+  const savedOwnCsoOutput = savedScreen7?.ownCsoOutput || null;
+  const hasSavedRightsHolderMap = Boolean(
+    savedScreen7?.submitted
+    && validSavedSpecificGroupIds.length >= 2
+    && validSavedSpecificGroupIds.every((groupId) => restoredBarrierLinks[groupId].length > 0 && restoredBarrierLinks[groupId].length <= 3)
+    && savedScreen7.generatedMapRows.length >= 2,
+  );
+  const restoredSignature = hasSavedRightsHolderMap ? JSON.stringify({
+    selectedGroupIds: orderedRightsHolderGroupIds(validSavedGroupIds),
+    selectedSpecificGroupIds: validSavedSpecificGroupIds,
+    customGroupLabel: validSavedGroupIds.includes('custom_group') && savedCustomValidation.isValid ? savedCustomValidation.trimmed : undefined,
+    groupBarrierLinks: validSavedSpecificGroupIds.map((groupId) => ({
+      groupId,
+      barrierIds: restoredBarrierLinks[groupId],
+    })),
+    ownCsoOutput: savedOwnCsoOutput,
+  }) : null;
+
+  const [selectedGroupIds, setSelectedGroupIds] = useState<RightsHolderGroupId[]>(validSavedGroupIds);
+  const [customGroupLabel, setCustomGroupLabel] = useState(savedCustomGroupLabel);
+  const [groupBarrierLinks, setGroupBarrierLinks] = useState<Record<RightsHolderGroupId, BarrierTagId[]>>(restoredBarrierLinks);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen7Submission | null>(hasSavedRightsHolderMap ? savedScreen7 : null);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen7OwnCsoOutput>({
-    projectIdea: '',
-    group: '',
-    affectedBenefit: '',
-    priorityBarrier: '',
-    whatBarrierMayBlock: '',
-    designResponse: '',
-    actorQuestion: '',
+    projectIdea: savedOwnCsoOutput?.projectIdea || '',
+    group: savedOwnCsoOutput?.group || '',
+    affectedBenefit: savedOwnCsoOutput?.affectedBenefit || '',
+    priorityBarrier: savedOwnCsoOutput?.priorityBarrier || '',
+    whatBarrierMayBlock: savedOwnCsoOutput?.whatBarrierMayBlock || '',
+    designResponse: savedOwnCsoOutput?.designResponse || '',
+    actorQuestion: savedOwnCsoOutput?.actorQuestion || '',
   });
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen7OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen7OwnCsoOutput | null>(savedOwnCsoOutput);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(hasSavedRightsHolderMap ? 4 : validSavedGroupIds.length > 0 ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -9986,7 +10070,7 @@ function RightsHolderBarrierMapScreen({
 
           <section className="m3-rights-map-safe-note" aria-labelledby={`${screen.id}-safe`} data-testid="m3-s07-safety-note">
             <h2 id={`${screen.id}-safe`}>Safe evidence</h2>
-            <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
+            <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other information that could identify people.</p>
             <p><strong>Safe evidence prompt:</strong> What can be checked without exposing people?</p>
             <div className="m3-rights-map-safe-grid">
               <div>
@@ -17526,18 +17610,18 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
 
   if (screen.interactionType === 'case-reader') {
     if (screen.id === 'M3-R03') {
-      return <CaseIntroductionScreen screen={screen} onComplete={onComplete} />;
+      return <Module3Screen3 screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
     }
 
     return <CaseReaderScaffold screen={screen} onComplete={onComplete} />;
   }
 
   if (screen.interactionType === 'snapshot-preview') {
-    return <SnapshotPreviewScreen screen={screen} onComplete={onComplete} />;
+    return <Module3Screen4 screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R05') {
-    return <ContextInequalityScanScreen screen={screen} onComplete={onComplete} />;
+    return <ContextInequalityScanScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R06') {
@@ -17545,7 +17629,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R07') {
-    return <RightsHolderBarrierMapScreen screen={screen} onComplete={onComplete} />;
+    return <RightsHolderBarrierMapScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R08') {

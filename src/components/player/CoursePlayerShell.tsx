@@ -765,6 +765,10 @@ export default function CoursePlayerShell({
       }
     }
 
+    // Let the active screen reset screen-owned interaction state without adding
+    // screen IDs or storage keys to this shared shell.
+    window.dispatchEvent(new CustomEvent('course:replay-screen', { detail: { screenId } }));
+
     // Toggle activeModal momentarily to trigger re-render of ScreenRenderer
     const currentId = state.currentScreenId;
     onChangeState(prev => ({ ...prev, currentScreenId: null }));

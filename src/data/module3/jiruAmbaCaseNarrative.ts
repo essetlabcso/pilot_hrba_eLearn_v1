@@ -1,11 +1,100 @@
+export type JiruAmbaEntryKind = 'fact' | 'signal' | 'verificationQuestion';
+
+export type JiruAmbaCaseEntry = {
+  id: string;
+  kind: JiruAmbaEntryKind;
+  text: string;
+  laterUse: string[];
+};
+
+export type JiruAmbaNamedItem = {
+  id: string;
+  label: string;
+  description?: string;
+};
+
+export const jiruAmbaCase = {
+  status: {
+    id: 'case.status.fictional-draft-not-approved',
+    fictional: true,
+    approved: false,
+    text: 'Jiru Amba is a fictional practice case. The final design has not yet been approved.',
+  },
+  setting: [
+    { id: 'setting.small-town', label: 'A small town' },
+    { id: 'setting.rural-kebeles', label: 'Several surrounding rural kebeles' },
+    { id: 'setting.weekly-market', label: 'A weekly market' },
+    { id: 'setting.water-service-points', label: 'Public water-service points' },
+    { id: 'setting.health-post', label: 'A health post' },
+    { id: 'setting.local-offices', label: 'Local administrative and service offices' },
+    { id: 'setting.livelihood-training', label: 'Livelihood and training opportunities' },
+    { id: 'setting.community-structures', label: 'Community and representative structures' },
+  ] satisfies JiruAmbaNamedItem[],
+  planAreas: [
+    { id: 'plan.market-improvement', label: 'Market improvement', description: 'Improve parts of the weekly market area and support better conditions for local trading and small-scale livelihoods.' },
+    { id: 'plan.water-service-repair', label: 'Water-service repair', description: 'Repair a public water-service point and support arrangements for its continued operation.' },
+    { id: 'plan.youth-livelihood-training', label: 'Youth livelihood training', description: 'Provide livelihood-skills training for selected young people.' },
+    { id: 'plan.health-post-improvement', label: 'Health-post improvement', description: 'Renovate selected parts of the health post and improve access to basic services.' },
+    { id: 'plan.consultation-feedback', label: 'Consultation and feedback', description: 'Hold community consultation meetings and place feedback boxes at selected public or project locations.' },
+  ] satisfies JiruAmbaNamedItem[],
+  processFacts: [
+    { id: 'process.draft-priorities', label: 'The first draft priorities were prepared after reviewing available service information and holding discussions with selected public actors, committee representatives, and local leaders.' },
+    { id: 'process.information-channels', label: 'Information about the consultation was shared mainly through local offices, committees, and community representatives.' },
+    { id: 'process.weekday-town-meeting', label: 'A consultation meeting was held in the town during a weekday.' },
+    { id: 'process.attendance', label: 'Public actors, committee representatives, local leaders, and some representatives of community groups attended.' },
+    { id: 'process.intended-groups', label: 'The draft refers to women, young people, persons with disabilities, market users, and residents of rural kebeles as intended participants or groups expected to benefit.' },
+    { id: 'process.basic-plan-elements', label: 'The draft contains activity targets, a broad timeline, and basic output indicators.' },
+    { id: 'process.feedback-arrangements', label: 'Feedback boxes and future public meetings are proposed as the main feedback arrangements.' },
+    { id: 'process.details-not-agreed', label: 'Detailed responsibilities, participation methods, accessibility measures, budget implications, response arrangements, and monitoring questions have not yet been fully agreed.' },
+  ] satisfies JiruAmbaNamedItem[],
+  rightsHolders: [
+    { id: 'rights-holder.women', label: 'Women', description: 'Including in the context of household water responsibilities and water-service decisions.' },
+    { id: 'rights-holder.youth', label: 'Young people seeking fair access to livelihood opportunities' },
+    { id: 'rights-holder.persons-with-disabilities', label: 'Persons with disabilities' },
+    { id: 'rights-holder.market-vendors-informal-workers', label: 'Market vendors and informal workers' },
+    { id: 'rights-holder.remote-rural-residents', label: 'Residents of remote rural kebeles' },
+    { id: 'rights-holder.low-income-households', label: 'Low-income households' },
+    { id: 'rights-holder.limited-information', label: 'People who may receive information late or through limited channels' },
+  ] satisfies JiruAmbaNamedItem[],
+  actors: [
+    { id: 'actor.public.woreda-planning-team', label: 'Woreda planning team' },
+    { id: 'actor.public.woreda-sector-services', label: 'Relevant woreda sector and service actors' },
+    { id: 'actor.public.kebele-level', label: 'Kebele-level actors' },
+    { id: 'actor.service.health-post-staff', label: 'Health-post staff' },
+    { id: 'actor.service.water-service', label: 'Actors involved in the water service' },
+    { id: 'actor.service.market-livelihood', label: 'Actors involved in market and livelihood activities' },
+    { id: 'actor.community.committees', label: 'Committees with formal or practical roles' },
+    { id: 'actor.community.representatives', label: 'Community representatives' },
+    { id: 'actor.community.market-water-committees', label: 'Market and water committee members' },
+    { id: 'actor.community.representative-structures', label: 'Women’s, youth, and disability representative structures' },
+    { id: 'actor.community.elders-local-figures', label: 'Elders and respected local figures' },
+    { id: 'actor.community.informal-intermediaries', label: 'Informal intermediaries' },
+    { id: 'actor.community.supporting-organizations', label: 'Other local organizations and supporting actors' },
+    { id: 'actor.cso.awra', label: 'Awra', description: 'The fictional local CSO supporting consultation and review of the draft design.' },
+    { id: 'actor.cso.selam', label: 'Selam', description: 'An Awra programme officer who follows the case through Module 3.' },
+  ] satisfies JiruAmbaNamedItem[],
+  entries: [
+    { id: 'case.fact.setting-mixed', kind: 'fact', text: 'Jiru Amba includes a small town and several surrounding rural kebeles.', laterUse: ['M3-R05', 'M3-R07'] },
+    { id: 'case.fact.plan-five-areas', kind: 'fact', text: 'The draft proposes five main areas of work.', laterUse: ['M3-R05', 'M3-R14', 'M3-R17'] },
+    { id: 'case.fact.consultation-held', kind: 'fact', text: 'A weekday consultation meeting was held in the town.', laterUse: ['M3-R05', 'M3-R12'] },
+    { id: 'case.fact.design-details-incomplete', kind: 'fact', text: 'Detailed responsibilities, participation methods, accessibility measures, response arrangements, and monitoring questions have not yet been fully agreed.', laterUse: ['M3-R08', 'M3-R11', 'M3-R12', 'M3-R13'] },
+    { id: 'case.fact.final-not-approved', kind: 'fact', text: 'The final design has not yet been approved.', laterUse: ['M3-R14', 'M3-R17'] },
+    { id: 'case.signal.different-experiences', kind: 'signal', text: 'People may experience services, opportunities, and decision-making processes differently.', laterUse: ['M3-R05', 'M3-R07'] },
+    { id: 'case.signal.information-timing', kind: 'signal', text: 'Some people may receive planning information later or through limited channels.', laterUse: ['M3-R05', 'M3-R07', 'M3-R12'] },
+    { id: 'case.signal.accessibility-participation', kind: 'signal', text: 'Accessibility, distance, time, care, livelihood, and transport may affect participation.', laterUse: ['M3-R05', 'M3-R11', 'M3-R12'] },
+    { id: 'case.verify.priority-barriers', kind: 'verificationQuestion', text: 'Which groups face the highest-priority barriers?', laterUse: ['M3-R05', 'M3-R07'] },
+    { id: 'case.verify.actor-responsibility', kind: 'verificationQuestion', text: 'Which actor holds which specific responsibility?', laterUse: ['M3-R06', 'M3-R08'] },
+    { id: 'case.verify.meaningful-participation', kind: 'verificationQuestion', text: 'Are the proposed participation and feedback arrangements meaningful, accessible, responsive, and safe?', laterUse: ['M3-R11', 'M3-R12', 'M3-R13'] },
+    { id: 'case.verify.design-change', kind: 'verificationQuestion', text: 'Which findings should change the objective, activities, intervention logic, indicators, and implementation arrangements?', laterUse: ['M3-R14', 'M3-R17'] },
+  ] satisfies JiruAmbaCaseEntry[],
+  safetyRules: [
+    { id: 'safety.fictional-first', label: 'Use the fictional Jiru Amba case first.' },
+    { id: 'safety.generalized-own-context', label: 'Use only generalized, non-identifying information in optional own-context fields.' },
+    { id: 'safety.no-sensitive-evidence', label: 'Do not enter sensitive or identifiable real-world evidence in the course.' },
+  ] satisfies JiruAmbaNamedItem[],
+} as const;
+
 export const module3ApprovedCaseNarrativeParagraphs = [
-  'Jiru Amba is a woreda in central Ethiopia with rural kebeles, a small town, a weekly market, farming communities, youth cooperatives, women’s saving groups, religious associations, elders’ councils, informal traders, and public service offices. The woreda is known for strong community solidarity, but not everyone has equal voice in local decisions. Older men, better-off households, association leaders, educated residents, brokers, and people close to officials often speak first and influence priorities, while women, youth, persons with disabilities, poorer households, informal workers, and people from remote kebeles may be present but not meaningfully heard.',
-  'When the woreda administration prepares the Jiru Amba Inclusive Local Development and Service Improvement Plan 2027–2030, Awra Grassroots Initiative is invited to support the consultation process. On paper, the plan looks strong: it includes market improvement, health-post renovation, youth livelihood training, water-point repair, ramps for public buildings, and feedback mechanisms. The consultation room is full, different groups are registered, and the final report says the community “actively participated and validated the plan.”',
-  'But Selam Tesfaye from Awra notices that the process is weaker than it appears. Most speakers are officials, elders, kebele leaders, male cooperative heads, and formal representatives. Women sit at the side or leave early because of trading, childcare, water collection, and household responsibilities. Persons with disabilities face an inaccessible meeting venue and long printed documents. Women vendors worry that the market improvement may exclude small traders, but market brokers dominate the discussion. Youth question whether training will lead to real opportunities, but the answer remains vague. Health workers know that service problems include trust, supplies, respectful treatment, and referral gaps, but they fear being blamed. Water users worry about tariffs and repairs, but women are hesitant to question respected committee leaders.',
-  'At the end of the consultation, participants rank activity cards that were already chosen by the planning team. There is no option to add priorities such as transparent stall allocation, women’s influence over market budgets, disability accommodation beyond ramps, safe complaint follow-up, water-fee transparency, or indicators that measure whether youth training leads to real change. The plan counts activities such as meetings held, people trained, ramps built, water points repaired, market stalls constructed, and feedback boxes installed, but it does not show whether rights-holders gained access, influence, dignity, safety, accountability, or response.',
-  'Back at the Awra office, Selam and her team review the plan through an HRBA lens. They ask: Who are the specific rights-holders? Who are the duty-bearers? What barriers are visible and hidden? Who has formal authority and informal power? Who can speak safely? What risks could appear if the plan is implemented without repair? They realize that the problem is not that participation was missing; the problem is that participation was shallow. People were invited, counted, photographed, and mentioned in the report, but many did not shape the decisions, budget, responsibilities, risks, or accountability.',
-  'Awra considers three options: support the plan as written, publicly criticize it, or prepare a careful rights-based design-improvement note. The team chooses the third option. They decide to recognize the strengths of the process while recommending focused consultations with affected groups, clearer duty-bearer responsibilities, practical participation accommodations, transparent market and water-fee processes, safer complaint-and-response mechanisms, and indicators that measure influence, access, response, and service quality. Awra also clarifies that its role is not to replace public authorities, but to support analysis, facilitation, community voice, monitoring, learning, and accountability.',
-  'When Awra shares the note, the planning team first feels cautious, but one sentence changes the discussion: “The issue is not whether consultation happened. The issue is whether the consultation changed the plan.” The team begins to see that attendance is not the same as influence, activities are not the same as rights-based change, and inclusion language is not enough unless barriers, responsibilities, budgets, risks, and accountability are addressed.',
-  'For learners, the Jiru Amba case shows a common project design problem: a plan can look participatory and still miss the people most affected. The task in Module 3 is to diagnose and improve the plan using context analysis, policy and standards analysis, stakeholder and power mapping, rights-holder and duty-bearer analysis, problem and root-cause analysis, risk assessment, and intervention logic repair. The goal is to help the Jiru Amba Futures Plan move from invited and counted to genuinely heard, included, and accountable.',
-  'Note: This case study is a fictional learning scenario created only for training purposes. Jiru Amba Woreda, Awra Grassroots Initiative, the characters, events, consultation process, and project details do not represent any real organization, location, person, project, government office, CSO, community, or actual situation.',
+  jiruAmbaCase.status.text,
+  ...jiruAmbaCase.entries.filter((entry) => entry.kind === 'fact').map((entry) => entry.text),
 ];
