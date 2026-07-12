@@ -42,33 +42,45 @@ const knowledgeCheckPrompts = [
   'Revised objective quality',
 ];
 
-const module3IntroVideoAsset = {
-  video: '/assets/hrba/modules/module-3-redesign/m3-intro-video.mp4',
-  poster: '/assets/hrba/modules/module-3-redesign/m3-intro-video-poster.webp',
-  posterAlt: 'Intro video poster for Module 3 on applying HRBA in project design.',
+const module3OrientationAssets = {
+  videoWatch: 'https://youtu.be/dpZv6wTuSQU',
+  videoEmbed: 'https://www.youtube.com/embed/dpZv6wTuSQU',
+  guide: '/assets/resources/module-3/module-3-orientation-guide.pdf',
+  objectiveBase: '/assets/hrba/modules/module-3/objectives',
 };
 
-const module3IntroTranscript = `Welcome to Module 3: Applying HRBA in Project Design. In this module, you will practice looking beneath a project activity list to understand who is affected, what barriers shape participation and benefit, who has responsibility, and what risks or accountability gaps need to be addressed before implementation begins. You will work with one shared planning case and use practical design tools to review context, standards, rights-holders, duty-bearers, power, root causes, gender and disability, participation, accountability, risk, objectives, activities, and indicators. By the end of the module, you will complete an HRBA Project Design Improvement Snapshot that captures the most important improvements needed in a project design.`;
+const module3IntroTranscript = [
+  ['Martha', 'Welcome to Module 3. In Module 2, we examined the foundations of the Human Rights-Based Approach, including rights-holders, duty-bearers, participation, equality, accountability, transparency, and access to information.'],
+  ['Dawit', 'Yes, Martha. In this module, we move from understanding those ideas to applying them in project design. The main question is no longer only, “What does HRBA mean?” We will now examine how HRBA should influence the way a project is analyzed, planned, reviewed, and prepared for implementation.'],
+  ['Martha', 'Applying HRBA in project design means using human rights standards and principles from the beginning. It means understanding the local situation, identifying the people and groups affected, examining barriers, and clarifying the responsibilities of public institutions and other actors.'],
+  ['Dawit', 'It also means looking at power, capacity, participation, accountability, risk, and evidence. These issues are especially important for local and grassroots CSOs working in different parts of Ethiopia.'],
+  ['Martha', 'The context may vary from one place to another.'],
+  ['Dawit', 'Exactly. A CSO working in an urban setting may face different conditions from one working in a remote rural area. Language, distance, disability, gender, access to services, institutional capacity, community relationships, and formal or informal influence may all affect project design.'],
+  ['Martha', 'Adapting a project to its context does not mean removing human rights standards or reducing public responsibility.'],
+  ['Dawit', 'It means applying those standards and responsibilities in a way that responds to the actual setting, the people involved, and the risks that need to be managed.'],
+  ['Martha', 'This module is therefore not only a set of explanations. It is a guided project-design process.'],
+  ['Dawit', 'You will first practise with the fictional Jiru Amba case. The case will help you work through the design questions without using sensitive information from real people or locations.'],
+  ['Martha', 'In each practical section, you will review a short explanation, examine an example, complete a structured task, and generate an output.'],
+  ['Dawit', 'These outputs include a context scan, a policy and standards map, a rights-holder and barrier map, an actor responsibility map, a power map, a root-cause and capacity-gap map, a participation and accountability pathway, and a risk and do-no-harm board.'],
+  ['Martha', 'You will then use those findings to improve the project objective, activity package, intervention logic, indicators, and evidence questions.'],
+  ['Dawit', 'Some Apply sections will also allow you to use a short, generalized example from your own CSO work. Do not enter names, exact locations, identifiable complaints, survivor stories, political accusations, or sensitive personal information.'],
+  ['Martha', 'The products you prepare will not remain as separate exercises.'],
+  ['Dawit', 'They will be brought together in your HRBA Project Design Improvement Snapshot. You will be able to review selected outputs, save them to your portfolio, and download them for later discussion or further development.'],
+  ['Martha', 'The snapshot is a draft learning and project-design product. It does not replace your organization’s technical, legal, safeguarding, management, or approval processes.'],
+  ['Dawit', 'But it can provide a useful starting point for project-team discussion, preparation for implementation, and future facilitated peer review or collaborative improvement where those opportunities are available.'],
+  ['Martha', 'By the end of this module, you should understand not only the main elements of HRBA project design, but also how those elements work together.'],
+  ['Dawit', 'And you will have produced a structured project-design output that can support your work as you move into Module 4.'],
+  ['Martha', 'Let us begin by looking at the learning process and the products you will develop.'],
+] as const;
 
-const module3RoadmapVisualAsset = {
-  src: '/assets/hrba/modules/module-3/m3-s02-learning-roadmap-strip.svg',
-  alt: 'Illustrated Module 3 learning path showing HRBA project design tools and a final design snapshot.',
-};
-
-const module3RoadmapIntro = [
-  'In Module 2, you explored the Everyday Rights Lens. In this module, you will use that lens in project design.',
-  'This module is about how to design a project or plan so that HRBA is built into the analysis, objectives, activities, participation, accountability, risk management, and indicators.',
-  'You will work with one shared planning case and use practical tools to examine what looks strong, what is missing, and what should be improved before implementation begins.',
-];
-
-const module3LearningObjectives = [
-  'Design CSO project responses that address root causes of exclusion, not only visible needs, service gaps, or activity requests.',
-  'Use HRBA analysis to make better project design decisions about rights-holders, barriers, duty-bearers, power, evidence, and accountability.',
-  'Translate rights standards, policy commitments, and local responsibilities into practical objectives, activities, roles, and follow-up measures.',
-  'Strengthen meaningful participation so rights-holders can influence priorities, design choices, implementation arrangements, and accountability processes.',
-  'Improve project logic, indicators, risk management, gender and disability inclusion, and do-no-harm measures before implementation begins.',
-  'Produce an HRBA Project Design Improvement Snapshot that helps your CSO explain what should change in a project or plan and why.',
-];
+const module3ObjectiveAreas = [
+  { id: 'context-standards', image: 'm3-objective-01-context-standards.webp', alt: 'Illustration connecting local context analysis with standards and policy references.', title: 'Context and standards', action: 'Understand the issue and identify relevant standards and responsibilities.', learn: 'HRBA project design begins with the local context. Project teams need to understand what is happening, who is affected differently, what barriers may exist, and which rights, policies, service standards, public responsibilities, or project commitments are relevant.', do: 'You will examine the Jiru Amba situation, identify context and inequality signals, consider information that requires verification, and connect selected issues to relevant standards and responsibilities.', produce: ['Context and Inequality Scan', 'Policy and Standards Map'], later: 'These outputs will help you identify specific rights-holder groups, barriers, responsible actors, and project-design priorities.', context: 'The task reflects the fact that local conditions, institutions, communication channels, and service arrangements differ across Ethiopian settings.' },
+  { id: 'rights-holders-barriers', image: 'm3-objective-02-rights-holders-barriers.webp', alt: 'Illustration showing rights-holder groups and barriers that affect access, information, and participation.', title: 'Rights-holders and barriers', action: 'Identify specific groups and examine the barriers they experience.', learn: 'Broad terms such as “the community” may hide important differences. HRBA requires project teams to identify specific rights-holder groups and examine how different barriers affect their access, participation, influence, benefit, safety, and follow-up.', do: 'You will identify priority rights-holder groups in the Jiru Amba case and match each group with relevant barriers and project-design implications.', produce: ['Rights-Holder and Barrier Map'], later: 'The findings will inform inclusion measures, participation arrangements, activities, accessibility, monitoring, and indicators.', context: 'The analysis will consider how gender, disability, age, distance, livelihood, information, and other factors may affect participation and access differently.' },
+  { id: 'responsibility-power', image: 'm3-objective-03-responsibility-power-causes-capacity.webp', alt: 'Illustration mapping public responsibility, influence, root causes, and capacity gaps.', title: 'Responsibility, power, causes, and capacity', action: 'Clarify who has responsibility, who has influence, and what affects change.', learn: 'Formal responsibility and practical influence are not always the same. Project teams need to distinguish duty-bearers, supporting actors, community actors, and realistic CSO roles. They also need to understand immediate problems, underlying causes, deeper factors, and capacity or response gaps.', do: 'You will classify actors, examine responsibility and influence, identify causes, and assess gaps related to mandate, knowledge, skills, resources, coordination, incentives, willingness, and accountability.', produce: ['Duty-Bearer and Actor Responsibility Map', 'Power and Influence Map', 'Root-Cause and Capacity-Gap Map'], later: 'These outputs will guide engagement, capacity support, accountability arrangements, activities, assumptions, and risks.', context: 'This helps avoid placing all responsibility on the CSO or assuming that every implementation gap has the same cause.' },
+  { id: 'inclusion-risk', image: 'm3-objective-04-inclusion-participation-accountability-risk.webp', alt: 'Illustration of inclusive participation, accessible feedback, accountability, and risk management.', title: 'Inclusion, participation, accountability, and risk', action: 'Check whether the design supports meaningful, accessible, and safe engagement.', learn: 'Inclusion should influence the design of activities, communication, budgets, participation, feedback, and monitoring. Participation means more than attendance. Accountability requires information, safe feedback, response, explanation, and follow-up. Project design should also identify and manage possible risks.', do: 'You will review gender and disability inclusion, design participation and accountability arrangements, and identify risks, mitigation measures, monitoring signs, and response conditions.', produce: ['Gender and Disability Design Check', 'Participation and Accountability Pathway', 'Risk and Do-No-Harm Board'], later: 'These outputs will shape implementation methods, accessible communication, feedback processes, risk management, budgets, and monitoring.', context: 'The most appropriate participation and accountability channels may differ across rural, urban, remote, linguistic, and institutional settings.' },
+  { id: 'design-repair', image: 'm3-objective-05-project-design-repair.webp', alt: 'Illustration of a draft project design being revised into a stronger integrated design.', title: 'Project-design repair', action: 'Use the analysis to improve the project design.', learn: 'HRBA analysis should change the project design. Findings about rights, barriers, responsibility, power, participation, inclusion, capacity, and risk should be reflected in objectives, activities, intervention logic, indicators, evidence, and implementation arrangements.', do: 'You will use the outputs from the earlier screens to revise a project objective, improve the activity package, strengthen the intervention logic, and improve indicators and evidence questions.', produce: ['HRBA Project Design Repair Package'], later: 'The repaired design will provide the basis for reviewing a draft project plan and preparing the final snapshot.', context: 'The aim is not to add HRBA language to an unchanged project. The analysis should result in practical design changes.' },
+  { id: 'review-portfolio', image: 'm3-objective-06-review-portfolio-implementation.webp', alt: 'Illustration of project outputs being reviewed, saved in a portfolio, and prepared for implementation.', title: 'Review, portfolio, and implementation', action: 'Review the design, finalize the output, and prepare for implementation.', learn: 'The maps, checks, pathways, and design repairs developed across the module form one connected project-design output. The final stage helps you review the design, identify remaining gaps, and prepare points that need attention during implementation.', do: 'You will review a draft project plan, complete an applied knowledge check, refine the final snapshot, and identify implementation watch-points.', produce: ['Draft Plan Review Note', 'Final HRBA Project Design Improvement Snapshot', 'Module 4 implementation watch-points'], later: 'The saved or downloaded outputs may support team review, further project development, Module 4 learning, and future facilitated peer exchange or collaborative refinement.', context: 'The output remains a draft learning and project-design product and should be reviewed through the organization’s technical, management, safeguarding, and approval processes.' },
+] as const;
 
 const module3CaseAssets = {
   introPoster: {
@@ -7426,119 +7438,135 @@ function PlaceholderNote({ screen }: { screen: Module3RevisedScreen }) {
 
 function IntroVideoScaffold({
   screen,
+  state,
+  onChangeState,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onComplete: () => void;
 }) {
+  const saved = getPracticeState(state, screen.id);
+  const savedStage = Math.min(3, Math.max(1, Number(saved.stage) || 1));
+  const savedMaxStage = Math.min(3, Math.max(savedStage, Number(saved.maxStageReached) || 1));
+  const [stage, setStage] = useState(savedStage);
+  const [maxStageReached, setMaxStageReached] = useState(savedMaxStage);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [answer, setAnswer] = useState(String(saved.answer || ''));
+  const [feedback, setFeedback] = useState(saved.correct === true ? 'Completed — correct answer recorded.' : '');
+  const [correct, setCorrect] = useState(saved.correct === true);
   const transcriptId = `${screen.id}-transcript`;
+  const save = (value: Record<string, unknown>) => onChangeState((prev) => ({ ...prev, practiceCheckState: { ...prev.practiceCheckState, [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), ...value } } }));
+  const focusStageHeading = () => requestAnimationFrame(() => {
+    const heading = document.querySelector<HTMLElement>('.m3-intro-video-screen .m3-orientation-stage h2');
+    heading?.setAttribute('tabindex', '-1');
+    heading?.focus();
+  });
+  const selectStage = (next: number) => {
+    if (next > maxStageReached + 1) return;
+    const nextMax = Math.max(maxStageReached, next);
+    setMaxStageReached(nextMax);
+    setStage(next);
+    save({ stage: next, maxStageReached: nextMax });
+    focusStageHeading();
+  };
+  const continueToStage = (next: number) => {
+    const nextMax = Math.max(maxStageReached, next);
+    setMaxStageReached(nextMax);
+    setStage(next);
+    save({ stage: next, maxStageReached: nextMax });
+    focusStageHeading();
+  };
+  const check = () => {
+    const messages: Record<string, string> = {
+      A: 'This is not correct. HRBA should guide project analysis and design from the beginning. It should not be added after the main project decisions have already been made.',
+      B: 'Correct. HRBA guides the full analysis and design process. The findings should influence the project objective, activities, participation and accountability arrangements, risks, indicators, evidence, and implementation planning.',
+      C: 'This is not correct. Human rights instruments may provide important references, but HRBA requires more than listing them. It also requires analysis of rights-holders, duty-bearers, barriers, power, participation, accountability, risk, and expected change.',
+      D: 'This is not correct. CSOs may support participation, evidence, dialogue, capacity development, and accountability. They should not automatically replace the responsibilities of public institutions and other duty-bearers.',
+    };
+    setFeedback(messages[answer]);
+    const isCorrect = answer === 'B';
+    setCorrect(isCorrect);
+    save({ answer, correct: isCorrect, stage: 3, maxStageReached });
+  };
 
   return (
     <main className="m3-screen m3-intro-video-screen" aria-labelledby={`${screen.id}-title`}>
-      <section className="m3-intro-video-card">
+      <article className="m3-orientation-shell">
         <div className="m3-title-block m3-intro-video-copy">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-context-label">{screen.eyebrow}</p>
           <h1 id={`${screen.id}-title`}>{screen.title}</h1>
-          <p>
-            A project can look strong on paper and still miss important design questions. This
-            module helps you look beneath the activity list and strengthen a project before
-            implementation begins.
-          </p>
+          <p>This section introduces how human rights standards and principles are applied in project analysis, design, review, and preparation for implementation.</p>
         </div>
+        <GuidedWorkspaceStageNav activeStage={stage} onSelect={selectStage} stages={[{ id: 1, label: 'What applying HRBA means', complete: maxStageReached > 1 }, { id: 2, label: 'How this module works', unlocked: maxStageReached >= 2, complete: maxStageReached > 2 }, { id: 3, label: 'Check your understanding', unlocked: maxStageReached >= 3, complete: correct }]} />
 
-        <figure className="m3-video-frame">
-          <div
-            className="m3-video-placeholder"
-            role="img"
-            aria-label={module3IntroVideoAsset.posterAlt}
-            data-video-src={module3IntroVideoAsset.video}
-            data-poster-src={module3IntroVideoAsset.poster}
-          >
-            <span aria-hidden="true">Play</span>
-            <p><strong>Intro video · 1 minute</strong></p>
-            <p>
-              This short video introduces Module 3: what it covers, why it matters, what you will
-              practice, and what you will produce by the end.
-            </p>
-          </div>
-        </figure>
+        {stage === 1 && <section className="m3-orientation-stage m3-orientation-stage--opening"><div className="m3-orientation-concepts"><section className="m3-orientation-concept"><h2>From HRBA foundations to project design</h2>
+          <p>In Module 2, you examined the foundations and core principles of the Human Rights-Based Approach. In Module 3, you will apply those foundations to project design.</p>
+          <p>Applying HRBA in project design means using human rights standards and principles to guide project decisions from the beginning. HRBA should inform situation analysis, project planning, preparation for implementation, monitoring, evaluation, accountability, and learning.</p>
+          <p>It is not an additional paragraph, a separate activity, or a statement added after the project has already been designed.</p>
+          <p>An HRBA project-design process examines:</p><ul><li>the rights and standards connected to the issue;</li><li>the people and groups who hold those rights;</li><li>the public institutions and other actors that have responsibilities;</li><li>the barriers that affect access, participation, influence, benefit, safety, and follow-up;</li><li>the capacity of rights-holders to know, claim, and enjoy their rights;</li><li>the capacity of duty-bearers to respect, protect, and fulfil rights;</li><li>participation, accountability, transparency, and access to information;</li><li>power relationships, causes, risks, and evidence;</li><li>the changes that should be reflected in objectives, activities, indicators, and implementation arrangements.</li></ul>
+          <p>The local context is the starting point. Before finalizing activities, the project team should understand the situation, the people affected, the responsibilities of relevant actors, and the conditions that may support or limit change.</p>
+          </section><section className="m3-orientation-concept"><h3>Relevance to Ethiopian local and grassroots CSOs</h3><p>Local and grassroots CSOs in Ethiopia work in different regional, linguistic, administrative, social, and service-delivery contexts.</p><p>A method that is appropriate in one setting may need to be adjusted in another. Project teams may need to consider:</p><ul><li>rural, urban, and remote conditions;</li><li>access to public services and information;</li><li>woreda, kebele, service-provider, committee, and community roles;</li><li>formal responsibilities and informal influence;</li><li>language, literacy, disability, gender, age, distance, and economic barriers;</li><li>the capacity and resources of public institutions and community actors;</li><li>appropriate and safe participation methods;</li><li>constructive engagement and accountability arrangements.</li></ul><p>Adapting HRBA to context does not remove human rights standards or public responsibility. It means applying those standards and responsibilities in a practical way that reflects the setting, the people involved, and the risks that need to be managed.</p><p>This module uses a fictional Ethiopian setting so that these questions can be examined safely and practically.</p></section></div>
+          <section className="m3-host-video"><h3>Martha and Dawit introduce Module 3</h3><p>Listen to Martha and Dawit explain how this module connects HRBA foundations with practical project-design work.</p><div className="m3-video-frame"><iframe src={module3OrientationAssets.videoEmbed} title="Martha and Dawit introduce Module 3" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div><p><a href={module3OrientationAssets.videoWatch} target="_blank" rel="noreferrer">Open video on YouTube — opens in a new tab</a></p><div className="m3-video-transcript"><button type="button" className="m3-secondary-button" aria-expanded={transcriptOpen} aria-controls={transcriptId} onClick={() => setTranscriptOpen(!transcriptOpen)}>{transcriptOpen ? 'Hide transcript' : 'Read transcript'}</button>{transcriptOpen && <div id={transcriptId} className="m3-video-transcript__body"><h4>Transcript: Martha and Dawit Introduce Module 3</h4>{module3IntroTranscript.map(([speaker, text]) => <p key={text}><strong>{speaker}:</strong><br />{text}</p>)}</div>}</div></section>
+          <div className="m3-stage-actions"><PrimaryButton onClick={() => continueToStage(2)}>Continue to how this module works</PrimaryButton></div></section>}
 
-        <div className="m3-video-transcript">
-          <button
-            type="button"
-            className="m3-secondary-button"
-            aria-expanded={transcriptOpen}
-            aria-controls={transcriptId}
-            onClick={() => setTranscriptOpen((current) => !current)}
-          >
-            Read transcript
-          </button>
-          {transcriptOpen && (
-            <div id={transcriptId} className="m3-video-transcript__body">
-              <p>{module3IntroTranscript}</p>
-            </div>
-          )}
-        </div>
+        {stage === 2 && <section className="m3-orientation-stage"><h2>How you will work in this module</h2><p>Module 3 is organized as a guided project-design process.</p><p>You will first practise with the fictional Jiru Amba case. The case will help you examine a project issue without entering sensitive information from real people or locations.</p><p>After practising with the case, some screens will allow you to apply the same questions to a generalized example from your own CSO work.</p><p>You will:</p><ol><li>review a short explanation;</li><li>examine a worked example;</li><li>complete a structured practice task;</li><li>generate a map, check, pathway, board, or design output;</li><li>review what the output shows;</li><li>save selected work to your portfolio;</li><li>download outputs for later team discussion or further development.</li></ol><p className="m3-safety-note">You should not enter names, exact locations, identifiable complaints, survivor stories, political accusations, or sensitive personal information.</p><h3>What you will produce</h3><p>This module will produce several connected project-design outputs.</p><div className="m3-product-grid"><div><h4>Analysis products</h4><ul><li>Context and Inequality Scan</li><li>Policy and Standards Map</li><li>Rights-Holder and Barrier Map</li><li>Duty-Bearer and Actor Responsibility Map</li><li>Power and Influence Map</li><li>Root-Cause and Capacity-Gap Map</li></ul></div><div><h4>Design-process products</h4><ul><li>Gender and Disability Design Check</li><li>Participation and Accountability Pathway</li><li>Risk and Do-No-Harm Board</li></ul></div><div><h4>Project-design products</h4><ul><li>revised project objective;</li><li>revised activity package;</li><li>improved intervention logic;</li><li>improved indicators and evidence questions;</li><li>draft-plan review note.</li></ul></div></div><h4>Cumulative product</h4><p>The outputs will be brought together in your HRBA Project Design Improvement Snapshot.</p><p>The snapshot is a draft learning and project-design product. It does not replace technical, legal, safeguarding, management, or organizational review.</p><p>It can support:</p><ul><li>later discussion with colleagues;</li><li>further project development;</li><li>preparation for implementation;</li><li>Module 4 learning;</li><li>future facilitated peer exchange or collaborative review where such arrangements are available.</li></ul><ol className="m3-process-strip"><li>Practise with Jiru Amba</li><li>Apply safely to a generalized context</li><li>Generate and review outputs</li><li>Save and carry forward</li></ol><div className="m3-stage-actions"><SecondaryButton onClick={() => selectStage(1)}>Previous stage</SecondaryButton><PrimaryButton onClick={() => selectStage(3)}>Continue to check your understanding</PrimaryButton></div></section>}
 
-        <div className="m3-intro-video-actions">
-          <PrimaryButton onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton>
-        </div>
-      </section>
+        {stage === 3 && <section className="m3-orientation-stage"><h2>Check your understanding</h2><fieldset><legend>Select the statement that best explains how HRBA is applied in project design.</legend>{[['A','HRBA is added as a separate human rights activity after the main project plan has been completed.'],['B','HRBA uses human rights standards and principles throughout analysis and design, and the findings shape objectives, activities, participation, accountability, risks, indicators, and evidence.'],['C','HRBA mainly requires the project team to list international human rights instruments in the proposal.'],['D','HRBA transfers the responsibilities of public institutions to the CSO implementing the project.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s1-check" value={id} checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); setCorrect(false); }} /> <span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-secondary-button" disabled={!answer || correct} onClick={check}>Submit answer</button>{feedback && <div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} role="status">{feedback}</div>}<div className="m3-stage-actions"><SecondaryButton onClick={() => selectStage(2)}>Previous stage</SecondaryButton><PrimaryButton disabled={!correct} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></div></section>}
+      </article>
     </main>
   );
 }
 
 function LearningRoadmapScreen({
   screen,
+  state,
+  onChangeState,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onComplete: () => void;
 }) {
-  const [showRoadmapVisual, setShowRoadmapVisual] = useState(true);
+  const saved = getPracticeState(state, screen.id);
+  const approvedAreaIds = module3ObjectiveAreas.map((area) => area.id as string);
+  const normalizedReviewed = Array.from(new Set(Array.isArray(saved.reviewed) ? (saved.reviewed as string[]).filter((id) => approvedAreaIds.includes(id)) : []));
+  const [reviewed, setReviewed] = useState<string[]>(normalizedReviewed);
+  const [active, setActive] = useState<number | null>(null);
+  const [answer, setAnswer] = useState(String(saved.answer || ''));
+  const [feedback, setFeedback] = useState(saved.correct === true ? 'Completed — correct answer recorded.' : '');
+  const [correct, setCorrect] = useState(saved.correct === true);
+  const detailHeadingRef = useRef<HTMLHeadingElement>(null);
+  const checkHeadingRef = useRef<HTMLHeadingElement>(null);
+  const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const titleId = `${screen.id}-title`;
-  const objectivesHeadingId = `${screen.id}-objectives-heading`;
+  const save = (value: Record<string, unknown>) => onChangeState((prev) => ({ ...prev, practiceCheckState: { ...prev.practiceCheckState, [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), ...value } } }));
+  useEffect(() => {
+    onChangeState((prev) => ({ ...prev, practiceCheckState: { ...prev.practiceCheckState, [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), reviewed: normalizedReviewed } } }));
+    // Normalize legacy or malformed saved IDs once when this screen initializes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const openArea = (index: number) => { const next = Array.from(new Set([...reviewed, module3ObjectiveAreas[index].id])); setReviewed(next); setActive(index); save({ reviewed: next }); requestAnimationFrame(() => detailHeadingRef.current?.focus()); };
+  const closeArea = () => { const previous = active; setActive(null); requestAnimationFrame(() => { if (previous !== null) cardRefs.current[previous]?.focus(); }); };
+  useEffect(() => { if (active === null) return; const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { const previous = active; setActive(null); requestAnimationFrame(() => cardRefs.current[previous]?.focus()); } }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [active]);
+  const check = () => { const messages: Record<string,string> = { A: 'This is not correct. A context finding should influence later analysis and design decisions. It should not remain only in the background section.', B: 'This is incomplete. More meetings may not solve the problem if information, timing, language, accessibility, influence, response, and follow-up are not addressed.', C: 'Correct. The finding should carry forward into standards, rights-holder and barrier analysis, actor responsibility, participation and accountability design, activities, and indicators.', D: 'This is not correct. The CSO may facilitate communication, participation, evidence, or coordination, but it should not automatically replace the responsibilities of public institutions and other duty-bearers.' }; const isCorrect = answer === 'C'; setCorrect(isCorrect); setFeedback(messages[answer]); save({ reviewed, answer, correct: isCorrect }); };
+  const allReviewed = approvedAreaIds.every((id) => reviewed.includes(id));
+  const continueToCheck = () => { setActive(null); requestAnimationFrame(() => checkHeadingRef.current?.focus()); };
 
   return (
-    <main className="m3-screen m3-roadmap-screen" aria-labelledby={titleId}>
-      <article className="m3-roadmap-shell">
-        <header className="m3-roadmap-header m3-roadmap-header--objectives">
-          <p className="m3-context-label">BEFORE THE FIRST DESIGN LESSON</p>
-          <h1 id={titleId}>Module 3 Learning Objectives</h1>
-          <div className="m3-roadmap-orientation">
-            {module3RoadmapIntro.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </header>
+    <main className="m3-screen m3-objectives-screen" aria-labelledby={titleId}>
+      <article className="m3-orientation-shell">
+        <header><p className="m3-context-label">{screen.eyebrow}</p><h1 id={titleId}>{screen.title}</h1><p className="m3-supporting-line">The module follows a connected process from situation analysis to project-design improvement and preparation for implementation.</p><p>By the end of this module, you will be able to apply HRBA to the analysis and design of a CSO project.</p><p>You will work through six connected learning areas. Each area produces an output that will be used in later screens and included in the final HRBA Project Design Improvement Snapshot.</p><p>Select each card to review the learning area, the task, the output, and how it will be used later.</p></header>
+        <p className="m3-reviewed-count" aria-live="polite"><strong>{reviewed.length} of 6</strong> learning areas reviewed</p>
+        {active === null ? <section className="m3-learning-area-grid" aria-label="Module 3 learning areas">{module3ObjectiveAreas.map((area,index) => { const isReviewed = reviewed.includes(area.id); return <article className={`m3-learning-area-card ${isReviewed ? 'is-reviewed' : ''}`} key={area.id}><span className="m3-learning-area-number">{index + 1}</span><img src={`${module3OrientationAssets.objectiveBase}/${area.image}`} alt={area.alt} /><h2>{area.title}</h2><p>{area.action}</p><button ref={(node) => { cardRefs.current[index] = node; }} type="button" className="m3-secondary-button" onClick={() => openArea(index)}>{isReviewed ? `Review ${area.title}` : `Open ${area.title}`}</button><span className="m3-reviewed-label">{isReviewed ? 'Reviewed ✓' : 'Not yet reviewed'}</span></article>; })}</section> : (() => { const area = module3ObjectiveAreas[active]; return <section className="m3-learning-detail" aria-labelledby={`${area.id}-heading`}><p className="m3-card-kicker">Learning area {active + 1} of 6</p><h2 id={`${area.id}-heading`} ref={detailHeadingRef} tabIndex={-1}>{area.title}</h2><img src={`${module3OrientationAssets.objectiveBase}/${area.image}`} alt={area.alt} /><h3>What you will learn</h3><p>{area.learn}</p><h3>What you will do</h3><p>{area.do}</p><h3>What you will produce</h3><ul>{area.produce.map(item => <li key={item}>{item}</li>)}</ul><h3>How you will use it later</h3><p>{area.later}</p><h3>Context note</h3><p>{area.context}</p><div className="m3-detail-navigation"><button type="button" className="m3-secondary-button" disabled={active === 0} onClick={() => openArea(active - 1)}>Previous learning area</button><button type="button" className="m3-secondary-button" disabled={active === 5} onClick={() => openArea(active + 1)}>Next learning area</button><button type="button" className="m3-secondary-button" onClick={closeArea}>Back to learning areas</button>{allReviewed && active === 5 && <button type="button" className="m3-primary-button" onClick={continueToCheck}>Continue to the knowledge check</button>}</div></section>; })()}
 
-        {showRoadmapVisual && (
-          <figure className="m3-roadmap-visual">
-            <img
-              src={module3RoadmapVisualAsset.src}
-              alt={module3RoadmapVisualAsset.alt}
-              onError={() => setShowRoadmapVisual(false)}
-            />
-          </figure>
-        )}
-
-        <section className="m3-roadmap-block m3-roadmap-objective-section" aria-labelledby={objectivesHeadingId}>
-          <h2 id={objectivesHeadingId}>By the end of this module, you will be able to:</h2>
-          <ol className="m3-roadmap-objectives">
-            {module3LearningObjectives.map((objective, index) => (
-              <li key={objective} className="m3-roadmap-objective-card">
-                <span className="m3-roadmap-objective-number" aria-hidden="true">{index + 1}</span>
-                <p>{objective}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <div className="m3-roadmap-actions">
-          <PrimaryButton onClick={() => onComplete()}>Start the first design lesson</PrimaryButton>
-        </div>
+        {active === null && <><aside className="m3-host-callout" aria-label="Martha and Dawit"><p><strong>Martha:</strong> The six learning areas are connected. Each one prepares information or decisions that you will use later.</p><p><strong>Dawit:</strong> For example, a barrier identified during the context analysis should later influence the responsible actors, the activity package, the participation method, and the indicators.</p><p><strong>Martha:</strong> Keep the pathway in mind as you work. The purpose is to bring the findings together into one practical project-design output.</p></aside>
+        {allReviewed && <section className="m3-applied-check"><h2 ref={checkHeadingRef} tabIndex={-1}>Check the connected process</h2><p>Read the situation and select the response that best follows the Module 3 process.</p><p><strong>Situation:</strong> During the context scan, a CSO finds that people living in remote kebeles often receive information late and have limited opportunity to influence project priorities.</p><fieldset><legend>How should this finding be used in the later project-design process?</legend>{[['A','Keep it only as background information because the project activities have already been planned.'],['B','Add more community meetings without checking who can access them, who can influence decisions, or how feedback will receive a response.'],['C','Connect the finding to relevant standards and responsibilities, identify the affected rights-holder groups and barriers, clarify responsible actors, design accessible information and participation arrangements, and reflect the changes in activities and indicators.'],['D','Ask the CSO to take permanent responsibility for public information and participation because the affected kebeles are remote.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s2-check" checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); setCorrect(false); }} /> <span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-secondary-button" disabled={!answer || correct} onClick={check}>Submit answer</button>{feedback && <div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} role="status">{feedback}</div>}</section>}
+        <section className="m3-guide-download"><h2>Module 3 orientation guide</h2><p>This short guide summarizes the HRBA project-design process, the six learning areas, the products you will develop, safe-use guidance, and selected resources for further reading.</p><a className="m3-secondary-button" href={module3OrientationAssets.guide} download>Download Module 3 orientation guide (PDF)</a></section>
+        <div className="m3-roadmap-actions"><PrimaryButton disabled={!allReviewed || !correct} onClick={() => onComplete()}>Start the first design lesson</PrimaryButton></div></>}
       </article>
     </main>
   );
@@ -17181,12 +17209,12 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.interactionType === 'video') {
-    return <IntroVideoScaffold screen={screen} onComplete={onComplete} />;
+    return <IntroVideoScaffold screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.interactionType === 'text') {
     if (screen.id === 'M3-R02') {
-      return <LearningRoadmapScreen screen={screen} onComplete={onComplete} />;
+      return <LearningRoadmapScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
     }
 
     return <TextScaffold screen={screen} onComplete={onComplete} />;
