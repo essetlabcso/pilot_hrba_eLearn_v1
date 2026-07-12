@@ -14,7 +14,6 @@ interface PlayerSidebarProps {
   menuButtonRef?: RefObject<HTMLButtonElement | null>;
   helpButtonRef?: RefObject<HTMLButtonElement | null>;
   accessibilityButtonRef?: RefObject<HTMLButtonElement | null>;
-  hideMediaControls?: boolean;
 }
 
 type ToolModal = 'menu' | 'glossary' | 'resources' | 'help' | 'accessibility';
@@ -77,8 +76,7 @@ export default function PlayerSidebar({
   onExit,
   menuButtonRef,
   helpButtonRef,
-  accessibilityButtonRef,
-  hideMediaControls = false
+  accessibilityButtonRef
 }: PlayerSidebarProps) {
   return (
     <aside className="player-sidebar-aside" aria-label="Course tools and media controls">
@@ -125,7 +123,7 @@ export default function PlayerSidebar({
         })}
       </div>
 
-      {!hideMediaControls && <div className="player-sidebar-bottom">
+      <div className="player-sidebar-bottom">
         <div className="player-sidebar-section">
           <span className="player-sidebar-section-label">Media Controls</span>
 
@@ -183,7 +181,7 @@ export default function PlayerSidebar({
         >
           Return to LMS
         </button>
-      </div>}
+      </div>
     </aside>
   );
 }
