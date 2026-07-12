@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 import {
   getModule3RevisedScreen,
+  getModule3VisibleScreenNumber,
+  MODULE3_REVISED_VISIBLE_SCREEN_TOTAL,
   module3RevisedScreenRoutes,
   type Module3RevisedScreen,
 } from '../../data/module3/module3RevisedScreens';
@@ -15,6 +17,11 @@ type Module3RevisedRendererProps = {
 };
 
 const MODULE_ID = 'module_03_project_design';
+
+function module3ScreenProgressLabel(screen: Module3RevisedScreen) {
+  const visibleScreenNumber = getModule3VisibleScreenNumber(screen.id);
+  return `${screen.phase} · Screen ${visibleScreenNumber ?? screen.screenNumber} of ${MODULE3_REVISED_VISIBLE_SCREEN_TOTAL}`;
+}
 
 const snapshotFields = [
   'Project or plan title',
@@ -7339,7 +7346,7 @@ function ScreenShell({
   return (
     <main className="m3-screen m3-studio-screen" aria-labelledby={titleId}>
       <div className="m3-title-block">
-        <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+        <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
         <p className="m3-context-label">{screen.eyebrow}</p>
         <h1 id={titleId}>{screen.title}</h1>
         <p>{screen.purpose}</p>
@@ -7431,7 +7438,7 @@ function IntroVideoScaffold({
     <main className="m3-screen m3-intro-video-screen" aria-labelledby={`${screen.id}-title`}>
       <section className="m3-intro-video-card">
         <div className="m3-title-block m3-intro-video-copy">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-context-label">{screen.eyebrow}</p>
           <h1 id={`${screen.id}-title`}>{screen.title}</h1>
           <p>
@@ -8119,7 +8126,7 @@ function ContextInequalityScanScreen({
           <p className="m3-context-label">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p className="m3-context-scan-subtitle">Look beyond visible evidence before choosing activities.</p>
-          <p className="m3-context-scan-meta">{screen.phase} · <strong>Screen {screen.screenNumber} of 22</strong></p>
+          <p className="m3-context-scan-meta">{screen.phase} · <strong>Screen {getModule3VisibleScreenNumber(screen.id) ?? screen.screenNumber} of {MODULE3_REVISED_VISIBLE_SCREEN_TOTAL}</strong></p>
           <nav className="m3-context-stage-nav" aria-label="Context scan stages">
             {stageDefinitions.map((stage) => {
               const active = activeStage === stage.id;
@@ -8789,7 +8796,7 @@ function PolicyStandardsMapScreen({
     <main className="m3-screen m3-policy-map-screen" aria-labelledby={titleId}>
       <article className="m3-policy-map-shell">
         <header className="m3-policy-map-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-context-label">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p className="m3-policy-map-subtitle">
@@ -9596,7 +9603,7 @@ function RightsHolderBarrierMapScreen({
     <main className="m3-screen m3-rights-map-screen" aria-labelledby={titleId}>
       <article className="m3-rights-map-shell">
         <header className="m3-rights-map-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-rights-map-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Rights-Holder and Barrier Map</h1>
           <p className="m3-rights-map-subtitle">
@@ -10654,7 +10661,7 @@ function ResponsibilityMapScreen({
     <main className="m3-screen m3-responsibility-map-screen" aria-labelledby={titleId}>
       <article className="m3-responsibility-map-shell">
         <header className="m3-responsibility-map-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-responsibility-map-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Duty-Bearer and Actor Responsibility Map</h1>
           <p className="m3-responsibility-map-subtitle">
@@ -11454,7 +11461,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
           <p className="m3-power-map-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Power and Influence Map</h1>
           <p className="m3-power-map-subtitle">See who can enable change, who may block it, and how rights-holder voice can be strengthened safely.</p>
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <nav className="m3-power-studio-stage-nav" aria-label="Power mapping stages">
             {stageDefinitions.map((stage) => (
               <button
@@ -12173,7 +12180,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
     <main className="m3-screen m3-s11-screen" aria-labelledby={titleId}>
       <article className="m3-s11-shell">
         <header className="m3-s11-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-s11-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Gender and Disability Design Check</h1>
           <p>Check whether gender and disability are missing, only mentioned, or built into the project design through participation, accessibility, responsibilities, budget, indicators, feedback, and follow-up.</p>
@@ -12732,7 +12739,7 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
     <main className="m3-screen m3-participation-screen" aria-labelledby={titleId}>
       <article className="m3-participation-shell">
         <header className="m3-participation-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-participation-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Participation and Accountability Pathway</h1>
           <p className="m3-participation-subtitle">Design how rights-holders access information, influence decisions, receive response, and see what changed.</p>
@@ -13183,7 +13190,7 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
     <main className="m3-screen m3-risk-screen" aria-labelledby={titleId}>
       <article className="m3-risk-shell">
         <header className="m3-risk-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-risk-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Risk and Do-No-Harm in Project Design</h1>
           <p className="m3-risk-subtitle">Check what could exclude, expose, silence, or harm people before the project is implemented.</p>
@@ -14946,7 +14953,7 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
     <main className="m3-screen m3-proposal-screen m3-s17-screen" aria-labelledby={titleId} data-qa="m3-s17-screen">
       <article className="m3-proposal-shell m3-s17-shell">
         <header className="m3-proposal-header m3-s17-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-proposal-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p>Check whether the draft plan really uses the HRBA analysis, identify gaps, and improve the design.</p>
@@ -15432,7 +15439,7 @@ function ProposalReviewScreen({ screen, onComplete }: {
     <main className="m3-screen m3-proposal-screen" aria-labelledby={titleId}>
       <article className="m3-proposal-shell">
         <header className="m3-proposal-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-proposal-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p>Read the Jiru Amba draft plan and decide which sections need an HRBA gap check.</p>
@@ -15672,7 +15679,7 @@ function ProposalGapMapScreen({ screen, state, onComplete }: {
     <main className="m3-screen m3-proposal-screen" aria-labelledby={titleId}>
       <article className="m3-proposal-shell">
         <header className="m3-proposal-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-proposal-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p>Identify the proposal gaps that weaken rights-holder focus, responsibility, participation, accountability, risk, and evidence.</p>
@@ -15928,7 +15935,7 @@ function ProposalSectionRepairScreen({ screen, state, onComplete }: {
     <main className="m3-screen m3-proposal-screen" aria-labelledby={titleId}>
       <article className="m3-proposal-shell">
         <header className="m3-proposal-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-proposal-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p>Choose one weak section from the draft plan and repair it using HRBA design logic. The goal is not to add rights words. The goal is to improve the design.</p>
@@ -16153,7 +16160,7 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
     <main className="m3-screen m3-closing-screen m3-s20-screen" aria-labelledby={`${screen.id}-title`} data-qa="m3-s20-screen">
       <article className="m3-closing-shell">
         <header className="m3-closing-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
           <h1 id={`${screen.id}-title`}>Module 3 Applied Knowledge Check</h1>
           <p>Choose the strongest rights-based response. Use what you practiced in Module 3: context analysis, standards, rights-holders, responsibilities, power, indicators, accountability, and draft plan repair.</p>
@@ -16383,7 +16390,7 @@ function PortfolioSnapshotScreen({
     <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
       <article className="m3-closing-shell m3-closing-portfolio">
         <header className="m3-closing-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
           <h1 id={`${screen.id}-title`}>My HRBA Project Design Improvement Snapshot</h1>
           <p>This is your Module 3 portfolio artifact. Earlier outputs have been gathered into one editable snapshot so you can carry the strongest design-improvement points into Module 4.</p>
@@ -16551,7 +16558,7 @@ function Module3ClosureScreen({
     <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
       <article className="m3-closing-shell">
         <header className="m3-closing-header m3-closing-complete-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
           <h1 id={`${screen.id}-title`}>Module 3 completed</h1>
           <p>You have completed Module 3. You practiced reviewing a project design before implementation, finding hidden HRBA gaps, and repairing one section using rights-holders, barriers, responsibilities, participation, accountability, inclusion, risk, and evidence.</p>
@@ -16801,7 +16808,7 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
     <main className="m3-screen m3-root-cause-map-screen" aria-labelledby={titleId}>
       <article className="m3-root-cause-map-shell">
         <header className="m3-root-cause-map-header">
-          <ProgressChip>{screen.phase} · Screen {screen.screenNumber} of 22</ProgressChip>
+          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-root-cause-map-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Root-Cause and Capacity-Gap Map</h1>
           <p className="m3-root-cause-map-subtitle">Move below visible problems to understand what directly caused the issue, what deeper pattern keeps it happening, whose capacity needs strengthening, and what the project design should change.</p>

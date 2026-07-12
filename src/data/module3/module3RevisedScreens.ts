@@ -274,6 +274,17 @@ export const MODULE3_REVISED_SCREENS: Module3RevisedScreen[] = [
   },
 ];
 
+export const MODULE3_REVISED_VISIBLE_SCREENS = MODULE3_REVISED_SCREENS.filter(
+  (screen) => screen.hiddenFromLearnerSequence !== true,
+);
+
+export const MODULE3_REVISED_VISIBLE_SCREEN_TOTAL = MODULE3_REVISED_VISIBLE_SCREENS.length;
+
+export function getModule3VisibleScreenNumber(screenId: string) {
+  const visibleIndex = MODULE3_REVISED_VISIBLE_SCREENS.findIndex((screen) => screen.id === screenId);
+  return visibleIndex >= 0 ? visibleIndex + 1 : null;
+}
+
 export const module3RevisedRouteTargets = Object.fromEntries([
   ['/module-3', { moduleId: 'module_03_project_design', screenId: 'M3-PLAYER-00' }],
   ['/module-3/cover', { moduleId: 'module_03_project_design', screenId: 'M3-PLAYER-00' }],

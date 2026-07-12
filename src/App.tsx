@@ -15,6 +15,7 @@ import {
 import {
   module3PlayerSequence,
   module3RevisedRouteTargets,
+  module3RevisedScreenRoutes,
 } from './data/module3/module3RevisedScreens';
 import {
   finalAssessmentRouteTargets,
@@ -315,6 +316,26 @@ export default function App() {
           nextState.currentLayer = 'player';
           nextState.currentModuleId = targetModuleId;
           nextState.currentScreenId = targetScreenId;
+
+          const requestedVisibleModule3ScreenIsLocked =
+            targetModuleId === 'module_03_project_design' &&
+            typeof requestedScreenId === 'string' &&
+            typeof targetScreenId === 'string' &&
+            module3ScreenIds.includes(requestedScreenId) &&
+            targetScreenId !== requestedScreenId;
+          const canonicalModule3Route = requestedVisibleModule3ScreenIsLocked
+            ? module3RevisedScreenRoutes[targetScreenId]
+            : undefined;
+
+          if (canonicalModule3Route && typeof window !== 'undefined') {
+            const canonicalParams = new URLSearchParams(window.location.search);
+            canonicalParams.delete('screenId');
+            canonicalParams.delete('moduleId');
+            canonicalParams.delete('completed');
+            const canonicalQuery = canonicalParams.toString();
+            const canonicalUrl = `${canonicalModule3Route}${canonicalQuery ? `?${canonicalQuery}` : ''}${window.location.hash}`;
+            window.history.replaceState(window.history.state, '', canonicalUrl);
+          }
         } else {
           nextState.currentLayer = 'platform';
           nextState.currentModuleId = null;
