@@ -1777,20 +1777,62 @@
         animation: none !important;
   }
 }
+
+/* Module 3 Batch 1: opening orientation and learning areas */
+.m3-orientation-shell { display: grid; gap: 1.25rem; width: min(1180px, 100%); margin: 0 auto; padding: clamp(1rem, 3vw, 2rem); border: 1px solid rgba(183,221,238,.65); border-radius: 22px; background: linear-gradient(145deg,#fff,#f2faf7); box-shadow: 0 18px 42px rgba(7,28,51,.12); }
+.m3-orientation-shell h1 { margin: .2rem 0 .55rem; color: #071c33; font-size: clamp(2rem,4vw,3.4rem); }
+.m3-orientation-shell h2,.m3-orientation-shell h3,.m3-orientation-shell h4 { color: #0b2c4a; }
+.m3-supporting-line { color: #176f79; font-size: 1.1rem; font-weight: 800; }
+.m3-orientation-stage,.m3-learning-detail,.m3-applied-check,.m3-guide-download { padding: clamp(1rem,2.5vw,1.6rem); border: 1px solid #cfe5e4; border-radius: 18px; background: rgba(255,255,255,.96); }
+.m3-orientation-stage p,.m3-orientation-stage li,.m3-learning-detail p,.m3-learning-detail li { line-height: 1.65; }
+.m3-orientation-concepts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+.m3-orientation-concept { min-width: 0; padding: clamp(1rem,2vw,1.4rem); border: 1px solid #cfe5e4; border-radius: 16px; background: #f8fcfb; }
+.m3-stage-actions,.m3-detail-navigation { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem; margin-top: 1.25rem; }
+.m3-host-video { margin-top: 1.5rem; padding: 1rem; border-radius: 18px; background: #edf8f5; }
+.m3-host-video .m3-video-frame { aspect-ratio: 16/9; min-height: auto; }
+.m3-host-video .m3-video-frame iframe { min-height: 0; }
+.m3-video-transcript__body { max-height: 28rem; margin-top: 1rem; padding-right: .5rem; overflow: auto; }
+.m3-product-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+.m3-product-grid > div { padding: 1rem; border-radius: 14px; background: #f1f8f6; }
+.m3-safety-note { padding: 1rem; border-left: 5px solid #c69223; background: #fff7df; font-weight: 700; }
+.m3-process-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: .75rem; padding: 0; counter-reset: process; list-style: none; }
+.m3-process-strip li { position: relative; padding: 1rem; border-radius: 14px; background: #0b3658; color: #fff; font-weight: 800; }
+.m3-check-option { display: flex; gap: .7rem; margin: .65rem 0; padding: .9rem; border: 1px solid #c8dcdf; border-radius: 12px; background: #fff; cursor: pointer; }
+.m3-check-option:has(input:checked) { border-color: #177f83; box-shadow: 0 0 0 2px rgba(23,127,131,.18); }
+.m3-check-feedback { margin-top: 1rem; padding: 1rem; border-left: 5px solid #c69223; background: #fff7df; }
+.m3-check-feedback.is-correct { border-color: #247b62; background: #e8f7ef; }
+.m3-reviewed-count { margin: 0; padding: .8rem 1rem; border-radius: 999px; background: #0b3658; color: #fff; width: fit-content; }
+.m3-learning-area-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+.m3-learning-area-card { position: relative; display: flex; flex-direction: column; gap: .65rem; padding: 1rem; border: 2px solid #d9e8e8; border-radius: 18px; background: #fff; box-shadow: 0 10px 24px rgba(7,28,51,.08); }
+.m3-learning-area-card.is-reviewed { border-color: #2b8873; }
+.m3-learning-area-card img { width: 100%; aspect-ratio: 1; border-radius: 13px; object-fit: contain; background: #f3f8f7; }
+.m3-learning-area-card h2 { margin: .15rem 0 0; font-size: 1.2rem; }
+.m3-learning-area-card p { margin: 0 0 auto; }
+.m3-learning-area-number { position: absolute; z-index: 1; top: 1.5rem; left: 1.5rem; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: #c69223; color: #071c33; font-weight: 900; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.m3-reviewed-label { color: #235d50; font-weight: 800; }
+.m3-learning-detail { display: grid; grid-template-columns: minmax(220px,.75fr) minmax(0,1.25fr); gap: .5rem 1.5rem; }
+.m3-learning-detail > img { grid-row: 2/12; width: 100%; border-radius: 16px; object-fit: contain; }
+.m3-learning-detail > h2,.m3-learning-detail > .m3-card-kicker,.m3-learning-detail > .m3-detail-navigation { grid-column: 1/-1; }
+.m3-learning-detail h3,.m3-learning-detail p,.m3-learning-detail ul { grid-column: 2; margin-top: .2rem; }
+.m3-host-callout { padding: 1rem 1.25rem; border-left: 5px solid #c69223; border-radius: 14px; background: #f7f3e6; }
+.m3-guide-download { background: #edf8f5; }
+@media (max-width: 900px) { .m3-learning-area-grid,.m3-product-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .m3-process-strip { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 600px) { .m3-orientation-shell { padding: .85rem; border-radius: 14px; } .m3-learning-area-grid,.m3-product-grid,.m3-process-strip { grid-template-columns: 1fr; } .m3-learning-detail { grid-template-columns: 1fr; } .m3-learning-detail > img,.m3-learning-detail h3,.m3-learning-detail p,.m3-learning-detail ul { grid-column: 1; grid-row: auto; } .m3-stage-actions,.m3-detail-navigation { flex-direction: column; } .m3-stage-actions button,.m3-detail-navigation button { width: 100%; } }
 .main-screen-canvas__content:has(.m3-intro-video-screen),
 .main-screen-canvas__content:has(.m3-objectives-screen) {
   padding: 0.72rem;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .m3-screen.m3-intro-video-screen,
 .m3-screen.m3-objectives-screen {
   width: 100%;
     max-width: none;
-    height: 100%;
-    min-height: 0;
+    height: auto;
+    min-height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 .m3-intro-video-card,
 .m3-objectives-layout {
@@ -1972,6 +2014,7 @@
   grid-column: 1 / -1;
 }
 @media (max-width: 900px) {
+  .m3-orientation-concepts { grid-template-columns: 1fr; }
   .main-screen-canvas__content:has(.m3-intro-video-screen),
   .main-screen-canvas__content:has(.m3-objectives-screen) {
     overflow: auto;
@@ -20399,3 +20442,9 @@
     grid-template-columns: minmax(0, 1fr) minmax(280px, 0.34fr);
   }
 }
+
+/* The opening screens contain long-form approved content and must scroll on desktop. */
+.main-screen-canvas__content:has(.m3-intro-video-screen),
+.main-screen-canvas__content:has(.m3-objectives-screen) { overflow: auto; }
+.m3-screen.m3-intro-video-screen,
+.m3-screen.m3-objectives-screen { height: auto; min-height: 100%; overflow: visible; }
