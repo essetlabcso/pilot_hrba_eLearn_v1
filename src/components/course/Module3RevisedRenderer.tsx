@@ -2076,6 +2076,7 @@ type Screen9ActorRating = {
   actorLabel: string;
   category: ActorCategory;
   roleFromResponsibilityMap: string;
+  formalAuthorityLevel: Screen9InfluenceLevel | '';
   influenceLevel: Screen9InfluenceLevel | '';
   supportInterestLevel: Screen9SupportLevel | '';
   likelyChangeRole: LikelyChangeRole | '';
@@ -2161,6 +2162,9 @@ type Screen10Submission = {
     directCauses: string[];
     deeperRootCauses: string[];
     capacityGaps: string[];
+    rightsHolderCapacityGaps?: string[];
+    dutyBearerSystemCapacityGaps?: string[];
+    connectedActors?: string[];
   };
   generatedProblemLayersCanvas: Array<{
     problemPattern: string;
@@ -2168,6 +2172,8 @@ type Screen10Submission = {
     directCause: string;
     deeperRootCause: string;
     capacityGap: string;
+    rightsHolderCapacityGap?: string;
+    dutyBearerSystemCapacityGap?: string;
     responsibilityGap?: string;
     designImplication: string;
     questionForLaterDesignRepair: string;
@@ -2178,6 +2184,9 @@ type Screen10Submission = {
     directCauses: string[];
     deeperRootCauses: string[];
     capacityGaps: string[];
+    rightsHolderCapacityGaps?: string[];
+    dutyBearerSystemCapacityGaps?: string[];
+    connectedActors?: string[];
     generatedProblemLayersCanvas: Screen10Submission['generatedProblemLayersCanvas'];
     designImplications: string[];
     questionsForLaterDesignRepair: string[];
@@ -2201,6 +2210,8 @@ type Screen10CauseMapDraft = {
   directCause: string;
   deeperRootCause: string;
   capacityGap: string;
+  rightsHolderCapacityGap: string;
+  dutyBearerSystemCapacityGap: string;
   responsibilityGap: string;
   designImplication: string;
 };
@@ -2337,6 +2348,7 @@ type Screen9Submission = {
   generatedActorRows: Array<{
     actor: string;
     roleFromResponsibilityMap: string;
+    formalAuthorityLevel: string;
     influenceLevel: string;
     supportInterestLevel: string;
     likelyRoleInChange: string;
@@ -3409,6 +3421,8 @@ function getEmptyScreen10CauseMapDraft(): Screen10CauseMapDraft {
     directCause: '',
     deeperRootCause: '',
     capacityGap: '',
+    rightsHolderCapacityGap: '',
+    dutyBearerSystemCapacityGap: '',
     responsibilityGap: '',
     designImplication: '',
   };
@@ -3590,7 +3604,7 @@ const screen8GeneratedDefaults: Record<Screen8BarrierId, {
     supportOrAllyActor: 'Peer CSO, inclusion adviser, or partner support organization.',
     capacityGapToCheck: 'Weak facilitation, unclear consultation process, limited trust, or decisions shaped before consultation.',
     safeEngagementQuestion: 'How can Awra help lower-influence groups shape priorities without exposing individuals or creating confrontation?',
-    nextQuestion: 'Which actor has the most influence over priority-setting, and who may resist changing the process?',
+    nextQuestion: 'Which actor has the most influence over priority-setting, and what engagement considerations require verification?',
   },
   information_barrier: {
     rightsHolderGroupAffected: 'Groups who may not receive clear, timely, accessible, or trusted information.',
@@ -3854,7 +3868,7 @@ const screen8ActorsByLane: Record<'public' | 'service' | 'voice' | 'cso', Screen
     { id: 'community_volunteers_or_facilitators', label: 'Community volunteers or facilitators', category: 'rights_holder_voice_support' },
     {
       id: 'respected_leaders_possible_gatekeeper',
-      label: 'Respected community leaders or possible gatekeepers',
+      label: 'Respected community leaders or actors influencing access',
       category: 'rights_holder_voice_support',
       safeNote: 'Use carefully. This role may support access, but may also dominate or filter voice.',
     },
@@ -3870,8 +3884,10 @@ const screen8ActorsByLane: Record<'public' | 'service' | 'voice' | 'cso', Screen
 };
 
 const responsibilityMapIntroParagraphs = [
-  'After identifying rights-holder groups and barriers, a design team needs to ask who has responsibility to respond. HRBA project design should not leave responsibility vague or shift public obligations onto the CSO.',
-  'In the Jiru Amba case, some actors may have formal duties, some may manage services, some may influence decisions, and some may support community voice. A strong design clarifies what each actor should do and what role the CSO can safely and realistically play.',
+  'Rights-holders are the people or groups whose rights, access, participation, influence, or benefit are being examined. Primary duty-bearers are public institutions or officials with the relevant formal responsibility.',
+  'Supporting public or non-public actors may contribute services, coordination, information, resources, or follow-up. Community or customary actors may offer local knowledge or participation channels, but inclusion, appropriateness, and risk still require verification.',
+  'Private actors are relevant where a business, contractor, market actor, employer, or provider affects access, livelihoods, services, or implementation. A CSO role should remain supportive or facilitative and should not replace permanent public responsibility.',
+  'Responsibility and support are not the same. Not every public actor has the same mandate, not every gap results from unwillingness, and capacity is broader than training: authority, resources, coordination, incentives, willingness, and accountability may matter.',
 ];
 
 const responsibilityMapKeyIdea =
@@ -3879,23 +3895,23 @@ const responsibilityMapKeyIdea =
 
 const responsibilityMapExplainCards = [
   {
-    title: 'What this section is about',
-    text: 'Map duty-bearers, service actors, supporting actors, and the CSO role connected to the barriers identified in the Jiru Amba case.',
+    title: 'Primary responsibility',
+    text: 'Keep the relevant public duty-bearer visible and verify the exact mandate where it is not established.',
     tone: 'amber',
   },
   {
-    title: 'Why this matters for CSOs',
-    text: 'Clear actor roles help CSOs avoid replacing duty-bearers while still supporting participation, evidence, coordination, capacity, and accountability.',
+    title: 'Supporting actors',
+    text: 'Separate service, community, customary, private, and other supporting contributions from primary responsibility.',
     tone: 'green',
   },
   {
-    title: 'What you will do',
-    text: 'Select actors and match them to responsibilities, support roles, and safe design actions.',
+    title: 'Realistic Awra role',
+    text: 'Awra may facilitate participation, accessible information, evidence, dialogue, coordination, monitoring, referral, or follow-up.',
     tone: 'blue',
   },
   {
-    title: 'What you will produce',
-    text: 'A draft Actor Responsibility Map that can be saved to your portfolio and used in later design screens.',
+    title: 'Capacity or response gap',
+    text: 'Check knowledge, authority, skills, resources, coordination, incentives, willingness, and accountability rather than assuming training is the answer.',
     tone: 'teal',
   },
 ];
@@ -3922,8 +3938,8 @@ const screen8SupportActors: Screen8ActorOption[] = [
 ];
 
 const screen8CarefulActors: Screen8ActorOption[] = [
-  { id: 'information_gatekeeper', label: 'Actor who controls information', category: 'careful_engagement_actor', useFor: 'may enable transparency or limit who receives information.' },
-  { id: 'high_influence_committee_leader', label: 'High-influence committee leader', category: 'careful_engagement_actor', useFor: 'may support change or resist transparency.' },
+  { id: 'information_gatekeeper', label: 'Actor who may influence information access', category: 'careful_engagement_actor', useFor: 'may enable transparency or affect who receives information; verify constructively.' },
+  { id: 'high_influence_committee_leader', label: 'High-influence committee leader', category: 'careful_engagement_actor', useFor: 'may contribute to change or present an engagement risk that requires verification.' },
   { id: 'informal_broker_careful', label: 'Informal broker', category: 'careful_engagement_actor', useFor: 'may shape access, trust, or participation risks.' },
 ];
 
@@ -4049,14 +4065,14 @@ const screen9DefaultActors: Module3Actor[] = [
   { actorId: 'remote_kebele_communities', label: 'Communities in remote kebeles', category: 'rights_holder_group', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
   { actorId: 'informal_workers', label: 'Informal workers', category: 'rights_holder_group', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
   { actorId: 'awra_cso_team', label: 'Awra CSO team', category: 'cso_role', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
-  { actorId: 'informal_brokers_gatekeepers', label: 'Informal brokers or gatekeepers', category: 'careful_engagement_actor', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
+  { actorId: 'informal_brokers_gatekeepers', label: 'Informal actors who may influence information or access', category: 'careful_engagement_actor', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
   { actorId: 'partner_support_organization', label: 'Partner or support organization', category: 'support_ally_actor', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
 ];
 
 const likelyRoleOptions: Array<{ id: LikelyChangeRole; label: string }> = [
-  { id: 'enabler', label: 'Champion' },
-  { id: 'gatekeeper', label: 'Gatekeeper' },
-  { id: 'blocker', label: 'Blocker or delaying actor' },
+  { id: 'enabler', label: 'Possible enabling contribution' },
+  { id: 'gatekeeper', label: 'Possible influence over information or access' },
+  { id: 'blocker', label: 'Possible implementation or response risk' },
   { id: 'support_actor', label: 'Support actor' },
   { id: 'undecided_actor', label: 'Actor needing careful engagement' },
   { id: 'low_power_rights_holder_group', label: 'Actor needing voice strengthening' },
@@ -4110,6 +4126,54 @@ function getScreen8SavedOutput(state: LearningState): Screen8Submission | null {
   }
   if (record.screenId === 'M3-R08') return record as Screen8Submission;
   return null;
+}
+
+function getScreen9SavedOutput(state: LearningState): Screen9Submission | null {
+  const record = getPracticeState(state, 'M3-R09');
+  const nested = record.screen9;
+  if (nested && typeof nested === 'object' && (nested as Screen9Submission).screenId === 'M3-R09') {
+    return nested as Screen9Submission;
+  }
+  if (record.screenId === 'M3-R09') return record as Screen9Submission;
+  return null;
+}
+
+function getScreen10SavedOutput(state: LearningState): Screen10Submission | null {
+  const record = getPracticeState(state, 'M3-R10');
+  const nested = record.screen10;
+  if (nested && typeof nested === 'object' && (nested as Screen10Submission).screenId === 'M3-R10') {
+    return nested as Screen10Submission;
+  }
+  if (record.screenId === 'M3-R10') return record as Screen10Submission;
+  return null;
+}
+
+function restoreScreen8Mappings(output: Screen8Submission | null): Record<string, Screen8BarrierMapping> {
+  if (!output) return {};
+  return Object.fromEntries(output.barrierActorLinks.map((link) => {
+    const mapping = createEmptyScreen8Mapping();
+    link.actorSelections.forEach((selection) => {
+      const key: keyof Screen8BarrierMapping = selection.category === 'primary_public_responsibility'
+        ? 'publicActorIds'
+        : selection.category === 'service_or_local_implementation'
+          ? 'serviceActorIds'
+          : selection.category === 'community_influence_actor'
+            ? 'communityActorIds'
+            : selection.category === 'participation_actor'
+              ? 'participationActorIds'
+              : selection.category === 'rights_holder_voice_support'
+                ? 'voiceActorIds'
+                : selection.category === 'support_ally_actor'
+                  ? 'supportActorIds'
+                  : selection.category === 'careful_engagement_actor'
+                    ? 'carefulActorIds'
+                    : 'csoRoleIds';
+      mapping[key].push(selection.actorId);
+      mapping.actionIdsByActor[selection.actorId] = selection.actionIds;
+    });
+    mapping.capacityGapHintIds = link.capacityGapHintIds.filter((id) => screen8CapacityGapHints.some((hint) => hint.id === id));
+    return [link.barrierId, mapping];
+  }));
 }
 
 function getBarrierLabel(barrierId: Screen8BarrierId) {
@@ -4477,9 +4541,9 @@ const screen9ActorContent: Record<string, { role: string; implication: string; q
     question: 'What capacity does Awra need to support change safely: facilitation, accessibility, evidence handling, dialogue, advocacy, or monitoring?',
   },
   informal_brokers_gatekeepers: {
-    clue: 'Informal influence actor that may control information, access, trust, or who is heard. Handle carefully.',
-    role: 'Informal influence actor that may control information, access, trust, or who is heard.',
-    implication: 'The design should handle this actor carefully, avoid reinforcing gatekeeping, and create safer channels for rights-holder voice.',
+    clue: 'Informal actor who may influence information, access, trust, or who is heard. The pattern requires verification.',
+    role: 'Informal or relationship-based influence that may affect information, access, trust, or participation.',
+    implication: 'The design should engage constructively, check who may be excluded, and create more than one channel for rights-holder voice.',
     question: 'What root causes give this actor influence: information control, social norms, weak transparency, dependency, or lack of alternative channels?',
   },
   partner_support_organization: {
@@ -4510,6 +4574,7 @@ function getDefaultActorRating(actor: Module3Actor): Screen9ActorRating {
     actorLabel: actor.label,
     category: actor.category,
     roleFromResponsibilityMap: content.role,
+    formalAuthorityLevel: actor.category === 'primary_public_responsibility' ? 'high' : isPublicOrService ? 'medium' : 'low',
     influenceLevel: isPublicOrService || isGatekeeper ? 'high' : isSupport ? 'medium' : 'low',
     supportInterestLevel: isRightsHolder || isSupport ? 'high' : isGatekeeper ? 'uncertain' : 'uncertain',
     likelyChangeRole: isRightsHolder ? 'low_power_rights_holder_group' : isGatekeeper ? 'gatekeeper' : isPublicOrService ? 'undecided_actor' : isSupport ? 'support_actor' : 'undecided_actor',
@@ -4526,6 +4591,7 @@ function createEmptyActorRating(actor: Module3Actor): Screen9ActorRating {
     actorLabel: actor.label,
     category: actor.category,
     roleFromResponsibilityMap: defaultRating.roleFromResponsibilityMap,
+    formalAuthorityLevel: '',
     influenceLevel: '',
     supportInterestLevel: '',
     likelyChangeRole: '',
@@ -4537,7 +4603,8 @@ function createEmptyActorRating(actor: Module3Actor): Screen9ActorRating {
 
 function isScreen9RatingComplete(rating: Screen9ActorRating) {
   return Boolean(
-    rating.influenceLevel &&
+    rating.formalAuthorityLevel &&
+      rating.influenceLevel &&
       rating.supportInterestLevel &&
       rating.likelyChangeRole &&
       rating.engagementApproach,
@@ -4552,25 +4619,26 @@ function influenceScore(value: Screen9InfluenceLevel | '') {
 }
 
 function getPowerMapZone(rating: Screen9ActorRating): Screen9PowerMapZone['zoneId'] {
-  const score = influenceScore(rating.influenceLevel);
-  if (score === 3 && rating.supportInterestLevel === 'high') return 'work_closely';
-  if (score === 3 && rating.supportInterestLevel !== 'high') return 'engage_carefully';
-  if (score <= 2 && rating.supportInterestLevel === 'high') return 'strengthen_voice';
+  const authority = influenceScore(rating.formalAuthorityLevel);
+  const influence = influenceScore(rating.influenceLevel);
+  if (authority === 3 && influence === 3) return 'work_closely';
+  if (authority === 3) return 'engage_carefully';
+  if (influence === 3) return 'strengthen_voice';
   return 'monitor_lightly';
 }
 
 const powerMapZoneLabels: Record<Screen9PowerMapZone['zoneId'], string> = {
-  work_closely: 'High influence / high support or interest',
-  engage_carefully: 'High influence / uncertain or low support',
-  strengthen_voice: 'Low or medium influence / high support or interest',
-  monitor_lightly: 'Low or medium influence / low support or interest',
+  work_closely: 'High formal authority / high practical influence',
+  engage_carefully: 'High formal authority / lower practical influence',
+  strengthen_voice: 'Lower formal authority / high practical influence',
+  monitor_lightly: 'Lower formal authority / lower practical influence',
 };
 
 const powerMapZoneInterpretations: Record<Screen9PowerMapZone['zoneId'], string> = {
-  work_closely: 'These actors can help move change. Engage them early and clearly.',
-  engage_carefully: 'These actors can block, delay, filter, or weaken change. Build interest, clarify benefits, and reduce risk.',
-  strengthen_voice: 'Rights-holder groups or allies may care deeply but lack power. Support participation and collective voice safely.',
-  monitor_lightly: 'Keep aware, but do not spend most effort here unless their role changes.',
+  work_closely: 'These actors combine formal responsibility and practical influence. Engage early and clarify responsibility.',
+  engage_carefully: 'These actors hold formal responsibility but may need operational support, coordination, or mandate clarification.',
+  strengthen_voice: 'These actors have practical influence without equivalent formal authority. Verify how their influence affects access and participation.',
+  monitor_lightly: 'Keep the relationship proportionate and verify whether authority or influence changes.',
 };
 
 function generatePowerMapZones(ratings: Screen9ActorRating[]): Screen9PowerMapZone[] {
@@ -4614,7 +4682,7 @@ function getScreen9SummaryMessages(ratings: Screen9ActorRating[]) {
     messages.push('Careful engagement is needed. Your map includes actors who can enable or block change. The design should use constructive dialogue, clear evidence, and risk-aware engagement.');
   }
   if (ratings.some((rating) => rating.likelyChangeRole === 'gatekeeper')) {
-    messages.push('Gatekeeping may affect inclusion. The design should avoid relying on one channel for participation or information. It should create safer and more diverse ways for affected groups to be heard.');
+    messages.push('Influence over information or access may affect inclusion. Verify the pattern and avoid relying on one channel for participation or information. Create more diverse ways for affected groups to be heard.');
   }
   if (messages.length === 0) messages.push('Your map shows where engagement can support change and where the design should strengthen safe participation.');
   return messages;
@@ -4758,7 +4826,7 @@ Examples:
 - service committee;
 - community representative;
 - rights-holder group;
-- informal gatekeeper;
+- informal actor who may influence information or access;
 - CSO facilitator;
 - support organization.
 
@@ -4776,7 +4844,7 @@ How much can this actor shape decisions, resources, information, trust, access, 
 
 ## 5. Support or interest
 
-How likely is this actor to support change, resist it, ignore it, or be strongly affected by it?
+What contribution, interest, likely engagement, or possible risk should be verified for this actor?
 
 - Low support / low interest
 - Uncertain or mixed
@@ -4787,8 +4855,8 @@ How likely is this actor to support change, resist it, ignore it, or be strongly
 Choose the closest role:
 
 - enabler;
-- blocker;
-- gatekeeper;
+- possible implementation or response risk;
+- possible influence over information or access;
 - ally;
 - undecided actor;
 - low-power rights-holder group;
@@ -4826,7 +4894,7 @@ Examples:
 
 - Why does this group have low influence?
 - Why does this actor control information?
-- Why may this actor resist change?
+- What possible engagement risk requires verification?
 - What capacity gap affects response?
 - What local norms or systems keep the barrier in place?
 `;
@@ -4905,6 +4973,8 @@ function buildScreen10Submission(
   selections: Record<string, ProblemLayerId | undefined>,
   ownCsoOutput: Screen10OwnCsoOutput | null,
   generatedProblemLayersCanvas = screen10GeneratedPatterns,
+  carriedActors: string[] = [],
+  carriedCapacityGaps: string[] = [],
 ): Screen10Submission {
   const grouped = getScreen10GroupedStatements(selections);
   const feedbackState = getScreen10FeedbackState(selections);
@@ -4927,6 +4997,12 @@ function buildScreen10Submission(
       directCauses: grouped.direct.map((statement) => statement.statement),
       deeperRootCauses: grouped.root.map((statement) => statement.statement),
       capacityGaps: grouped.capacity.map((statement) => statement.statement),
+      rightsHolderCapacityGaps: generatedProblemLayersCanvas.map((row) => row.rightsHolderCapacityGap).filter(Boolean) as string[],
+      dutyBearerSystemCapacityGaps: Array.from(new Set([
+        ...generatedProblemLayersCanvas.map((row) => row.dutyBearerSystemCapacityGap).filter(Boolean) as string[],
+        ...carriedCapacityGaps,
+      ])),
+      connectedActors: carriedActors,
     },
     generatedProblemLayersCanvas,
     rootCauseCapacityGapMap: {
@@ -4941,6 +5017,12 @@ function buildScreen10Submission(
       directCauses: grouped.direct.map((statement) => statement.statement),
       deeperRootCauses: grouped.root.map((statement) => statement.statement),
       capacityGaps: grouped.capacity.map((statement) => statement.statement),
+      rightsHolderCapacityGaps: generatedProblemLayersCanvas.map((row) => row.rightsHolderCapacityGap).filter(Boolean) as string[],
+      dutyBearerSystemCapacityGaps: Array.from(new Set([
+        ...generatedProblemLayersCanvas.map((row) => row.dutyBearerSystemCapacityGap).filter(Boolean) as string[],
+        ...carriedCapacityGaps,
+      ])),
+      connectedActors: carriedActors,
       generatedProblemLayersCanvas,
       designImplications,
       questionsForLaterDesignRepair,
@@ -10595,9 +10677,18 @@ function ResponsibilityMapScreen({
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   const barrierOptions = getScreen8BarrierOptions(state);
-  const [selectedBarrierIds, setSelectedBarrierIds] = useState<Screen8BarrierId[]>([]);
-  const [mappings, setMappings] = useState<Record<string, Screen8BarrierMapping>>({});
-  const [optionalReflection, setOptionalReflection] = useState('');
+  const savedOutput = getScreen8SavedOutput(state);
+  const restoredBarrierIds = (savedOutput?.mappedBarrierIds || []).filter((id): id is Screen8BarrierId =>
+    barrierOptions.some((barrier) => barrier.id === id),
+  ).slice(0, 2);
+  const restoredMappings = restoreScreen8Mappings(savedOutput);
+  const restoredSignature = savedOutput ? JSON.stringify({
+    selectedBarrierIds: restoredBarrierIds,
+    mappings: restoredBarrierIds.map((barrierId) => [barrierId, getScreen8Mapping(restoredMappings, barrierId)]),
+  }) : null;
+  const [selectedBarrierIds, setSelectedBarrierIds] = useState<Screen8BarrierId[]>(restoredBarrierIds);
+  const [mappings, setMappings] = useState<Record<string, Screen8BarrierMapping>>(restoredMappings);
+  const [optionalReflection, setOptionalReflection] = useState(savedOutput?.optionalReflection || '');
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen8OwnCsoOutput>({
     projectIssueOrBarrier: '',
     rightsHolderGroupAffected: '',
@@ -10608,11 +10699,11 @@ function ResponsibilityMapScreen({
     capacityGap: '',
     safeEngagementQuestion: '',
   });
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen8OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen8OwnCsoOutput | null>(savedOutput?.ownCsoOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen8Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [activeStage, setActiveStage] = useState(1);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen8Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredBarrierIds.length ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -10623,7 +10714,7 @@ function ResponsibilityMapScreen({
   const selectedMappings = selectedBarrierIds.map((barrierId) => getScreen8Mapping(mappings, barrierId));
   const allSelectedBarriersHavePublicResponsibility =
     selectedMappings.length > 0 && selectedMappings.every((mapping) => mapping.publicActorIds.length > 0);
-  const hasSupportingOrServiceActor = selectedMappings.some((mapping) =>
+  const allSelectedBarriersHaveSupportingActor = selectedMappings.length > 0 && selectedMappings.every((mapping) =>
     mapping.serviceActorIds.length > 0 ||
     mapping.communityActorIds.length > 0 ||
     mapping.participationActorIds.length > 0 ||
@@ -10631,13 +10722,14 @@ function ResponsibilityMapScreen({
     mapping.supportActorIds.length > 0 ||
     mapping.carefulActorIds.length > 0,
   );
+  const allSelectedBarriersHaveCsoRole = selectedMappings.length > 0 && selectedMappings.every((mapping) => mapping.csoRoleIds.length === 1);
   const allSelectedBarriersHaveCapacityHint =
     selectedMappings.length > 0 && selectedMappings.every((mapping) => mapping.capacityGapHintIds.length > 0);
   const canSubmit =
     hasSelectedBarrier &&
     allSelectedBarriersHavePublicResponsibility &&
-    hasSupportingOrServiceActor &&
-    feedbackDraft.hasCsoRole &&
+    allSelectedBarriersHaveSupportingActor &&
+    allSelectedBarriersHaveCsoRole &&
     allSelectedBarriersHaveCapacityHint &&
     !feedbackDraft.overloadWarning;
   const currentSignature = JSON.stringify({
@@ -10661,10 +10753,10 @@ function ResponsibilityMapScreen({
               ? 'This map gives too much responsibility to the CSO. Add the actor who has responsibility for the service, decision, information, or feedback process.'
               : !allSelectedBarriersHavePublicResponsibility
                 ? 'Add a duty-bearer or responsible public actor for each selected barrier.'
-                : !hasSupportingOrServiceActor
-                  ? 'Add at least one service, community, rights-holder voice, support, or careful-engagement actor.'
-                  : !feedbackDraft.hasCsoRole
-                    ? 'Add at least one realistic CSO role.'
+                : !allSelectedBarriersHaveSupportingActor
+                  ? 'Add at least one supporting actor for each selected barrier.'
+                  : !allSelectedBarriersHaveCsoRole
+                    ? 'Add one realistic Awra role for each selected barrier.'
                     : !allSelectedBarriersHaveCapacityHint
                       ? 'Choose one capacity-gap hint for each selected barrier.'
                       : 'Generate a draft responsibility map from your selections.';
@@ -10759,7 +10851,7 @@ function ResponsibilityMapScreen({
       carryForward: {
         snapshotField: 'dutyBearerActorResponsibilityMap',
         issue: 'The Jiru Amba barriers cannot be solved by Awra alone. A rights-based design needs to show which public or service actors should respond, which actors influence access, and what role Awra can realistically play.',
-        nextUse: 'Use this map in the next screen to analyze power and influence. Ask who has authority, who has influence, who may support change, and who may resist or delay action.',
+      nextUse: 'Use this map in the next screen to analyze formal authority and practical influence. Ask what each actor may contribute, what engagement considerations require verification, and whose voice needs strengthening.',
       },
     };
   };
@@ -10937,6 +11029,10 @@ function ResponsibilityMapScreen({
       });
       return {
         ...mapping,
+        publicActorIds: lane === 'public' ? (actorId ? [actorId] : []) : mapping.publicActorIds.filter((id) => id !== actorId),
+        serviceActorIds: lane === 'service' ? (actorId ? [actorId] : []) : mapping.serviceActorIds.filter((id) => id !== actorId),
+        communityActorIds: lane === 'community' ? (actorId ? [actorId] : []) : mapping.communityActorIds.filter((id) => id !== actorId),
+        csoRoleIds: lane === 'cso' ? (actorId ? [actorId] : []) : mapping.csoRoleIds.filter((id) => id !== actorId),
         [laneKey]: actorId ? [actorId] : [],
         actionIdsByActor,
       };
@@ -11368,7 +11464,7 @@ function ResponsibilityMapScreen({
             <div className="m3-responsibility-map-carry-grid">
               <div><span>Learning from the Jiru Amba case</span><p>The Jiru Amba barriers cannot be solved by Awra alone. A rights-based design needs to show which public or service actors should respond, which actors influence access, and what role Awra can realistically play.</p></div>
               <div><span>Responsibility questions to carry forward</span><p>Carry forward your selected barriers, responsible actors, CSO role, and capacity gaps.</p></div>
-              <div><span>Next use</span><p>Use this map in the next screen to analyze power and influence. Ask who has authority, who has influence, who may support change, and who may resist or delay action.</p></div>
+              <div><span>Next use</span><p>Use this map in the next screen to analyze formal authority and practical influence. Ask what each actor may contribute, what engagement considerations require verification, and whose voice needs strengthening.</p></div>
             </div>
           </section>
         )}
@@ -11487,19 +11583,32 @@ function PowerInfluenceMapScreen({
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   const baseActors = getScreen9ActorOptions(state);
-  const [actorOptions, setActorOptions] = useState<Module3Actor[]>(baseActors);
-  const [selectedActorIds, setSelectedActorIds] = useState<string[]>([]);
-  const [actorRatings, setActorRatings] = useState<Record<string, Screen9ActorRating>>({});
+  const savedOutput = getScreen9SavedOutput(state);
+  const restoredCustomActors: Module3Actor[] = (savedOutput?.actorRatings || [])
+    .filter((rating) => !baseActors.some((actor) => actor.actorId === rating.actorId))
+    .map((rating) => ({ actorId: rating.actorId, label: rating.actorLabel, category: rating.category, sourceScreen: 'custom', linkedBarrierIds: [], safeCustom: true }));
+  const restoredActorOptions = [...baseActors, ...restoredCustomActors];
+  const restoredActorIds = (savedOutput?.selectedActorIds || []).filter((id) => restoredActorOptions.some((actor) => actor.actorId === id)).slice(0, 6);
+  const restoredRatings = Object.fromEntries((savedOutput?.actorRatings || [])
+    .filter((rating) => restoredActorIds.includes(rating.actorId))
+    .map((rating) => [rating.actorId, {
+      ...rating,
+      formalAuthorityLevel: rating.formalAuthorityLevel || (rating.category === 'primary_public_responsibility' ? 'high' : rating.category === 'service_or_local_implementation' ? 'medium' : 'low'),
+    }]));
+  const restoredSignature = savedOutput ? JSON.stringify({ selectedActorIds: restoredActorIds, actorRatings: restoredActorIds.map((id) => restoredRatings[id]) }) : null;
+  const [actorOptions, setActorOptions] = useState<Module3Actor[]>(restoredActorOptions);
+  const [selectedActorIds, setSelectedActorIds] = useState<string[]>(restoredActorIds);
+  const [actorRatings, setActorRatings] = useState<Record<string, Screen9ActorRating>>(restoredRatings);
   const [customActorLabel, setCustomActorLabel] = useState('');
   const [customActorCategory, setCustomActorCategory] = useState<ActorCategory>('service_or_local_implementation');
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen9OwnCsoDraft>(getEmptyScreen9OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen9OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen9OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen9Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [understandAnswer, setUnderstandAnswer] = useState('');
-  const [exampleReviewed, setExampleReviewed] = useState(false);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen9Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
+  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(savedOutput ? 4 : restoredActorIds.length ? 3 : 1);
+  const [understandAnswer, setUnderstandAnswer] = useState(savedOutput ? 'informal' : '');
+  const [exampleReviewed, setExampleReviewed] = useState(Boolean(savedOutput));
   const [activeActorFilter, setActiveActorFilter] = useState<'public' | 'service' | 'rights' | 'community' | 'support' | 'custom' | 'all'>('public');
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [copyStatus, setCopyStatus] = useState('');
@@ -11617,6 +11726,7 @@ function PowerInfluenceMapScreen({
     const generatedActorRows = ratingsForOutput.map((rating) => ({
       actor: rating.actorLabel,
       roleFromResponsibilityMap: rating.roleFromResponsibilityMap,
+      formalAuthorityLevel: getScreen9InfluenceLabel(rating.formalAuthorityLevel),
       influenceLevel: getScreen9InfluenceLabel(rating.influenceLevel),
       supportInterestLevel: getScreen9SupportLabel(rating.supportInterestLevel),
       likelyRoleInChange: getScreen9RoleLabel(rating.likelyChangeRole),
@@ -11781,10 +11891,10 @@ Use role categories and generalized group labels. Do not record names, accusatio
     return '◎';
   };
   const getQuadrantDisplayLabel = (zoneId: Screen9PowerMapZone['zoneId']) => {
-    if (zoneId === 'work_closely') return 'High influence / high support';
-    if (zoneId === 'engage_carefully') return 'High influence / uncertain or low support';
-    if (zoneId === 'strengthen_voice') return 'Low or medium influence / high support';
-    return 'Low or medium influence / low support';
+    if (zoneId === 'work_closely') return 'High formal authority / high practical influence';
+    if (zoneId === 'engage_carefully') return 'High formal authority / lower practical influence';
+    if (zoneId === 'strengthen_voice') return 'Lower formal authority / high practical influence';
+    return 'Lower formal authority / lower practical influence';
   };
   const copyMapSummary = () => {
     if (!submittedOutput) return;
@@ -11876,7 +11986,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
         <header className="m3-power-map-header m3-power-studio-header">
           <p className="m3-power-map-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Power and Influence Map</h1>
-          <p className="m3-power-map-subtitle">See who can enable change, who may block it, and how rights-holder voice can be strengthened safely.</p>
+          <p className="m3-power-map-subtitle">Compare formal authority and practical influence, then choose constructive, proportionate, and risk-aware engagement.</p>
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <nav className="m3-power-studio-stage-nav" aria-label="Power mapping stages">
             {stageDefinitions.map((stage) => (
@@ -11927,7 +12037,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
               <section className="m3-power-studio-explain-grid" aria-label="Screen purpose and output">
                 {[
                   ['What this section is about', 'Map actors by their formal power and practical influence so the project can engage them safely and strategically.', 'amber'],
-                  ['Why this matters for CSOs', 'Power analysis helps CSOs avoid shallow participation, identify hidden blockers or enablers, and strengthen rights-holder influence without creating unnecessary risk.', 'green'],
+                  ['Why this matters for CSOs', 'Power analysis helps CSOs avoid shallow participation, examine possible influence and engagement risks, and strengthen rights-holder influence without making unsupported claims.', 'green'],
                   ['What you will do', 'Select actors from the Jiru Amba case, rate their power and influence, and choose a safe engagement approach.', 'blue'],
                   ['What you will produce', 'A draft Power and Influence Map that can be saved to your portfolio and used in later design screens.', 'teal'],
                 ].map(([title, text, tone]) => (
@@ -11981,10 +12091,10 @@ Use role categories and generalized group labels. Do not record names, accusatio
               {[
                 ['Actor', 'Market committee'],
                 ['Connected barrier', 'Market priorities may be shaped before women vendors and informal workers can influence decisions.'],
-                ['Influence level', 'High influence'],
-                ['Support or interest', 'Uncertain support'],
-                ['Likely role', 'Gatekeeper or blocker'],
-                ['Engagement approach', 'Engage carefully, clarify shared responsibility, use transparent consultation, and avoid relying on one actor to represent all market users.'],
+                ['Formal authority', 'Formal responsibility requires verification.'],
+                ['Practical influence', 'May have strong influence over market information and access.'],
+                ['Interest or likely engagement', 'Requires constructive verification; no positive or negative behavior is assumed.'],
+                ['Engagement approach', 'Engage constructively, clarify responsibility, use transparent consultation, and avoid relying on one actor to represent all market users.'],
                 ['Design implication', 'Use more than one participation channel and check whether lower-influence market users shaped priorities before final decisions.'],
               ].map(([label, text]) => (
                 <article key={label}>
@@ -12059,14 +12169,21 @@ Use role categories and generalized group labels. Do not record names, accusatio
                             </div>
                           </div>
                           <label>
-                            <span>Influence level</span>
+                            <span>Formal authority or decision responsibility</span>
+                            <select value={rating.formalAuthorityLevel} onChange={(event) => updateRating(actor.actorId, 'formalAuthorityLevel', event.target.value)} data-testid="m3-s09-authority-select">
+                              <option value="">Choose formal authority</option>
+                              {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label.replace('influence', 'formal authority')}</option>)}
+                            </select>
+                          </label>
+                          <label>
+                            <span>Practical influence over decisions, access, or implementation</span>
                             <select value={rating.influenceLevel} onChange={(event) => updateRating(actor.actorId, 'influenceLevel', event.target.value)} data-testid="m3-s09-influence-select">
-                              <option value="">Choose influence</option>
+                              <option value="">Choose practical influence</option>
                               {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                             </select>
                           </label>
                           <label>
-                            <span>Support/resistance or engagement risk</span>
+                            <span>Interest, likely engagement, or possible risk</span>
                             <select value={rating.supportInterestLevel} onChange={(event) => updateRating(actor.actorId, 'supportInterestLevel', event.target.value)} data-testid="m3-s09-support-select">
                               <option value="">Choose support or risk</option>
                               {screen9SupportOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -12116,12 +12233,13 @@ Use role categories and generalized group labels. Do not record names, accusatio
             <section className="m3-power-studio-table-wrap" aria-label="Actor engagement strategy">
               <h3>Actor engagement strategy</h3>
               <table>
-                <thead><tr><th>Actor</th><th>Role or responsibility</th><th>Influence level</th><th>Support/resistance or engagement risk</th><th>Capacity or support gap</th><th>Strategy implication</th><th>Carry forward to design repair</th></tr></thead>
+                <thead><tr><th>Actor</th><th>Role or responsibility</th><th>Formal authority</th><th>Practical influence</th><th>Interest or likely engagement</th><th>Possible contribution or risk</th><th>Strategy implication</th><th>Carry forward to design repair</th></tr></thead>
                 <tbody>
                   {submittedRows.map((row) => (
                       <tr key={row.actor} data-testid="m3-s09-generated-map-row">
                         <td>{row.actor}</td>
                         <td>{row.roleFromResponsibilityMap}</td>
+                        <td>{row.formalAuthorityLevel}</td>
                         <td>{row.influenceLevel}</td>
                         <td>{row.supportInterestLevel}</td>
                         <td>{row.likelyRoleInChange}</td>
@@ -17057,21 +17175,46 @@ function Module3ClosureScreen({
   );
 }
 
-function RootCauseCapacityGapScreen({ screen, onComplete }: {
+function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selections, setSelections] = useState<Record<string, ProblemLayerId | undefined>>({});
-  const [selectedBarrierId, setSelectedBarrierId] = useState('');
-  const [causeMapDraft, setCauseMapDraft] = useState<Screen10CauseMapDraft>(getEmptyScreen10CauseMapDraft());
+  const savedOutput = getScreen10SavedOutput(state);
+  const carriedScreen8 = getScreen8SavedOutput(state);
+  const carriedScreen9 = getScreen9SavedOutput(state);
+  const carriedActorLabels = Array.from(new Set([
+    ...(carriedScreen9?.actorRatings || []).map((rating) => rating.actorLabel),
+    ...(carriedScreen8?.exportedActorsForScreen9 || []).map((actor) => actor.label),
+  ])).slice(0, 8);
+  const carriedCapacityGapLabels = Array.from(new Set((carriedScreen8?.barrierActorLinks || [])
+    .flatMap((link) => link.capacityGapHintIds.map(getCapacityGapLabel)))).slice(0, 6);
+  const restoredSelections = Object.fromEntries((savedOutput?.problemLayerSelections || [])
+    .filter((selection) => screen10Statements.some((statement) => statement.id === selection.statementId) && ['visible', 'direct', 'root', 'capacity'].includes(selection.selectedLayer))
+    .map((selection) => [selection.statementId, selection.selectedLayer])) as Record<string, ProblemLayerId | undefined>;
+  const restoredCanvas = savedOutput?.generatedProblemLayersCanvas?.[0];
+  const restoredBarrierId = restoredCanvas && screen10GeneratedPatterns.some((pattern) => pattern.problemPattern === restoredCanvas.problemPattern) ? restoredCanvas.problemPattern : '';
+  const restoredCauseMapDraft: Screen10CauseMapDraft = restoredCanvas ? {
+    directCause: restoredCanvas.directCause,
+    deeperRootCause: restoredCanvas.deeperRootCause,
+    capacityGap: restoredCanvas.capacityGap,
+    rightsHolderCapacityGap: restoredCanvas.rightsHolderCapacityGap || savedOutput?.problemLayers.rightsHolderCapacityGaps?.[0] || '',
+    dutyBearerSystemCapacityGap: restoredCanvas.dutyBearerSystemCapacityGap || savedOutput?.problemLayers.dutyBearerSystemCapacityGaps?.[0] || '',
+    responsibilityGap: restoredCanvas.responsibilityGap || '',
+    designImplication: restoredCanvas.designImplication,
+  } : getEmptyScreen10CauseMapDraft();
+  const restoredSignature = savedOutput ? JSON.stringify({ selectedBarrierId: restoredBarrierId, causeMapDraft: restoredCauseMapDraft, selections: restoredSelections, ownCsoOutput: savedOutput.ownCsoPracticeOutput || null }) : null;
+  const [selections, setSelections] = useState<Record<string, ProblemLayerId | undefined>>(restoredSelections);
+  const [selectedBarrierId, setSelectedBarrierId] = useState(restoredBarrierId);
+  const [causeMapDraft, setCauseMapDraft] = useState<Screen10CauseMapDraft>(restoredCauseMapDraft);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen10OwnCsoDraft>(getEmptyScreen10OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen10OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen10OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen10Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen10Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHeroImage, setShowHeroImage] = useState(true);
   const [showWorkedFlow, setShowWorkedFlow] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredBarrierId ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -17081,11 +17224,13 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
   const allClassified = classifiedCount === screen10Statements.length;
   const selectedPattern = screen10GeneratedPatterns.find((pattern) => pattern.problemPattern === selectedBarrierId);
   const completedRequiredFields = Object.values(causeMapDraft).filter(Boolean).length;
-  const causeMapComplete = Boolean(selectedPattern && completedRequiredFields === 5);
+  const causeMapComplete = Boolean(selectedPattern && completedRequiredFields === 7);
   const completedCauseMapRowCount = causeMapComplete ? 1 : 0;
   const currentSignature = JSON.stringify({ selectedBarrierId, causeMapDraft, selections, ownCsoOutput });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
-  const canGenerate = causeMapComplete;
+  const layerCounts = getScreen10LayerCounts(selections);
+  const hasRequiredLayers = layerCounts.visibleCount > 0 && layerCounts.directCount > 0 && layerCounts.rootCount > 0 && layerCounts.capacityCount > 0;
+  const canGenerate = causeMapComplete && allClassified && hasRequiredLayers;
   const canContinue = Boolean(submittedOutput && allClassified && !formChanged);
   const submitLabel = submittedOutput && formChanged ? 'Update cause map' : 'Generate cause map';
   const helperText = !selectedPattern
@@ -17114,21 +17259,21 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
 
   const submitCanvas = () => {
     if (!canGenerate || !selectedPattern) return;
-    const generatedSelections = Object.fromEntries(screen10Statements.map((statement) => [statement.id, statement.suggestedLayer])) as Record<string, ProblemLayerId>;
     const learnerCauseMap: Screen10Submission['generatedProblemLayersCanvas'] = [{
       problemPattern: selectedPattern.problemPattern,
       visibleSign: selectedPattern.visibleSign,
       directCause: causeMapDraft.directCause,
       deeperRootCause: causeMapDraft.deeperRootCause,
       capacityGap: causeMapDraft.capacityGap,
+      rightsHolderCapacityGap: causeMapDraft.rightsHolderCapacityGap,
+      dutyBearerSystemCapacityGap: causeMapDraft.dutyBearerSystemCapacityGap,
       responsibilityGap: causeMapDraft.responsibilityGap,
       designImplication: causeMapDraft.designImplication,
       questionForLaterDesignRepair: selectedPattern.questionForLaterDesignRepair,
     }];
-    setSelections(generatedSelections);
-    const submission = buildScreen10Submission(generatedSelections, ownCsoOutput, learnerCauseMap);
+    const submission = buildScreen10Submission(selections, ownCsoOutput, learnerCauseMap, carriedActorLabels, carriedCapacityGapLabels);
     setSubmittedOutput(submission);
-    setSubmittedSignature(JSON.stringify({ selectedBarrierId, causeMapDraft, selections: generatedSelections, ownCsoOutput }));
+    setSubmittedSignature(JSON.stringify({ selectedBarrierId, causeMapDraft, selections, ownCsoOutput }));
     setActiveStage(4);
     if (typeof window !== 'undefined') {
       window.setTimeout(() => outputRef.current?.focus(), 0);
@@ -17137,7 +17282,7 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
 
   const continueWithPayload = () => {
     if (!canContinue) return;
-    const output = (formChanged ? buildScreen10Submission(selections, ownCsoOutput) : submittedOutput) || undefined;
+    const output = (formChanged ? buildScreen10Submission(selections, ownCsoOutput, undefined, carriedActorLabels, carriedCapacityGapLabels) : submittedOutput) || undefined;
     onComplete(output ? {
       ...output,
       rootCauseCapacityGapMap: output.rootCauseCapacityGapMap,
@@ -17215,7 +17360,17 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
   }> = [
     { field: 'directCause', label: 'Immediate cause', options: screen10GeneratedPatterns.map((pattern) => pattern.directCause) },
     { field: 'deeperRootCause', label: 'Deeper/root cause', options: screen10GeneratedPatterns.map((pattern) => pattern.deeperRootCause) },
-    { field: 'capacityGap', label: 'Capacity or support gap', options: screen10GeneratedPatterns.map((pattern) => pattern.capacityGap) },
+    { field: 'capacityGap', label: 'Combined capacity or response gap', options: screen10GeneratedPatterns.map((pattern) => pattern.capacityGap) },
+    { field: 'rightsHolderCapacityGap', label: 'Rights-holder capacity gap', options: [
+      'Timely accessible information and safe collective participation channels are limited.',
+      'Affected groups may need accessible information, reasonable accommodation, and more than one way to influence decisions.',
+      'Rights-holders may need clearer feedback, response, and follow-up arrangements to exercise voice effectively.',
+    ] },
+    { field: 'dutyBearerSystemCapacityGap', label: 'Duty-bearer or system capacity or response gap', options: [
+      'Responsibility, authority, and response arrangements require clarification and verification.',
+      'Resources, coordination, incentives, or accountability mechanisms may be insufficient for the required response.',
+      'A specific skill or method gap may require targeted support linked to the responsible function.',
+    ] },
     { field: 'responsibilityGap', label: 'Responsibility gap', options: screen10ResponsibilityGapOptions },
     { field: 'designImplication', label: 'Design implication', options: screen10GeneratedPatterns.map((pattern) => pattern.designImplication) },
   ];
@@ -17229,6 +17384,24 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
           <h1 id={titleId}>Root-Cause and Capacity-Gap Map</h1>
           <p className="m3-root-cause-map-subtitle">Move below visible problems to understand what directly caused the issue, what deeper pattern keeps it happening, whose capacity needs strengthening, and what the project design should change.</p>
         </header>
+
+        <aside className="m3-root-cause-map-dialogue" aria-labelledby={`${screen.id}-midpoint-guidance`}>
+          <h2 id={`${screen.id}-midpoint-guidance`}>Midpoint guidance: connect responsibility, influence, causes, and capacity</h2>
+          <p><strong>Martha:</strong> “We have identified who holds responsibility and who may provide support. The next question is not only who is named in the plan, but who can influence what happens.”</p>
+          <p><strong>Dawit:</strong> “A formal mandate and practical influence may differ. Information, relationships, resources, social norms, and access to decision-makers can shape project decisions.”</p>
+          <p><strong>Martha:</strong> “We also need to examine why a gap exists. It may relate to authority, skills, resources, coordination, incentives, willingness, or accountability.”</p>
+          <p><strong>Dawit:</strong> “Awra can facilitate dialogue, accessible information, evidence, and follow-up, but it should not replace public responsibility.”</p>
+          <p><strong>Martha:</strong> “Use this analysis to connect responsibility, influence, causes, and capacity before improving the project design.”</p>
+        </aside>
+
+        {(carriedActorLabels.length > 0 || carriedCapacityGapLabels.length > 0) && (
+          <section className="m3-root-cause-map-carry" aria-labelledby={`${screen.id}-carried-findings`}>
+            <h2 id={`${screen.id}-carried-findings`}>Findings carried from responsibility and influence analysis</h2>
+            {carriedActorLabels.length > 0 && <p><strong>Connected actors:</strong> {carriedActorLabels.join(', ')}</p>}
+            {carriedCapacityGapLabels.length > 0 && <p><strong>Capacity or response gaps to examine:</strong> {carriedCapacityGapLabels.join(', ')}</p>}
+            <p>Use these as analytical prompts. They do not establish a mandate, behavior, or capacity finding without appropriate verification.</p>
+          </section>
+        )}
 
         <nav className="m3-root-cause-map-stage-nav" aria-label="Root-cause and capacity-gap stages">
           {rootCauseStages.map((stage) => (
@@ -17351,8 +17524,30 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
             </div>
           </section>
 
+          <section className={`m3-root-cause-map-practice-step ${!selectedPattern ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-classification-step`}>
+            <h3 id={`${screen.id}-classification-step`}>Step 2: Review and correct the problem-layer classifications</h3>
+            <p>The suggested classifications are a starting point. Review each statement and correct it where your analysis supports a different layer.</p>
+            {selectedPattern ? (
+              <div className="m3-root-cause-map-classification-list">
+                {screen10Statements.map((statement) => (
+                  <label key={statement.id}>
+                    <span><strong>{statement.shortLabel}</strong><small>{statement.statement}</small></span>
+                    <select
+                      aria-label={`Classification for ${statement.shortLabel}`}
+                      value={selections[statement.id] || ''}
+                      onChange={(event) => setSelections((current) => ({ ...current, [statement.id]: event.target.value as ProblemLayerId }))}
+                    >
+                      <option value="">Choose layer</option>
+                      {layerOrder.map((layer) => <option key={layer} value={layer}>{problemLayerLabels[layer]}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            ) : <p className="m3-root-cause-map-empty-note">Select one priority barrier before reviewing classifications.</p>}
+          </section>
+
           <section className={`m3-root-cause-map-practice-step ${!selectedPattern ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-cause-row`}>
-            <h3 id={`${screen.id}-cause-row`}>Step 2: Complete a cause-and-capacity mapping row</h3>
+            <h3 id={`${screen.id}-cause-row`}>Step 3: Complete a cause-and-capacity mapping row</h3>
             {selectedPattern ? (
               <article className="m3-root-cause-map-cause-row" data-testid="m3-s10-cause-map-row">
                 <div>
@@ -17403,7 +17598,7 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
                   <span className="m3-guided-muted">Select one priority barrier.</span>
                 )}
               </div>
-              <p className="m3-guided-helper">Completed fields: {completedRequiredFields} of 5</p>
+              <p className="m3-guided-helper">Completed fields: {completedRequiredFields} of 7</p>
               <p className="m3-guided-helper">Completed cause-map rows: {completedCauseMapRowCount}</p>
               <p className="m3-guided-helper">{helperText}</p>
               <button type="button" className="m3-root-cause-map-submit-button" disabled={!canGenerate} onClick={submitCanvas}>
@@ -17428,7 +17623,9 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
                     ['Visible problem', pattern.visibleSign],
                     ['Immediate cause', pattern.directCause],
                     ['Deeper/root cause', pattern.deeperRootCause],
-                    ['Capacity or support gap', pattern.capacityGap],
+                    ['Combined capacity or response gap', pattern.capacityGap],
+                    ['Rights-holder capacity gap', pattern.rightsHolderCapacityGap || 'Confirm what accessible information, collective voice, or safe participation channel is needed.'],
+                    ['Duty-bearer or system capacity gap', pattern.dutyBearerSystemCapacityGap || 'Confirm whether authority, resources, coordination, incentives, willingness, or accountability affects response.'],
                     ['Responsibility gap', pattern.responsibilityGap || 'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.'],
                     ['Design implication', pattern.designImplication],
                     ['Carry forward to gender, disability, participation, and risk checks', pattern.questionForLaterDesignRepair],
@@ -17641,7 +17838,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R10') {
-    return <RootCauseCapacityGapScreen screen={screen} onComplete={onComplete} />;
+    return <RootCauseCapacityGapScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R11') {
