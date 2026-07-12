@@ -74,12 +74,12 @@ const module3IntroTranscript = [
 ] as const;
 
 const module3ObjectiveAreas = [
-  { id: 'context-standards', image: 'm3-objective-01-context-standards.webp', alt: 'Illustration connecting local context analysis with standards and policy references.', title: 'Context and standards', action: 'Understand the issue and identify relevant standards and responsibilities.', learn: 'HRBA project design begins with the local context. Project teams need to understand what is happening, who is affected differently, what barriers may exist, and which rights, policies, service standards, public responsibilities, or project commitments are relevant.', do: 'You will examine the Jiru Amba situation, identify context and inequality signals, consider information that requires verification, and connect selected issues to relevant standards and responsibilities.', produce: ['Context and Inequality Scan', 'Policy and Standards Map'], later: 'These outputs will help you identify specific rights-holder groups, barriers, responsible actors, and project-design priorities.', context: 'The task reflects the fact that local conditions, institutions, communication channels, and service arrangements differ across Ethiopian settings.' },
-  { id: 'rights-holders-barriers', image: 'm3-objective-02-rights-holders-barriers.webp', alt: 'Illustration showing rights-holder groups and barriers that affect access, information, and participation.', title: 'Rights-holders and barriers', action: 'Identify specific groups and examine the barriers they experience.', learn: 'Broad terms such as “the community” may hide important differences. HRBA requires project teams to identify specific rights-holder groups and examine how different barriers affect their access, participation, influence, benefit, safety, and follow-up.', do: 'You will identify priority rights-holder groups in the Jiru Amba case and match each group with relevant barriers and project-design implications.', produce: ['Rights-Holder and Barrier Map'], later: 'The findings will inform inclusion measures, participation arrangements, activities, accessibility, monitoring, and indicators.', context: 'The analysis will consider how gender, disability, age, distance, livelihood, information, and other factors may affect participation and access differently.' },
-  { id: 'responsibility-power', image: 'm3-objective-03-responsibility-power-causes-capacity.webp', alt: 'Illustration mapping public responsibility, influence, root causes, and capacity gaps.', title: 'Responsibility, power, causes, and capacity', action: 'Clarify who has responsibility, who has influence, and what affects change.', learn: 'Formal responsibility and practical influence are not always the same. Project teams need to distinguish duty-bearers, supporting actors, community actors, and realistic CSO roles. They also need to understand immediate problems, underlying causes, deeper factors, and capacity or response gaps.', do: 'You will classify actors, examine responsibility and influence, identify causes, and assess gaps related to mandate, knowledge, skills, resources, coordination, incentives, willingness, and accountability.', produce: ['Duty-Bearer and Actor Responsibility Map', 'Power and Influence Map', 'Root-Cause and Capacity-Gap Map'], later: 'These outputs will guide engagement, capacity support, accountability arrangements, activities, assumptions, and risks.', context: 'This helps avoid placing all responsibility on the CSO or assuming that every implementation gap has the same cause.' },
-  { id: 'inclusion-risk', image: 'm3-objective-04-inclusion-participation-accountability-risk.webp', alt: 'Illustration of inclusive participation, accessible feedback, accountability, and risk management.', title: 'Inclusion, participation, accountability, and risk', action: 'Check whether the design supports meaningful, accessible, and safe engagement.', learn: 'Inclusion should influence the design of activities, communication, budgets, participation, feedback, and monitoring. Participation means more than attendance. Accountability requires information, safe feedback, response, explanation, and follow-up. Project design should also identify and manage possible risks.', do: 'You will review gender and disability inclusion, design participation and accountability arrangements, and identify risks, mitigation measures, monitoring signs, and response conditions.', produce: ['Gender and Disability Design Check', 'Participation and Accountability Pathway', 'Risk and Do-No-Harm Board'], later: 'These outputs will shape implementation methods, accessible communication, feedback processes, risk management, budgets, and monitoring.', context: 'The most appropriate participation and accountability channels may differ across rural, urban, remote, linguistic, and institutional settings.' },
-  { id: 'design-repair', image: 'm3-objective-05-project-design-repair.webp', alt: 'Illustration of a draft project design being revised into a stronger integrated design.', title: 'Project-design repair', action: 'Use the analysis to improve the project design.', learn: 'HRBA analysis should change the project design. Findings about rights, barriers, responsibility, power, participation, inclusion, capacity, and risk should be reflected in objectives, activities, intervention logic, indicators, evidence, and implementation arrangements.', do: 'You will use the outputs from the earlier screens to revise a project objective, improve the activity package, strengthen the intervention logic, and improve indicators and evidence questions.', produce: ['HRBA Project Design Repair Package'], later: 'The repaired design will provide the basis for reviewing a draft project plan and preparing the final snapshot.', context: 'The aim is not to add HRBA language to an unchanged project. The analysis should result in practical design changes.' },
-  { id: 'review-portfolio', image: 'm3-objective-06-review-portfolio-implementation.webp', alt: 'Illustration of project outputs being reviewed, saved in a portfolio, and prepared for implementation.', title: 'Review, portfolio, and implementation', action: 'Review the design, finalize the output, and prepare for implementation.', learn: 'The maps, checks, pathways, and design repairs developed across the module form one connected project-design output. The final stage helps you review the design, identify remaining gaps, and prepare points that need attention during implementation.', do: 'You will review a draft project plan, complete an applied knowledge check, refine the final snapshot, and identify implementation watch-points.', produce: ['Draft Plan Review Note', 'Final HRBA Project Design Improvement Snapshot', 'Module 4 implementation watch-points'], later: 'The saved or downloaded outputs may support team review, further project development, Module 4 learning, and future facilitated peer exchange or collaborative refinement.', context: 'The output remains a draft learning and project-design product and should be reviewed through the organization’s technical, management, safeguarding, and approval processes.' },
+  { id: 'context-standards', title: 'Context and standards', prompt: 'Analyze the situation and identify the standards and responsibilities that should guide the design.', lead: 'Project design begins with context, inequality and the standards that apply.', do: 'Analyze what is happening, who may be affected differently, which assumptions require safe verification, and which rights, policies, standards and public responsibilities are relevant.', produce: ['Context and Inequality Scan', 'Policy and Standards Map'], later: 'These outputs define the issue, affected groups and standards that later project decisions must address.' },
+  { id: 'rights-holders-barriers', title: 'Rights-holders and barriers', prompt: 'Identify specific groups and examine what may prevent access, participation, influence or benefit.', lead: 'HRBA project design looks beyond a general reference to “the community.”', do: 'Identify specific rights-holder groups and compare the barriers affecting access, information, participation, influence, safety, benefit and follow-up.', produce: ['Rights-Holder and Barrier Map'], later: 'The map informs actor analysis, inclusion measures, participation arrangements, accountability and risk decisions.' },
+  { id: 'responsibility-power', title: 'Responsibility, power, causes and capacity', prompt: 'Clarify who has responsibility, who has influence, why barriers persist and what capacities are missing.', lead: 'Formal responsibility, practical influence, root causes and capacity are related but not identical.', do: 'Distinguish duty-bearers, supporting actors and realistic CSO roles; compare formal and informal influence; examine root causes and identify capacity gaps affecting rights-holders and duty-bearers.', produce: ['Actor Responsibility Map', 'Power and Influence Map', 'Root-Cause and Capacity-Gap Map'], later: 'These outputs show who should act, who can shape decisions, why the problem continues and what needs to change.' },
+  { id: 'inclusion-risk', title: 'Inclusion, participation, accountability and risk', prompt: 'Assess whether people can participate meaningfully, receive a response and engage without avoidable harm.', lead: 'Inclusion should change project arrangements, resources, decisions and monitoring.', do: 'Assess gender and disability implications, design meaningful participation and feedback-response arrangements, and identify risks, mitigation measures, monitoring signs and responsible actors.', produce: ['Gender and Disability Design Check', 'Participation and Accountability Pathway', 'Risk and Do-No-Harm Board'], later: 'These outputs inform accessibility, reasonable accommodation, participation channels, budgets, feedback response, risk monitoring and implementation arrangements.' },
+  { id: 'design-repair', title: 'Project-design repair', prompt: 'Use the analysis to improve the objective, activities, intervention logic and indicators.', lead: 'Analysis is useful only when it changes the design.', do: 'Repair the project objective, activity package, intervention logic, indicators and evidence questions so that they respond to the identified barriers, responsibilities, capacities, participation requirements, inclusion measures and risks.', produce: ['Revised project objective', 'Revised activity package', 'Improved intervention logic', 'Indicators and evidence questions'], later: 'The repaired design package is used to review the draft plan and prepare the final snapshot.' },
+  { id: 'review-portfolio', title: 'Review, portfolio and implementation', prompt: 'Review the design, save the cumulative output and prepare key points for implementation.', lead: 'The final stage brings the Module 3 analysis and design decisions together.', do: 'Review and repair a draft project plan, complete the applied knowledge check, finalize the cumulative snapshot and identify implementation watch-points for Module 4.', produce: ['Draft Plan Review Note', 'HRBA Project Design Improvement Snapshot', 'Implementation watch-points'], later: 'The snapshot supports organizational review and preparation for implementation. It remains a draft learning and project-design product until it passes the organization’s technical, safeguarding, management and approval processes.' },
 ] as const;
 
 const module3CaseAssets = {
@@ -7436,7 +7436,132 @@ function PlaceholderNote({ screen }: { screen: Module3RevisedScreen }) {
   );
 }
 
-function IntroVideoScaffold({
+function LightIntroVideoScreen({
+  screen,
+  state,
+  onChangeState,
+  onComplete,
+}: {
+  screen: Module3RevisedScreen;
+  state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
+  onComplete: () => void;
+}) {
+  const saved = getPracticeState(state, screen.id);
+  const savedAnswers = typeof saved.lightAnswers === 'object' && saved.lightAnswers !== null
+    ? saved.lightAnswers as Record<string, string>
+    : {};
+  const [answers, setAnswers] = useState<Record<string, string>>(savedAnswers);
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const transcriptId = `${screen.id}-transcript`;
+  const questions = [
+    {
+      id: 'sequence',
+      prompt: 'When should HRBA analysis influence a project design?',
+      correct: 'B',
+      options: [
+        ['A', 'After the main activities and indicators have already been finalized.'],
+        ['B', 'From the beginning, before and while objectives, activities, indicators, and implementation arrangements are decided.'],
+        ['C', 'Only when a donor specifically requests human rights language.'],
+      ],
+      correctFeedback: 'Correct. Analysis should shape the design from the beginning.',
+      incorrectFeedback: 'Not yet. HRBA is not wording added to an already completed design.',
+    },
+    {
+      id: 'actors',
+      prompt: 'What does HRBA add to a general stakeholder analysis?',
+      correct: 'C',
+      options: [
+        ['A', 'A list of everyone invited to project meetings.'],
+        ['B', 'A plan for the CSO to permanently replace public institutions.'],
+        ['C', 'Clear rights-holders, duty-bearers, supporting actors, power relationships, barriers, and capacity gaps.'],
+      ],
+      correctFeedback: 'Correct. HRBA clarifies rights, responsibilities, barriers, influence, and capacity.',
+      incorrectFeedback: 'Not yet. The analysis must go beyond attendance lists or transferring public responsibility to the CSO.',
+    },
+    {
+      id: 'carry-forward',
+      prompt: 'What should happen to findings from the Analysis Phase?',
+      correct: 'A',
+      options: [
+        ['A', 'They should improve the objective, activities, participation and accountability arrangements, indicators, risk measures, and implementation plan.'],
+        ['B', 'They should remain in the background section while the original design stays unchanged.'],
+        ['C', 'They should be saved only as optional reference notes.'],
+      ],
+      correctFeedback: 'Correct. Findings are useful when they change practical project-design decisions.',
+      incorrectFeedback: 'Not yet. Analysis must carry forward into the project design rather than remain separate.',
+    },
+  ] as const;
+  const correctCount = questions.filter((question) => answers[question.id] === question.correct).length;
+  const complete = correctCount === questions.length;
+  const save = (patch: Record<string, unknown>) => onChangeState((prev) => ({
+    ...prev,
+    practiceCheckState: {
+      ...prev.practiceCheckState,
+      [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), interactionProgressVersion: 4, ...patch },
+    },
+  }));
+  useEffect(() => {
+    save({ lightAnswers: answers, screen1Complete: complete, correct: complete });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers, complete]);
+  const chooseAnswer = (questionId: string, value: string) => {
+    const next = { ...answers, [questionId]: value };
+    setAnswers(next);
+    save({ lightAnswers: next });
+  };
+  const shifts = [
+    ['Needs and general target groups', 'Rights, specific rights-holders, and patterns of exclusion'],
+    ['Passive beneficiaries and stakeholder lists', 'Rights-holders, duty-bearers, influence, and capacity'],
+    ['Activities selected before analysis', 'Design choices shaped by evidence'],
+  ];
+
+  return (
+    <main className="m3-screen m3-intro-video-screen m3-light-orientation" aria-labelledby={`${screen.id}-title`}>
+      <article className="m3-light-orientation__canvas">
+        <header className="m3-light-orientation__header">
+          <p className="m3-context-label">MODULE ORIENTATION</p>
+          <h1 id={`${screen.id}-title`}>From Analysis to Rights-Based Project Design</h1>
+          <p>See how Module 3 moves from HRBA foundations to practical project-design analysis and planning.</p>
+        </header>
+
+        <section className="m3-light-video" aria-labelledby={`${screen.id}-video-title`}>
+          <div className="m3-light-video__heading"><span aria-hidden="true">▶</span><div><p>START HERE</p><h2 id={`${screen.id}-video-title`}>Module 3 intro video</h2></div></div>
+          <div className="m3-video-container">{videoLoaded ? <div className="m3-video-frame"><iframe src={module3OrientationAssets.videoEmbed} title="Module 3 intro video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div> : <div className="m3-video-preview"><span className="m3-video-preview__icon" aria-hidden="true">▶</span><button type="button" className="m3-primary-button" onClick={() => { setVideoLoaded(true); save({ introResourceReviewed: true }); }}>Play intro video</button></div>}<div className="m3-video-links"><button type="button" className="m3-secondary-button" aria-expanded={transcriptOpen} aria-controls={transcriptId} onClick={() => setTranscriptOpen(!transcriptOpen)}>{transcriptOpen ? 'Hide transcript' : 'View transcript'}</button><a href={module3OrientationAssets.videoWatch} target="_blank" rel="noreferrer">Open video on YouTube — opens in a new tab</a></div>{transcriptOpen && <div id={transcriptId} className="m3-video-transcript__body"><h3>Intro video transcript</h3>{module3IntroTranscript.map(([speaker,text]) => <p key={text}><strong>{speaker}:</strong><br />{text}</p>)}</div>}</div>
+        </section>
+
+        <section className="m3-light-section" aria-labelledby={`${screen.id}-change-title`}>
+          <div className="m3-light-section__heading"><p>THE DESIGN SHIFT</p><h2 id={`${screen.id}-change-title`}>How HRBA changes project design</h2></div>
+          <p>HRBA analysis is completed before the main design choices are finalized. It changes who the project focuses on, how responsibility is understood, and how evidence shapes objectives, activities, indicators, and implementation.</p>
+          <div className="m3-light-shifts">{shifts.map(([from,to],index) => <article key={from}><span>{index + 1}</span><div><small>From</small><strong>{from}</strong></div><b aria-hidden="true">→</b><div><small>To</small><strong>{to}</strong></div></article>)}</div>
+          <div className="m3-light-principles" aria-label="HRBA design checks">{['Participation','Accountability','Non-discrimination and equality','Empowerment and capacity','Legality'].map((item,index) => <span key={item}><b>{index + 1}</b>{item}</span>)}</div>
+        </section>
+
+        <section className="m3-light-section" aria-labelledby={`${screen.id}-work-title`}>
+          <div className="m3-light-section__heading"><p>YOUR LEARNING FLOW</p><h2 id={`${screen.id}-work-title`}>How you will learn and work</h2></div>
+          <div className="m3-light-work-grid">
+            <article><span aria-hidden="true">1</span><h3>Analyse first</h3><p>Use the fictional Jiru Amba case to examine context, standards, rights-holders, responsibilities, barriers, power, causes, capacity, inclusion, accountability, and risk.</p></article>
+            <article><span aria-hidden="true">2</span><h3>Improve the design</h3><p>Carry the findings into the objective, activities, intervention logic, participation arrangements, indicators, evidence questions, and implementation measures.</p></article>
+            <article><span aria-hidden="true">3</span><h3>Review and prepare</h3><p>Review the design, save the cumulative snapshot, and identify implementation watch-points for Module 4.</p></article>
+          </div>
+          <p className="m3-light-method"><strong>Your simple working rhythm:</strong> Review → Practise → Generate → Interpret → Carry forward</p>
+          <aside className="m3-light-safe"><div><strong>Practice safely</strong><p>Practise first with Jiru Amba. For later own-context reflection, use only generalized, non-identifying information.</p></div><a href={module3OrientationAssets.guide} download>Download the Module 3 Orientation Guide (PDF)</a></aside>
+        </section>
+
+        <section className="m3-light-check" aria-labelledby={`${screen.id}-check-title`}>
+          <div className="m3-light-section__heading"><p>THREE QUICK QUESTIONS</p><h2 id={`${screen.id}-check-title`}>Check your understanding</h2></div>
+          <p>Choose one answer for each question. Feedback appears immediately, and you can change an answer if needed.</p>
+          <div className="m3-light-question-list">{questions.map((question,index) => { const selected = answers[question.id]; const isCorrect = selected === question.correct; return <fieldset key={question.id}><legend><span>{index + 1}</span>{question.prompt}</legend>{question.options.map(([id,text]) => <label className={`m3-check-option ${selected === id ? 'is-selected' : ''}`} key={id}><input type="radio" name={`m3-s1-${question.id}`} value={id} checked={selected === id} onChange={() => chooseAnswer(question.id,id)} /><span><strong>{id}.</strong> {text}</span></label>)}{selected && <div className={`m3-light-question-feedback ${isCorrect ? 'is-correct' : ''}`} role="status">{isCorrect ? question.correctFeedback : question.incorrectFeedback}</div>}</fieldset>; })}</div>
+        </section>
+
+        <footer className="m3-light-footer"><div><strong>{correctCount} of 3 questions correct</strong><p>{complete ? 'Orientation complete. You can continue to the learning objectives.' : 'Answer all three questions correctly to continue.'}</p></div><PrimaryButton disabled={!complete} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></footer>
+      </article>
+    </main>
+  );
+}
+
+export function IntroVideoScaffold({
   screen,
   state,
   onChangeState,
@@ -7688,6 +7813,8 @@ function IntroVideoScaffold({
   );
 }
 
+/* The JSX detail branch passes React state (not a ref) through card navigation callbacks. */
+/* eslint-disable react-hooks/refs */
 function LearningRoadmapScreen({
   screen,
   state,
@@ -7703,9 +7830,10 @@ function LearningRoadmapScreen({
   const approvedAreaIds = module3ObjectiveAreas.map((area) => area.id as string);
   const normalizedReviewed = Array.from(new Set(Array.isArray(saved.reviewed) ? (saved.reviewed as string[]).filter((id) => approvedAreaIds.includes(id)) : []));
   const [reviewed, setReviewed] = useState<string[]>(normalizedReviewed);
-  const [active, setActive] = useState<number | null>(null);
+  const savedActive = approvedAreaIds.indexOf(String(saved.activeId || ''));
+  const [active, setActive] = useState<number | null>(savedActive >= 0 ? savedActive : null);
   const [answer, setAnswer] = useState(String(saved.answer || ''));
-  const [feedback, setFeedback] = useState(saved.correct === true ? 'Completed — correct answer recorded.' : '');
+  const [feedback, setFeedback] = useState(saved.correct === true ? 'Correct. In Module 3, analysis informs the objective, activities, intervention logic, indicators, review, final snapshot and preparation for implementation.' : '');
   const [correct, setCorrect] = useState(saved.correct === true);
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
   const checkHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -7717,28 +7845,36 @@ function LearningRoadmapScreen({
     // Normalize legacy or malformed saved IDs once when this screen initializes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const openArea = (index: number) => { const next = Array.from(new Set([...reviewed, module3ObjectiveAreas[index].id])); setReviewed(next); setActive(index); save({ reviewed: next }); requestAnimationFrame(() => detailHeadingRef.current?.focus()); };
-  const closeArea = () => { const previous = active; setActive(null); requestAnimationFrame(() => { if (previous !== null) cardRefs.current[previous]?.focus(); }); };
-  useEffect(() => { if (active === null) return; const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { const previous = active; setActive(null); requestAnimationFrame(() => cardRefs.current[previous]?.focus()); } }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [active]);
-  const check = () => { const messages: Record<string,string> = { A: 'This is not correct. A context finding should influence later analysis and design decisions. It should not remain only in the background section.', B: 'This is incomplete. More meetings may not solve the problem if information, timing, language, accessibility, influence, response, and follow-up are not addressed.', C: 'Correct. The finding should carry forward into standards, rights-holder and barrier analysis, actor responsibility, participation and accountability design, activities, and indicators.', D: 'This is not correct. The CSO may facilitate communication, participation, evidence, or coordination, but it should not automatically replace the responsibilities of public institutions and other duty-bearers.' }; const isCorrect = answer === 'C'; setCorrect(isCorrect); setFeedback(messages[answer]); save({ reviewed, answer, correct: isCorrect }); };
+  const openArea = (index: number) => { const next = Array.from(new Set([...reviewed, module3ObjectiveAreas[index].id])); setReviewed(next); setActive(index); save({ reviewed: next, activeId: module3ObjectiveAreas[index].id }); requestAnimationFrame(() => detailHeadingRef.current?.focus({ preventScroll: true })); };
+  const closeArea = () => { const previous = active; setActive(null); save({ activeId: null }); requestAnimationFrame(() => { if (previous !== null) cardRefs.current[previous]?.focus({ preventScroll: true }); }); };
+  // The listener is intentionally rebound only when the active card changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (active === null) return; const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { const previous = active; setActive(null); save({ activeId: null }); requestAnimationFrame(() => cardRefs.current[previous]?.focus()); } }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [active]);
+  const check = () => { const messages: Record<string,string> = { A: 'Not yet. Adding human rights wording after the design is complete does not make the design rights-based. The analysis should shape the design from the beginning.', B: 'Correct. In Module 3, analysis informs the objective, activities, intervention logic, indicators, review, final snapshot and preparation for implementation.', C: 'Not yet. Attendance alone does not demonstrate meaningful influence, inclusion, accountability or response.' }; const isCorrect = answer === 'B'; setCorrect(isCorrect); setFeedback(messages[answer]); save({ reviewed, answer, correct: isCorrect, status: isCorrect ? 'completed' : 'in_progress' }); };
   const allReviewed = approvedAreaIds.every((id) => reviewed.includes(id));
-  const continueToCheck = () => { setActive(null); requestAnimationFrame(() => checkHeadingRef.current?.focus()); };
+  const iconPaths = [
+    <><circle cx="25" cy="32" r="18" opacity=".16"/><path d="M8 32h34M25 14c6 6 9 12 9 18s-3 12-9 18c-6-6-9-12-9-18s3-12 9-18Z" fill="none" stroke="currentColor" strokeWidth="3.5"/><path d="M39 12h16v22H39zM43 19h8M43 25h6" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinejoin="round"/></>,
+    <><circle cx="22" cy="23" r="7"/><circle cx="42" cy="23" r="7"/><path d="M9 47c1-9 6-14 13-14s12 5 13 14M32 47c1-9 5-14 10-14 7 0 12 5 13 14" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/><path d="M29 10v44" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="4 4"/></>,
+    <><circle cx="19" cy="19" r="7"/><circle cx="46" cy="18" r="6"/><circle cx="33" cy="43" r="8"/><path d="M24 23l6 13m12-13-6 13M26 45H13m38 0H40" fill="none" stroke="currentColor" strokeWidth="4"/></>,
+    <><path d="M32 8l20 8v14c0 13-8 21-20 26C20 51 12 43 12 30V16z" opacity=".16"/><path d="M21 32l7 7 15-17" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/></>,
+    <><path d="M12 13h33v39H12z" opacity=".16"/><path d="M20 23h18M20 32h13M20 41h20M43 13l9 9-19 19-10 2 2-10z" fill="none" stroke="currentColor" strokeWidth="4" strokeLinejoin="round"/><path d="M44 44h11" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></>,
+    <><path d="M17 12h30v42H17z" opacity=".16"/><path d="M25 12V8h14v4M24 24h16M24 33h16M24 42h9m7 1 4 4 8-10" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></>,
+  ];
 
   return (
-    <main className="m3-screen m3-objectives-screen" aria-labelledby={titleId}>
-      <article className="m3-orientation-shell">
-        <header><p className="m3-context-label">{screen.eyebrow}</p><h1 id={titleId}>{screen.title}</h1><p className="m3-supporting-line">The module follows a connected process from situation analysis to project-design improvement and preparation for implementation.</p><p>By the end of this module, you will be able to apply HRBA to the analysis and design of a CSO project.</p><p>You will work through six connected learning areas. Each area produces an output that will be used in later screens and included in the final HRBA Project Design Improvement Snapshot.</p><p>Select each card to review the learning area, the task, the output, and how it will be used later.</p></header>
-        <p className="m3-reviewed-count" aria-live="polite"><strong>{reviewed.length} of 6</strong> learning areas reviewed</p>
-        {active === null ? <section className="m3-learning-area-grid" aria-label="Module 3 learning areas">{module3ObjectiveAreas.map((area,index) => { const isReviewed = reviewed.includes(area.id); return <article className={`m3-learning-area-card ${isReviewed ? 'is-reviewed' : ''}`} key={area.id}><span className="m3-learning-area-number">{index + 1}</span><img src={`${module3OrientationAssets.objectiveBase}/${area.image}`} alt={area.alt} /><h2>{area.title}</h2><p>{area.action}</p><button ref={(node) => { cardRefs.current[index] = node; }} type="button" className="m3-secondary-button" onClick={() => openArea(index)}>{isReviewed ? `Review ${area.title}` : `Open ${area.title}`}</button><span className="m3-reviewed-label">{isReviewed ? 'Reviewed ✓' : 'Not yet reviewed'}</span></article>; })}</section> : (() => { const area = module3ObjectiveAreas[active]; return <section className="m3-learning-detail" aria-labelledby={`${area.id}-heading`}><p className="m3-card-kicker">Learning area {active + 1} of 6</p><h2 id={`${area.id}-heading`} ref={detailHeadingRef} tabIndex={-1}>{area.title}</h2><img src={`${module3OrientationAssets.objectiveBase}/${area.image}`} alt={area.alt} /><h3>What you will learn</h3><p>{area.learn}</p><h3>What you will do</h3><p>{area.do}</p><h3>What you will produce</h3><ul>{area.produce.map(item => <li key={item}>{item}</li>)}</ul><h3>How you will use it later</h3><p>{area.later}</p><h3>Context note</h3><p>{area.context}</p><div className="m3-detail-navigation"><button type="button" className="m3-secondary-button" disabled={active === 0} onClick={() => openArea(active - 1)}>Previous learning area</button><button type="button" className="m3-secondary-button" disabled={active === 5} onClick={() => openArea(active + 1)}>Next learning area</button><button type="button" className="m3-secondary-button" onClick={closeArea}>Back to learning areas</button>{allReviewed && active === 5 && <button type="button" className="m3-primary-button" onClick={continueToCheck}>Continue to the knowledge check</button>}</div></section>; })()}
-
-        {active === null && <><aside className="m3-host-callout" aria-label="Martha and Dawit"><p><strong>Martha:</strong> The six learning areas are connected. Each one prepares information or decisions that you will use later.</p><p><strong>Dawit:</strong> For example, a barrier identified during the context analysis should later influence the responsible actors, the activity package, the participation method, and the indicators.</p><p><strong>Martha:</strong> Keep the pathway in mind as you work. The purpose is to bring the findings together into one practical project-design output.</p></aside>
-        {allReviewed && <section className="m3-applied-check"><h2 ref={checkHeadingRef} tabIndex={-1}>Check the connected process</h2><p>Read the situation and select the response that best follows the Module 3 process.</p><p><strong>Situation:</strong> During the context scan, a CSO finds that people living in remote kebeles often receive information late and have limited opportunity to influence project priorities.</p><fieldset><legend>How should this finding be used in the later project-design process?</legend>{[['A','Keep it only as background information because the project activities have already been planned.'],['B','Add more community meetings without checking who can access them, who can influence decisions, or how feedback will receive a response.'],['C','Connect the finding to relevant standards and responsibilities, identify the affected rights-holder groups and barriers, clarify responsible actors, design accessible information and participation arrangements, and reflect the changes in activities and indicators.'],['D','Ask the CSO to take permanent responsibility for public information and participation because the affected kebeles are remote.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s2-check" checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); setCorrect(false); }} /> <span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-secondary-button" disabled={!answer || correct} onClick={check}>Submit answer</button>{feedback && <div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} role="status">{feedback}</div>}</section>}
-        <section className="m3-guide-download"><h2>Module 3 orientation guide</h2><p>This short guide summarizes the HRBA project-design process, the six learning areas, the products you will develop, safe-use guidance, and selected resources for further reading.</p><a className="m3-secondary-button" href={module3OrientationAssets.guide} download>Download Module 3 orientation guide (PDF)</a></section>
-        <div className="m3-roadmap-actions"><PrimaryButton disabled={!allReviewed || !correct} onClick={() => onComplete()}>Start the first design lesson</PrimaryButton></div></>}
+    <main className="m3-screen m3-objectives-screen m3-flip-screen" aria-labelledby={titleId}>
+      <article className="m3-flip-canvas">
+        {active === null ? <div className="m3-flip-landing">
+          <header className="m3-flip-header"><p className="m3-context-label">MODULE 3 | LEARNING OBJECTIVES</p><h1 id={titleId}>Module 3 Learning Objectives</h1><p>Explore the six connected learning areas. Each one shows what you will practise, the output you will produce, and how that output supports the next project-design stage.</p><p className="m3-flip-method">Review <span>→</span> Practise with Jiru Amba <span>→</span> Generate <span>→</span> Interpret <span>→</span> Carry forward</p><p className="m3-flip-instruction">Open all six objective cards before completing the understanding check.</p><div className="m3-flip-status" role="status" aria-live="polite">{reviewed.length} of 6 objectives explored</div></header>
+          <section className="m3-flip-grid" aria-label="Module 3 learning objectives">{module3ObjectiveAreas.map((area,index) => { const isReviewed = reviewed.includes(area.id); return <button ref={(node) => { cardRefs.current[index] = node; }} type="button" className={`m3-flip-card ${isReviewed ? 'is-explored' : ''}`} key={area.id} aria-label={`Objective ${index + 1} of 6: ${area.title}`} onClick={() => openArea(index)}><span className="m3-flip-card-top"><span className="m3-flip-number">{index + 1}</span><span className="m3-flip-explored">{isReviewed ? '✓ Explored' : 'Open'}</span></span><span className="m3-flip-visual"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">{iconPaths[index]}</svg></span><span className="m3-flip-card-copy"><strong>{area.title}</strong><span>{area.prompt}</span><em>{isReviewed ? 'Review objective' : 'Explore objective'} <span aria-hidden="true">→</span></em></span></button>; })}</section>
+          {allReviewed && <section className="m3-flip-check" aria-labelledby="m3-s2-check-heading"><h2 id="m3-s2-check-heading" ref={checkHeadingRef} tabIndex={-1}>Check your understanding</h2><fieldset><legend>Which statement best describes the HRBA project-design process used in Module 3?</legend>{[['A','The project team selects the main activities first and adds human rights references after the project design is complete.'],['B','The project team analyzes context, standards, rights-holders, duty-bearers, barriers, power, causes, capacity, inclusion, participation, accountability and risk, and then uses the findings to improve the project design and prepare for implementation.'],['C','The project team invites different groups to meetings and treats their attendance as sufficient evidence that the project design is rights-based.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s2-check" value={id} checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); }} /><span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-primary-button" disabled={!answer || correct} onClick={check}>Check answer</button><div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} aria-live="polite">{feedback}</div></section>}
+          <footer className="m3-flip-footer"><p>{!allReviewed ? 'Explore all six objectives to unlock the understanding check.' : !correct ? 'Complete the understanding check to continue.' : 'All six objectives explored and understanding check complete.'}</p><PrimaryButton disabled={!allReviewed || !correct} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></footer>
+        </div> : (() => { const area = module3ObjectiveAreas[active]; return <div className={`m3-flip-detail-view objective-${active + 1}`}><nav className="m3-flip-rail" aria-label="Objective navigation">{module3ObjectiveAreas.map((item,index) => { const visited = reviewed.includes(item.id); return <button type="button" key={item.id} className={`${index === active ? 'is-active' : ''} ${visited ? 'is-explored' : ''}`} aria-current={index === active ? 'step' : undefined} onClick={() => openArea(index)}><span>{index + 1}</span><span>{item.title}<small>{visited ? 'Explored' : 'Not explored'}</small></span></button>; })}</nav><article className="m3-flip-detail" aria-labelledby={`${area.id}-heading`} aria-live="polite"><div className="m3-flip-detail-art"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">{iconPaths[active]}</svg><span>{active + 1}</span></div><div className="m3-flip-detail-copy"><p className="m3-context-label">OBJECTIVE {active + 1} OF 6</p><h2 id={`${area.id}-heading`} ref={detailHeadingRef} tabIndex={-1}>{area.title}</h2><p className="m3-flip-lead">{area.lead}</p><h3>What you will do</h3><p>{area.do}</p><h3>What you will produce</h3><ul>{area.produce.map(item => <li key={item}>{item}</li>)}</ul><h3>How this carries forward</h3><p>{area.later}</p><aside className="m3-flip-safe"><strong>Practice safely</strong><span>Practise first with the fictional Jiru Amba case. In later own-context reflection, use only generalized, non-identifying information.</span></aside><div className="m3-flip-detail-actions"><button type="button" className="m3-primary-button" onClick={() => openArea((active + 1) % module3ObjectiveAreas.length)}>Next objective <span aria-hidden="true">→</span></button><button type="button" className="m3-secondary-button" onClick={closeArea}>Back to all objectives</button></div></div></article></div>; })()}
       </article>
     </main>
   );
 }
+/* eslint-enable react-hooks/refs */
 
 function TextScaffold({
   screen,
@@ -17377,7 +17513,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.interactionType === 'video') {
-    return <IntroVideoScaffold screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return <LightIntroVideoScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.interactionType === 'text') {

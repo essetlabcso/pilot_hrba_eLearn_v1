@@ -631,6 +631,12 @@ export default function CoursePlayerShell({
           delete practiceCheckState.module3_revised_m3_r01;
           return { ...prev, practiceCheckState, screenProgress: { ...prev.screenProgress, module_03_project_design: (prev.screenProgress.module_03_project_design || []).filter(id => id !== 'M3-R01') } };
         });
+      } else if (screenId === 'M3-R02') {
+        onChangeState((prev) => {
+          const practiceCheckState = { ...prev.practiceCheckState };
+          delete practiceCheckState.module3_revised_m3_r02;
+          return { ...prev, practiceCheckState, screenProgress: { ...prev.screenProgress, module_03_project_design: (prev.screenProgress.module_03_project_design || []).filter(id => id !== 'M3-R02') } };
+        });
       } else if (screenId === 'M1-S1-06A') {
         onChangeState((prev) => {
           const nextPracticeCheckState = { ...prev.practiceCheckState };
@@ -810,6 +816,11 @@ export default function CoursePlayerShell({
       if (screenId === 'M3-R01') {
         const screen1 = state.practiceCheckState.module3_revised_m3_r01 as Record<string, unknown> | undefined;
         return screen1?.screen1Complete !== true;
+      }
+      if (screenId === 'M3-R02') {
+        const screen2 = state.practiceCheckState.module3_revised_m3_r02 as Record<string, unknown> | undefined;
+        const reviewed = Array.isArray(screen2?.reviewed) ? screen2.reviewed : [];
+        return reviewed.length < 6 || screen2?.correct !== true;
       }
       if (
         screenId.startsWith('M3-R') &&
