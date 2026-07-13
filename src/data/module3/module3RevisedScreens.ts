@@ -242,7 +242,7 @@ export const MODULE3_REVISED_SCREENS: Module3RevisedScreen[] = [
   {
     id: 'M3-R20',
     screenNumber: 20,
-    title: 'Module 3 Applied Knowledge Check',
+    title: 'Applied Knowledge Check',
     purpose: 'Short applied knowledge check covering the Jiru Amba case and key design judgments from the module.',
     phase: 'Part 7 of 7 · Check, save, and carry forward',
     eyebrow: 'MODULE 3 · APPLIED CHECK',

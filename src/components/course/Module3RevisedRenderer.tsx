@@ -6389,28 +6389,50 @@ type Screen18GapMapCard = {
   recommendedRepairMove: string;
   carryForward: string;
 };
-type Screen20QuestionId = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6' | 'Q7' | 'Q8';
-type Screen20OptionId = 'A' | 'B' | 'C' | 'D';
+type Screen20QuestionId =
+  | 'm3-akc-q01'
+  | 'm3-akc-q02'
+  | 'm3-akc-q03'
+  | 'm3-akc-q04'
+  | 'm3-akc-q05'
+  | 'm3-akc-q06'
+  | 'm3-akc-q07'
+  | 'm3-akc-q08'
+  | 'm3-akc-q09'
+  | 'm3-akc-q10';
+type Screen20OptionId = 'a' | 'b' | 'c' | 'd';
 type Screen20Question = {
   id: Screen20QuestionId;
-  title: string;
+  domain: string;
   scenario: string;
   prompt: string;
-  options: { id: Screen20OptionId; text: string }[];
+  options: { id: Screen20OptionId; text: string; feedback: string }[];
   correctAnswer: Screen20OptionId;
-  feedback: string;
-  incorrectFeedback: string;
-  designReminder: string;
-  strongArea: string;
-  reviewFlag: string;
+  designPrinciple: string;
+  tools: string[];
+  reviewTopic: string;
+};
+type Screen20QuestionResult = {
+  questionId: Screen20QuestionId;
+  selectedAnswer: Screen20OptionId;
+  correctAnswer: Screen20OptionId;
+  correct: boolean;
 };
 type Screen20Submission = {
-  answers: Record<string, string>;
-  correctAnswers: string[];
-  missedQuestions: string[];
+  answers: Partial<Record<Screen20QuestionId, Screen20OptionId>>;
+  questionResults: Screen20QuestionResult[];
+  correctAnswers: Screen20QuestionId[];
+  missedQuestions: Screen20QuestionId[];
   reviewFlags: string[];
+  reviewTopics: string[];
   score: number;
-  completedReviewOfMissedQuestions: boolean;
+  totalQuestions: number;
+  percentage: number;
+  assessmentResult: string;
+  resultGuidance: string;
+  attemptCount: number;
+  completed: true;
+  submittedAt: string;
   generatedAt: string;
 };
 type SnapshotFieldId =
@@ -6940,152 +6962,164 @@ function buildScreen19Submission(sectionId: ProposalSectionId, moveIds: RepairMo
 
 const screen20Questions: Screen20Question[] = [
   {
-    id: 'Q1',
-    title: 'Diagnosing the hidden HRBA gap',
-    scenario:
-      'A CSO reviews a draft project plan for improving market services in Jiru Amba. The plan includes consultation meetings, training, small infrastructure support, and an attendance indicator. However, it does not show whether women vendors, persons with disabilities, youth, or remote kebele residents influenced the priorities.',
-    prompt: 'Which is the strongest HRBA design concern?',
+    id: 'm3-akc-q01',
+    domain: 'Context and inequality',
+    scenario: 'Awra notices that residents of remote kebeles and some persons with disabilities attend local planning meetings less often than people living near the town centre. A team member concludes that these groups are less interested.',
+    prompt: 'What is the most appropriate first design response?',
     options: [
-      { id: 'A', text: 'The plan should add more training sessions before implementation.' },
-      { id: 'B', text: 'The plan may look complete, but it does not yet show who influenced decisions or who faces barriers.' },
-      { id: 'C', text: 'The plan should avoid mentioning different groups because this could complicate implementation.' },
-      { id: 'D', text: 'The plan should focus on infrastructure first and address participation during monitoring.' },
+      { id: 'a', text: 'Schedule more meetings at the same venue and use the same notice method.', feedback: 'More meetings may not address the barriers. The design should first examine whether timing, distance, information or accessibility affects groups differently.' },
+      { id: 'b', text: 'Compare notice, distance, cost, accessibility and participation conditions across groups, and verify possible reasons using generalized, non-identifying evidence.', feedback: 'Correct. Context analysis distinguishes observed patterns from possible explanations and identifies information that should be verified safely.' },
+      { id: 'c', text: 'Use the total number of participants as sufficient evidence that access is equal.', feedback: 'Total attendance may hide unequal access among groups and locations. Disaggregated, proportionate analysis is needed.' },
+      { id: 'd', text: 'Ask local leaders to provide the names of people who are not interested.', feedback: 'Collecting names is unnecessary and may create privacy or participation risks. The course uses generalized and non-identifying evidence.' },
     ],
-    correctAnswer: 'B',
-    feedback: 'This identifies the deeper HRBA design issue: the plan lists activities but does not yet show meaningful influence, differentiated barriers, or design response.',
-    incorrectFeedback: 'This option focuses on an activity or simplification, but the main HRBA issue is whether the design responds to different rights-holder barriers and influence.',
-    designReminder: 'A complete-looking activity list is not the same as rights-based design logic.',
-    strongArea: 'Diagnosing hidden HRBA gaps beneath activity language',
-    reviewFlag: 'Strengthen hidden HRBA gap diagnosis',
+    correctAnswer: 'b',
+    designPrinciple: 'Context analysis should examine differentiated effects and avoid treating an assumption as a confirmed explanation.',
+    tools: ['Screen 5 — Context and Inequality Scan'],
+    reviewTopic: 'context-and-inequality',
   },
   {
-    id: 'Q2',
-    title: 'Participation before decisions',
-    scenario:
-      'A project team says: “We will hold a public meeting after the draft plan is prepared, explain the final priorities, and invite feedback.” Some groups may attend, but they will not shape the priorities before decisions are made.',
-    prompt: 'What is the strongest HRBA-informed repair?',
-    options: [
-      { id: 'A', text: 'Keep the public meeting but add a photo record and attendance list.' },
-      { id: 'B', text: 'Hold two public meetings instead of one so more people can hear the plan.' },
-      { id: 'C', text: 'Ask kebele leaders to confirm that the community was consulted.' },
-      { id: 'D', text: 'Share information earlier, create accessible ways for different groups to discuss options, and show how their priorities influence final choices.' },
-    ],
-    correctAnswer: 'D',
-    feedback: 'This moves participation from late information-sharing to meaningful influence before decisions are finalized.',
-    incorrectFeedback: 'This may improve documentation or outreach, but it does not ensure that rights-holders influence priorities before they are finalized.',
-    designReminder: 'Meaningful participation starts early enough to shape decisions.',
-    strongArea: 'Moving participation before final decisions',
-    reviewFlag: 'Strengthen early participation and influence',
-  },
-  {
-    id: 'Q3',
-    title: 'Using standards in practical design',
-    scenario:
-      'A CSO wants to use rights standards and policy commitments in a project design. The team worries that this will make the proposal too legal or unrealistic.',
-    prompt: 'What is the best way to use standards in the design?',
-    options: [
-      { id: 'A', text: 'Use standards as practical design anchors: what people should access, who has responsibility, what should be adjusted, and what must be followed up.' },
-      { id: 'B', text: 'Add a list of international conventions to the background section and leave the activities unchanged.' },
-      { id: 'C', text: 'Avoid standards unless the CSO can prove legal violations.' },
-      { id: 'D', text: 'Mention standards only in the risk section to show compliance.' },
-    ],
-    correctAnswer: 'A',
-    feedback: 'Standards are useful when they shape practical design questions, responsibilities, accessibility, accountability, and follow-up.',
-    incorrectFeedback: 'Listing standards without changing design choices does not make the project more HRBA-aligned.',
-    designReminder: 'Standards should guide design choices, not sit as decoration.',
-    strongArea: 'Using standards as practical design anchors',
-    reviewFlag: 'Use standards to shape design decisions',
-  },
-  {
-    id: 'Q4',
-    title: 'Clarifying responsibility and CSO role',
-    scenario:
-      'A draft plan says the CSO will “ensure local services become accountable and inclusive.” The plan does not identify what public offices, committees, service actors, community actors, or the CSO itself should each do.',
-    prompt: 'Which repair is strongest?',
-    options: [
-      { id: 'A', text: 'Keep the wording broad so the CSO has flexibility during implementation.' },
-      { id: 'B', text: 'Make the CSO responsible for all accountability actions because it is managing the project.' },
-      { id: 'C', text: 'Clarify who has public responsibility, who can support change, what capacity gaps exist, and what enabling role the CSO can realistically play.' },
-      { id: 'D', text: 'Remove duty-bearers from the plan to avoid conflict.' },
-    ],
-    correctAnswer: 'C',
-    feedback: 'HRBA design should clarify responsibility without shifting public obligations onto the CSO or hiding who must respond.',
-    incorrectFeedback: 'A broad or CSO-centred responsibility statement can make the project look active while leaving accountability unclear.',
-    designReminder: 'CSOs can enable accountability without replacing responsible actors.',
-    strongArea: 'Clarifying responsibility and realistic CSO role',
-    reviewFlag: 'Clarify responsibilities and CSO role',
-  },
-  {
-    id: 'Q5',
-    title: 'Power and influence',
-    scenario: 'A formal committee has responsibility for market decisions, but informal brokers often influence who receives information first. Women vendors say they hear about decisions late and are unsure whether speaking up will matter.',
-    prompt: 'What is the strongest design response?',
-    options: [
-      { id: 'A', text: 'Work only with the formal committee because it has the official mandate.' },
-      { id: 'B', text: 'Map formal responsibility and informal influence, then design safe ways to strengthen women vendors’ access to information and influence.' },
-      { id: 'C', text: 'Avoid mentioning informal influence because it may be sensitive.' },
-      { id: 'D', text: 'Ask informal brokers to represent women vendors in the next meeting.' },
-    ],
-    correctAnswer: 'B',
-    feedback: 'This uses power analysis constructively: it recognizes formal and informal influence while protecting rights-holder voice and safety.',
-    incorrectFeedback: 'Ignoring informal influence or asking powerful actors to represent affected groups can reproduce exclusion.',
-    designReminder: 'Power analysis should improve safe influence, not reinforce gatekeeping.',
-    strongArea: 'Using power analysis to protect rights-holder voice',
-    reviewFlag: 'Strengthen power and influence analysis',
-  },
-  {
-    id: 'Q6',
-    title: 'Indicator repair',
-    scenario: 'A proposed indicator says: “Number of people attending consultation meetings and trainings.” The project objective is to strengthen inclusive service-improvement decisions.',
-    prompt: 'Which indicator is strongest?',
-    options: [
-      { id: 'A', text: 'Percentage of participants from affected groups whose feedback is acted on or leads to a documented change or response in the plan.' },
-      { id: 'B', text: 'Number of consultation meetings completed on schedule.' },
-      { id: 'C', text: 'Number of people trained on local service improvement.' },
-      { id: 'D', text: 'Percentage of participants who say the meeting was well organized.' },
-    ],
-    correctAnswer: 'A',
-    feedback: 'This indicator measures influence and response, not only attendance or activity delivery.',
-    incorrectFeedback: 'This option may measure activity quality or participation volume, but it does not show whether rights-holder feedback influenced decisions or led to response.',
-    designReminder: 'Strong indicators show influence, response, access, or change.',
-    strongArea: 'Repairing indicators to show influence and response',
-    reviewFlag: 'Improve indicators and safe evidence',
-  },
-  {
-    id: 'Q7',
-    title: 'Feedback-response and accountability',
-    scenario: 'A CSO adds a suggestion box to a project plan. The plan does not explain who reviews feedback, how people receive answers, what happens with urgent concerns, or how changes are followed up.',
+    id: 'm3-akc-q02',
+    domain: 'Standards and responsibilities',
+    scenario: 'A draft plan refers generally to the right to water. It proposes that Awra will ensure that water-service complaints are resolved, but it does not identify which public or service actor has responsibility.',
     prompt: 'What is the strongest repair?',
     options: [
-      { id: 'A', text: 'Add more suggestion boxes in different locations.' },
-      { id: 'B', text: 'Tell community members that all feedback will be considered.' },
-      { id: 'C', text: 'Ask staff to summarize feedback at the end of the project.' },
-      { id: 'D', text: 'Define a safe feedback-response pathway with roles, timelines, referral or correction steps, and follow-up on what changed.' },
+      { id: 'a', text: 'Keep the wording because referring to a right is sufficient.', feedback: 'A rights reference should inform a practical responsibility and design question. General rights language alone does not clarify who should act.' },
+      { id: 'b', text: 'State that Awra will take permanent responsibility for resolving all water-service complaints.', feedback: 'Awra may support information, evidence, dialogue and follow-up, but it should not replace permanent public or service responsibility.' },
+      { id: 'c', text: 'Connect the issue to the relevant standard or policy reference, identify the appropriate responsible public or service actor, and define Awra’s supporting role.', feedback: 'Correct. The design should connect standards with responsibility and define a realistic supporting role for the CSO.' },
+      { id: 'd', text: 'Remove the reference to responsibility and decide during implementation.', feedback: 'Leaving responsibility unclear can weaken response and accountability. The design should clarify it before implementation.' },
     ],
-    correctAnswer: 'D',
-    feedback: 'Accountability is not just collecting feedback; it requires answerability, safe response, correction or referral, and follow-up.',
-    incorrectFeedback: 'More feedback collection does not create accountability unless there is a clear response and follow-up pathway.',
-    designReminder: 'Feedback becomes accountability when people receive response and follow-up.',
-    strongArea: 'Designing feedback-response and accountability pathways',
-    reviewFlag: 'Strengthen feedback-response and accountability',
+    correctAnswer: 'c',
+    designPrinciple: 'Human rights standards should inform responsibility, project-design questions and practical arrangements.',
+    tools: ['Screen 6 — Policy and Standards Map', 'Screen 8 — Duty-Bearer and Actor Responsibility Map'],
+    reviewTopic: 'standards-and-responsibility',
   },
   {
-    id: 'Q8',
-    title: 'Draft plan review note',
-    scenario: 'After completing the HRBA design analysis, the CSO needs to send a constructive note to its project team. The draft plan has weak participation, unclear responsibility, activity-focused indicators, and no feedback-response pathway.',
-    prompt: 'Which review note is most useful?',
+    id: 'm3-akc-q03',
+    domain: 'Rights-holders and barriers',
+    scenario: 'A project states that “community members will be invited” to one town-centre consultation. Earlier analysis identified different barriers for women, residents of remote kebeles, persons with disabilities and low-income households.',
+    prompt: 'Which revision best applies a rights-holder and barrier analysis?',
     options: [
-      { id: 'A', text: '“The proposal is not rights-based and should be rewritten completely.”' },
-      { id: 'B', text: '“The project should add more HRBA language in the objective and background.”' },
-      { id: 'C', text: '“The plan is ready to improve: clarify affected groups, move participation earlier, assign response roles, repair indicators, and add feedback-response follow-up.”' },
-      { id: 'D', text: '“The plan should focus on implementation first and address HRBA issues during monitoring.”' },
+      { id: 'a', text: 'Identify the relevant groups, connect each group to its priority barriers, and adjust information, access and participation arrangements accordingly.', feedback: 'Correct. Rights-holder analysis should identify specific groups, their barriers and the resulting project-design implications.' },
+      { id: 'b', text: 'Increase the number of invitations without changing the consultation method.', feedback: 'More invitations do not necessarily address distance, accessibility, timing, cost or influence barriers.' },
+      { id: 'c', text: 'Ask one representative to speak for all community groups.', feedback: 'One representative may not reflect different experiences and may reproduce existing exclusions.' },
+      { id: 'd', text: 'Replace the barrier analysis with a general stakeholder count.', feedback: 'A stakeholder count does not explain who faces barriers or what the project should change.' },
     ],
-    correctAnswer: 'C',
-    feedback: 'This is constructive, specific, and action-oriented. It turns analysis into practical design repairs.',
-    incorrectFeedback: 'The review note should not be only critical, cosmetic, or delayed until monitoring. It should guide practical design improvement before implementation.',
-    designReminder: 'A useful review note turns analysis into practical repairs.',
-    strongArea: 'Writing constructive draft plan repair notes',
-    reviewFlag: 'Strengthen draft plan repair note',
+    correctAnswer: 'a',
+    designPrinciple: 'Broad terms such as “the community” may hide different barriers and participation conditions.',
+    tools: ['Screen 7 — Rights-Holders and Barriers'],
+    reviewTopic: 'rights-holders-and-barriers',
+  },
+  {
+    id: 'm3-akc-q04',
+    domain: 'Duty-bearers and realistic CSO roles',
+    scenario: 'A draft plan places feedback boxes at service points. Awra is expected to collect feedback, decide what action is required, provide the service response and report completion. The relevant service office has authority to make the service decision.',
+    prompt: 'What is the most appropriate allocation of roles?',
+    options: [
+      { id: 'a', text: 'Make Awra the permanent complaint and service-response authority.', feedback: 'This would transfer public or service responsibility to the CSO.' },
+      { id: 'b', text: 'Ask a community leader to make every service decision.', feedback: 'A community actor may support communication or participation, but should not automatically replace the responsible authority.' },
+      { id: 'c', text: 'Leave the responsible actor unnamed so that the arrangement remains flexible.', feedback: 'An unnamed responsibility can cause feedback to remain unanswered.' },
+      { id: 'd', text: 'Assign receipt, review and response responsibility to the appropriate public or service actor, while Awra supports accessible channels, documentation, monitoring and follow-up.', feedback: 'Correct. Primary responsibility and the CSO’s supporting role should remain distinct.' },
+    ],
+    correctAnswer: 'd',
+    designPrinciple: 'CSOs may facilitate participation, information, evidence, dialogue and follow-up without replacing duty-bearers.',
+    tools: ['Screen 8 — Duty-Bearers, Supporting Actors, and CSO Roles'],
+    reviewTopic: 'duty-bearers-and-cso-role',
+  },
+  {
+    id: 'm3-akc-q05',
+    domain: 'Power and influence',
+    scenario: 'The woreda planning office has formal authority over a planning decision. A respected local actor has no formal mandate but strongly influences who receives information and who attends discussions.',
+    prompt: 'How should the project analyze this situation?',
+    options: [
+      { id: 'a', text: 'Treat the respected local actor as the formal duty-bearer.', feedback: 'Influence does not automatically create formal responsibility.' },
+      { id: 'b', text: 'Map formal authority and practical influence separately, and plan constructive engagement and alternative participation channels.', feedback: 'Correct. Formal authority and practical influence may differ and should inform engagement, participation and risk decisions.' },
+      { id: 'c', text: 'Exclude the local actor from analysis because the actor has no official title.', feedback: 'Actors without formal authority may still influence information, access or decisions.' },
+      { id: 'd', text: 'Label the local actor as hostile and avoid all engagement.', feedback: 'Power analysis should avoid unsupported labels and use constructive, risk-aware engagement.' },
+    ],
+    correctAnswer: 'b',
+    designPrinciple: 'Responsibility and influence are related but not identical.',
+    tools: ['Screen 9 — Power and Influence Map'],
+    reviewTopic: 'power-and-influence',
+  },
+  {
+    id: 'm3-akc-q06',
+    domain: 'Causes and capacity gaps',
+    scenario: 'Feedback responses are repeatedly late. The project team immediately proposes general training for all officials.',
+    prompt: 'What should the team do before deciding that training is the appropriate response?',
+    options: [
+      { id: 'a', text: 'Provide the training immediately because delay always results from limited knowledge.', feedback: 'Training is appropriate only where a specific knowledge or skill gap contributes to the problem.' },
+      { id: 'b', text: 'Assume that the delay proves unwillingness.', feedback: 'Delay may relate to several factors. Unwillingness should not be assumed without evidence.' },
+      { id: 'c', text: 'Distinguish the visible problem from underlying and deeper causes, and examine mandate, skills, resources, coordination, incentives, willingness and accountability.', feedback: 'Correct. Capacity analysis should examine more than knowledge and should connect the response to the identified cause.' },
+      { id: 'd', text: 'Transfer all response duties to Awra.', feedback: 'Transferring responsibility does not address the underlying institutional or capacity issue.' },
+    ],
+    correctAnswer: 'c',
+    designPrinciple: 'Capacity includes authority, skills, resources, coordination, incentives, willingness and accountability—not only training.',
+    tools: ['Screen 10 — Root-Cause and Capacity-Gap Map'],
+    reviewTopic: 'causes-and-capacity',
+  },
+  {
+    id: 'm3-akc-q07',
+    domain: 'Gender, disability, accessibility, and inclusion',
+    scenario: 'A draft says: “Women and persons with disabilities will be invited. Accessible arrangements will be used where possible.” It does not assign responsibility, resources or monitoring.',
+    prompt: 'Which repair most clearly integrates inclusion into project design?',
+    options: [
+      { id: 'a', text: 'Identify differentiated barriers, specify accessible information and participation arrangements, provide reasonable accommodation where required, assign responsibility and resources, and monitor whether the measures function.', feedback: 'Correct. Inclusion should affect practical arrangements, responsibility, resources and monitoring.' },
+      { id: 'b', text: 'Add the word “inclusive” to the objective.', feedback: 'General inclusion language does not show how the project design will change.' },
+      { id: 'c', text: 'Use participant totals as the only inclusion indicator.', feedback: 'Attendance totals do not show accessibility, accommodation or influence.' },
+      { id: 'd', text: 'Collect the diagnoses and medical details of every participant.', feedback: 'Personal medical information is unnecessary for this course activity and may create privacy and safeguarding risks.' },
+    ],
+    correctAnswer: 'a',
+    designPrinciple: 'Gender and disability should be integrated into design decisions rather than only mentioned.',
+    tools: ['Screen 11 — Gender and Disability Design Check'],
+    reviewTopic: 'gender-disability-and-inclusion',
+  },
+  {
+    id: 'm3-akc-q08',
+    domain: 'Participation and accountability',
+    scenario: 'A project will hold consultations and install suggestion boxes. The draft does not state which decision participants can influence, who receives feedback, how a response is provided or how people learn what changed.',
+    prompt: 'What is the strongest repair?',
+    options: [
+      { id: 'a', text: 'Add more suggestion boxes.', feedback: 'Additional channels do not complete the accountability process without receipt, response, explanation and follow-up.' },
+      { id: 'b', text: 'Report only the number of people attending consultations.', feedback: 'Attendance does not demonstrate influence or accountability.' },
+      { id: 'c', text: 'Invite senior community representatives instead of defining a response process.', feedback: 'Representation alone does not show how wider input affects decisions or receives a response.' },
+      { id: 'd', text: 'Define accessible information, participation methods, a decision-influence point, a responsible recipient, review, response, explanation and follow-up.', feedback: 'Correct. Meaningful participation and accountability require influence, responsibility, response, explanation and follow-up.' },
+    ],
+    correctAnswer: 'd',
+    designPrinciple: 'Participation is more than attendance, and feedback collection is incomplete without response and follow-up.',
+    tools: ['Screen 12 — Participation and Accountability Pathway'],
+    reviewTopic: 'participation-and-accountability',
+  },
+  {
+    id: 'm3-akc-q09',
+    domain: 'Risk and do-no-harm',
+    scenario: 'A public meeting is proposed so residents can discuss exclusion from a service. Speaking publicly may expose some participants to unwanted attention or repercussions.',
+    prompt: 'What is the most appropriate design response?',
+    options: [
+      { id: 'a', text: 'Continue with the public meeting and state that the activity is safe.', feedback: 'No method should be described as automatically safe. Risk should be assessed and monitored.' },
+      { id: 'b', text: 'Assess who may be affected, use appropriate alternative or confidential channels, assign mitigation and monitoring responsibility, and define pause, stop or referral conditions where relevant.', feedback: 'Correct. Risk management should connect the design choice with affected groups, mitigation, monitoring, alternatives and conditions for review or pause.' },
+      { id: 'c', text: 'Cancel all participation activities permanently.', feedback: 'Risk analysis should improve the design rather than automatically remove all participation.' },
+      { id: 'd', text: 'Collect participants’ names so that the project can monitor individual risk.', feedback: 'Collecting names may increase exposure and is not necessary for generalized course evidence.' },
+    ],
+    correctAnswer: 'b',
+    designPrinciple: 'Risk analysis should lead to specific prevention, mitigation, monitoring and alternative arrangements without guaranteeing safety.',
+    tools: ['Screen 13 — Risk and Do-No-Harm'],
+    reviewTopic: 'risk-and-do-no-harm',
+  },
+  {
+    id: 'm3-akc-q10',
+    domain: 'Intervention logic and project-design repair',
+    scenario: 'A draft objective is: “Conduct four consultations and train 30 officials.” The indicators count consultations, participants and people trained.',
+    prompt: 'Which revision best strengthens the intervention logic?',
+    options: [
+      { id: 'a', text: 'Keep the activities as the objective because completed activities demonstrate change.', feedback: 'Consultations and training are activities or outputs, not the intended change.' },
+      { id: 'b', text: 'Add the phrase “rights-based and inclusive” without changing the logic or indicators.', feedback: 'HRBA terminology does not replace a connected intervention logic.' },
+      { id: 'c', text: 'Connect the barrier and cause to responsible actors, activities, outputs and an expected change, then add a change-focused indicator, safe evidence, an assumption and an implementation risk.', feedback: 'Correct. The logic should explain how activities contribute to a meaningful change and how that change will be assessed.' },
+      { id: 'd', text: 'Add more activity-count indicators.', feedback: 'Activity counts may remain useful, but they do not show whether access, influence, response, quality or responsible-actor practice changed.' },
+    ],
+    correctAnswer: 'c',
+    designPrinciple: 'Project design should connect issue, cause, actor, activity, output, expected change, indicator, evidence, assumption and risk.',
+    tools: ['Screen 14 — HRBA Project Design Repair', 'Screen 15 — Draft Plan Review and Repair'],
+    reviewTopic: 'intervention-logic-and-repair',
   },
 ];
 
@@ -7256,8 +7290,15 @@ const snapshotSections: SnapshotSection[] = [
 
 function getScreen20SavedOutput(state: LearningState): Screen20Submission | null {
   const record = getPracticeState(state, 'M3-R20');
-  const nested = record.appliedKnowledgeCheck;
-  if (nested && typeof nested === 'object') return nested as Screen20Submission;
+  if (record.attemptInProgress === true) return null;
+  const nested = record.assessmentResult || record.appliedKnowledgeCheck || record.screen20;
+  if (nested && typeof nested === 'object') {
+    const candidate = nested as Partial<Screen20Submission>;
+    const answers = normalizeScreen20Answers(candidate.answers);
+    if (Object.keys(answers).length === screen20Questions.length) {
+      return buildScreen20Submission(answers, Math.max(1, Number(candidate.attemptCount) || 1), candidate.submittedAt || candidate.generatedAt);
+    }
+  }
   return null;
 }
 
@@ -7270,23 +7311,62 @@ function getScreen21SavedSnapshot(state: LearningState): M3PortfolioSnapshot | n
   return null;
 }
 
-function getScreen20ScoreMessage(score: number) {
-  if (score >= 7) return 'Strong progress. You are ready to carry these applied design judgments into your snapshot.';
-  if (score >= 5) return 'Good progress. Review the areas below before moving on.';
-  return 'You can still continue, but these are useful areas to revisit before you build your snapshot.';
+function isScreen20QuestionId(value: string): value is Screen20QuestionId {
+  return screen20Questions.some((question) => question.id === value);
 }
 
-function buildScreen20Submission(answers: Record<string, string>, completedReviewOfMissedQuestions: boolean): Screen20Submission {
+function isScreen20OptionId(value: unknown): value is Screen20OptionId {
+  return value === 'a' || value === 'b' || value === 'c' || value === 'd';
+}
+
+function normalizeScreen20Answers(value: unknown): Partial<Record<Screen20QuestionId, Screen20OptionId>> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return Object.entries(value).reduce<Partial<Record<Screen20QuestionId, Screen20OptionId>>>((valid, [questionId, optionId]) => {
+    if (isScreen20QuestionId(questionId) && isScreen20OptionId(optionId)) valid[questionId] = optionId;
+    return valid;
+  }, {});
+}
+
+function getScreen20ResultGuidance(score: number) {
+  if (score >= 9) return { title: 'Strong application', guidance: 'You applied the main Module 3 reasoning consistently. Review any question you missed before finalizing your snapshot.' };
+  if (score >= 7) return { title: 'Applied foundation with targeted review', guidance: 'You applied most of the Module 3 tools appropriately. Review the identified topics before finalizing your snapshot.' };
+  if (score >= 5) return { title: 'Developing application', guidance: 'You have applied several important ideas. Review the identified tools and compare the explanations with your saved project-design work.' };
+  return { title: 'Further review recommended', guidance: 'Review the identified Module 3 tools before finalizing the snapshot. Focus on how analysis should change responsibilities, activities, participation, risk controls and indicators.' };
+}
+
+function getScreen20ReviewTools(missedQuestions: Screen20QuestionId[]) {
+  return Array.from(new Set(screen20Questions.filter((question) => missedQuestions.includes(question.id)).flatMap((question) => question.tools)));
+}
+
+function buildScreen20Submission(
+  answers: Partial<Record<Screen20QuestionId, Screen20OptionId>>,
+  attemptCount: number,
+  submittedAt = new Date().toISOString(),
+): Screen20Submission {
   const correctAnswers = screen20Questions.filter((question) => answers[question.id] === question.correctAnswer).map((question) => question.id);
   const missedQuestions = screen20Questions.filter((question) => answers[question.id] !== question.correctAnswer).map((question) => question.id);
+  const result = getScreen20ResultGuidance(correctAnswers.length);
   return {
     answers,
+    questionResults: screen20Questions.map((question) => ({
+      questionId: question.id,
+      selectedAnswer: answers[question.id] as Screen20OptionId,
+      correctAnswer: question.correctAnswer,
+      correct: answers[question.id] === question.correctAnswer,
+    })),
     correctAnswers,
     missedQuestions,
-    reviewFlags: screen20Questions.filter((question) => missedQuestions.includes(question.id)).map((question) => question.reviewFlag),
+    reviewFlags: getScreen20ReviewTools(missedQuestions),
+    reviewTopics: screen20Questions.filter((question) => missedQuestions.includes(question.id)).map((question) => question.reviewTopic),
     score: correctAnswers.length,
-    completedReviewOfMissedQuestions,
-    generatedAt: new Date().toISOString(),
+    totalQuestions: screen20Questions.length,
+    percentage: correctAnswers.length * 10,
+    assessmentResult: result.title,
+    resultGuidance: result.guidance,
+    attemptCount,
+    completed: true,
+    submittedAt,
+    generatedAt: submittedAt,
   };
 }
 
@@ -17011,41 +17091,109 @@ function ProposalSectionRepairScreen({ screen, state, onComplete }: {
   );
 }
 
-function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
+function AppliedKnowledgeCheckScreen({ screen, state, onChangeState, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [checkedQuestions, setCheckedQuestions] = useState<Record<string, boolean>>({});
-  const [summary, setSummary] = useState<Screen20Submission | null>(null);
-  const feedbackRef = useRef<HTMLDivElement>(null);
+  const savedRecord = getPracticeState(state, screen.id);
+  const savedResult = getScreen20SavedOutput(state);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const savedQuestionId = typeof savedRecord.currentQuestionId === 'string' ? savedRecord.currentQuestionId : '';
+    const savedIndex = screen20Questions.findIndex((question) => question.id === savedQuestionId);
+    return savedIndex >= 0 ? savedIndex : 0;
+  });
+  const [answers, setAnswers] = useState<Partial<Record<Screen20QuestionId, Screen20OptionId>>>(() =>
+    normalizeScreen20Answers(savedRecord.answers || savedResult?.answers),
+  );
+  const [summary, setSummary] = useState<Screen20Submission | null>(savedResult);
+  const [statusMessage, setStatusMessage] = useState(savedResult ? 'Results restored.' : '');
+  const [validationMessage, setValidationMessage] = useState('');
   const summaryRef = useRef<HTMLHeadingElement>(null);
+  const questionRef = useRef<HTMLHeadingElement>(null);
   const question = screen20Questions[currentIndex];
   const selectedAnswer = answers[question.id] || '';
-  const isChecked = Boolean(checkedQuestions[question.id]);
-  const isCorrect = selectedAnswer === question.correctAnswer;
-  const answeredCount = screen20Questions.filter((item) => checkedQuestions[item.id]).length;
-  const allAnswered = answeredCount === screen20Questions.length;
-  const canContinue = Boolean(summary && allAnswered);
+  const answeredCount = screen20Questions.filter((item) => Boolean(answers[item.id])).length;
+  const canContinue = Boolean(summary);
+
+  const saveProgress = (patch: Record<string, unknown>) => onChangeState((prev) => ({
+    ...prev,
+    practiceCheckState: {
+      ...prev.practiceCheckState,
+      [practiceKey(screen.id)]: {
+        ...getPracticeState(prev, screen.id),
+        ...patch,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  }));
 
   const selectAnswer = (questionId: Screen20QuestionId, optionId: Screen20OptionId) => {
-    if (checkedQuestions[questionId]) return;
-    setAnswers((current) => ({ ...current, [questionId]: optionId }));
-    setCheckedQuestions((current) => ({ ...current, [questionId]: true }));
-    setSummary(null);
-    window.setTimeout(() => feedbackRef.current?.focus(), 0);
+    const nextAnswers = { ...answers, [questionId]: optionId };
+    setAnswers(nextAnswers);
+    setValidationMessage('');
+    setStatusMessage(`Answer saved. Question ${currentIndex + 1} of ${screen20Questions.length}.`);
+    saveProgress({ answers: nextAnswers, currentQuestionId: questionId, attemptInProgress: true });
   };
 
-  const moveNext = () => {
-    if (currentIndex < screen20Questions.length - 1) {
-      setCurrentIndex((index) => index + 1);
+  const moveToQuestion = (index: number) => {
+    const nextIndex = Math.max(0, Math.min(screen20Questions.length - 1, index));
+    setCurrentIndex(nextIndex);
+    saveProgress({ answers, currentQuestionId: screen20Questions[nextIndex].id, attemptInProgress: true });
+    window.setTimeout(() => questionRef.current?.focus(), 0);
+  };
+
+  const submitAssessment = () => {
+    const firstUnanswered = screen20Questions.findIndex((item) => !answers[item.id]);
+    if (firstUnanswered >= 0) {
+      const message = `Answer question ${firstUnanswered + 1} before submitting the assessment.`;
+      setValidationMessage(message);
+      setStatusMessage(message);
+      setCurrentIndex(firstUnanswered);
+      window.setTimeout(() => questionRef.current?.focus(), 0);
       return;
     }
-    setSummary(buildScreen20Submission(answers, true));
+    const priorAttemptCount = Math.max(0, Number(savedRecord.attemptCount) || savedResult?.attemptCount || 0);
+    const result = buildScreen20Submission(answers, priorAttemptCount + 1);
+    setSummary(result);
+    setValidationMessage('');
+    setStatusMessage('Assessment submitted. Results available.');
+    saveProgress({
+      answers,
+      questionResults: result.questionResults,
+      score: result.score,
+      totalQuestions: result.totalQuestions,
+      percentage: result.percentage,
+      reviewTopics: result.reviewTopics,
+      reviewFlags: result.reviewFlags,
+      attemptCount: result.attemptCount,
+      submittedAt: result.submittedAt,
+      assessmentResult: result,
+      appliedKnowledgeCheck: result,
+      screen20: result,
+      attemptInProgress: false,
+    });
     window.setTimeout(() => summaryRef.current?.focus(), 0);
   };
-  const categorySummary = ['Context and inequality analysis', 'Rights standards and responsibilities', 'Participation and influence', 'Accountability and feedback-response', 'Indicators and safe evidence', 'Draft plan repair'];
+
+  const retryAssessment = () => {
+    if (!window.confirm('Start a new attempt? Your saved result remains available until you confirm this retry.')) return;
+    setAnswers({});
+    setSummary(null);
+    setCurrentIndex(0);
+    setValidationMessage('');
+    setStatusMessage('New attempt started. Question 1 of 10.');
+    saveProgress({
+      answers: {},
+      currentQuestionId: screen20Questions[0].id,
+      attemptInProgress: true,
+      assessmentResult: null,
+      appliedKnowledgeCheck: null,
+      screen20: null,
+    });
+    window.setTimeout(() => questionRef.current?.focus(), 0);
+  };
 
   return (
     <main className="m3-screen m3-closing-screen m3-s20-screen" aria-labelledby={`${screen.id}-title`} data-qa="m3-s20-screen">
@@ -17053,49 +17201,34 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
         <header className="m3-closing-header">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>Module 3 Applied Knowledge Check</h1>
-          <p>Choose the strongest rights-based response. Use what you practiced in Module 3: context analysis, standards, rights-holders, responsibilities, power, indicators, accountability, and draft plan repair.</p>
+          <h1 id={`${screen.id}-title`}>Applied Knowledge Check</h1>
+          <p>This knowledge check asks you to apply the main Module 3 tools to short project-design situations. Select the most appropriate response in each situation.</p>
+          <p>The questions focus on design reasoning rather than memorizing definitions. After submission, you will receive an explanation, the relevant design principle, and the Module 3 tool connected to each question.</p>
         </header>
-
-        <ol className="m3-s20-stage-cues" aria-label="Applied knowledge check stages">
-          {[
-            ['Understand', 'Use the full Module 3 design logic.'],
-            ['Practice', `${answeredCount} of ${screen20Questions.length} questions answered.`],
-            ['Review answers', summary ? 'Summary ready.' : 'Available after all questions.'],
-            ['Save / Continue', canContinue ? 'Ready for snapshot.' : 'Complete the check first.'],
-          ].map(([label, description], index) => {
-            const active = (!summary && index === 1) || (summary && (index === 2 || index === 3));
-            return (
-              <li key={label} className={active ? 'is-active' : ''}>
-                <span>{index + 1}</span>
-                <strong>{label}</strong>
-                <small>{description}</small>
-              </li>
-            );
-          })}
-        </ol>
 
         <section className="m3-s20-check-overview" aria-label="Knowledge check overview">
           <article>
-            <h2>Understand</h2>
-            <p>Each question asks for the strongest HRBA design judgment, not the longest activity list.</p>
+            <h2>Ten situations</h2>
+            <p>Answer every question. Your selections are saved as you work.</p>
           </article>
           <article>
-            <h2>Practice</h2>
-            <p>Choose one answer per scenario. Feedback appears immediately so you can keep the reasoning fresh.</p>
+            <h2>Review before submitting</h2>
+            <p>Use Previous and Next to revisit answers. Explanations appear after submission.</p>
           </article>
           <article>
-            <h2>Carry forward</h2>
-            <p>Your score and review flags move into the final Module 3 snapshot.</p>
+            <h2>Safe participation</h2>
+            <p>No names or personal information are required. Results identify relevant screens to review.</p>
           </article>
         </section>
+
+        <p className="m3-s20-live-status" aria-live="polite">{statusMessage || `${answeredCount} of ${screen20Questions.length} questions answered.`}</p>
 
         {!summary && (
           <section className="m3-closing-quiz-card" aria-labelledby={`${screen.id}-${question.id}`}>
             <div className="m3-closing-quiz-progress" aria-live="polite">
               Question {currentIndex + 1} of {screen20Questions.length} · {answeredCount} answered
             </div>
-            <h2 id={`${screen.id}-${question.id}`}>{question.title}</h2>
+            <h2 id={`${screen.id}-${question.id}`} ref={questionRef} tabIndex={-1}>{question.domain}</h2>
             <div className="m3-closing-scenario">
               <span>Scenario</span>
               <p>{question.scenario}</p>
@@ -17104,96 +17237,78 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
               <legend>{question.prompt}</legend>
               {question.options.map((option) => {
                 const selected = selectedAnswer === option.id;
-                const status = isChecked && selected ? (isCorrect ? 'is-correct' : 'is-not-yet') : '';
                 return (
-                  <label key={option.id} className={`${selected ? 'is-selected' : ''} ${status}`}>
+                  <label key={option.id} className={selected ? 'is-selected' : ''}>
                     <input
                       type="radio"
                       name={`${screen.id}-${question.id}`}
                       value={option.id}
                       checked={selected}
-                      disabled={isChecked}
                       onChange={() => selectAnswer(question.id, option.id)}
                     />
-                    <span>{option.id}. {option.text}</span>
-                    {isChecked && selected && <strong>{isCorrect ? 'Correct!' : 'Not quite!'}</strong>}
+                    <span>{option.id.toUpperCase()}. {option.text}</span>
                   </label>
                 );
               })}
             </fieldset>
-
-            {isChecked && (
-              <div className={`m3-closing-feedback ${isCorrect ? 'is-correct' : 'is-not-yet'}`} tabIndex={-1} ref={feedbackRef}>
-                <h3>{isCorrect ? 'Correct!' : 'Not quite!'}</h3>
-                <p>{isCorrect ? question.feedback : question.incorrectFeedback}</p>
-                <p><strong>Design reminder:</strong> {question.designReminder}</p>
-                <button type="button" className="m3-closing-primary" onClick={moveNext}>
-                  {currentIndex === screen20Questions.length - 1 ? 'Show summary' : 'Next question'}
-                </button>
-              </div>
-            )}
+            {validationMessage && <p className="m3-s20-validation" role="alert">{validationMessage}</p>}
+            <div className="m3-s20-question-actions">
+              <button type="button" className="m3-closing-secondary" disabled={currentIndex === 0} onClick={() => moveToQuestion(currentIndex - 1)}>Previous question</button>
+              {currentIndex < screen20Questions.length - 1 && <button type="button" className="m3-closing-primary" onClick={() => moveToQuestion(currentIndex + 1)}>Next question</button>}
+              <button type="button" className="m3-closing-primary" data-qa="m3-s20-submit" onClick={submitAssessment}>Submit assessment</button>
+            </div>
           </section>
         )}
 
         {summary && (
-          <section className="m3-closing-summary" aria-live="polite" aria-labelledby={`${screen.id}-summary`}>
-            <h2 id={`${screen.id}-summary`} ref={summaryRef} tabIndex={-1}>Your Module 3 applied knowledge check is complete</h2>
-            <p>You practiced applying HRBA thinking to real project design choices: analysis, standards, rights-holders, responsibilities, power, indicators, accountability, and draft plan repair.</p>
-            <p className="m3-closing-score">Score: {summary.score} of {screen20Questions.length}</p>
-            <p>{getScreen20ScoreMessage(summary.score)}</p>
-            <div className="m3-s20-category-chip-row">{categorySummary.map((item) => <span key={item}>{item}</span>)}</div>
+          <section className="m3-closing-summary" aria-labelledby={`${screen.id}-summary`} data-qa="m3-s20-results">
+            <h2 id={`${screen.id}-summary`} ref={summaryRef} tabIndex={-1}>{summary.assessmentResult}</h2>
+            <div className="m3-s20-result-metrics" aria-label="Assessment result">
+              <p className="m3-closing-score">Score: {summary.score}/{summary.totalQuestions}</p>
+              <p><strong>{summary.percentage}%</strong> · {summary.score} answered correctly · {summary.missedQuestions.length} requiring review</p>
+            </div>
+            <p>{summary.resultGuidance}</p>
+            <p>Attempt {summary.attemptCount}</p>
+            <section className="m3-s20-targeted-review" aria-labelledby={`${screen.id}-targeted-review`}>
+              <h3 id={`${screen.id}-targeted-review`}>Targeted review guidance</h3>
+              {summary.reviewFlags.length ? <ul>{summary.reviewFlags.map((tool) => <li key={tool}>{tool}</li>)}</ul> : <p>No priority review topic was identified. Continue to the Final Snapshot and review your saved Module 3 outputs.</p>}
+            </section>
             <section className="m3-s20-answer-review" aria-labelledby={`${screen.id}-answer-review`}>
               <h3 id={`${screen.id}-answer-review`}>Review answers</h3>
-              {screen20Questions.map((item) => {
+              {screen20Questions.map((item, index) => {
                 const learnerAnswer = item.options.find((option) => option.id === answers[item.id]);
                 const correctAnswer = item.options.find((option) => option.id === item.correctAnswer);
                 const answeredCorrectly = answers[item.id] === item.correctAnswer;
                 return (
                   <details key={item.id}>
                     <summary>
-                      <span>{item.id}</span>
-                      <strong>{item.title}</strong>
-                      <em>{answeredCorrectly ? 'Correct' : 'Review'}</em>
+                      <span>{index + 1}</span>
+                      <strong>{item.domain}</strong>
+                      <em>{answeredCorrectly ? 'Correct' : 'Incorrect'}</em>
                     </summary>
                     <div>
-                      <p><strong>Question or design challenge:</strong> {item.prompt}</p>
-                      <p><strong>Learner answer:</strong> {learnerAnswer ? learnerAnswer.text : 'Not answered'}</p>
-                      <p><strong>Feedback:</strong> {answeredCorrectly ? item.feedback : item.incorrectFeedback}</p>
-                      <p><strong>Corrected HRBA reasoning:</strong> {correctAnswer?.text}</p>
-                      <p><strong>Carry forward to final Module 3 snapshot:</strong> {item.designReminder}</p>
+                      <p><strong>{answeredCorrectly ? 'Correct' : 'Incorrect'}.</strong></p>
+                      <p><strong>Your selected answer:</strong> {learnerAnswer ? `${learnerAnswer.id.toUpperCase()}. ${learnerAnswer.text}` : 'Not answered'}</p>
+                      <p><strong>Correct answer:</strong> {correctAnswer ? `${correctAnswer.id.toUpperCase()}. ${correctAnswer.text}` : ''}</p>
+                      <p><strong>Explanation:</strong> {learnerAnswer?.feedback}</p>
+                      <p><strong>Design principle:</strong> {item.designPrinciple}</p>
+                      <p><strong>Module 3 tool:</strong> {item.tools.join('; ')}</p>
                     </div>
                   </details>
                 );
               })}
             </section>
-            <div className="m3-closing-summary-grid">
-              <article>
-                <h3>{summary.score >= 6 ? 'Strong progress' : 'Strong choices'}</h3>
-                {summary.correctAnswers.length > 0 ? (
-                  <ul>{screen20Questions.filter((item) => summary.correctAnswers.includes(item.id)).map((item) => <li key={item.id}>{item.strongArea}</li>)}</ul>
-                ) : (
-                  <p>Use the areas to develop to strengthen these applied design decisions.</p>
-                )}
-              </article>
-              <article>
-                <h3>Areas to develop</h3>
-                {summary.reviewFlags.length > 0 ? (
-                  <ul>{summary.reviewFlags.map((flag) => <li key={flag}>Area to strengthen: {flag}. Review this area before moving on. This is an important design judgement for CSO project work.</li>)}</ul>
-                ) : (
-                  <p>Strong progress. Carry the full HRBA design logic into your snapshot.</p>
-                )}
-              </article>
-            </div>
             <p className="m3-closing-carry">{screen20CarryForward}</p>
+            <button type="button" className="m3-closing-secondary" data-qa="m3-s20-retry" onClick={retryAssessment}>Retry assessment</button>
           </section>
         )}
 
         <div className="m3-closing-actions">
           <PrimaryButton
             disabled={!canContinue}
-            onClick={() => summary && onComplete({ appliedKnowledgeCheck: summary, screen20: summary })}
+            onClick={() => summary && onComplete({ appliedKnowledgeCheck: summary, assessmentResult: summary, screen20: summary, score: summary.score, totalQuestions: summary.totalQuestions, percentage: summary.percentage, reviewTopics: summary.reviewTopics, attemptCount: summary.attemptCount })}
           >
-            {canContinue ? screen.continueLabel : 'Complete the applied check'}
+            {canContinue ? screen.continueLabel : 'Submit the applied check to continue'}
           </PrimaryButton>
         </div>
       </article>
@@ -18227,7 +18342,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R20') {
-    return <AppliedKnowledgeCheckScreen screen={screen} onComplete={onComplete} />;
+    return <AppliedKnowledgeCheckScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R21') {
