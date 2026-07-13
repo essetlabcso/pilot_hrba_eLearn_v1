@@ -6469,6 +6469,44 @@ type M3PortfolioSnapshot = Record<SnapshotFieldId, string> & {
   sourceScreensUsed: string[];
   learnerEditedFields: string[];
   savedAt: string;
+  snapshotStatus?: 'saved';
+  sourceSignature?: string;
+  snapshotSections?: FinalSnapshotSection[];
+  implementationWatchPoints?: string[];
+  assessmentSummary?: FinalSnapshotAssessmentSummary | null;
+  ownCsoNote?: string;
+};
+type FinalSnapshotSectionId =
+  | 'issue-context'
+  | 'standards-responsibilities'
+  | 'rights-holders-barriers'
+  | 'actors-cso-role'
+  | 'power-influence'
+  | 'causes-capacity'
+  | 'gender-disability'
+  | 'participation-accountability'
+  | 'risk-mitigation'
+  | 'objective-activities'
+  | 'logic-indicators-evidence'
+  | 'draft-plan-review'
+  | 'implementation-watch-points'
+  | 'assessment-summary';
+type FinalSnapshotSection = {
+  id: FinalSnapshotSectionId;
+  title: string;
+  sourceId: string;
+  sourceLabel: string;
+  content: string[];
+  complete: boolean;
+  missingReason?: string;
+};
+type FinalSnapshotAssessmentSummary = {
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  resultLabel: string;
+  targetedReview: string[];
+  attemptCount: number;
 };
 
 const proposalAssets = {
@@ -7129,15 +7167,6 @@ const screen20CarryForward =
 const screen21SafetyNote =
   'Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people. For your own work, write general section names and safe design notes.';
 
-const implementationWatchPointOptions = [
-  'participation is not influencing decisions',
-  'duty-bearers are not responding',
-  'excluded groups are not reached',
-  'feedback is collected but not answered',
-  'risk mitigation is not being followed',
-  'indicators only count activities',
-];
-
 const snapshotSections: SnapshotSection[] = [
   {
     id: 'review-work',
@@ -7304,9 +7333,12 @@ function getScreen20SavedOutput(state: LearningState): Screen20Submission | null
 
 function getScreen21SavedSnapshot(state: LearningState): M3PortfolioSnapshot | null {
   const record = getPracticeState(state, 'M3-R21');
-  const nested = record.module3PortfolioSnapshot || record.m3ProjectDesignImprovementSnapshot;
+  const nested = record.finalSnapshot || record.module3PortfolioSnapshot || record.m3ProjectDesignImprovementSnapshot;
   if (nested && typeof nested === 'object' && typeof (nested as M3PortfolioSnapshot).savedAt === 'string') {
-    return nested as M3PortfolioSnapshot;
+    const candidate = nested as M3PortfolioSnapshot;
+    const hasRecognizedContent = Boolean(candidate.snapshotSections?.length)
+      || snapshotSections.some((section) => section.fields.some((field) => typeof candidate[field.id] === 'string'));
+    if (hasRecognizedContent) return candidate;
   }
   return null;
 }
@@ -7368,10 +7400,6 @@ function buildScreen20Submission(
     submittedAt,
     generatedAt: submittedAt,
   };
-}
-
-function flattenSnapshotFields() {
-  return snapshotSections.flatMap((section) => section.fields);
 }
 
 function notYetSaved(label: string) {
@@ -7527,6 +7555,145 @@ function getDefaultSnapshotValues(state: LearningState): Record<SnapshotFieldId,
       'Select one implementation watch-point before saving.',
     ),
   };
+}
+
+const finalSnapshotSourceIds = ['M3-R05', 'M3-R06', 'M3-R07', 'M3-R08', 'M3-R09', 'M3-R10', 'M3-R11', 'M3-R12', 'M3-R13', 'M3-R14', 'M3-R17', 'M3-R20'];
+
+function uniqueSnapshotItems(values: Array<unknown>) {
+  const seen = new Set<string>();
+  return values
+    .flatMap((value) => Array.isArray(value) ? value : [value])
+    .flatMap((value) => String(value || '').split(/\n+/))
+    .map((value) => value.trim())
+    .filter((value) => value && !/not yet saved|select one implementation watch-point/i.test(value))
+    .filter((value) => {
+      const key = value.toLocaleLowerCase().replace(/\s+/g, ' ');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function stableSnapshotSerialize(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableSnapshotSerialize).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, nested]) => `${JSON.stringify(key)}:${stableSnapshotSerialize(nested)}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value) || 'null';
+}
+
+function getFinalSnapshotSourceSignature(state: LearningState) {
+  const serialized = stableSnapshotSerialize(Object.fromEntries(finalSnapshotSourceIds.map((screenId) => [screenId, getPracticeState(state, screenId)])));
+  let hash = 2166136261;
+  for (let index = 0; index < serialized.length; index += 1) {
+    hash ^= serialized.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `m3-final-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+}
+
+function getFinalSnapshotSections(state: LearningState): FinalSnapshotSection[] {
+  const values = getDefaultSnapshotValues(state);
+  const screen5 = getPracticeState(state, 'M3-R05');
+  const screen6 = getPracticeState(state, 'M3-R06');
+  const screen7 = getScreen7SavedOutput(state);
+  const screen8 = getScreen8SavedOutput(state);
+  const screen9 = getScreen9SavedOutput(state);
+  const screen10 = getScreen10SavedOutput(state);
+  const screen11 = getScreen11SavedOutput(state);
+  const screen12 = getScreen12SavedOutput(state);
+  const screen13 = getScreen13SavedOutput(state);
+  const screen14 = getScreen14SavedOutput(state);
+  const screen17 = getScreen17SavedOutput(state);
+  const assessment = getScreen20SavedOutput(state);
+  const watchPoints = uniqueSnapshotItems([
+    screen13?.riskDoNoHarmBoard?.generatedBoard.watchSign,
+    screen13?.riskDoNoHarmBoard?.generatedBoard.pauseStopReferralCondition,
+    screen14?.designRepairPackage?.implementationWatchPoint,
+    screen11?.carryForwardQuestion,
+    screen12?.participationAccountabilityPathway?.followUpMethod,
+    screen17?.appliedCheckReview?.implementationWatchPoint,
+    screen9?.generatedActorRows?.map((row) => row.designImplication),
+  ]).slice(0, 8);
+  const makeSection = (
+    id: FinalSnapshotSectionId,
+    title: string,
+    sourceId: string,
+    sourceLabel: string,
+    content: Array<unknown>,
+    sourceValid: boolean,
+  ): FinalSnapshotSection => {
+    const cleanContent = uniqueSnapshotItems(content);
+    return {
+      id,
+      title,
+      sourceId,
+      sourceLabel,
+      content: cleanContent,
+      complete: sourceValid && cleanContent.length > 0,
+      missingReason: sourceValid && cleanContent.length === 0
+        ? 'The saved record does not contain the required current output.'
+        : !sourceValid ? `Complete and save ${sourceLabel} before finalizing the snapshot.` : undefined,
+    };
+  };
+
+  return [
+    makeSection('issue-context', 'Issue and context', 'M3-R05', 'Screen 5 — Context and Inequality Scan', [values.contextInequalityFocus], Boolean(screen5.contextInequalityScan)),
+    makeSection('standards-responsibilities', 'Standards and responsibilities', 'M3-R06', 'Screen 6 — Policy and Standards Map', [values.policyStandardsSources, screen8?.responsibilitySummary], Boolean(screen6.policyStandardsMap || (Array.isArray(screen6.generatedMapRows) && screen6.generatedMapRows.length))),
+    makeSection('rights-holders-barriers', 'Rights-holders and barriers', 'M3-R07', 'Screen 7 — Rights-Holders and Barriers', [values.rightsHolderBarrierFocus], Boolean(screen7)),
+    makeSection('actors-cso-role', 'Duty-bearers, supporting actors, and CSO role', 'M3-R08', 'Screen 8 — Duty-Bearers, Supporting Actors, and CSO Roles', [values.dutyBearersSupportingActorsCsoRole], Boolean(screen8)),
+    makeSection('power-influence', 'Power and influence', 'M3-R09', 'Screen 9 — Power and Influence Map', [screen9?.generatedActorRows?.map((row) => `${row.actor}: ${row.designImplication}`), screen9?.powerMapSummary], Boolean(screen9)),
+    makeSection('causes-capacity', 'Causes and capacity gaps', 'M3-R10', 'Screen 10 — Root-Cause and Capacity-Gap Map', [screen10?.rootCauseSummary, screen10?.rootCauseCapacityGapMap?.designImplications], Boolean(screen10)),
+    makeSection('gender-disability', 'Gender, disability, accessibility, and accommodation', 'M3-R11', 'Screen 11 — Gender and Disability Design Check', [screen11?.markerLiteDashboard?.selectedRepairRows?.map((row) => row.repairSelected), screen11?.portfolioSummary, screen11?.carryForwardQuestion], Boolean(screen11)),
+    makeSection('participation-accountability', 'Participation and accountability', 'M3-R12', 'Screen 12 — Participation and Accountability Pathway', [values.participationAccountabilityPathway], Boolean(screen12)),
+    makeSection('risk-mitigation', 'Risk and mitigation', 'M3-R13', 'Screen 13 — Risk and Do-No-Harm Board', [values.riskDoNoHarmWatchPoint], Boolean(screen13)),
+    makeSection('objective-activities', 'Repaired objective and activity package', 'M3-R14', 'Screen 14 — HRBA Project Design Repair', [screen14?.repairedObjective?.repairedHrbaObjective, screen14?.repairedActivityPackage?.repairedActivities?.map((activity) => activity.repairedActivity), screen14?.designRepairPackage?.carryForwardNote], Boolean(screen14)),
+    makeSection('logic-indicators-evidence', 'Intervention logic, indicators, and evidence', 'M3-R14', 'Screen 14 — HRBA Project Design Repair', [screen14?.interventionLogicIndicators?.outcome, screen14?.interventionLogicIndicators?.indicator, screen14?.interventionLogicIndicators?.safeEvidenceSource, screen14?.interventionLogicIndicators?.assumptionRisk], Boolean(screen14)),
+    makeSection('draft-plan-review', 'Draft-plan review findings', 'M3-R17', 'Screen 15 — Draft Plan Review and Repair', [values.activityDraftPlanRepair, values.draftPlanReviewNote, (screen17?.reviewNote as { remainingVerificationQuestions?: string[] } | undefined)?.remainingVerificationQuestions], Boolean(screen17)),
+    makeSection('implementation-watch-points', 'Implementation watch-points', 'M3-R13', 'Screens 9, 11–15 — implementation watch-points', watchPoints, watchPoints.length > 0),
+    makeSection('assessment-summary', 'Applied Knowledge Check summary', 'M3-R20', 'Screen 16 — Applied Knowledge Check', assessment ? [`Score: ${assessment.score}/${assessment.totalQuestions} (${assessment.percentage}%). Result: ${assessment.assessmentResult}. Attempt: ${assessment.attemptCount}.`, assessment.reviewFlags.length ? `Targeted review: ${assessment.reviewFlags.join('; ')}` : 'No priority review topic was identified.'] : [], Boolean(assessment)),
+  ];
+}
+
+function getFinalSnapshotAssessmentSummary(state: LearningState): FinalSnapshotAssessmentSummary | null {
+  const assessment = getScreen20SavedOutput(state);
+  return assessment ? {
+    score: assessment.score,
+    totalQuestions: assessment.totalQuestions,
+    percentage: assessment.percentage,
+    resultLabel: assessment.assessmentResult,
+    targetedReview: assessment.reviewFlags,
+    attemptCount: assessment.attemptCount,
+  } : null;
+}
+
+function isFinalSnapshotCurrent(state: LearningState, snapshot: M3PortfolioSnapshot | null) {
+  return Boolean(
+    snapshot?.snapshotStatus === 'saved'
+    && snapshot.sourceSignature === getFinalSnapshotSourceSignature(state)
+    && snapshot.snapshotSections?.length === 14
+    && snapshot.snapshotSections.every((section) => section.complete),
+  );
+}
+
+function buildFinalSnapshotMarkdown(snapshot: M3PortfolioSnapshot) {
+  const sections = snapshot.snapshotSections || [];
+  return `# HRBA Project Design Improvement Snapshot
+
+Fictional practice case: Jiru Amba
+Reviewed and saved: ${snapshot.savedAt}
+
+This snapshot reflects the learner's selected Module 3 practice outputs.
+
+${sections.map((section) => `## ${section.title}\nSource: ${section.sourceLabel}\n\n${section.content.map((item) => `- ${item}`).join('\n')}`).join('\n\n')}
+
+## Optional own-CSO note
+${snapshot.ownCsoNote || 'No optional own-CSO note was recorded.'}
+
+Use generalized, non-identifying information. Remaining verification questions and implementation watch-points should be reviewed during implementation.`;
 }
 
 function getSnapshotSourceScreensUsed(state: LearningState) {
@@ -17319,45 +17486,37 @@ function AppliedKnowledgeCheckScreen({ screen, state, onChangeState, onComplete 
 function PortfolioSnapshotScreen({
   screen,
   state,
+  onChangeState,
   onSaveSnapshot,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
   state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onSaveSnapshot: (snapshot: M3PortfolioSnapshot) => void;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const defaults = getDefaultSnapshotValues(state);
+  const assembledSections = getFinalSnapshotSections(state);
+  const sourceSignature = getFinalSnapshotSourceSignature(state);
   const savedSnapshot = getScreen21SavedSnapshot(state);
-  const knowledgeCheck = getScreen20SavedOutput(state);
-  const [values, setValues] = useState<Record<SnapshotFieldId, string>>(() => {
-    const initialValues = { ...defaults };
-    if (savedSnapshot) {
-      flattenSnapshotFields().forEach((field) => {
-        initialValues[field.id] = savedSnapshot[field.id] || initialValues[field.id];
-      });
-    }
-    return initialValues;
-  });
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => ({ [snapshotSections[0].id]: true }));
-  const [reviewedSections, setReviewedSections] = useState<string[]>(savedSnapshot ? snapshotSections.map((section) => section.id) : [snapshotSections[0].id]);
-  const [implementationWatchPoint, setImplementationWatchPoint] = useState(savedSnapshot?.implementationWatchPoint || '');
-  const [editedFields, setEditedFields] = useState<string[]>(savedSnapshot?.learnerEditedFields || []);
+  const initialSavedCurrent = isFinalSnapshotCurrent(state, savedSnapshot);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => ({ [assembledSections[0].id]: true }));
+  const [reviewedSections, setReviewedSections] = useState<string[]>(initialSavedCurrent ? assembledSections.map((section) => section.id) : []);
+  const [ownCsoNote, setOwnCsoNote] = useState(savedSnapshot?.ownCsoNote || '');
   const [localSavedSnapshot, setLocalSavedSnapshot] = useState<M3PortfolioSnapshot | null>(savedSnapshot);
-  const [lastSavedSignature, setLastSavedSignature] = useState<string | null>(
-    savedSnapshot ? JSON.stringify({ values, implementationWatchPoint: savedSnapshot.implementationWatchPoint }) : null,
-  );
-  const [saveMessage, setSaveMessage] = useState(savedSnapshot ? 'Saved to My Portfolio: Module 3 HRBA Project Design Improvement Snapshot.' : '');
+  const [saveMessage, setSaveMessage] = useState(initialSavedCurrent ? 'Final snapshot saved. Your reviewed HRBA Project Design Improvement Snapshot is saved to the course portfolio.' : savedSnapshot ? 'Update required. Earlier saved snapshot content is preserved but is not the current final version.' : '');
   const saveRef = useRef<HTMLParagraphElement>(null);
-  const currentSignature = JSON.stringify({ values, implementationWatchPoint });
-  const allSectionsReviewed = snapshotSections.every((section) => reviewedSections.includes(section.id));
-  const isSavedCurrent = Boolean(lastSavedSignature && lastSavedSignature === currentSignature);
-  const canContinue = allSectionsReviewed && Boolean(implementationWatchPoint) && isSavedCurrent;
-  const staleAfterSave = Boolean(lastSavedSignature && lastSavedSignature !== currentSignature);
-  const reviewFlags = knowledgeCheck?.reviewFlags || savedSnapshot?.knowledgeCheckReviewFlags || [];
-  const snapshotFieldsList = flattenSnapshotFields();
-  const missingFields = snapshotFieldsList.filter((field) => /not yet saved|Select one implementation watch-point/i.test(values[field.id]));
-  const completedFieldCount = snapshotFieldsList.length - missingFields.length;
+  const readinessRef = useRef<HTMLDivElement>(null);
+  const snapshotHeadingRef = useRef<HTMLHeadingElement>(null);
+  const incompleteSections = assembledSections.filter((section) => !section.complete);
+  const allSectionsReviewed = assembledSections.every((section) => reviewedSections.includes(section.id));
+  const sourceIsCurrent = Boolean(localSavedSnapshot?.snapshotStatus === 'saved' && localSavedSnapshot.sourceSignature === sourceSignature);
+  const noteIsCurrent = Boolean(localSavedSnapshot && (localSavedSnapshot.ownCsoNote || '') === ownCsoNote.trim());
+  const isSavedCurrent = sourceIsCurrent && noteIsCurrent;
+  const updateRequired = Boolean(localSavedSnapshot && !sourceIsCurrent);
+  const noteNeedsSave = Boolean(localSavedSnapshot && sourceIsCurrent && !noteIsCurrent);
+  const canSave = incompleteSections.length === 0 && allSectionsReviewed;
+  const canContinue = canSave && isSavedCurrent;
 
   const markReviewed = (sectionId: string) => {
     setReviewedSections((current) => current.includes(sectionId) ? current : [...current, sectionId]);
@@ -17368,71 +17527,78 @@ function PortfolioSnapshotScreen({
     markReviewed(sectionId);
   };
 
-  const updateField = (fieldId: SnapshotFieldId, value: string) => {
-    setValues((current) => ({ ...current, [fieldId]: value }));
-    setEditedFields((current) => current.includes(fieldId) ? current : [...current, fieldId]);
-    if (lastSavedSignature) setSaveMessage('Your snapshot changed. Save the updated version before continuing.');
+  const returnToTool = (section: FinalSnapshotSection) => {
+    onChangeState((prev) => ({ ...prev, currentModuleId: MODULE_ID, currentScreenId: section.sourceId }));
+    setRoute(module3RevisedScreenRoutes[section.sourceId]);
   };
 
   const saveSnapshot = () => {
+    if (!canSave) {
+      setSaveMessage(incompleteSections.length ? `Cannot save yet. Complete ${incompleteSections[0].title} first.` : 'Review every snapshot section before saving.');
+      window.setTimeout(() => readinessRef.current?.focus(), 0);
+      return;
+    }
+    const defaults = getDefaultSnapshotValues(state);
+    const watchPoints = assembledSections.find((section) => section.id === 'implementation-watch-points')?.content || [];
     const snapshot: M3PortfolioSnapshot = {
-      ...values,
-      module4ImplementationWatchPoint: implementationWatchPoint || values.module4ImplementationWatchPoint,
-      implementationWatchPoint,
-      knowledgeCheckReviewFlags: reviewFlags,
+      ...defaults,
+      module4ImplementationWatchPoint: watchPoints[0] || defaults.module4ImplementationWatchPoint,
+      implementationWatchPoint: watchPoints[0] || defaults.module4ImplementationWatchPoint,
+      knowledgeCheckReviewFlags: getScreen20SavedOutput(state)?.reviewFlags || [],
       sourceScreensUsed: getSnapshotSourceScreensUsed(state),
-      learnerEditedFields: editedFields,
+      learnerEditedFields: [],
       savedAt: new Date().toISOString(),
+      snapshotStatus: 'saved',
+      sourceSignature,
+      snapshotSections: assembledSections,
+      implementationWatchPoints: watchPoints,
+      assessmentSummary: getFinalSnapshotAssessmentSummary(state),
+      ownCsoNote: ownCsoNote.trim(),
     };
-    const signature = JSON.stringify({ values, implementationWatchPoint });
-    setLastSavedSignature(signature);
-    setSaveMessage('Saved to My Portfolio: Module 3 HRBA Project Design Improvement Snapshot.');
+    setSaveMessage('Final snapshot saved. Your reviewed HRBA Project Design Improvement Snapshot is saved to the course portfolio.');
     setLocalSavedSnapshot(snapshot);
     onSaveSnapshot(snapshot);
     window.setTimeout(() => saveRef.current?.focus(), 0);
   };
 
+  const updateSnapshot = () => {
+    setReviewedSections([]);
+    setOpenSections({ [assembledSections[0].id]: true });
+    setSaveMessage('Snapshot updated from current Module 3 outputs. Review every section and save again.');
+    window.setTimeout(() => snapshotHeadingRef.current?.focus(), 0);
+  };
+
+  const downloadSnapshot = (format: 'docx' | 'md') => {
+    if (!localSavedSnapshot || !isSavedCurrent) return;
+    downloadDesignRepairTemplate(buildFinalSnapshotMarkdown(localSavedSnapshot), 'hrba-project-design-improvement-snapshot', format);
+  };
+
   return (
-    <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
+    <main className="m3-screen m3-closing-screen m3-final-snapshot" aria-labelledby={`${screen.id}-title`} data-qa="m3-final-snapshot">
       <article className="m3-closing-shell m3-closing-portfolio">
         <header className="m3-closing-header">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>My HRBA Project Design Improvement Snapshot</h1>
-          <p>This is your Module 3 portfolio artifact. Earlier outputs have been gathered into one editable snapshot so you can carry the strongest design-improvement points into Module 4.</p>
-          <div className="m3-closing-safe-note">
-            <strong>Safe-use note</strong>
-            <p>{screen21SafetyNote}</p>
-          </div>
+          <h1 id={`${screen.id}-title`}>Final Snapshot</h1>
+          <h2 ref={snapshotHeadingRef} tabIndex={-1}>Review your HRBA Project Design Improvement Snapshot</h2>
+          <p>This snapshot brings together the analysis and project-design decisions you completed throughout Module 3. Review each section before saving the final version. Missing sections are identified rather than filled with assumed information.</p>
+          <ol><li>Review each snapshot section.</li><li>Return to an earlier tool if a required section is missing.</li><li>Save and download the reviewed snapshot before continuing.</li></ol>
         </header>
 
-        <div className="m3-closing-snapshot-layout">
-          <aside className="m3-closing-snapshot-side">
-            <h2>Snapshot progress</h2>
-            <p><strong>{reviewedSections.length} of {snapshotSections.length}</strong> sections reviewed</p>
-            <p><strong>{completedFieldCount} of {snapshotFieldsList.length}</strong> snapshot areas have saved source content or learner edits.</p>
-            <p className={isSavedCurrent ? 'm3-closing-status is-saved' : 'm3-closing-status'}>{isSavedCurrent ? '✓ Saved' : staleAfterSave ? '• Needs save' : '• Needs review'}</p>
-            <section className="m3-closing-completeness" aria-label="Snapshot completeness summary">
-              <h3>Completeness check</h3>
-              {missingFields.length > 0 ? (
-                <>
-                  <p>{missingFields.length} snapshot area{missingFields.length === 1 ? '' : 's'} still show missing source content.</p>
-                  <ul>{missingFields.slice(0, 5).map((field) => <li key={field.id}>{field.label}</li>)}</ul>
-                </>
-              ) : (
-                <p>All snapshot areas have content. Review, choose a Module 4 watch-point, save, and continue.</p>
-              )}
-            </section>
-            {reviewFlags.length > 0 && (
-              <section>
-                <h3>Your knowledge check suggested paying attention to...</h3>
-                <ul>{reviewFlags.map((flag) => <li key={flag}>{flag}</li>)}</ul>
-              </section>
-            )}
-          </aside>
+        <section className="m3-final-readiness" aria-labelledby={`${screen.id}-readiness`} ref={readinessRef} tabIndex={-1}>
+          <h2 id={`${screen.id}-readiness`}>Review readiness</h2>
+          <div className="m3-final-status-grid">
+            <p><strong>{assembledSections.length - incompleteSections.length}/{assembledSections.length}</strong><span> required sections complete</span></p>
+            <p><strong>{reviewedSections.length}/{assembledSections.length}</strong><span> sections reviewed</span></p>
+            <p><strong>{getScreen20SavedOutput(state) ? 'Complete' : 'Not yet complete'}</strong><span> Applied Knowledge Check</span></p>
+            <p><strong>{isSavedCurrent ? 'Saved · Current' : updateRequired ? 'Update required' : noteNeedsSave ? 'Needs save' : 'Not saved'}</strong><span> final snapshot status</span></p>
+          </div>
+          {incompleteSections.length > 0 && <div className="m3-closing-warning"><p><strong>{incompleteSections.length} required section{incompleteSections.length === 1 ? '' : 's'} not yet complete.</strong> Missing content is not filled with assumed information.</p></div>}
+          {updateRequired && <button type="button" className="m3-closing-primary" data-qa="m3-final-update" onClick={updateSnapshot}>Update Snapshot</button>}
+        </section>
 
-          <section className="m3-closing-accordion" aria-label="Portfolio snapshot sections">
-            {snapshotSections.map((section) => {
+        <section className="m3-closing-accordion" aria-label="HRBA Project Design Improvement Snapshot sections">
+            {assembledSections.map((section) => {
               const expanded = Boolean(openSections[section.id]);
               const reviewed = reviewedSections.includes(section.id);
               const panelId = `${screen.id}-${section.id}`;
@@ -17446,93 +17612,46 @@ function PortfolioSnapshotScreen({
                     onClick={() => toggleSection(section.id)}
                   >
                     <span>{section.title}</span>
-                    <strong>{reviewed ? 'Reviewed' : 'Needs edit'}</strong>
+                    <strong>{!section.complete ? 'Not yet complete' : reviewed ? 'Reviewed' : 'Review required'}</strong>
                   </button>
                   {expanded && (
                     <div id={panelId} className="m3-closing-accordion-panel">
-                      {section.fields.map((field) => {
-                        const textareaId = `${screen.id}-${field.id}`;
-                        const metaId = `${textareaId}-meta`;
-                        return (
-                          <label key={field.id} htmlFor={textareaId} className="m3-closing-field">
-                            <span>{field.label}</span>
-                            <small>{field.prompt}</small>
-                            <textarea
-                              id={textareaId}
-                              value={values[field.id]}
-                              maxLength={field.maxLength}
-                              placeholder={field.placeholder}
-                              aria-describedby={metaId}
-                              onChange={(event) => updateField(field.id, event.target.value)}
-                            />
-                            <span id={metaId} className="m3-closing-field-meta">{values[field.id].length}/{field.maxLength} characters · <strong>{field.source}</strong></span>
-                            <details>
-                              <summary>View source notes</summary>
-                              <p>{field.sourceNotes}</p>
-                            </details>
-                          </label>
-                        );
-                      })}
+                      <p className="m3-final-source"><strong>Source:</strong> {section.sourceLabel}</p>
+                      {section.complete ? <ul>{section.content.map((item) => <li key={item}>{item}</li>)}</ul> : <div className="m3-final-missing"><p><strong>Not yet complete.</strong> {section.missingReason}</p><button type="button" className="m3-closing-secondary" onClick={() => returnToTool(section)}>Return to {section.sourceLabel}</button></div>}
                     </div>
                   )}
                 </article>
               );
             })}
-          </section>
+        </section>
 
-          <aside className="m3-closing-save-panel" aria-live="polite">
-            <h2>Implementation watch-point</h2>
-            <p>Choose one final watch-point for Module 4.</p>
-            <fieldset className="m3-closing-watch-options">
-              <legend>One implementation watch-point for Module 4</legend>
-              {implementationWatchPointOptions.map((option) => (
-                <label key={option} className={implementationWatchPoint === option ? 'is-selected' : ''}>
-                  <input
-                    type="radio"
-                    name={`${screen.id}-watch-point`}
-                    value={option}
-                    checked={implementationWatchPoint === option}
-                    onChange={() => {
-                      setImplementationWatchPoint(option);
-                      setValues((current) => ({ ...current, module4ImplementationWatchPoint: option }));
-                      if (lastSavedSignature) setSaveMessage('Your snapshot changed. Save the updated version before continuing.');
-                    }}
-                  />
-                  <span>{implementationWatchPoint === option ? '✓ ' : ''}{option}</span>
-                </label>
-              ))}
-            </fieldset>
-            <div className="m3-closing-safe-note">
-              <strong>Safe-use note</strong>
-              <p>{screen21SafetyNote}</p>
-            </div>
-            <button type="button" className="m3-closing-primary" disabled={!allSectionsReviewed || !implementationWatchPoint} onClick={saveSnapshot}>
-              Save to My Portfolio
-            </button>
+        <section className="m3-final-own-note" aria-labelledby={`${screen.id}-own-note`}>
+          <h2 id={`${screen.id}-own-note`}>Optional own-CSO note</h2>
+          <p>You may record one generalized design point to review later. Do not enter organization names, proposal titles, donor names, exact locations, identifiable complaints, personal information, confidential project text or sensitive incidents.</p>
+          <label htmlFor={`${screen.id}-own-note-input`}>Generalized design point <span>Optional</span></label>
+          <textarea id={`${screen.id}-own-note-input`} value={ownCsoNote} maxLength={500} onChange={(event) => { setOwnCsoNote(event.target.value); if (isSavedCurrent) setSaveMessage('The optional note changed. Save the snapshot again before continuing.'); }} />
+          <p>{ownCsoNote.length}/500 characters · Kept separate from the required Jiru Amba snapshot.</p>
+        </section>
+
+        <section className="m3-closing-save-panel m3-final-save" aria-labelledby={`${screen.id}-save`}>
+            <h2 id={`${screen.id}-save`}>Save and download</h2>
+            <p className="m3-closing-safe-note">{screen21SafetyNote}</p>
+            <button type="button" className="m3-closing-primary" data-qa="m3-final-save" disabled={!canSave} onClick={saveSnapshot}>Save final snapshot</button>
             <p ref={saveRef} tabIndex={-1} className="m3-closing-save-message" aria-live="polite">
-              {saveMessage || (!allSectionsReviewed ? `Open and review all ${snapshotSections.length} sections before saving.` : !implementationWatchPoint ? 'Select one implementation watch-point before saving.' : 'Ready to save your snapshot.')}
+              {saveMessage || (incompleteSections.length ? 'Complete every required source section before saving.' : !allSectionsReviewed ? `Open and review all ${assembledSections.length} sections before saving.` : 'Ready to save the final snapshot.')}
             </p>
-          </aside>
-        </div>
+            <div className="m3-final-downloads">
+              <button type="button" className="m3-closing-secondary" disabled={!isSavedCurrent} onClick={() => downloadSnapshot('docx')}>Download final snapshot (.docx)</button>
+              <button type="button" className="m3-closing-secondary" disabled={!isSavedCurrent} onClick={() => downloadSnapshot('md')}>Download final snapshot (.md)</button>
+            </div>
+        </section>
 
         <div className="m3-closing-actions">
           <PrimaryButton
             disabled={!canContinue}
-            onClick={() => {
-              onComplete({
-                module3PortfolioSnapshot: localSavedSnapshot || {
-                  ...values,
-                  module4ImplementationWatchPoint: implementationWatchPoint || values.module4ImplementationWatchPoint,
-                  implementationWatchPoint,
-                  knowledgeCheckReviewFlags: reviewFlags,
-                  sourceScreensUsed: getSnapshotSourceScreensUsed(state),
-                  learnerEditedFields: editedFields,
-                  savedAt: new Date().toISOString(),
-                },
-              });
-            }}
+            onClick={() => localSavedSnapshot && onComplete({ module3PortfolioSnapshot: localSavedSnapshot, finalSnapshot: localSavedSnapshot, sourceSignature })}
           >
-            {canContinue ? screen.continueLabel : 'Complete your snapshot'}
+            {canContinue ? 'Continue to Module 3 Closure' : updateRequired ? 'Update and save snapshot to continue' : 'Save current snapshot to continue'}
           </PrimaryButton>
         </div>
       </article>
@@ -17543,104 +17662,74 @@ function PortfolioSnapshotScreen({
 function Module3ClosureScreen({
   screen,
   state,
+  onChangeState,
   onStartModule4,
   onReturnSnapshot,
 }: {
   screen: Module3RevisedScreen;
   state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onStartModule4: () => void;
   onReturnSnapshot: () => void;
 }) {
   const snapshot = getScreen21SavedSnapshot(state);
-  const saved = Boolean(snapshot);
-  const snapshotHighlights = saved && snapshot ? [
-    ['Repaired design decision', snapshot.repairedDesignDecision],
-    ['Activity or draft plan repair', snapshot.activityDraftPlanRepair],
-    ['Intervention logic and indicator focus', snapshot.interventionLogicIndicatorFocus],
-    ['Module 4 implementation watch-point', snapshot.module4ImplementationWatchPoint || snapshot.implementationWatchPoint],
-  ].filter(([, value]) => value && !/not yet saved/i.test(value)) : [];
+  const snapshotCurrent = isFinalSnapshotCurrent(state, snapshot);
+  const closureRecord = getPracticeState(state, screen.id);
+  const [acknowledged, setAcknowledged] = useState(closureRecord.acknowledged === true);
+  const watchPoints = snapshotCurrent ? snapshot?.implementationWatchPoints || [] : [];
+  const canComplete = snapshotCurrent && acknowledged;
+
+  const updateAcknowledgement = (value: boolean) => {
+    setAcknowledged(value);
+    onChangeState((prev) => ({ ...prev, practiceCheckState: { ...prev.practiceCheckState, [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), acknowledged: value, acknowledgedAt: value ? new Date().toISOString() : null } } }));
+  };
 
   return (
-    <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
+    <main className="m3-screen m3-closing-screen m3-final-closure" aria-labelledby={`${screen.id}-title`} data-qa="m3-final-closure">
       <article className="m3-closing-shell">
         <header className="m3-closing-header m3-closing-complete-header">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>Module 3 completed</h1>
-          <p>You have completed Module 3. You practiced reviewing a project design before implementation, finding hidden HRBA gaps, and repairing one section using rights-holders, barriers, responsibilities, participation, accountability, inclusion, risk, and evidence.</p>
-          {saved ? (
-            <div className="m3-closing-badges" aria-label="Module completion badges">
-              <span>✓ Module 3 completed</span>
-              <span>✓ HRBA Project Design Improvement Snapshot saved</span>
-            </div>
+          <h1 id={`${screen.id}-title`}>{snapshotCurrent ? 'Module 3 complete' : 'Final snapshot required'}</h1>
+          {snapshotCurrent ? (
+            <><p>You have completed the Module 3 project-design process and saved your HRBA Project Design Improvement Snapshot.</p><p className="m3-closing-status is-saved">Saved · Current final snapshot</p></>
           ) : (
             <div className="m3-closing-warning">
-              <p><strong>Your Module 3 snapshot has not been saved yet.</strong> Return to the snapshot screen and save before starting Module 4.</p>
+              <p><strong>Your final snapshot must be reviewed and saved before Module 3 can be completed.</strong></p>
             </div>
           )}
         </header>
 
-        <section className="m3-closing-achievements" aria-label="Module 3 achievements">
-          <h2>What you can now do</h2>
-          {[
-            ['You analyzed before activities', 'You looked beyond activities and asked who holds rights, who may be excluded, and what barriers shape the issue.'],
-            ['You clarified responsibilities and risks', 'You checked duty-bearers, supporting actors, CSO role, power, capacity gaps, gender, disability, accountability, and do-no-harm.'],
-            ['You repaired design logic', 'You strengthened proposal language, intervention logic, indicators, and one implementation watch-point.'],
-          ].map(([title, text]) => (
-            <article key={title}>
-              <h2>{title}</h2>
-              <p>{text}</p>
-            </article>
-          ))}
+        <section className="m3-closing-transition">
+          <h2>What you completed</h2>
+          <p>In this module, you analyzed context and inequality; connected issues to standards and responsibility; identified rights-holders, barriers, actors, influence, causes and capacity gaps; designed inclusion, participation, accountability and risk measures; repaired the objective, activities, intervention logic and indicators; reviewed a draft plan; completed the Applied Knowledge Check; and finalized the HRBA Project Design Improvement Snapshot.</p>
         </section>
 
-        <section className="m3-closing-transition m3-closing-snapshot-confirm" aria-label="Saved Module 3 design snapshot">
-          <h2>Your saved design snapshot</h2>
-          {saved && snapshot ? (
-            <>
-              <p>Your final HRBA Project Design Improvement Snapshot is saved. It can support Module 4 implementation planning and help you keep the repaired design logic visible during delivery.</p>
-              {snapshotHighlights.length > 0 && (
-                <dl className="m3-closing-snapshot-highlights">
-                  {snapshotHighlights.map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-            </>
-          ) : (
-            <p>Your final snapshot is not saved yet. Return to the snapshot screen, save it, and then come back here to complete Module 3.</p>
-          )}
+        <section className="m3-final-dialogue" aria-labelledby={`${screen.id}-dialogue`}>
+          <h2 id={`${screen.id}-dialogue`}>Martha and Dawit: carrying the design forward</h2>
+          <dl>
+            <div><dt>Martha</dt><dd>“You have moved from context analysis to a practical project-design package. The final snapshot shows how the earlier findings changed the objective, activities, responsibilities, participation arrangements, accountability measures, risk controls and indicators.”</dd></div>
+            <div><dt>Dawit</dt><dd>“The design is now ready to guide implementation, but it should not be treated as fixed. Implementation may confirm some assumptions and show that other decisions need to change.”</dd></div>
+            <div><dt>Martha</dt><dd>“Continue to check whether rights-holders receive accessible information, can participate meaningfully and receive a response and explanation.”</dd></div>
+            <div><dt>Dawit</dt><dd>“Also monitor whether responsible actors carry out agreed actions, whether mitigation measures function, whether evidence remains appropriate and whether the project needs to adapt.”</dd></div>
+            <div><dt>Martha</dt><dd>“Module 4 will focus on carrying these design decisions into implementation.”</dd></div>
+          </dl>
         </section>
 
         <section className="m3-closing-transition">
-          <h2>What carries forward to Module 4</h2>
-          <p>A rights-based design is only useful if it stays alive during implementation.</p>
-          <p>In Module 4, you will use your design snapshot to check whether participation, accountability, inclusion, risk management, and duty-bearer engagement are actually happening during delivery.</p>
-          <h3>Carry these into Module 4:</h3>
-          <ul>
-            <li>rights-holder and barrier analysis;</li>
-            <li>duty-bearer and CSO role logic;</li>
-            <li>gender and disability watch-points;</li>
-            <li>participation and feedback pathway;</li>
-            <li>risk and do-no-harm checks;</li>
-            <li>repaired objective, activity, or proposal section;</li>
-            <li>implementation watch-point.</li>
-          </ul>
+          <h2>Implementation watch-points</h2>
+          {watchPoints.length ? <ul>{watchPoints.map((item) => <li key={item}>{item}</li>)}</ul> : <p>No current saved watch-point is available. Return to the Final Snapshot for review.</p>}
+        </section>
+
+        <section className="m3-closing-transition">
+          <h2>Continue to Module 4</h2>
+          <p>Module 4 focuses on implementation. You will use the project-design decisions and implementation watch-points from this module to guide participation, accountability, inclusion, risk management, evidence and adaptation during delivery.</p>
+          <label className="m3-final-acknowledgement"><input type="checkbox" checked={acknowledged} disabled={!snapshotCurrent} onChange={(event) => updateAcknowledgement(event.target.checked)} /><span>I have reviewed the saved snapshot and the implementation watch-points.</span></label>
         </section>
 
         <div className="m3-closing-actions m3-closing-actions--split">
-          <button type="button" className="m3-closing-primary" onClick={saved ? onStartModule4 : onReturnSnapshot}>
-            {saved ? 'Start Module 4' : 'Return to snapshot'}
-          </button>
-          <button type="button" className="m3-closing-secondary" onClick={onReturnSnapshot}>
-            Review Module 3 snapshot
-          </button>
-          <button type="button" className="m3-closing-secondary" onClick={onReturnSnapshot}>
-            View My Portfolio
-          </button>
+          <button type="button" className="m3-closing-secondary" onClick={onReturnSnapshot}>Return to Final Snapshot</button>
+          <button type="button" className="m3-closing-primary" data-qa="m3-closure-continue" disabled={!canComplete} onClick={onStartModule4}>Continue to Module 4</button>
         </div>
       </article>
     </main>
@@ -18350,6 +18439,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
       <PortfolioSnapshotScreen
         screen={screen}
         state={state}
+        onChangeState={onChangeState}
         onSaveSnapshot={(snapshot) => {
           onChangeState((prev) => ({
             ...prev,
@@ -18359,6 +18449,10 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
                 ...(prev.practiceCheckState[practiceKey(screen.id)] || {}),
                 status: 'saved',
                 savedAt: snapshot.savedAt,
+                snapshotStatus: snapshot.snapshotStatus,
+                sourceSignature: snapshot.sourceSignature,
+                ownCsoNote: snapshot.ownCsoNote,
+                finalSnapshot: snapshot,
                 module3PortfolioSnapshot: snapshot,
                 m3ProjectDesignImprovementSnapshot: snapshot,
               },
@@ -18375,7 +18469,8 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
       <Module3ClosureScreen
         screen={screen}
         state={state}
-        onStartModule4={() => completeScreen(screen, onChangeState, { completed, module3PortfolioSnapshot: getScreen21SavedSnapshot(state) })}
+        onChangeState={onChangeState}
+        onStartModule4={() => completeScreen(screen, onChangeState, { completed: true, acknowledged: true, module3PortfolioSnapshot: getScreen21SavedSnapshot(state) })}
         onReturnSnapshot={() => {
           onChangeState((prev) => ({
             ...prev,
