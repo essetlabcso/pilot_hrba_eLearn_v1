@@ -20822,6 +20822,75 @@
   margin: 1rem 0 0;
 }
 
+.m3-s17-lens-grid,
+.m3-s17-strength-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+  margin-block: 0.85rem 1.25rem;
+}
+
+.m3-s17-lens-grid article,
+.m3-s17-strength-grid button,
+.m3-s17-finding-editor {
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid #bad5df;
+  border-radius: 0.8rem;
+  background: #fff;
+  color: #102f3b;
+}
+
+.m3-s17-lens-grid article,
+.m3-s17-strength-grid button {
+  display: grid;
+  gap: 0.35rem;
+  text-align: start;
+}
+
+.m3-s17-strength-grid button {
+  cursor: pointer;
+}
+
+.m3-s17-strength-grid button.is-selected {
+  border: 2px solid #087f78;
+  background: #edf9f7;
+}
+
+.m3-s17-finding-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.m3-s17-finding-editor {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.m3-s17-finding-editor legend {
+  padding-inline: 0.35rem;
+  color: #075f59;
+  font-weight: 850;
+}
+
+.m3-s17-finding-editor label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 750;
+}
+
+.m3-s17-finding-editor select,
+.m3-s17-finding-editor textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid #83afbd;
+  border-radius: 0.55rem;
+  background: #fff;
+  color: #102f3b;
+  font: inherit;
+}
+
 .m3-s14-transition dl div {
   display: grid;
   grid-template-columns: minmax(4.5rem, auto) 1fr;
