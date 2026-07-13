@@ -407,6 +407,12 @@ export default function App() {
     
     return defaultState;
   });
+
+  useEffect(() => {
+    const restoreRouteFromHistory = () => window.location.reload();
+    window.addEventListener('popstate', restoreRouteFromHistory);
+    return () => window.removeEventListener('popstate', restoreRouteFromHistory);
+  }, []);
   const portalContext = useMemo(() => getPortalLaunchContextFromWindow(), []);
   const portalCompletedModuleIds = useMemo(
     () => getPortalCompletedModuleIds(state.completedModules),

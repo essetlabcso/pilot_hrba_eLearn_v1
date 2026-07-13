@@ -14619,7 +14619,7 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
     actorRole: savedPackage?.interventionLogicChain.find((item) => item.startsWith('Responsible actor or role:'))?.replace('Responsible actor or role:', '').trim() || '',
     watchPoint: savedPackage?.implementationWatchPoint || savedLogic?.implementationWatchPoint || '',
   } : initialRepairDraft;
-  const [stage, setStage] = useState<Screen14StageId>(1);
+  const [stage, setStage] = useState<Screen14StageId>(savedScreen14 ? 8 : 1);
   const [selectedIssueId, setSelectedIssueId] = useState(restoredIssueId);
   const [repairDraft, setRepairDraft] = useState(restoredRepairDraft);
   const [selectedActivityIds, setSelectedActivityIds] = useState<string[]>(savedScreen14?.repairedActivityPackage?.selectedActionIds.filter((id) => activityRepairActions.some((action) => action.id === id)) || []);
