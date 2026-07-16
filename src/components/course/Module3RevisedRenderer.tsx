@@ -9883,7 +9883,7 @@ function PolicyStandardsMapScreen({
                           </option>
                         ))}
                       </select>
-                      <em>{selectedAnchor ? `${matchHint}: ${compactPolicyMapLine(selectedAnchor.designQuestion, 110)}` : `Hint: strongest match is ${getAnchorById(logic.strongest)?.title}.`}</em>
+                      <em>{selectedAnchor ? `${matchHint}: ${compactPolicyMapLine(selectedAnchor.designQuestion, 110)}` : 'Consider which reference helps clarify responsibility, inclusion, participation, accountability, access, or risk in this situation.'}</em>
                     </label>
                   );
                 })}
@@ -13199,11 +13199,14 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
           {showScale && <img className="m3-s11-scale-visual" src={module3Screen11Assets.scale.src} alt={module3Screen11Assets.scale.alt} onError={() => setShowScale(false)} />}
           <div className="m3-s11-example-grid">
             {[
-              ['Design signal', 'The plan says women and persons with disabilities were invited to consultation.'],
-              ['Classification', 'Mentioned but not built in.'],
-              ['Why it matters', 'Invitation does not prove meaningful influence, accessible participation, accommodation, safe feedback, budget, or follow-up.'],
-              ['Design repair', 'Add accessible information, reasonable accommodation, consultation timing that fits livelihood and care responsibilities, and a feedback pathway that explains what changed.'],
-              ['Carry-forward question', 'Who needs to participate, what support do they need, how can they influence decisions, and how will they receive feedback?'],
+              ['Design statement', 'The plan says women and persons with disabilities were invited to consultation.'],
+              ['What is missing', 'Invitation does not yet show meaningful influence, accessible participation, accommodation, safe feedback, budget, or follow-up.'],
+              ['Gender consideration', 'Consultation timing and methods should account for livelihood and care responsibilities and whether women can influence decisions.'],
+              ['Disability and accessibility consideration', 'Provide accessible information, communication and participation formats, reasonable accommodation, and an alternative feedback route.'],
+              ['Design repair', 'Add accessible information, reasonable accommodation, suitable consultation timing, and a feedback pathway that explains what changed.'],
+              ['Responsible role', 'The planning office coordinates the decision and response, with service and CSO support roles clearly assigned.'],
+              ['Resource or accommodation implication', 'Budget for accessible formats, facilitation, venue or transport support, and reasonable accommodation where required.'],
+              ['Monitoring point', 'Check who participated, whose priorities influenced the decision, whether accommodations worked, and whether feedback received a response.'],
             ].map(([label, text]) => (
               <article key={label}>
                 <span>{label}</span>
@@ -13776,18 +13779,21 @@ function ParticipationAccountabilityPathwayScreen({ screen, state, onComplete }:
         <section className="m3-participation-grid-two">
           <article className="m3-participation-card">
             <h2>Worked example: women traders</h2>
-            <div className="m3-participation-example-grid">
+            <ol className="m3-participation-example-grid" aria-label="Participation and accountability pathway example">
               {[
-                ['Rights-holder group', 'Women traders.'],
-                ['Gap', 'They attended a meeting, but the final market priorities may already have been shaped.'],
-                ['Decision to influence', 'Market service priorities, fee arrangements, information-sharing, and feedback follow-up.'],
-                ['Access support', 'Clear information before decisions, consultation time that fits livelihood and care responsibilities, and a trusted facilitator.'],
-                ['Influence method', 'Small-group discussion before final decisions, with documented non-identifying priorities carried to the planning team.'],
-                ['Response channel', 'Public response note and safe feedback route explaining what changed, what did not change, and why.'],
-                ['Responsible actor', 'Woreda planning office with support from the market committee and CSO facilitator.'],
-                ['Design adjustment', 'Add early consultation, feedback-response steps, and an indicator showing whether women traders influenced decisions before finalization.'],
-              ].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}
-            </div>
+                ['Accessible information', 'Share clear information before decisions in formats and at times women traders can use.'],
+                ['Participation method', 'Use a facilitated small-group discussion that fits livelihood and care responsibilities.'],
+                ['Decision-influence point', 'Carry documented, non-identifying priorities into market service, fee, information and feedback decisions before finalization.'],
+                ['Feedback or concern channel', 'Provide a safe feedback route and a public response note.'],
+                ['Responsible recipient', 'The Woreda planning office receives the priorities, supported by the market committee and CSO facilitator.'],
+                ['Review and response', 'The planning team reviews the priorities and records what can change.'],
+                ['Explanation', 'Explain what changed, what did not change, and why.'],
+                ['Follow-up or adaptation', 'Follow up on agreed actions and adapt the pathway when participation is not influencing decisions.'],
+                ['Accessibility and inclusion check', 'Check whether timing, language, format and facilitation enable women traders and persons with disabilities to participate.'],
+                ['Alternative channel', 'Offer a confidential or assisted route for people who cannot safely or practically use the main channel.'],
+                ['Risk or implementation watch-point', 'Monitor whether priorities are gathered before decisions and whether responses reach participants.'],
+              ].map(([label, value], index) => <li key={label}><span aria-hidden="true">{index + 1}</span><div><strong>{label}</strong><p>{value}</p></div></li>)}
+            </ol>
             <p className="m3-participation-note">Notice: The example does not only say “women traders attended.” It shows the decision they influence, the support they need, who responds, and how they know what changed.</p>
             <div className="m3-guided-stage-actions">
               <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(1)}>Back to Understand</button>
@@ -17422,7 +17428,7 @@ function AppliedKnowledgeCheckScreen({ screen, state, onChangeState, onComplete 
             <div className="m3-s20-question-actions">
               <button type="button" className="m3-closing-secondary" disabled={currentIndex === 0} onClick={() => moveToQuestion(currentIndex - 1)}>Previous question</button>
               {currentIndex < screen20Questions.length - 1 && <button type="button" className="m3-closing-primary" onClick={() => moveToQuestion(currentIndex + 1)}>Next question</button>}
-              <button type="button" className="m3-closing-primary" data-qa="m3-s20-submit" onClick={submitAssessment}>Submit assessment</button>
+              <button type="button" className={currentIndex === screen20Questions.length - 1 ? 'm3-closing-primary' : 'm3-closing-secondary'} data-qa="m3-s20-submit" onClick={submitAssessment}>Submit assessment</button>
             </div>
           </section>
         )}
@@ -17636,7 +17642,8 @@ function PortfolioSnapshotScreen({
         <section className="m3-closing-save-panel m3-final-save" aria-labelledby={`${screen.id}-save`}>
             <h2 id={`${screen.id}-save`}>Save and download</h2>
             <p className="m3-closing-safe-note">{screen21SafetyNote}</p>
-            <button type="button" className="m3-closing-primary" data-qa="m3-final-save" disabled={!canSave} onClick={saveSnapshot}>Save final snapshot</button>
+            <p className="m3-final-next-action"><strong>Next action:</strong> {updateRequired ? 'Update the snapshot, then review and save it again.' : incompleteSections.length ? 'Return to the incomplete source sections.' : !allSectionsReviewed ? 'Open and review the remaining snapshot sections.' : !isSavedCurrent ? 'Save the reviewed final snapshot.' : 'Continue to Module 3 Closure.'}</p>
+            <button type="button" className={!updateRequired && canSave && !isSavedCurrent ? 'm3-closing-primary' : 'm3-closing-secondary'} data-qa="m3-final-save" disabled={!canSave} onClick={saveSnapshot}>Save final snapshot</button>
             <p ref={saveRef} tabIndex={-1} className="m3-closing-save-message" aria-live="polite">
               {saveMessage || (incompleteSections.length ? 'Complete every required source section before saving.' : !allSectionsReviewed ? `Open and review all ${assembledSections.length} sections before saving.` : 'Ready to save the final snapshot.')}
             </p>
@@ -17706,14 +17713,16 @@ function Module3ClosureScreen({
         </section>
 
         <section className="m3-final-dialogue" aria-labelledby={`${screen.id}-dialogue`}>
-          <h2 id={`${screen.id}-dialogue`}>Martha and Dawit: carrying the design forward</h2>
-          <dl>
-            <div><dt>Martha</dt><dd>“You have moved from context analysis to a practical project-design package. The final snapshot shows how the earlier findings changed the objective, activities, responsibilities, participation arrangements, accountability measures, risk controls and indicators.”</dd></div>
-            <div><dt>Dawit</dt><dd>“The design is now ready to guide implementation, but it should not be treated as fixed. Implementation may confirm some assumptions and show that other decisions need to change.”</dd></div>
-            <div><dt>Martha</dt><dd>“Continue to check whether rights-holders receive accessible information, can participate meaningfully and receive a response and explanation.”</dd></div>
-            <div><dt>Dawit</dt><dd>“Also monitor whether responsible actors carry out agreed actions, whether mitigation measures function, whether evidence remains appropriate and whether the project needs to adapt.”</dd></div>
-            <div><dt>Martha</dt><dd>“Module 4 will focus on carrying these design decisions into implementation.”</dd></div>
-          </dl>
+          <h2 id={`${screen.id}-dialogue`}>Carry the design forward</h2>
+          <ul>
+            <li>Check whether rights-holders receive timely and accessible information.</li>
+            <li>Monitor whether participation influences real decisions.</li>
+            <li>Confirm that feedback receives a response, explanation and follow-up.</li>
+            <li>Monitor whether responsible actors carry out agreed actions.</li>
+            <li>Check whether accessibility and reasonable-accommodation measures function.</li>
+            <li>Monitor risks, mitigation measures and alternative channels.</li>
+            <li>Review assumptions and adapt the project when evidence changes.</li>
+          </ul>
         </section>
 
         <section className="m3-closing-transition">
@@ -17723,7 +17732,7 @@ function Module3ClosureScreen({
 
         <section className="m3-closing-transition">
           <h2>Continue to Module 4</h2>
-          <p>Module 4 focuses on implementation. You will use the project-design decisions and implementation watch-points from this module to guide participation, accountability, inclusion, risk management, evidence and adaptation during delivery.</p>
+          <p>Module 4 focuses on using these design decisions during implementation.</p>
           <label className="m3-final-acknowledgement"><input type="checkbox" checked={acknowledged} disabled={!snapshotCurrent} onChange={(event) => updateAcknowledgement(event.target.checked)} /><span>I have reviewed the saved snapshot and the implementation watch-points.</span></label>
         </section>
 

@@ -21260,3 +21260,276 @@
 @media (max-width: 480px) {
   .m3-s11-classification-list label { grid-template-columns: 1fr; }
 }
+
+/* Module 3 simple UI/UX polish: clearer controls, hierarchy and responsive actions. */
+.m3-screen :is(input:not([type="radio"]):not([type="checkbox"]), select, textarea) {
+  max-width: 100%;
+  border: 2px solid #52758b;
+  background-color: #fff;
+  color: #102a3a;
+}
+
+.m3-screen :is(input:not([type="radio"]):not([type="checkbox"]), select, textarea):hover:not(:disabled) {
+  border-color: #245d7b;
+}
+
+.m3-screen :is(button, input, select, textarea):focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
+}
+
+.m3-screen :is(input[type="radio"], input[type="checkbox"]) {
+  min-width: 1.2rem;
+  min-height: 1.2rem;
+  accent-color: #075f75;
+}
+
+.m3-screen button,
+.m3-screen :is(input, select) {
+  min-height: 2.75rem;
+}
+
+.m3-screen button:disabled {
+  border-color: #a6b1ba !important;
+  background: #e7ebee !important;
+  color: #52606b !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  filter: grayscale(0.25);
+  opacity: 0.68;
+  transform: none !important;
+}
+
+.m3-screen :is(.m3-closing-primary, .m3-s11-submit-button, .m3-participation-submit):not(:disabled) {
+  border: 2px solid #064d5c;
+  background: #076a78;
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(7, 73, 88, 0.2);
+  font-weight: 850;
+}
+
+.m3-screen :is(.m3-closing-secondary, .m3-secondary-button):not(:disabled) {
+  border: 2px solid #52758b;
+  background: #fff;
+  color: #143f55;
+  box-shadow: none;
+  font-weight: 750;
+}
+
+.m3-screen :is(.m3-guided-tabs, .m3-power-studio-filter-tabs, .m3-power-studio-apply-tabs) {
+  gap: 0.25rem;
+  border: 2px solid #9db2c0;
+  padding: 0.25rem;
+  background: #f4f7f9;
+}
+
+.m3-screen :is(.m3-guided-tabs, .m3-power-studio-filter-tabs, .m3-power-studio-apply-tabs) button {
+  border: 1px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+.m3-screen :is(.m3-guided-tabs, .m3-power-studio-filter-tabs, .m3-power-studio-apply-tabs) button.is-active,
+.m3-screen button[aria-selected="true"] {
+  border-color: #1f667c;
+  border-bottom-color: #075f75;
+  background: #fff;
+  color: #083a4b;
+  box-shadow: inset 0 -2px 0 #075f75;
+}
+
+.m3-screen :is(.m3-s11-stage-nav, .m3-participation-stage-nav, .m3-power-studio-stage-nav) {
+  border: 2px solid #a6bbc7;
+  box-shadow: 0 4px 12px rgba(23, 52, 68, 0.08);
+}
+
+.m3-screen :is(.m3-s11-stage-nav, .m3-participation-stage-nav, .m3-power-studio-stage-nav) button.is-active {
+  border: 2px solid #17647a;
+  background: #fff;
+  color: #0b3949;
+  box-shadow: inset 0 -4px 0 #075f75;
+}
+
+.m3-power-studio-actor-card {
+  border-width: 2px;
+  border-color: #91a9b8;
+}
+
+.m3-power-studio-actor-card.is-selected,
+.m3-screen :is(button, label, article).is-selected,
+.m3-screen [aria-pressed="true"] {
+  border: 2px solid #08766f;
+  box-shadow: inset 5px 0 0 #08766f, 0 4px 12px rgba(8, 118, 111, 0.14);
+}
+
+.m3-power-studio-rating-rows {
+  gap: 1rem;
+}
+
+.m3-power-studio-rating-row {
+  border: 2px solid #8badc1;
+  padding: 1rem;
+  background: #fafdff;
+}
+
+.m3-power-studio-rating-row :is(select, textarea) {
+  border-width: 2px;
+}
+
+.m3-s11-example-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.m3-s11-example-grid article {
+  border: 1px solid #a9c0cd;
+  border-inline-start: 0.35rem solid #147388;
+  padding: 1rem;
+  background: #fff;
+}
+
+.m3-s11-example-grid span {
+  color: #0b5065;
+  font-weight: 900;
+}
+
+.m3-participation-example-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.m3-participation-example-grid > li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+  border: 1px solid #acc1cc;
+  border-inline-start: 0.3rem solid #147388;
+  border-radius: 0.7rem;
+  padding: 0.85rem;
+  background: #fff;
+}
+
+.m3-participation-example-grid > li > span {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  background: #0c6478;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: none;
+}
+
+.m3-participation-example-grid > li > div {
+  display: block;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.m3-participation-example-grid > li strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #0b4456;
+}
+
+.m3-participation-example-grid > li p {
+  margin: 0;
+}
+
+.m3-s20-result-metrics,
+.m3-final-status-grid {
+  border: 2px solid #98b3c1;
+  box-shadow: 0 4px 12px rgba(23, 52, 68, 0.08);
+}
+
+.m3-closing-score,
+.m3-final-status-grid strong {
+  color: #084f63;
+  font-weight: 950;
+}
+
+.m3-s20-question-actions,
+.m3-closing-actions,
+.m3-final-downloads {
+  gap: 0.75rem;
+}
+
+.m3-final-next-action {
+  margin: 1rem 0;
+  border: 2px solid #2d7487;
+  border-inline-start-width: 0.45rem;
+  border-radius: 0.65rem;
+  padding: 0.85rem 1rem;
+  background: #eff8fa;
+  color: #103f4d;
+}
+
+.m3-final-dialogue ul {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 0;
+  padding-left: 1.35rem;
+}
+
+@media (max-width: 48rem) {
+  .m3-s11-example-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .m3-power-studio-rating-row {
+    grid-template-columns: 1fr;
+  }
+
+  .m3-power-studio-row-implication,
+  .m3-power-studio-rating-signal {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 40rem) {
+  .m3-screen {
+    overflow-x: clip;
+    padding-inline: 0.75rem;
+  }
+
+  .m3-screen :is(.m3-guided-tabs, .m3-power-studio-filter-tabs, .m3-power-studio-apply-tabs) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .m3-screen :is(.m3-guided-tabs, .m3-power-studio-filter-tabs, .m3-power-studio-apply-tabs) button {
+    flex: 0 0 auto;
+  }
+
+  .m3-s20-question-actions,
+  .m3-closing-actions,
+  .m3-final-downloads {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .m3-s20-question-actions button,
+  .m3-closing-actions button,
+  .m3-final-downloads button,
+  .m3-final-save > button {
+    width: 100%;
+  }
+}
+
+[data-a11y-high-contrast="true"] .m3-screen :is(input, select, textarea, button),
+[data-high-contrast="true"] .m3-screen :is(input, select, textarea, button) {
+  border-color: currentColor;
+}
+
+[data-a11y-text-size="large"] .m3-screen :is(.m3-guided-tabs, .m3-power-studio-filter-tabs, .m3-power-studio-apply-tabs) {
+  flex-wrap: wrap;
+}
