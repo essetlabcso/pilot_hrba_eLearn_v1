@@ -12540,6 +12540,12 @@ Use role categories and generalized group labels. Do not record names, accusatio
     if (zoneId === 'strengthen_voice') return 'Lower formal authority / high practical influence';
     return 'Lower formal authority / lower practical influence';
   };
+  const getQuadrantActionLabel = (zoneId: Screen9PowerMapZone['zoneId']) => {
+    if (zoneId === 'work_closely') return 'Work closely';
+    if (zoneId === 'engage_carefully') return 'Engage carefully';
+    if (zoneId === 'strengthen_voice') return 'Strengthen voice';
+    return 'Monitor lightly';
+  };
   const copyMapSummary = () => {
     if (!submittedOutput) return;
     const summary = [
@@ -12566,11 +12572,24 @@ Use role categories and generalized group labels. Do not record names, accusatio
     if (stage?.unlocked) setActiveStage(stageId);
   };
   const renderQuadrantBoard = (zones: Screen9PowerMapZone[], compact = false) => (
-    <div className={compact ? 'm3-power-studio-quadrants is-compact' : 'm3-power-studio-quadrants'} aria-label="Power and influence quadrant map">
+    <div className={compact ? 'm3-power-studio-quadrant-frame is-compact' : 'm3-power-studio-quadrant-frame'}>
+      {!compact && (
+        <div className="m3-b9-axis-legend" aria-label="How to read this map">
+          <span><strong>Vertical organizing concept:</strong> formal authority</span>
+          <span><strong>Horizontal organizing concept:</strong> practical influence</span>
+        </div>
+      )}
+      <div className={compact ? 'm3-power-studio-quadrants is-compact' : 'm3-power-studio-quadrants'} aria-label="Four-zone power and influence map">
       {zones.map((zone) => (
-        <section key={zone.zoneId} className={`m3-power-studio-quadrant m3-power-studio-quadrant--${zone.zoneId}`} data-testid="m3-s09-quadrant">
-          <h3>{getQuadrantDisplayLabel(zone.zoneId)}</h3>
-          {!compact && <p>{powerMapZoneInterpretations[zone.zoneId]}</p>}
+        <section key={zone.zoneId} className={`m3-power-studio-quadrant m3-power-studio-quadrant--${zone.zoneId}`} data-testid="m3-s09-quadrant" aria-labelledby={`${screen.id}-${compact ? 'preview-' : ''}${zone.zoneId}`}>
+          <header className="m3-b9-zone-header">
+            <div>
+              <p className="m3-b9-zone-position">{getQuadrantDisplayLabel(zone.zoneId)}</p>
+              <h3 id={`${screen.id}-${compact ? 'preview-' : ''}${zone.zoneId}`}>{getQuadrantActionLabel(zone.zoneId)}</h3>
+            </div>
+            <span className="m3-b9-zone-count">{zone.actorIds.length} {zone.actorIds.length === 1 ? 'actor' : 'actors'}</span>
+          </header>
+          {!compact && <p className="m3-b9-zone-guidance">{powerMapZoneInterpretations[zone.zoneId]}</p>}
           <div className="m3-power-studio-quadrant-actors">
             {zone.actorIds.length > 0 ? zone.actorIds.map((actorId) => {
               const rating = (submittedOutput?.actorRatings || completedRatings).find((item) => item.actorId === actorId) || actorRatings[actorId];
@@ -12581,14 +12600,26 @@ Use role categories and generalized group labels. Do not record names, accusatio
                   <span aria-hidden="true">{getActorIcon(actor?.category || rating.category)}</span>
                   <div>
                     <strong>{rating.actorLabel}</strong>
-                    <small>{getScreen9RoleLabel(rating.likelyChangeRole)}</small>
+                    {compact ? <small>{getScreen9RoleLabel(rating.likelyChangeRole)}</small> : (
+                      <dl className="m3-b9-actor-details">
+                        <div><dt>Role or responsibility</dt><dd>{rating.roleFromResponsibilityMap}</dd></div>
+                        <div><dt>Formal authority</dt><dd>{getScreen9InfluenceLabel(rating.formalAuthorityLevel)}</dd></div>
+                        <div><dt>Practical influence</dt><dd>{getScreen9InfluenceLabel(rating.influenceLevel)}</dd></div>
+                        <div><dt>Support or interest</dt><dd>{getScreen9SupportLabel(rating.supportInterestLevel)}</dd></div>
+                        <div><dt>Likely role in change</dt><dd>{getScreen9RoleLabel(rating.likelyChangeRole)}</dd></div>
+                        <div><dt>Engagement approach</dt><dd>{getScreen9ApproachLabel(rating.engagementApproach)}</dd></div>
+                        {rating.designImplication && <div><dt>Design implication</dt><dd>{rating.designImplication}</dd></div>}
+                        {rating.questionForScreen10 && <div><dt>Carry forward to Screen 10</dt><dd>{rating.questionForScreen10}</dd></div>}
+                      </dl>
+                    )}
                   </div>
                 </article>
               );
-            }) : <div className="m3-power-studio-empty-quadrant">No actors in this quadrant</div>}
+            }) : <div className="m3-power-studio-empty-quadrant">No actors are assigned to this zone in the saved map.</div>}
           </div>
         </section>
       ))}
+      </div>
     </div>
   );
   const renderPowerPanel = () => (
@@ -12874,25 +12905,17 @@ Use role categories and generalized group labels. Do not record names, accusatio
               <strong>{formChanged ? 'Map needs update' : 'Map generated'}</strong>
             </div>
             {renderQuadrantBoard(outputZones)}
-            <section className="m3-power-studio-table-wrap" aria-label="Actor engagement strategy">
-              <h3>Actor engagement strategy</h3>
-              <table>
-                <thead><tr><th>Actor</th><th>Role or responsibility</th><th>Formal authority</th><th>Practical influence</th><th>Interest or likely engagement</th><th>Possible contribution or risk</th><th>Strategy implication</th><th>Carry forward to design repair</th></tr></thead>
-                <tbody>
-                  {submittedRows.map((row) => (
-                      <tr key={row.actor} data-testid="m3-s09-generated-map-row">
-                        <td>{row.actor}</td>
-                        <td>{row.roleFromResponsibilityMap}</td>
-                        <td>{row.formalAuthorityLevel}</td>
-                        <td>{row.influenceLevel}</td>
-                        <td>{row.supportInterestLevel}</td>
-                        <td>{row.likelyRoleInChange}</td>
-                        <td>{row.designImplication}</td>
-                        <td>{row.questionForScreen10}</td>
-                      </tr>
-                  ))}
-                </tbody>
-              </table>
+            <section className="m3-b9-carry-list" aria-labelledby={`${screen.id}-actor-carry-forward`}>
+              <h3 id={`${screen.id}-actor-carry-forward`}>Actor responsibility and carry-forward questions</h3>
+              <div>
+                {submittedRows.map((row) => (
+                  <article key={row.actor}>
+                    <h4>{row.actor}</h4>
+                    <p><strong>Role or responsibility:</strong> {row.roleFromResponsibilityMap}</p>
+                    <p><strong>Question for Screen 10:</strong> {row.questionForScreen10}</p>
+                  </article>
+                ))}
+              </div>
             </section>
             <section className="m3-power-studio-summary">
               <h3>What this power map suggests</h3>
@@ -14374,18 +14397,65 @@ function ParticipationAccountabilityPathwayScreen({ screen, state, onComplete }:
             <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Participation and Accountability Pathway</h2>
             <p>This pathway shows how a selected rights-holder group can receive information, access participation, influence a decision, receive a response, and see what changed. It is a learning output, not a complaint record or formal accountability finding.</p>
             <div className="m3-participation-badge-row">{pathway.badges.map((badge) => <span key={badge}>{badge}</span>)}</div>
-            <div className="m3-participation-pathway">
+            <section className="m3-b12-pathway-context" aria-labelledby={`${screen.id}-pathway-context`}>
+              <h3 id={`${screen.id}-pathway-context`}>Pathway context</h3>
+              <dl>
+                <div><dt>Project moment strengthened</dt><dd>{pathway.projectMoment || pathway.decisionToInfluence}</dd></div>
+                <div><dt>Rights-holder or participant group</dt><dd>{pathway.rightsHolderGroup}</dd></div>
+                <div><dt>Participation or accountability gap</dt><dd>{pathway.participationAccountabilityGap}</dd></div>
+                <div><dt>Decision to influence</dt><dd>{pathway.decisionToInfluence}</dd></div>
+              </dl>
+            </section>
+            <div className="m3-participation-pathway m3-b12-phased-pathway" aria-label="Eleven-step participation and accountability pathway">
               {[
-                ['Project moment strengthened', pathway.projectMoment || pathway.decisionToInfluence],
-                ['Rights-holder or participant group', pathway.rightsHolderGroup],
-                ['Participation method', pathway.influenceMethod],
-                ['Information/access measure', pathway.accessSupport.join('; ')],
-                ['Feedback or concern channel', pathway.responseChannel],
-                ['Response/follow-up actor or role', pathway.responsibleActor],
-                ['Design adaptation', pathway.designAdjustment],
-                ['Implementation watch-point', pathway.implementationWatchPoint || pathway.indicatorEvidenceQuestion],
-                ['Carry forward to risk and do-no-harm check', 'Use this pathway in the next screen to check whether participation or feedback could expose people, create unmet expectations, exclude lower-influence groups, or leave response responsibility unclear.'],
-              ].map(([label, value], index) => <article key={label} data-testid="m3-s12-generated-pathway-row"><span>{index + 1}</span><h3>{label}</h3><p>{value}</p></article>)}
+                {
+                  phase: 'Prepare access and information',
+                  steps: [
+                    ['Information method', pathway.informationMethod || pathway.accessSupport[0]],
+                  ],
+                },
+                {
+                  phase: 'Enable influence before the decision',
+                  steps: [
+                    ['Participation or influence method', pathway.participationMethod || pathway.influenceMethod],
+                    ['Information and access support', pathway.accessSupport.join('; ')],
+                  ],
+                },
+                {
+                  phase: 'Receive and respond to feedback',
+                  steps: [
+                    ['Feedback or concern channel', pathway.responseChannel],
+                    ['Responsible response or follow-up actor', pathway.responsibleActor],
+                    ['Response method', pathway.responseMethod],
+                  ],
+                },
+                {
+                  phase: 'Explain, follow up, adapt, and monitor',
+                  steps: [
+                    ['Explanation and follow-up', pathway.explanationFollowUp || pathway.followUpMethod],
+                    ['Accessibility, inclusion, and risk check', pathway.accessibilityRiskCheck],
+                    ['Alternative channel', pathway.alternativeChannel],
+                    ['Design adjustment', pathway.designAdjustment],
+                    ['Implementation watch-point', pathway.implementationWatchPoint || pathway.indicatorEvidenceQuestion],
+                  ],
+                },
+              ].map((phase, phaseIndex) => {
+                const priorStepCount = [0, 1, 3, 6][phaseIndex];
+                return (
+                  <section key={phase.phase} className={`m3-b12-phase m3-b12-phase--${phaseIndex + 1}`} aria-labelledby={`${screen.id}-phase-${phaseIndex + 1}`}>
+                    <header><span>Phase {phaseIndex + 1}</span><h3 id={`${screen.id}-phase-${phaseIndex + 1}`}>{phase.phase}</h3></header>
+                    <div>
+                      {phase.steps.map(([label, value], stepIndex) => (
+                        <article key={label} data-testid="m3-s12-generated-pathway-row">
+                          <span>{priorStepCount + stepIndex + 1}</span>
+                          <h4>{label}</h4>
+                          <p>{value || 'No additional value was saved for this step.'}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
             <section className="m3-participation-suggests" aria-labelledby={`${screen.id}-suggests`}>
               <h3 id={`${screen.id}-suggests`}>What your pathway suggests</h3>
@@ -18829,20 +18899,45 @@ function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
             <h3>Problem layers summary</h3>
             <div className="m3-root-cause-map-patterns">
               {submittedOutput.generatedProblemLayersCanvas.map((pattern) => (
-                <article key={pattern.problemPattern} className="m3-root-cause-map-pattern" data-testid="m3-s10-generated-row">
-                  <h4>{pattern.problemPattern}</h4>
-                  {[
-                    ['Priority barrier', pattern.problemPattern],
-                    ['Visible problem', pattern.visibleSign],
-                    ['Immediate cause', pattern.directCause],
-                    ['Deeper/root cause', pattern.deeperRootCause],
-                    ['Combined capacity or response gap', pattern.capacityGap],
-                    ['Rights-holder capacity gap', pattern.rightsHolderCapacityGap || 'Confirm what accessible information, collective voice, or safe participation channel is needed.'],
-                    ['Duty-bearer or system capacity gap', pattern.dutyBearerSystemCapacityGap || 'Confirm whether authority, resources, coordination, incentives, willingness, or accountability affects response.'],
-                    ['Responsibility gap', pattern.responsibilityGap || 'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.'],
-                    ['Design implication', pattern.designImplication],
-                    ['Carry forward to gender, disability, participation, and risk checks', pattern.questionForLaterDesignRepair],
-                  ].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}
+                <article key={pattern.problemPattern} className="m3-root-cause-map-pattern m3-b10-diagnostic" data-testid="m3-s10-generated-row">
+                  <header className="m3-b10-diagnostic-header">
+                    <p>Complete diagnostic record</p>
+                    <h4>{pattern.problemPattern}</h4>
+                  </header>
+                  <ol className="m3-b10-diagnostic-pathway">
+                    <li className="m3-b10-layer m3-b10-layer--visible">
+                      <span className="m3-b10-step" aria-hidden="true">1</span>
+                      <div><h5>Visible sign</h5><p>{pattern.visibleSign}</p></div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--direct">
+                      <span className="m3-b10-step" aria-hidden="true">2</span>
+                      <div><h5>Direct cause</h5><p>{pattern.directCause}</p></div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--root">
+                      <span className="m3-b10-step" aria-hidden="true">3</span>
+                      <div><h5>Deeper root cause</h5><p>{pattern.deeperRootCause}</p></div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--capacity">
+                      <span className="m3-b10-step" aria-hidden="true">4</span>
+                      <div>
+                        <h5>Capacity gap</h5>
+                        <p className="m3-b10-combined-gap"><strong>Combined capacity or response gap:</strong> {pattern.capacityGap}</p>
+                        <dl className="m3-b10-gap-types">
+                          <div><dt>Rights-holder capacity gap</dt><dd>{pattern.rightsHolderCapacityGap || 'Confirm what accessible information, collective voice, or safe participation channel is needed.'}</dd></div>
+                          <div><dt>Duty-bearer or system capacity gap</dt><dd>{pattern.dutyBearerSystemCapacityGap || 'Confirm whether authority, resources, coordination, incentives, willingness, or accountability affects response.'}</dd></div>
+                          <div><dt>Responsibility gap</dt><dd>{pattern.responsibilityGap || 'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.'}</dd></div>
+                        </dl>
+                      </div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--repair">
+                      <span className="m3-b10-step" aria-hidden="true">5</span>
+                      <div>
+                        <h5>Design implication or repair question</h5>
+                        <p><strong>Design implication:</strong> {pattern.designImplication}</p>
+                        <p><strong>Carry forward to gender, disability, participation, and risk checks:</strong> {pattern.questionForLaterDesignRepair}</p>
+                      </div>
+                    </li>
+                  </ol>
                 </article>
               ))}
             </div>
