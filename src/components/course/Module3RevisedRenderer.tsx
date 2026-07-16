@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode, RefObject } from 'react';
 import type { LearningState } from '../../state/learningState';
 import {
   getModule3RevisedScreen,
@@ -2337,6 +2337,44 @@ type Screen11Submission = {
   ownCsoPracticeOutput?: Screen11OwnCsoOutput;
   portfolioSummary: string;
   savedAt: string;
+};
+
+type Screen11VisualizationStatus = 'empty' | 'partial' | 'current' | 'stale';
+
+type Screen11VisualizationRow = {
+  id: M3Screen11SignalId;
+  designArea: string;
+  status: InclusionStatus | null;
+  statusLabel: string;
+  explanation: string;
+  genderConsideration: string;
+  disabilityConsideration: string;
+  selectedRepair: string;
+  responsibleRole: string;
+  resourceOrAccommodationImplication: string;
+  monitoringPoint: string;
+  carryForwardUse: string;
+};
+
+type Screen11VisualizationViewModel = {
+  status: Screen11VisualizationStatus;
+  statusLabel: string;
+  statusMessage: string;
+  meaning: string;
+  overallStatuses: Array<{
+    id: 'gender' | 'disability';
+    label: string;
+    status: Screen11GenderStatus | Screen11DisabilityStatus;
+    statusLabel: string;
+    description: string;
+  }>;
+  rows: Screen11VisualizationRow[];
+  repairs: Screen11Submission['markerLiteDashboard']['selectedRepairRows'];
+  warnings: Array<{ id: string; title: string; text: string }>;
+  interpretationTitle: string;
+  interpretationText: string;
+  carryForwardNote: string;
+  orderingNote: string;
 };
 
 type Screen9Submission = {
@@ -13118,6 +13156,259 @@ function PortfolioScaffold({
   );
 }
 
+function buildScreen11VisualizationViewModel({
+  submittedOutput,
+  formChanged,
+  classifications,
+  selectedDesignArea,
+  inclusionCheckDraft,
+  helperText,
+}: {
+  submittedOutput: Screen11Submission | null;
+  formChanged: boolean;
+  classifications: Partial<Record<M3Screen11SignalId, InclusionStatus>>;
+  selectedDesignArea: Screen11DashboardRow | undefined;
+  inclusionCheckDraft: Screen11InclusionCheckDraft;
+  helperText: string;
+}): Screen11VisualizationViewModel {
+  const hasDraftContent = Object.keys(classifications).length > 0
+    || Boolean(selectedDesignArea)
+    || Object.values(inclusionCheckDraft).some(Boolean);
+  const status: Screen11VisualizationStatus = submittedOutput
+    ? formChanged ? 'stale' : 'current'
+    : hasDraftContent ? 'partial' : 'empty';
+  const statusCopy: Record<Screen11VisualizationStatus, { label: string; message: string }> = {
+    empty: {
+      label: 'Dashboard not started',
+      message: helperText,
+    },
+    partial: {
+      label: 'Dashboard in progress',
+      message: helperText,
+    },
+    current: {
+      label: 'Generated dashboard',
+      message: 'This dashboard reflects the current generated inclusion check.',
+    },
+    stale: {
+      label: 'Dashboard needs update',
+      message: helperText,
+    },
+  };
+  const savedInclusionRows = submittedOutput
+    ? submittedOutput.inclusionCheckRows || submittedOutput.markerLiteDashboard.inclusionCheckRows || []
+    : [];
+  const rows: Screen11VisualizationRow[] = submittedOutput
+    ? submittedOutput.markerLiteDashboard.rows.map((row) => {
+      const inclusionRow = savedInclusionRows.find((item) => item.designAreaReviewed === row.designArea);
+      const markerResult = submittedOutput.classifications[row.signalId];
+      return {
+        id: row.signalId,
+        designArea: row.designArea,
+        status: markerResult,
+        statusLabel: inclusionStatusLabels[markerResult],
+        explanation: row.whatIsWeakOrStrong,
+        genderConsideration: inclusionRow?.genderRelatedConsideration || '',
+        disabilityConsideration: inclusionRow?.disabilityAccessibilityConsideration || '',
+        selectedRepair: inclusionRow?.designAdaptation || '',
+        responsibleRole: inclusionRow?.responsibleActorOrRole || '',
+        resourceOrAccommodationImplication: '',
+        monitoringPoint: inclusionRow?.implementationWatchPoint || '',
+        carryForwardUse: inclusionRow?.carryForwardToParticipationAccountabilityRisk || row.carryForwardUse,
+      };
+    })
+    : screen11Signals
+      .filter((signal) => Boolean(classifications[signal.id]) || selectedDesignArea?.signalId === signal.id)
+      .map((signal) => {
+        const markerResult = classifications[signal.id] || null;
+        const isSelectedArea = selectedDesignArea?.signalId === signal.id;
+        return {
+          id: signal.id,
+          designArea: screen11DashboardRows.find((row) => row.signalId === signal.id)?.designArea || signal.title,
+          status: markerResult,
+          statusLabel: markerResult ? inclusionStatusLabels[markerResult] : 'Not yet classified',
+          explanation: markerResult ? signal.implication[markerResult] : '',
+          genderConsideration: isSelectedArea ? inclusionCheckDraft.genderConsideration : '',
+          disabilityConsideration: isSelectedArea ? inclusionCheckDraft.disabilityConsideration : '',
+          selectedRepair: isSelectedArea ? inclusionCheckDraft.designAdaptation : '',
+          responsibleRole: isSelectedArea ? inclusionCheckDraft.responsibleRole : '',
+          resourceOrAccommodationImplication: '',
+          monitoringPoint: isSelectedArea ? inclusionCheckDraft.watchPoint : '',
+          carryForwardUse: '',
+        };
+      });
+  const overallStatuses: Screen11VisualizationViewModel['overallStatuses'] = submittedOutput ? [
+    {
+      id: 'gender',
+      label: 'Gender',
+      status: submittedOutput.genderDesignStatus,
+      statusLabel: getScreen11StatusLabel(submittedOutput.genderDesignStatus),
+      description: getScreen11StatusDescription('gender', submittedOutput.genderDesignStatus),
+    },
+    {
+      id: 'disability',
+      label: 'Disability and accessibility',
+      status: submittedOutput.disabilityDesignStatus,
+      statusLabel: getScreen11StatusLabel(submittedOutput.disabilityDesignStatus),
+      description: getScreen11StatusDescription('disability', submittedOutput.disabilityDesignStatus),
+    },
+  ] : [];
+  const warnings = submittedOutput
+    ? submittedOutput.warningIds
+      .map((warningId) => screen11Warnings.find((warning) => warning.id === warningId))
+      .filter((warning): warning is (typeof screen11Warnings)[number] => Boolean(warning))
+      .map(({ id, title, text }) => ({ id, title, text }))
+    : [];
+  const feedback = submittedOutput ? screen11FeedbackText[submittedOutput.primaryFeedbackState] : null;
+
+  return {
+    status,
+    statusLabel: statusCopy[status].label,
+    statusMessage: statusCopy[status].message,
+    meaning: 'This design check shows where gender and disability or accessibility considerations are integrated, partial, or still missing—and what repair is needed.',
+    overallStatuses,
+    rows,
+    repairs: submittedOutput?.markerLiteDashboard.selectedRepairRows || [],
+    warnings,
+    interpretationTitle: feedback?.title || '',
+    interpretationText: feedback?.text || '',
+    carryForwardNote: submittedOutput?.carryForwardQuestion || '',
+    orderingNote: submittedOutput
+      ? 'Ordering source: saved generated dashboard-row order and saved repair-row order.'
+      : 'Ordering source: current classifications follow the original Screen 11 option order.',
+  };
+}
+
+function GenderDisabilityDashboardVisualization({
+  viewModel,
+  idPrefix,
+  headingRef,
+}: {
+  viewModel: Screen11VisualizationViewModel;
+  idPrefix: string;
+  headingRef?: RefObject<HTMLHeadingElement | null>;
+}) {
+  const statusIcon = (status: InclusionStatus | Screen11GenderStatus | Screen11DisabilityStatus | null) => {
+    if (status === 'built' || status === 'strongerDesign') return '✓';
+    if (status === 'mentioned' || status === 'visibleNotBuiltIn' || status === 'partlyBuiltIn') return '◐';
+    if (status === 'missing' || status === 'needsDesignRepair') return '!';
+    return '…';
+  };
+  const rowDetails = (row: Screen11VisualizationRow) => ([
+    ['Strength or weakness explanation', row.explanation],
+    ['Gender consideration', row.genderConsideration],
+    ['Disability/accessibility consideration', row.disabilityConsideration],
+    ['Selected repair', row.selectedRepair],
+    ['Responsible role', row.responsibleRole],
+    ['Resource or accommodation implication', row.resourceOrAccommodationImplication],
+    ['Monitoring point', row.monitoringPoint],
+    ['Where this is used next', row.carryForwardUse],
+  ] as Array<[string, string]>).filter(([, value]) => Boolean(value));
+
+  return (
+    <section className={`m3-s11-dashboard m3-s11-visualization is-${viewModel.status}`} aria-labelledby={`${idPrefix}-title`}>
+      <header className="m3-s11-visualization-header">
+        <div>
+          <p className="m3-s11-visualization-eyebrow">READ-ONLY DESIGN-CHECK DASHBOARD</p>
+          <h2 id={`${idPrefix}-title`} ref={headingRef} tabIndex={headingRef ? -1 : undefined}>Gender and Disability Design Check Dashboard</h2>
+        </div>
+        <span className="m3-s11-visualization-output-status">{viewModel.statusLabel}</span>
+      </header>
+      <p className="m3-s11-visualization-status-message" aria-live="polite">{viewModel.statusMessage}</p>
+      <p className="m3-s11-visualization-meaning"><strong>What this shows:</strong> {viewModel.meaning}</p>
+
+      {viewModel.overallStatuses.length > 0 ? (
+        <section aria-labelledby={`${idPrefix}-overall`}>
+          <h3 id={`${idPrefix}-overall`}>Overall status summary</h3>
+          <div className="m3-s11-dashboard-summary">
+            {viewModel.overallStatuses.map((item) => (
+              <article key={item.id} className={`m3-s11-status-card is-${item.status}`}>
+                <span>{item.label}</span>
+                <div className="m3-s11-status-heading">
+                  <strong aria-hidden="true">{statusIcon(item.status)}</strong>
+                  <h4>{item.statusLabel}</h4>
+                </div>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <p className="m3-s11-visualization-empty">Overall gender and disability/accessibility statuses will appear after the existing generation requirements are complete.</p>
+      )}
+
+      <section aria-labelledby={`${idPrefix}-areas`}>
+        <h3 id={`${idPrefix}-areas`}>Design-area check</h3>
+        {viewModel.rows.length > 0 ? (
+          <ol className="m3-s11-visual-area-list">
+            {viewModel.rows.map((row, index) => (
+              <li key={row.id}>
+                <article className={`m3-s11-visual-area-card is-${row.status || 'pending'}`}>
+                  <header>
+                    <span className="m3-s11-visual-area-number" aria-hidden="true">{index + 1}</span>
+                    <div>
+                      <h4>{row.designArea}</h4>
+                      <p className="m3-s11-visual-area-status"><span aria-hidden="true">{statusIcon(row.status)}</span>{row.statusLabel}</p>
+                    </div>
+                  </header>
+                  {rowDetails(row).length > 0 && (
+                    <dl>{rowDetails(row).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+                  )}
+                </article>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="m3-s11-visualization-empty">Classify a design statement to begin the dashboard. No learner output has been generated yet.</p>
+        )}
+      </section>
+
+      {viewModel.repairs.length > 0 && (
+        <section className="m3-s11-visual-repairs" aria-labelledby={`${idPrefix}-repairs`}>
+          <h3 id={`${idPrefix}-repairs`}>Selected design repairs</h3>
+          <ul>{viewModel.repairs.map((repair) => <li key={repair.repairSelected}><strong>{repair.repairSelected}</strong><span>{repair.whyItMatters}</span><span><strong>Use next:</strong> {repair.whereToUseItNext}</span></li>)}</ul>
+        </section>
+      )}
+
+      {viewModel.warnings.length > 0 && (
+        <section className="m3-s11-warning-list m3-s11-visual-warnings" aria-labelledby={`${idPrefix}-warnings`}>
+          <h3 id={`${idPrefix}-warnings`}>Warnings and attention points</h3>
+          <ul>{viewModel.warnings.map((warning) => <li key={warning.id}><span aria-hidden="true">!</span><div><strong>{warning.title}</strong><p>{warning.text}</p></div></li>)}</ul>
+        </section>
+      )}
+
+      <section className="m3-s11-visualization-text" aria-labelledby={`${idPrefix}-text`}>
+        <h3 id={`${idPrefix}-text`}>Complete text version</h3>
+        <p><strong>Output status:</strong> {viewModel.statusLabel}. {viewModel.statusMessage}</p>
+        {viewModel.overallStatuses.map((item) => <p key={item.id}><strong>{item.label}:</strong> {item.statusLabel}. {item.description}</p>)}
+        {viewModel.rows.length > 0 ? (
+          <ol className="m3-s11-inclusion-output-grid">
+            {viewModel.rows.map((row, index) => (
+              <li key={row.id}>
+                <article>
+                  <h4>{index + 1}. {row.designArea}</h4>
+                  <p><strong>Status:</strong> {row.statusLabel}</p>
+                  {rowDetails(row).length > 0 && <dl>{rowDetails(row).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+                </article>
+              </li>
+            ))}
+          </ol>
+        ) : <p>No classified design areas are available yet.</p>}
+        {viewModel.repairs.length > 0 && (
+          <section className="m3-s11-selected-repair-grid" aria-labelledby={`${idPrefix}-text-repairs`}>
+            <h4 id={`${idPrefix}-text-repairs`}>Selected repairs</h4>
+            {viewModel.repairs.map((repair) => <article key={repair.repairSelected}><h5>{repair.repairSelected}</h5><p><strong>Why it matters:</strong> {repair.whyItMatters}</p><p><strong>Where to use it next:</strong> {repair.whereToUseItNext}</p></article>)}
+          </section>
+        )}
+        {viewModel.warnings.length > 0 && <section><h4>Warnings</h4><ul>{viewModel.warnings.map((warning) => <li key={warning.id}><strong>{warning.title}:</strong> {warning.text}</li>)}</ul></section>}
+        {viewModel.interpretationText && <section className="m3-s11-feedback"><h4>{viewModel.interpretationTitle}</h4><p>{viewModel.interpretationText}</p></section>}
+        {viewModel.carryForwardNote && <section className="m3-s11-carry-forward"><h4>Carry this into Screen 12</h4><p>{viewModel.carryForwardNote}</p></section>}
+      </section>
+      <p className="m3-s11-visualization-ordering">{viewModel.orderingNote}</p>
+    </section>
+  );
+}
+
 function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
   state: LearningState;
@@ -13177,7 +13468,14 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
       ? `Classify all ${screen11Signals.length} design statements before generating the inclusion check.`
       : 'Select one design area and complete gender, disability/accessibility, adaptation, responsible role, and watch-point fields.';
   const dashboardClassifications = submittedOutput?.classifications;
-  const warnings = dashboardClassifications ? getScreen11Warnings(dashboardClassifications) : [];
+  const screen11VisualizationViewModel = buildScreen11VisualizationViewModel({
+    submittedOutput,
+    formChanged,
+    classifications,
+    selectedDesignArea,
+    inclusionCheckDraft,
+    helperText,
+  });
 
   const selectDesignArea = (signalId: M3Screen11SignalId) => {
     setSelectedDesignAreaId((current) => current === signalId ? '' : signalId);
@@ -13517,6 +13815,10 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
             <p aria-live="polite">{helperText}</p>
           </div>
         </section>
+        <GenderDisabilityDashboardVisualization
+          viewModel={screen11VisualizationViewModel}
+          idPrefix={`${screen.id}-practice-visualization`}
+        />
           </div>
           <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-gender-live`}>
             <h2 id={`${screen.id}-gender-live`}>Inclusion check so far</h2>
@@ -13539,90 +13841,15 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
         )}
 
         {activeStage === 4 && submittedOutput && dashboardClassifications && (
-          <section className="m3-s11-dashboard" aria-live="polite" aria-labelledby={dashboardId}>
-            <h2 id={dashboardId} ref={outputRef} tabIndex={-1}>Your Gender and Disability Inclusion Check</h2>
-            <p>This inclusion check shows how the selected design area should respond to gender-related and disability/accessibility barriers before activities are finalized. It is a learning output, not formal donor marker scoring.</p>
-            <div className="m3-s11-dashboard-summary">
-              {[
-                ['Gender design status', submittedOutput.genderDesignStatus, getScreen11StatusDescription('gender', submittedOutput.genderDesignStatus)],
-                ['Disability design status', submittedOutput.disabilityDesignStatus, getScreen11StatusDescription('disability', submittedOutput.disabilityDesignStatus)],
-              ].map(([title, status, description]) => (
-                <article key={title} className="m3-s11-status-card">
-                  <span>{title}</span>
-                  <h3>{getScreen11StatusLabel(status as Screen11GenderStatus | Screen11DisabilityStatus)}</h3>
-                  <p>{description}</p>
-                </article>
-              ))}
-            </div>
-            <section aria-labelledby={`${screen.id}-review`}>
-              <h3 id={`${screen.id}-review`}>Review inclusion check</h3>
-              <div className="m3-s11-inclusion-output-grid">
-                {(submittedOutput.inclusionCheckRows || submittedOutput.markerLiteDashboard.inclusionCheckRows || []).map((row) => {
-                  return (
-                    <article key={row.designAreaReviewed} data-testid="m3-s11-generated-dashboard-row">
-                      <h4>{row.designAreaReviewed}</h4>
-                      <dl>
-                        <div><dt>Design area or activity reviewed</dt><dd>{row.designAreaReviewed}</dd></div>
-                        <div><dt>Gender-related consideration</dt><dd>{row.genderRelatedConsideration}</dd></div>
-                        <div><dt>Disability/accessibility consideration</dt><dd>{row.disabilityAccessibilityConsideration}</dd></div>
-                        <div><dt>Design adaptation</dt><dd>{row.designAdaptation}</dd></div>
-                        <div><dt>Responsible actor or role</dt><dd>{row.responsibleActorOrRole}</dd></div>
-                        <div><dt>Implementation watch-point</dt><dd>{row.implementationWatchPoint}</dd></div>
-                        <div><dt>Carry forward to participation, accountability, and risk checks</dt><dd>{row.carryForwardToParticipationAccountabilityRisk}</dd></div>
-                      </dl>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-            <section aria-labelledby={`${screen.id}-selected-repairs`}>
-              <h3 id={`${screen.id}-selected-repairs`}>Design repairs to carry forward</h3>
-              <div className="m3-s11-selected-repair-grid">
-                {submittedOutput.markerLiteDashboard.selectedRepairRows.map((repair) => (
-                  <article key={repair.repairSelected}>
-                    <h4>{repair.repairSelected}</h4>
-                    <p><strong>Why it matters:</strong> {repair.whyItMatters}</p>
-                    <p><strong>Where to use it next:</strong> {repair.whereToUseItNext}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-            <section className="m3-s11-carry-forward" aria-labelledby={`${screen.id}-dashboard-suggests`}>
-              <h3 id={`${screen.id}-dashboard-suggests`}>What your dashboard suggests</h3>
-              <p>{submittedOutput.markerLiteDashboard.dashboardInterpretation}</p>
-            </section>
-            <section className="m3-s11-carry-forward" aria-labelledby={`${screen.id}-carry-question`}>
-              <h3 id={`${screen.id}-carry-question`}>Carry this into Screen 12</h3>
-              <p>{submittedOutput.carryForwardQuestion}</p>
-            </section>
-          </section>
+          <GenderDisabilityDashboardVisualization
+            viewModel={screen11VisualizationViewModel}
+            idPrefix={dashboardId}
+            headingRef={outputRef}
+          />
         )}
 
         {activeStage === 4 && submittedOutput && (
-          <>
-            <section className="m3-s11-feedback" aria-labelledby={`${screen.id}-feedback`}>
-              <h2 id={`${screen.id}-feedback`}>Feedback and interpretation</h2>
-              <h3>{screen11FeedbackText[submittedOutput.primaryFeedbackState].title}</h3>
-              <p>{screen11FeedbackText[submittedOutput.primaryFeedbackState].text}</p>
-              {warnings.length > 0 && (
-                <div className="m3-s11-warning-list">
-                  <h3>What to check next</h3>
-                  <ul>
-                    {warnings.map((warning) => (
-                      <li key={warning.id}>
-                        <span aria-hidden="true">!</span>
-                        <div>
-                          <strong>{warning.title}</strong>
-                          <p>{warning.text}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </section>
-
-            <section className="m3-s11-save-confirmation" aria-labelledby={`${screen.id}-save`}>
+          <section className="m3-s11-save-confirmation" aria-labelledby={`${screen.id}-save`}>
               <h2 id={`${screen.id}-save`}>Case-study learning to carry forward</h2>
               <div className="m3-s11-save-grid">
                 <article>
@@ -13639,7 +13866,6 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
                 </article>
               </div>
             </section>
-          </>
         )}
 
         {activeStage === 4 && submittedOutput && (
