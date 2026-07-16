@@ -8539,6 +8539,139 @@ export function SnapshotPreviewScreen({
   );
 }
 
+type ContextSnapshotStatus = 'empty' | 'partial' | 'current' | 'stale';
+
+type ContextSnapshotBand = {
+  id: 'groups' | 'barriers' | 'evidence' | 'implications';
+  title: string;
+  items: string[];
+  emptyGuidance: string;
+};
+
+type ContextSnapshotViewModel = {
+  status: ContextSnapshotStatus;
+  statusLabel: string;
+  statusMessage: string;
+  meaning: string;
+  bands: ContextSnapshotBand[];
+  contextSummary: string;
+  carryForwardNote: string;
+  orderingNote: string;
+};
+
+function buildContextSnapshotViewModel({
+  status,
+  affectedGroups,
+  barriers,
+  evidence,
+  designImplications,
+  contextSummary,
+  carryForwardNote,
+  orderingNote,
+}: {
+  status: ContextSnapshotStatus;
+  affectedGroups: string[];
+  barriers: string[];
+  evidence: string[];
+  designImplications: string[];
+  contextSummary: string;
+  carryForwardNote: string;
+  orderingNote: string;
+}): ContextSnapshotViewModel {
+  const statusCopy: Record<ContextSnapshotStatus, { label: string; message: string }> = {
+    empty: {
+      label: 'Snapshot not started',
+      message: 'Select context signals to see how affected groups, possible barriers, safe evidence, and design implications connect.',
+    },
+    partial: {
+      label: 'Snapshot in progress',
+      message: 'This preview reflects your current selections. Generate the scan when the required signal types are represented.',
+    },
+    current: {
+      label: 'Generated snapshot',
+      message: 'This snapshot reflects the current generated scan and is ready for review.',
+    },
+    stale: {
+      label: 'Snapshot needs update',
+      message: 'Your selections changed after generation. Regenerate the scan before saving so the output matches your choices.',
+    },
+  };
+
+  return {
+    status,
+    statusLabel: statusCopy[status].label,
+    statusMessage: statusCopy[status].message,
+    meaning: 'Read from left to right: the selected context signals identify who may be affected differently, which barriers need testing, what evidence can be checked safely, and what the project design may need to change.',
+    bands: [
+      { id: 'groups', title: 'Affected groups', items: affectedGroups, emptyGuidance: 'No affected-group signals selected yet.' },
+      { id: 'barriers', title: 'Possible barriers to test', items: barriers, emptyGuidance: 'No possible barriers identified yet.' },
+      { id: 'evidence', title: 'Safe evidence to verify', items: evidence, emptyGuidance: 'No safe evidence needs identified yet.' },
+      { id: 'implications', title: 'Design implications', items: designImplications, emptyGuidance: 'Generate the scan to see a design implication.' },
+    ],
+    contextSummary,
+    carryForwardNote,
+    orderingNote,
+  };
+}
+
+function ContextInequalitySnapshot({
+  viewModel,
+  validationMessage,
+}: {
+  viewModel: ContextSnapshotViewModel;
+  validationMessage?: string;
+}) {
+  const displayedStatusMessage = validationMessage || viewModel.statusMessage;
+  return (
+    <section className={`m3-context-snapshot is-${viewModel.status}`} aria-labelledby="m3-context-snapshot-title">
+      <header className="m3-context-snapshot-header">
+        <div>
+          <p className="m3-context-snapshot-eyebrow">READ-ONLY VISUAL SUMMARY</p>
+          <h3 id="m3-context-snapshot-title">Context and Inequality Snapshot</h3>
+        </div>
+        <span className="m3-context-snapshot-status">{viewModel.statusLabel}</span>
+      </header>
+      <p className="m3-context-snapshot-status-message" aria-live="polite">
+        {displayedStatusMessage}
+      </p>
+      <p className="m3-context-snapshot-meaning"><strong>What this shows:</strong> {viewModel.meaning}</p>
+      <ol className="m3-context-snapshot-bands" aria-label="Context and inequality relationship summary">
+        {viewModel.bands.map((band, index) => (
+          <li key={band.id} className={`m3-context-snapshot-band is-${band.id}`}>
+            <div className="m3-context-snapshot-band-heading">
+              <span aria-hidden="true">{index + 1}</span>
+              <h4>{band.title} ({band.items.length} {band.items.length === 1 ? 'item' : 'items'})</h4>
+            </div>
+            {band.items.length > 0 ? (
+              <ul>{band.items.map((item) => <li key={item}>{item}</li>)}</ul>
+            ) : (
+              <p className="m3-context-snapshot-empty">{band.emptyGuidance}</p>
+            )}
+            {index < viewModel.bands.length - 1 && <span className="m3-context-snapshot-connector" aria-hidden="true">informs</span>}
+          </li>
+        ))}
+      </ol>
+      <section className="m3-context-snapshot-text" aria-labelledby="m3-context-snapshot-text-title">
+        <h4 id="m3-context-snapshot-text-title">Complete text version</h4>
+        <p className="m3-context-snapshot-text-status">
+          <strong>Output status:</strong> {viewModel.statusLabel}. {displayedStatusMessage}
+        </p>
+        <div className="m3-context-snapshot-text-grid">
+          {viewModel.bands.map((band, index) => (
+            <article key={band.id}>
+              <h5>{index + 1}. {band.title} ({band.items.length} {band.items.length === 1 ? 'item' : 'items'})</h5>
+              {band.items.length > 0 ? <ul>{band.items.map((item) => <li key={item}>{item}</li>)}</ul> : <p>{band.emptyGuidance}</p>}
+            </article>
+          ))}
+        </div>
+        {viewModel.contextSummary && <p className="m3-context-snapshot-summary"><strong>Context summary:</strong> {viewModel.contextSummary}</p>}
+        {viewModel.carryForwardNote && <p className="m3-context-snapshot-carry"><strong>Carry forward:</strong> {viewModel.carryForwardNote}</p>}
+      </section>
+      <p className="m3-context-snapshot-ordering">{viewModel.orderingNote}</p>
+    </section>
+  );
+}
+
 function ContextInequalityScanScreen({
   screen,
   state,
@@ -8559,12 +8692,13 @@ function ContextInequalityScanScreen({
   const hasSavedScan = savedScreen5.submitted === true
     && savedSelectedContextSignals.length >= 3
     && Boolean(savedScreen5.contextInequalityScan && typeof savedScreen5.contextInequalityScan === 'object');
+  const savedContextScan = hasSavedScan
+    ? savedScreen5.contextInequalityScan as Record<string, unknown>
+    : null;
   const savedOwnScan = hasSavedScan
-    && savedScreen5.contextInequalityScan
-    && typeof savedScreen5.contextInequalityScan === 'object'
-    && (savedScreen5.contextInequalityScan as Record<string, unknown>).optionalOwnCsoScan
-    && typeof (savedScreen5.contextInequalityScan as Record<string, unknown>).optionalOwnCsoScan === 'object'
-      ? (savedScreen5.contextInequalityScan as Record<string, unknown>).optionalOwnCsoScan as Record<string, unknown>
+    && savedContextScan?.optionalOwnCsoScan
+    && typeof savedContextScan.optionalOwnCsoScan === 'object'
+      ? savedContextScan.optionalOwnCsoScan as Record<string, unknown>
       : null;
 
   const [selected, setSelected] = useState<string[]>(savedSelectedContextSignals);
@@ -8654,6 +8788,70 @@ function ContextInequalityScanScreen({
     `${module3ContextCarryForward[0].text} Carry this scan into the next tools. The standards map will help clarify which rights, policies, and public responsibilities are connected to the issue. The rights-holder and barrier map will help identify the affected groups more precisely. Later, the design repair screens will use these findings to improve objectives, activities, accountability, risk, and indicators.`;
   const contextScanSummary =
     'You completed a first HRBA context and inequality scan. You looked beyond the visible plan and identified who may be affected differently, what barriers may exist, what assumptions should be verified safely, and what this may mean for the design. You will use this scan in the next step to connect the issue to relevant rights, standards, policies, and public responsibilities.';
+  const readSavedSnapshotItems = (field: string) => {
+    const value = savedContextScan?.[field];
+    return Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+      : [];
+  };
+  const useSavedSnapshotOrdering = Boolean(
+    hasSavedScan && generatedSignature === savedSelectedContextSignals.join('|'),
+  );
+  const orderedSnapshotChoices = outputSelection
+    .map((choiceId) => module3ContextChoices.find((choice) => choice.id === choiceId))
+    .filter((choice): choice is (typeof module3ContextChoices)[number] => Boolean(choice));
+  const orderedSnapshotGroups = Array.from(new Set(orderedSnapshotChoices.flatMap((choice) => choice.affectedGroups)));
+  const orderedSnapshotBarriers = Array.from(new Set(orderedSnapshotChoices.flatMap((choice) => choice.barriers)));
+  const orderedSnapshotEvidence = Array.from(new Set([
+    ...orderedSnapshotChoices.flatMap((choice) => choice.evidence),
+    ...(orderedSnapshotChoices.length > 0 ? ['No names, complaint details, exact sensitive locations, survivor stories, political accusations, or identifiable personal information'] : []),
+  ]));
+  const snapshotStatus: ContextSnapshotStatus = outputIsStale
+    ? 'stale'
+    : submitted
+      ? 'current'
+      : selected.length > 0
+        ? 'partial'
+        : 'empty';
+  const snapshotAffectedGroups = useSavedSnapshotOrdering
+    ? readSavedSnapshotItems('selectedJiruAmbaAffectedGroups')
+    : submitted
+      ? selectedAffectedGroups
+      : orderedSnapshotGroups;
+  const snapshotBarriers = useSavedSnapshotOrdering
+    ? readSavedSnapshotItems('selectedBarriers')
+    : submitted
+      ? selectedBarriers
+      : orderedSnapshotBarriers;
+  const snapshotEvidence = useSavedSnapshotOrdering
+    ? readSavedSnapshotItems('safeEvidenceToVerify')
+    : submitted
+      ? selectedEvidence
+      : orderedSnapshotEvidence;
+  const snapshotDesignImplication = useSavedSnapshotOrdering
+    && typeof savedContextScan?.generatedDesignImplications === 'string'
+    && savedContextScan.generatedDesignImplications.trim()
+      ? savedContextScan.generatedDesignImplications
+      : designImplication;
+  const snapshotContextSummary = useSavedSnapshotOrdering
+    && typeof savedScreen5.contextScanSummary === 'string'
+    && savedScreen5.contextScanSummary.trim()
+      ? savedScreen5.contextScanSummary
+      : contextScanSummary;
+  const contextSnapshotViewModel = buildContextSnapshotViewModel({
+    status: snapshotStatus,
+    affectedGroups: snapshotAffectedGroups,
+    barriers: snapshotBarriers,
+    evidence: snapshotEvidence,
+    designImplications: submitted ? [snapshotDesignImplication] : [],
+    contextSummary: submitted ? snapshotContextSummary : '',
+    carryForwardNote: submitted ? carryForwardText : '',
+    orderingNote: useSavedSnapshotOrdering
+      ? 'Ordering source for all four bands: saved generated order.'
+      : submitted
+        ? 'Ordering source for all four bands: the current generated output order, which follows the existing Screen 5 option order.'
+        : 'Ordering source for all four bands: stable learner-selection order; the original Screen 5 option order is the fallback when no selection sequence is available.',
+  });
   const ownScanText = Object.values(ownScan).join(' ');
   const unsafeOwnDetail = /\b[A-Z][a-z]+ [A-Z][a-z]+\b|\b\d{3,}\b|complaint|survivor|abuse|assault|rape|exact location|kebele \d+|woreda office/i.test(ownScanText);
   const matchPrompts = [
@@ -9159,6 +9357,10 @@ function ContextInequalityScanScreen({
                   );
                 })}
               </div>
+              <ContextInequalitySnapshot
+                viewModel={contextSnapshotViewModel}
+                validationMessage={validationMessage}
+              />
             </div>
             {renderScanPanel()}
             <div className="m3-context-mobile-drawer">{renderScanPanel()}</div>
@@ -9182,13 +9384,16 @@ function ContextInequalityScanScreen({
               </div>
               <strong>{outputIsStale ? 'Scan needs update' : 'Scan generated'}</strong>
             </div>
+            <ContextInequalitySnapshot viewModel={contextSnapshotViewModel} />
             <div className="m3-context-review-grid">
-              <article><h3>1. Observation or case signal</h3><p>{selectedVisibleEvidence.length > 0 ? selectedVisibleEvidence.join(' ') : 'The plan includes activities, budget lines, and indicators, but it does not yet show whether lower-influence groups shaped priorities.'}</p></article>
-              <article><h3>2. Who may be affected differently</h3><p>{selectedAffectedGroups.length > 0 ? selectedAffectedGroups.join(', ') : 'Women, persons with disabilities, youth, low-income households, informal workers, and remote residents may face different access, information, timing, livelihood, influence, or feedback barriers.'}</p><p className="m3-context-support-note">Women — in the context of household water responsibilities and water-service decisions.</p></article>
-              <article><h3>3. Possible explanation or barrier to test</h3><p>These are possible interpretations of the selected signals, not established facts.</p><ul>{(selectedBarriers.length > 0 ? selectedBarriers : ['Unequal influence', 'Time and care-work barriers', 'Livelihood and information barriers', 'Weak feedback response', 'Safety and confidentiality concerns']).map((item) => <li key={item}>{item}</li>)}</ul></article>
-              <article><h3>4. Information requiring safe verification</h3><ul>{selectedEvidence.map((item) => <li key={item}>{item}</li>)}</ul></article>
-              <article><h3>5. Design implications</h3><p>{designImplication}</p></article>
-              <article><h3>6. What to carry forward</h3><p>{carryForwardText}</p></article>
+              <article>
+                <h3>Existing scan detail: Observation or case signal</h3>
+                <p>{selectedVisibleEvidence.join(' ') || 'No visible-evidence detail is included in this generated scan.'}</p>
+              </article>
+              <article>
+                <h3>Interpretation safeguard</h3>
+                <p className="m3-context-support-note">The possible barriers and implications are interpretations of the selected signals, not established facts.</p>
+              </article>
             </div>
             <div className="m3-context-quality-strip" aria-label="Scan quality check">
               <h3>Scan quality check</h3>
