@@ -10207,16 +10207,13 @@ function PolicyStandardsMapScreen({
             <div className="m3-policy-map-output-grid">
               {generatedRows.map((row) => (
                 <article key={`${row.signalId}-${row.anchorId}`} className="m3-policy-map-output-row" data-testid="m3-s06-generated-map-row">
-                  <div>
-                    <span>1. Context signal</span>
+                  <div className="m3-policy-map-relationship-step is-context">
+                    <span className="m3-policy-map-step-label">1. Context signal</span>
                     <p>{row.signalLabel}</p>
                   </div>
-                  <div>
-                    <span>2. Design lens</span>
-                    <p>{row.sourceLayer}</p>
-                  </div>
-                  <div>
-                    <span>3. Policy/standards sources to check</span>
+                  <div className="m3-policy-map-relationship-step is-reference">
+                    <span className="m3-policy-map-step-label">2. Reference and design lens</span>
+                    <p className="m3-policy-map-source-layer"><strong>{row.sourceLayer}</strong></p>
                     <p>{row.sourcesToCheck}</p>
                     <span className="m3-policy-map-output-references" aria-label={`Related references for ${row.anchorTitle}`}>
                       {row.relatedReferences.map((reference) => (
@@ -10224,17 +10221,22 @@ function PolicyStandardsMapScreen({
                       ))}
                     </span>
                   </div>
-                  <div>
-                    <span>4. Design question</span>
-                    <p>{row.designQuestion}</p>
-                  </div>
-                  <div>
-                    <span>5. Responsibility question</span>
-                    <p>{row.responsibilityQuestion}</p>
-                  </div>
-                  <div>
-                    <span>6. What this means for project design</span>
-                    <p>{row.designImplication}</p>
+                  <div className="m3-policy-map-relationship-step is-design-use">
+                    <span className="m3-policy-map-step-label">3. Practical design use</span>
+                    <dl className="m3-policy-map-design-use-list">
+                      <div>
+                        <dt>Design question</dt>
+                        <dd>{row.designQuestion}</dd>
+                      </div>
+                      <div>
+                        <dt>Responsibility question</dt>
+                        <dd>{row.responsibilityQuestion}</dd>
+                      </div>
+                      <div>
+                        <dt>Design implication</dt>
+                        <dd>{row.designImplication}</dd>
+                      </div>
+                    </dl>
                   </div>
                 </article>
               ))}
@@ -11019,26 +11021,59 @@ function RightsHolderBarrierMapScreen({
               This map shows which rights-holder groups and barriers should shape the next design decisions. It is a learning output, not a full assessment.
             </p>
 
-            <section className="m3-rights-map-matrix" aria-labelledby={`${screen.id}-matrix`}>
-              <h3 id={`${screen.id}-matrix`}>Barrier pattern summary</h3>
-              <div className="m3-rights-map-matrix-table" role="table" aria-label="Barrier pattern summary">
-                <div role="row" className="m3-rights-map-matrix-row m3-rights-map-matrix-row--head">
-                  <span role="columnheader">Rights-holder group</span>
-                  {barrierCategoryOrder.map((category) => (
-                    <span key={category} role="columnheader">{barrierCategoryLabels[category]}</span>
-                  ))}
+            <section className="m3-rights-map-polished-matrix" aria-labelledby={`${screen.id}-matrix`}>
+              <div className="m3-rights-map-polished-matrix-header">
+                <div>
+                  <p className="m3-rights-map-output-kicker">GROUP-BY-GROUP ANALYSIS</p>
+                  <h3 id={`${screen.id}-matrix`}>Barrier pattern and design response</h3>
                 </div>
-                {generatedRows.map((row) => (
-                  <div key={row.groupId} role="row" className="m3-rights-map-matrix-row">
-                    <span role="rowheader">{row.groupLabel}</span>
+                <p>Each record keeps the written barrier category visible. “Not selected in this exercise” does not mean that no barrier exists.</p>
+              </div>
+              <div className="m3-rights-map-generated-card-grid">
+              {generatedRows.map((row) => (
+                <article key={row.groupId} className="m3-rights-map-generated-card" data-testid="m3-s07-generated-map-row">
+                  <header className="m3-rights-map-group-header">
+                    <span>Rights-holder group</span>
+                    <h4>{row.groupLabel}</h4>
+                    <p><strong>Affected benefit or opportunity:</strong> {row.affectedBenefit}</p>
+                  </header>
+                  <div className="m3-rights-map-category-grid" aria-label={`Barrier categories for ${row.groupLabel}`}>
                     {barrierCategoryOrder.map((category) => {
-                      const count = row.barrierIds.filter((barrierId) => getBarrierById(barrierId)?.category === category).length;
+                      const categoryBarriers = row.barrierIds
+                        .map((barrierId) => getBarrierById(barrierId))
+                        .filter((barrier): barrier is BarrierTag => Boolean(barrier && barrier.category === category));
                       return (
-                        <span key={category} role="cell">{count > 0 ? `Selected (${count})` : 'Not selected'}</span>
+                        <section key={category} className={`m3-rights-map-category is-${category}${categoryBarriers.length === 0 ? ' is-neutral' : ''}`}>
+                          <h5>{barrierCategoryLabels[category]}</h5>
+                          {categoryBarriers.length > 0 ? (
+                            <ul>
+                              {categoryBarriers.map((barrier) => <li key={barrier.id}>{barrier.label}</li>)}
+                            </ul>
+                          ) : <p>Not selected in this exercise</p>}
+                        </section>
                       );
                     })}
                   </div>
-                ))}
+                  <dl className="m3-rights-map-design-details">
+                    <div>
+                      <dt>What the barriers may block</dt>
+                      <dd>{row.whatBarrierMayBlock}</dd>
+                    </div>
+                    <div>
+                      <dt>Design question</dt>
+                      <dd>What should the project adjust so {row.groupLabel} can access, participate, influence, benefit, or receive follow-up?</dd>
+                    </div>
+                    <div className="is-response">
+                      <dt>Design response before finalizing</dt>
+                      <dd>{row.designResponse}</dd>
+                    </div>
+                    <div className="is-next-question">
+                      <dt>Next actor and responsibility question</dt>
+                      <dd>{row.screen8Question}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
               </div>
               {generatedRows.some((row) => generatedRows.some((other) => other.groupId !== row.groupId && other.barrierIds.some((id) => row.barrierIds.includes(id)))) && (
                 <p className="m3-rights-map-overlap-note">
@@ -11046,38 +11081,6 @@ function RightsHolderBarrierMapScreen({
                 </p>
               )}
             </section>
-
-            <div className="m3-rights-map-generated-card-grid">
-              {generatedRows.map((row) => (
-                <article key={row.groupId} className="m3-rights-map-generated-card" data-testid="m3-s07-generated-map-row">
-                  <h3>{row.groupLabel}</h3>
-                  <div>
-                    <span>Rights-holder group</span>
-                    <p>{row.groupLabel}</p>
-                  </div>
-                  <div>
-                    <span>Priority barriers</span>
-                    <p>{row.barrierLabels.join(', ')}</p>
-                  </div>
-                  <div>
-                    <span>What the barrier means for design</span>
-                    <p>{row.whatBarrierMayBlock}</p>
-                  </div>
-                  <div>
-                    <span>Design question</span>
-                    <p>What should the project adjust so {row.groupLabel} can access, participate, influence, benefit, or receive follow-up?</p>
-                  </div>
-                  <div>
-                    <span>What should change before finalizing the project</span>
-                    <p>{row.designResponse}</p>
-                  </div>
-                  <div>
-                    <span>Carry forward to duty-bearers and roles</span>
-                    <p>{row.screen8Question}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
 
 
             <section className="m3-rights-map-insight" aria-labelledby={`${screen.id}-insight`}>
@@ -12010,41 +12013,51 @@ function ResponsibilityMapScreen({
             <div className="m3-responsibility-map-review-rows" aria-label="Draft responsibility role map">
               {generatedRows.map((row, index) => (
                 <article key={`${row.barrierId}-${index}`} className="m3-responsibility-map-review-row" data-testid="m3-s08-generated-map-row">
-                  <div>
-                    <span>Priority barrier</span>
-                    <p>{row.barrierLabel}</p>
-                  </div>
-                  <div>
-                    <span>Relevant actor</span>
-                    <p>{[
-                      ...row.primaryPublicResponsibility,
-                      ...row.serviceOrSectorActors,
-                      ...row.communityOrInfluenceActors,
-                    ].filter(Boolean).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].primaryPublicResponsibility}</p>
-                  </div>
-                  <div>
-                    <span>Actor role type</span>
-                    <p>{getSubmittedSelections(row, ['primary_public_responsibility', 'service_or_local_implementation', 'community_influence_actor', 'participation_actor', 'rights_holder_voice_support', 'support_ally_actor', 'careful_engagement_actor']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Public or service responsibility to clarify'}</p>
-                  </div>
-                  <div>
-                    <span>Responsibility or contribution</span>
-                    <p>{getSubmittedActions(row).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].serviceOrSectorActor}</p>
-                  </div>
-                  <div>
-                    <span>Capacity or support gap</span>
-                    <p>{row.capacityGapHints.map(getCapacityGapLabel).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].capacityGapToCheck}</p>
-                  </div>
-                  <div>
-                    <span>Appropriate CSO role</span>
-                    <p>{row.csoRoles.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].realisticCsoRole}</p>
-                  </div>
-                  <div>
-                    <span>Design implication</span>
-                    <p>{getSubmittedActions(row).length > 0 ? getSubmittedActions(row).join(', ') : 'Clarify the actor role, response step, and follow-up measure before implementation.'}</p>
-                  </div>
-                  <div>
-                    <span>Carry forward to power and influence analysis</span>
-                    <p>{row.nextQuestion}</p>
+                  <header className="m3-responsibility-map-record-header">
+                    <span>Responsibility record {index + 1}</span>
+                    <h3>{row.barrierLabel}</h3>
+                  </header>
+                  <div className="m3-responsibility-map-lanes">
+                    <section className="m3-responsibility-map-lane is-rights-holder">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">1</span>
+                      <h4>Rights-holder group and barrier</h4>
+                      <p><strong>Group affected:</strong> {row.rightsHolderGroupAffected}</p>
+                      <p><strong>Priority barrier:</strong> {row.barrierLabel}</p>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-public">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">2</span>
+                      <h4>Primary public responsibility</h4>
+                      <p>{row.primaryPublicResponsibility.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].primaryPublicResponsibility}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['primary_public_responsibility']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Formal public responsibility'}</small>
+                      <small>Primary responsibility remains with the relevant public or service actor.</small>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-service">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">3</span>
+                      <h4>Service or sector implementation role</h4>
+                      <p>{row.serviceOrSectorActors.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].serviceOrSectorActor}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['service_or_local_implementation']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Service or local implementation role'}</small>
+                      <p className="m3-responsibility-map-lane-detail"><strong>Selected contribution:</strong> {getSubmittedActions(row).join(', ') || 'Clarify the response step and follow-up measure before implementation.'}</p>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-community">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">4</span>
+                      <h4>Community or influence role</h4>
+                      <p>{[...row.communityOrInfluenceActors, ...row.supportOrAllyActors].filter(Boolean).join(', ') || 'Verify which community, participation, voice, or support actor can influence access and response.'}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['community_influence_actor', 'participation_actor', 'rights_holder_voice_support', 'support_ally_actor', 'careful_engagement_actor']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Community influence or voice-support role'}</small>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-cso">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">5</span>
+                      <h4>Realistic CSO support role</h4>
+                      <p>{row.csoRoles.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].realisticCsoRole}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['cso_role']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'CSO support role'}</small>
+                      <small>Support and facilitation do not replace duty-bearer responsibility.</small>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-gap">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">6</span>
+                      <h4>Capacity gap and safe engagement question</h4>
+                      <p><strong>Capacity gap:</strong> {row.capacityGapHints.map(getCapacityGapLabel).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].capacityGapToCheck}</p>
+                      <p><strong>Safe engagement:</strong> {row.safeEngagementQuestion}</p>
+                      <p className="m3-responsibility-map-next-question"><strong>Carry forward:</strong> {row.nextQuestion}</p>
+                    </section>
                   </div>
                 </article>
               ))}
