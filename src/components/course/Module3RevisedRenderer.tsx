@@ -3022,6 +3022,36 @@ type Screen13Submission = {
   savedAt: string;
 };
 
+type Screen13VisualizationStatus = 'empty' | 'partial' | 'current' | 'stale';
+
+type Screen13VisualizationItem = {
+  label: string;
+  value: string;
+  safetyCritical?: boolean;
+};
+
+type Screen13VisualizationLane = {
+  id: 'risk' | 'response' | 'monitor';
+  number: 1 | 2 | 3;
+  title: string;
+  items: Screen13VisualizationItem[];
+};
+
+type Screen13VisualizationViewModel = {
+  status: Screen13VisualizationStatus;
+  statusLabel: string;
+  statusMessage: string;
+  meaning: string;
+  impactLevel: Screen13ImpactLevel | '';
+  impactLabel: string;
+  lanes: Screen13VisualizationLane[];
+  interpretationMessages: string[];
+  feedbackMessages: string[];
+  safetyConfirmation: string;
+  carryForwardNote: string;
+  orderingNote: string;
+};
+
 const screen12Assets = {
   hero: {
     src: '/assets/hrba/modules/module-3/m3-s12-participation-accountability-pathway.webp',
@@ -14455,6 +14485,189 @@ function ParticipationAccountabilityPathwayScreen({ screen, state, onComplete }:
   );
 }
 
+function buildScreen13VisualizationViewModel({
+  submittedOutput,
+  formChanged,
+  selection,
+  helperText,
+}: {
+  submittedOutput: Screen13Submission | null;
+  formChanged: boolean;
+  selection: Screen13RiskBoardSelection;
+  helperText: string;
+}): Screen13VisualizationViewModel {
+  const hasDraftContent = Boolean(
+    selection.riskSituation
+    || selection.riskCategories.length
+    || selection.affectedGroups.length
+    || selection.likelyCause
+    || selection.impactLevel
+    || selection.mitigationActions.length
+    || selection.responsibleActor
+    || selection.watchSign
+    || selection.alternativeChannel
+    || selection.pauseStopReferralCondition
+    || selection.designAdjustment,
+  );
+  const status: Screen13VisualizationStatus = submittedOutput
+    ? formChanged ? 'stale' : 'current'
+    : hasDraftContent ? 'partial' : 'empty';
+  const statusCopy: Record<Screen13VisualizationStatus, { label: string; message: string }> = {
+    empty: {
+      label: 'Board not started',
+      message: helperText,
+    },
+    partial: {
+      label: 'Board in progress',
+      message: helperText,
+    },
+    current: {
+      label: 'Generated board',
+      message: 'This board reflects the current generated risk and do-no-harm check.',
+    },
+    stale: {
+      label: 'Board needs update',
+      message: helperText,
+    },
+  };
+  const savedBoard = submittedOutput?.riskDoNoHarmBoard.generatedBoard;
+  const impactLevel = submittedOutput?.riskDoNoHarmBoard.selection.impactLevel || selection.impactLevel;
+  const riskItems: Screen13VisualizationItem[] = [
+    ['Situation or decision', savedBoard?.riskSituation || selection.riskSituation],
+    ['Risk category', savedBoard?.riskCategory || selection.riskCategories.join('; ')],
+    ['Affected group', savedBoard?.whoMayBeAffected || selection.affectedGroups.join('; ')],
+    ['Likely cause', savedBoard?.likelyCause || selection.likelyCause],
+  ].map(([label, value]) => ({ label, value })).filter((item) => Boolean(item.value));
+  const responseItems: Screen13VisualizationItem[] = [
+    ['Mitigation or design adaptation', savedBoard?.mitigationAction || selection.mitigationActions.join('; ')],
+    ['Responsible actor', savedBoard?.responsibleActor || selection.responsibleActor],
+    ['Alternative channel', savedBoard?.alternativeChannel || selection.alternativeChannel],
+    ['Design adjustment', savedBoard?.designAdjustment || selection.designAdjustment],
+  ].map(([label, value]) => ({ label, value })).filter((item) => Boolean(item.value));
+  const monitorItems: Screen13VisualizationItem[] = [
+    { label: 'Monitoring sign', value: savedBoard?.watchSign || selection.watchSign },
+    { label: 'Pause, stop, review, or referral condition', value: savedBoard?.pauseStopReferralCondition || selection.pauseStopReferralCondition, safetyCritical: true },
+    { label: 'Carry-forward use', value: savedBoard?.carryForwardUse || '', safetyCritical: true },
+  ].filter((item) => Boolean(item.value));
+
+  return {
+    status,
+    statusLabel: statusCopy[status].label,
+    statusMessage: statusCopy[status].message,
+    meaning: 'This board brings together the risk, the planned response, and the signs that indicate when the project should pause, stop, review, or refer.',
+    impactLevel,
+    impactLabel: savedBoard?.impactLevel || getRiskStatusLabel(selection.impactLevel),
+    lanes: [
+      { id: 'risk', number: 1, title: 'Risk', items: riskItems },
+      { id: 'response', number: 2, title: 'Response', items: responseItems },
+      { id: 'monitor', number: 3, title: 'Monitor and escalate', items: monitorItems },
+    ],
+    interpretationMessages: submittedOutput?.riskDoNoHarmBoard.interpretationMessages || [],
+    feedbackMessages: submittedOutput?.feedbackMessages || [],
+    safetyConfirmation: submittedOutput?.riskDoNoHarmBoard.safetyConfirmation || '',
+    carryForwardNote: savedBoard?.carryForwardUse || '',
+    orderingNote: submittedOutput
+      ? 'Ordering source: saved generated-board field order.'
+      : 'Ordering source: current learner selections follow the original Screen 13 field order.',
+  };
+}
+
+function RiskDoNoHarmBoardVisualization({
+  viewModel,
+  idPrefix,
+  headingRef,
+}: {
+  viewModel: Screen13VisualizationViewModel;
+  idPrefix: string;
+  headingRef?: RefObject<HTMLHeadingElement | null>;
+}) {
+  const hasBoardContent = viewModel.lanes.some((lane) => lane.items.length > 0);
+
+  return (
+    <section className={`m3-risk-output m3-s13-visualization is-${viewModel.status}`} aria-labelledby={`${idPrefix}-title`}>
+      <header className="m3-s13-visualization-header">
+        <div>
+          <p className="m3-s13-visualization-eyebrow">READ-ONLY SAFETY DECISION BOARD</p>
+          <h2 id={`${idPrefix}-title`} ref={headingRef} tabIndex={headingRef ? -1 : undefined}>Risk and Do-No-Harm Board</h2>
+        </div>
+        <span className="m3-s13-visualization-status">{viewModel.statusLabel}</span>
+      </header>
+      <p className="m3-s13-visualization-status-message" aria-live="polite">{viewModel.statusMessage}</p>
+      <p className="m3-s13-visualization-meaning"><strong>What this shows:</strong> {viewModel.meaning}</p>
+
+      {hasBoardContent ? (
+        <div className="m3-s13-board" aria-label="Three-lane risk and do-no-harm board">
+          {viewModel.lanes.map((lane) => (
+            <section key={lane.id} className={`m3-s13-lane m3-s13-lane--${lane.id}`} aria-labelledby={`${idPrefix}-${lane.id}`}>
+              <header>
+                <span aria-hidden="true">{lane.number}</span>
+                <h3 id={`${idPrefix}-${lane.id}`}>{lane.title}</h3>
+              </header>
+              {lane.id === 'risk' && viewModel.impactLabel && (
+                <p className={`m3-s13-impact is-${viewModel.impactLevel || 'pending'}`}>
+                  <span aria-hidden="true">{viewModel.impactLevel === 'high' ? '!' : viewModel.impactLevel === 'medium' ? '◐' : '○'}</span>
+                  <strong>Impact:</strong> {viewModel.impactLabel}
+                </p>
+              )}
+              {lane.items.length > 0 ? (
+                <dl>
+                  {lane.items.map((item) => (
+                    <div key={item.label} className={item.safetyCritical ? 'is-safety-critical' : undefined}>
+                      <dt>{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : <p className="m3-s13-visualization-empty">No information is available for this lane yet.</p>}
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p className="m3-s13-visualization-empty">Select a risk situation to begin the board. No learner output has been generated yet.</p>
+      )}
+
+      {viewModel.interpretationMessages.length > 0 && (
+        <section className="m3-s13-interpretation" aria-labelledby={`${idPrefix}-interpretation`}>
+          <h3 id={`${idPrefix}-interpretation`}>What the board suggests</h3>
+          <ul>{viewModel.interpretationMessages.map((message) => <li key={message}>{message}</li>)}</ul>
+        </section>
+      )}
+      {viewModel.feedbackMessages.length > 0 && (
+        <section className="m3-s13-feedback" aria-labelledby={`${idPrefix}-feedback`}>
+          <h3 id={`${idPrefix}-feedback`}>Feedback</h3>
+          <ul>{viewModel.feedbackMessages.map((message) => <li key={message}>{message}</li>)}</ul>
+        </section>
+      )}
+      {viewModel.safetyConfirmation && (
+        <section className="m3-s13-safety-confirmation" aria-labelledby={`${idPrefix}-safety`}>
+          <h3 id={`${idPrefix}-safety`}>Safety confirmation</h3>
+          <p>{viewModel.safetyConfirmation}</p>
+        </section>
+      )}
+
+      <section className="m3-s13-text-equivalent" aria-labelledby={`${idPrefix}-text`}>
+        <h3 id={`${idPrefix}-text`}>Complete text version</h3>
+        <p><strong>Output status:</strong> {viewModel.statusLabel}. {viewModel.statusMessage}</p>
+        {viewModel.lanes.map((lane) => (
+          <section key={lane.id} aria-labelledby={`${idPrefix}-text-${lane.id}`}>
+            <h4 id={`${idPrefix}-text-${lane.id}`}>{lane.number}. {lane.title}</h4>
+            {lane.id === 'risk' && viewModel.impactLabel && <p><strong>Impact:</strong> {viewModel.impactLabel}</p>}
+            {lane.items.length > 0 ? (
+              <dl>{lane.items.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+            ) : <p>No information is available for this lane yet.</p>}
+          </section>
+        ))}
+        {viewModel.interpretationMessages.length > 0 && <section><h4>Interpretation</h4><ul>{viewModel.interpretationMessages.map((message) => <li key={message}>{message}</li>)}</ul></section>}
+        {viewModel.feedbackMessages.length > 0 && <section><h4>Feedback</h4><ul>{viewModel.feedbackMessages.map((message) => <li key={message}>{message}</li>)}</ul></section>}
+        {viewModel.safetyConfirmation && <section><h4>Safety confirmation</h4><p>{viewModel.safetyConfirmation}</p></section>}
+        {viewModel.carryForwardNote && <section><h4>Carry this into Screen 14</h4><p>{viewModel.carryForwardNote}</p></section>}
+      </section>
+      {viewModel.carryForwardNote && <p className="m3-s13-carry-forward"><strong>Carry this into Screen 14:</strong> {viewModel.carryForwardNote}</p>}
+      <p className="m3-s13-ordering">{viewModel.orderingNote}</p>
+    </section>
+  );
+}
+
 function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
   state: LearningState;
@@ -14488,6 +14701,12 @@ function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
   const isValid = validationMessages.length === 0;
   const canContinue = Boolean(submittedOutput && !formChanged);
   const helperText = getScreen13HelperText(selection, Boolean(submittedOutput), formChanged);
+  const screen13VisualizationViewModel = buildScreen13VisualizationViewModel({
+    submittedOutput,
+    formChanged,
+    selection,
+    helperText,
+  });
   const selectRiskSituation = (riskSituation: string) => {
     setSelection((current) => current.riskSituation === riskSituation
       ? getEmptyRiskBoardSelection()
@@ -14786,43 +15005,23 @@ function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
         </section>
         )}
 
+        {activeStage === 3 && (
+          <RiskDoNoHarmBoardVisualization
+            viewModel={screen13VisualizationViewModel}
+            idPrefix={`${screen.id}-practice-visualization`}
+          />
+        )}
+
         {activeStage === 4 && submittedOutput && generatedBoard && (
-          <section className="m3-risk-output" aria-live="polite" aria-labelledby={`${screen.id}-output`}>
-            <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Risk and Do-No-Harm Check</h2>
-            <p>This board shows what could exclude, expose, silence, overload, or harm people before implementation, and what should change in the design. It is a learning output, not a complaint record, investigation, or formal risk assessment.</p>
-            <div className="m3-risk-output-grid m3-risk-output-grid--board">
-              {[
-                ['Design decision or activity reviewed', generatedBoard.riskSituation],
-                ['Possible risk or unintended harm', generatedBoard.riskCategory],
-                ['Who may be affected', generatedBoard.whoMayBeAffected],
-                ['Likely cause', generatedBoard.likelyCause],
-                ['Risk level', generatedBoard.impactLevel],
-                ['Mitigation or design adaptation', generatedBoard.mitigationAction],
-                ['Follow-up actor or role', generatedBoard.responsibleActor],
-                ['Implementation watch-point', generatedBoard.watchSign],
-                ['Alternative channel', generatedBoard.alternativeChannel],
-                ['Pause, stop, or referral condition', generatedBoard.pauseStopReferralCondition],
-                ['Carry forward to design repair', generatedBoard.carryForwardUse],
-              ].map(([label, value]) => (
-                <article key={label} className="m3-risk-output-card" data-testid="m3-s13-generated-board-row">
-                  <h3>{label}</h3>
-                  <p>{value}</p>
-                </article>
-              ))}
-            </div>
-          </section>
+          <RiskDoNoHarmBoardVisualization
+            viewModel={screen13VisualizationViewModel}
+            idPrefix={`${screen.id}-output`}
+            headingRef={outputRef}
+          />
         )}
 
         {activeStage === 4 && submittedOutput && (
           <>
-            <section className="m3-risk-feedback">
-              <h2>What your risk board suggests</h2>
-              <ul>{submittedOutput.riskDoNoHarmBoard.interpretationMessages.map((message) => <li key={message}>{message}</li>)}</ul>
-            </section>
-            <section className="m3-risk-feedback">
-              <h2>Feedback</h2>
-              <ul>{submittedOutput.feedbackMessages.map((message) => <li key={message}>{message}</li>)}</ul>
-            </section>
             <section className="m3-risk-carry-forward">
               <h2>Case-study learning to carry forward</h2>
               <div className="m3-risk-carry-grid">
