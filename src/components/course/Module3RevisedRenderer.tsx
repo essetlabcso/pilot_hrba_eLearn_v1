@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode, RefObject } from 'react';
 import type { LearningState } from '../../state/learningState';
 import {
   getModule3RevisedScreen,
@@ -9,6 +9,7 @@ import {
   type Module3RevisedScreen,
 } from '../../data/module3/module3RevisedScreens';
 import './module3-revised.css';
+import { Module3Screen3, Module3Screen4 } from './Module3Batch2Screens';
 
 type Module3RevisedRendererProps = {
   screenId: string;
@@ -74,12 +75,12 @@ const module3IntroTranscript = [
 ] as const;
 
 const module3ObjectiveAreas = [
-  { id: 'context-standards', image: 'm3-objective-01-context-standards.webp', alt: 'Illustration connecting local context analysis with standards and policy references.', title: 'Context and standards', action: 'Understand the issue and identify relevant standards and responsibilities.', learn: 'HRBA project design begins with the local context. Project teams need to understand what is happening, who is affected differently, what barriers may exist, and which rights, policies, service standards, public responsibilities, or project commitments are relevant.', do: 'You will examine the Jiru Amba situation, identify context and inequality signals, consider information that requires verification, and connect selected issues to relevant standards and responsibilities.', produce: ['Context and Inequality Scan', 'Policy and Standards Map'], later: 'These outputs will help you identify specific rights-holder groups, barriers, responsible actors, and project-design priorities.', context: 'The task reflects the fact that local conditions, institutions, communication channels, and service arrangements differ across Ethiopian settings.' },
-  { id: 'rights-holders-barriers', image: 'm3-objective-02-rights-holders-barriers.webp', alt: 'Illustration showing rights-holder groups and barriers that affect access, information, and participation.', title: 'Rights-holders and barriers', action: 'Identify specific groups and examine the barriers they experience.', learn: 'Broad terms such as “the community” may hide important differences. HRBA requires project teams to identify specific rights-holder groups and examine how different barriers affect their access, participation, influence, benefit, safety, and follow-up.', do: 'You will identify priority rights-holder groups in the Jiru Amba case and match each group with relevant barriers and project-design implications.', produce: ['Rights-Holder and Barrier Map'], later: 'The findings will inform inclusion measures, participation arrangements, activities, accessibility, monitoring, and indicators.', context: 'The analysis will consider how gender, disability, age, distance, livelihood, information, and other factors may affect participation and access differently.' },
-  { id: 'responsibility-power', image: 'm3-objective-03-responsibility-power-causes-capacity.webp', alt: 'Illustration mapping public responsibility, influence, root causes, and capacity gaps.', title: 'Responsibility, power, causes, and capacity', action: 'Clarify who has responsibility, who has influence, and what affects change.', learn: 'Formal responsibility and practical influence are not always the same. Project teams need to distinguish duty-bearers, supporting actors, community actors, and realistic CSO roles. They also need to understand immediate problems, underlying causes, deeper factors, and capacity or response gaps.', do: 'You will classify actors, examine responsibility and influence, identify causes, and assess gaps related to mandate, knowledge, skills, resources, coordination, incentives, willingness, and accountability.', produce: ['Duty-Bearer and Actor Responsibility Map', 'Power and Influence Map', 'Root-Cause and Capacity-Gap Map'], later: 'These outputs will guide engagement, capacity support, accountability arrangements, activities, assumptions, and risks.', context: 'This helps avoid placing all responsibility on the CSO or assuming that every implementation gap has the same cause.' },
-  { id: 'inclusion-risk', image: 'm3-objective-04-inclusion-participation-accountability-risk.webp', alt: 'Illustration of inclusive participation, accessible feedback, accountability, and risk management.', title: 'Inclusion, participation, accountability, and risk', action: 'Check whether the design supports meaningful, accessible, and safe engagement.', learn: 'Inclusion should influence the design of activities, communication, budgets, participation, feedback, and monitoring. Participation means more than attendance. Accountability requires information, safe feedback, response, explanation, and follow-up. Project design should also identify and manage possible risks.', do: 'You will review gender and disability inclusion, design participation and accountability arrangements, and identify risks, mitigation measures, monitoring signs, and response conditions.', produce: ['Gender and Disability Design Check', 'Participation and Accountability Pathway', 'Risk and Do-No-Harm Board'], later: 'These outputs will shape implementation methods, accessible communication, feedback processes, risk management, budgets, and monitoring.', context: 'The most appropriate participation and accountability channels may differ across rural, urban, remote, linguistic, and institutional settings.' },
-  { id: 'design-repair', image: 'm3-objective-05-project-design-repair.webp', alt: 'Illustration of a draft project design being revised into a stronger integrated design.', title: 'Project-design repair', action: 'Use the analysis to improve the project design.', learn: 'HRBA analysis should change the project design. Findings about rights, barriers, responsibility, power, participation, inclusion, capacity, and risk should be reflected in objectives, activities, intervention logic, indicators, evidence, and implementation arrangements.', do: 'You will use the outputs from the earlier screens to revise a project objective, improve the activity package, strengthen the intervention logic, and improve indicators and evidence questions.', produce: ['HRBA Project Design Repair Package'], later: 'The repaired design will provide the basis for reviewing a draft project plan and preparing the final snapshot.', context: 'The aim is not to add HRBA language to an unchanged project. The analysis should result in practical design changes.' },
-  { id: 'review-portfolio', image: 'm3-objective-06-review-portfolio-implementation.webp', alt: 'Illustration of project outputs being reviewed, saved in a portfolio, and prepared for implementation.', title: 'Review, portfolio, and implementation', action: 'Review the design, finalize the output, and prepare for implementation.', learn: 'The maps, checks, pathways, and design repairs developed across the module form one connected project-design output. The final stage helps you review the design, identify remaining gaps, and prepare points that need attention during implementation.', do: 'You will review a draft project plan, complete an applied knowledge check, refine the final snapshot, and identify implementation watch-points.', produce: ['Draft Plan Review Note', 'Final HRBA Project Design Improvement Snapshot', 'Module 4 implementation watch-points'], later: 'The saved or downloaded outputs may support team review, further project development, Module 4 learning, and future facilitated peer exchange or collaborative refinement.', context: 'The output remains a draft learning and project-design product and should be reviewed through the organization’s technical, management, safeguarding, and approval processes.' },
+  { id: 'context-standards', title: 'Context and standards', prompt: 'Analyze the situation and identify the standards and responsibilities that should guide the design.', lead: 'Project design begins with context, inequality and the standards that apply.', do: 'Analyze what is happening, who may be affected differently, which assumptions require safe verification, and which rights, policies, standards and public responsibilities are relevant.', produce: ['Context and Inequality Scan', 'Policy and Standards Map'], later: 'These outputs define the issue, affected groups and standards that later project decisions must address.' },
+  { id: 'rights-holders-barriers', title: 'Rights-holders and barriers', prompt: 'Identify specific groups and examine what may prevent access, participation, influence or benefit.', lead: 'HRBA project design looks beyond a general reference to “the community.”', do: 'Identify specific rights-holder groups and compare the barriers affecting access, information, participation, influence, safety, benefit and follow-up.', produce: ['Rights-Holder and Barrier Map'], later: 'The map informs actor analysis, inclusion measures, participation arrangements, accountability and risk decisions.' },
+  { id: 'responsibility-power', title: 'Responsibility, power, causes and capacity', prompt: 'Clarify who has responsibility, who has influence, why barriers persist and what capacities are missing.', lead: 'Formal responsibility, practical influence, root causes and capacity are related but not identical.', do: 'Distinguish duty-bearers, supporting actors and realistic CSO roles; compare formal and informal influence; examine root causes and identify capacity gaps affecting rights-holders and duty-bearers.', produce: ['Actor Responsibility Map', 'Power and Influence Map', 'Root-Cause and Capacity-Gap Map'], later: 'These outputs show who should act, who can shape decisions, why the problem continues and what needs to change.' },
+  { id: 'inclusion-risk', title: 'Inclusion, participation, accountability and risk', prompt: 'Assess whether people can participate meaningfully, receive a response and engage without avoidable harm.', lead: 'Inclusion should change project arrangements, resources, decisions and monitoring.', do: 'Assess gender and disability implications, design meaningful participation and feedback-response arrangements, and identify risks, mitigation measures, monitoring signs and responsible actors.', produce: ['Gender and Disability Design Check', 'Participation and Accountability Pathway', 'Risk and Do-No-Harm Board'], later: 'These outputs inform accessibility, reasonable accommodation, participation channels, budgets, feedback response, risk monitoring and implementation arrangements.' },
+  { id: 'design-repair', title: 'Project-design repair', prompt: 'Use the analysis to improve the objective, activities, intervention logic and indicators.', lead: 'Analysis is useful only when it changes the design.', do: 'Repair the project objective, activity package, intervention logic, indicators and evidence questions so that they respond to the identified barriers, responsibilities, capacities, participation requirements, inclusion measures and risks.', produce: ['Revised project objective', 'Revised activity package', 'Improved intervention logic', 'Indicators and evidence questions'], later: 'The repaired design package is used to review the draft plan and prepare the final snapshot.' },
+  { id: 'review-portfolio', title: 'Review, portfolio and implementation', prompt: 'Review the design, save the cumulative output and prepare key points for implementation.', lead: 'The final stage brings the Module 3 analysis and design decisions together.', do: 'Review and repair a draft project plan, complete the applied knowledge check, finalize the cumulative snapshot and identify implementation watch-points for Module 4.', produce: ['Draft Plan Review Note', 'HRBA Project Design Improvement Snapshot', 'Implementation watch-points'], later: 'The snapshot supports organizational review and preparation for implementation. It remains a draft learning and project-design product until it passes the organization’s technical, safeguarding, management and approval processes.' },
 ] as const;
 
 const module3CaseAssets = {
@@ -150,9 +151,9 @@ const module3ContextAudioAsset = {
 };
 
 const module3ContextScanIntro = [
-  'Before a CSO chooses activities, writes objectives, or proposes indicators, it needs to understand what is really happening, who is affected differently, and why.',
-  'A needs-based design may begin with visible problems: a market needs improvement, a health post needs renovation, or a water point needs repair. HRBA asks the design team to look further. Who can access the service? Who is excluded? Who has voice? Who carries responsibility? What barriers are hidden? What evidence still needs to be verified safely?',
-  'In this scan, you will look beyond the first activity idea and examine the context, inequalities, barriers, responsibilities, and evidence that should shape the project design.',
+  'Situation analysis is the starting point for HRBA project design. Before choosing activities, objectives, or indicators, examine what is happening and who may experience the issue differently.',
+  'The same issue may affect groups differently because of inequality, discrimination, access to information, distance, cost, disability, gender, livelihood, influence, or other barriers. These possible patterns are questions for analysis, not confirmed facts.',
+  'In this scan, distinguish what the case shows, a possible explanation, and what information still needs safe verification before the design is finalized.',
 ];
 
 const module3ContextKeyIdea =
@@ -183,7 +184,7 @@ const module3ContextExplainCards = [
 
 const module3ContextEvidence = [
   {
-    label: '1. What is visible?',
+    label: '1. What is happening?',
     items: [
       'A planning meeting took place.',
       'A service improvement plan was drafted.',
@@ -191,7 +192,7 @@ const module3ContextEvidence = [
     ],
   },
   {
-    label: '2. Who may experience this differently?',
+    label: '2. Who is affected differently?',
     items: [
       'Women',
       'Youth',
@@ -201,7 +202,7 @@ const module3ContextEvidence = [
     ],
   },
   {
-    label: '3. What barriers may explain this difference?',
+    label: '3. What barriers may exist?',
     items: [
       'Information does not reach everyone in time.',
       'Meeting times conflict with work or care responsibilities.',
@@ -210,16 +211,9 @@ const module3ContextEvidence = [
     ],
   },
   {
-    label: '4. What is still assumed?',
+    label: '4. What evidence should be verified safely?',
     items: [
-      '“The community participated” may not prove influence.',
-      '“Women were invited” may not prove safe or equal participation.',
-      '“Youth were consulted” may not prove their priorities shaped the final plan.',
-    ],
-  },
-  {
-    label: '5. What should be checked safely before design is finalized?',
-    items: [
+      'Check assumptions such as whether attendance led to influence.',
       'Disaggregated participation information where available.',
       'Facilitation notes and planning records.',
       'Anonymized feedback summaries.',
@@ -616,9 +610,9 @@ const policyAnchorCategories: Record<PolicyAnchorId, Exclude<PolicyAnchorCategor
 };
 
 const policyMapIntroParagraphs = [
-  'A project design should not only respond to visible needs. It should also consider the rights people are entitled to, the responsibilities of duty-bearers, and the policy or service commitments that already exist.',
-  'For a CSO, this does not mean turning the project into a legal document. It means using standards and commitments to ask better design questions: What should people be able to access? Who has responsibility? What should be adjusted so the project supports inclusion, participation, accountability, dignity, and safe follow-up?',
-  'In the Jiru Amba case, the standards and policy map helps you connect the proposed activities to design lenses and sources to check before implementation begins.',
+  'A project design should connect context issues to human rights standards and principles, relevant international or regional instruments, national law or policy, sector or service standards, public responsibilities, and organizational or project commitments.',
+  'Learners are not expected to memorize legal instruments. Use relevant references to ask practical questions about what people should access, who has responsibility, and what should change in the design.',
+  'National policy and service standards can guide local design choices, but they do not replace applicable international human rights standards. Use each source for the question it can help answer, and verify uncertain references before relying on them.',
 ];
 
 const policyMapKeyIdea =
@@ -1205,8 +1199,8 @@ type Screen7Submission = {
 };
 
 const rightsHolderIntroParagraphs = [
-  'A project design should not describe people only as "the community" or "beneficiaries." HRBA asks who is affected differently, what barriers they face, and what must change so people can access, participate, influence, benefit, and receive follow-up.',
-  'In the Jiru Amba case, different groups may experience the same plan differently. Women vendors, youth, persons with disabilities, low-income households, informal workers, and remote kebele residents may face different barriers. A strong design names these differences safely and turns them into practical design decisions.',
+  'Rights-holders are active participants who can express priorities, influence decisions, claim rights, and seek accountability. They should not be treated as passive beneficiaries or described only as “the community.”',
+  'Broad labels may hide meaningful differences. Barriers can affect information, access, participation, influence, benefit, safety, and follow-up. Identifying a priority barrier should therefore lead to a practical, group-specific project-design implication.',
 ];
 
 const rightsHolderKeyIdea =
@@ -2082,6 +2076,7 @@ type Screen9ActorRating = {
   actorLabel: string;
   category: ActorCategory;
   roleFromResponsibilityMap: string;
+  formalAuthorityLevel: Screen9InfluenceLevel | '';
   influenceLevel: Screen9InfluenceLevel | '';
   supportInterestLevel: Screen9SupportLevel | '';
   likelyChangeRole: LikelyChangeRole | '';
@@ -2167,6 +2162,9 @@ type Screen10Submission = {
     directCauses: string[];
     deeperRootCauses: string[];
     capacityGaps: string[];
+    rightsHolderCapacityGaps?: string[];
+    dutyBearerSystemCapacityGaps?: string[];
+    connectedActors?: string[];
   };
   generatedProblemLayersCanvas: Array<{
     problemPattern: string;
@@ -2174,6 +2172,8 @@ type Screen10Submission = {
     directCause: string;
     deeperRootCause: string;
     capacityGap: string;
+    rightsHolderCapacityGap?: string;
+    dutyBearerSystemCapacityGap?: string;
     responsibilityGap?: string;
     designImplication: string;
     questionForLaterDesignRepair: string;
@@ -2184,6 +2184,9 @@ type Screen10Submission = {
     directCauses: string[];
     deeperRootCauses: string[];
     capacityGaps: string[];
+    rightsHolderCapacityGaps?: string[];
+    dutyBearerSystemCapacityGaps?: string[];
+    connectedActors?: string[];
     generatedProblemLayersCanvas: Screen10Submission['generatedProblemLayersCanvas'];
     designImplications: string[];
     questionsForLaterDesignRepair: string[];
@@ -2207,6 +2210,8 @@ type Screen10CauseMapDraft = {
   directCause: string;
   deeperRootCause: string;
   capacityGap: string;
+  rightsHolderCapacityGap: string;
+  dutyBearerSystemCapacityGap: string;
   responsibilityGap: string;
   designImplication: string;
 };
@@ -2334,6 +2339,44 @@ type Screen11Submission = {
   savedAt: string;
 };
 
+type Screen11VisualizationStatus = 'empty' | 'partial' | 'current' | 'stale';
+
+type Screen11VisualizationRow = {
+  id: M3Screen11SignalId;
+  designArea: string;
+  status: InclusionStatus | null;
+  statusLabel: string;
+  explanation: string;
+  genderConsideration: string;
+  disabilityConsideration: string;
+  selectedRepair: string;
+  responsibleRole: string;
+  resourceOrAccommodationImplication: string;
+  monitoringPoint: string;
+  carryForwardUse: string;
+};
+
+type Screen11VisualizationViewModel = {
+  status: Screen11VisualizationStatus;
+  statusLabel: string;
+  statusMessage: string;
+  meaning: string;
+  overallStatuses: Array<{
+    id: 'gender' | 'disability';
+    label: string;
+    status: Screen11GenderStatus | Screen11DisabilityStatus;
+    statusLabel: string;
+    description: string;
+  }>;
+  rows: Screen11VisualizationRow[];
+  repairs: Screen11Submission['markerLiteDashboard']['selectedRepairRows'];
+  warnings: Array<{ id: string; title: string; text: string }>;
+  interpretationTitle: string;
+  interpretationText: string;
+  carryForwardNote: string;
+  orderingNote: string;
+};
+
 type Screen9Submission = {
   screenId: 'M3-R09';
   submitted: true;
@@ -2343,6 +2386,7 @@ type Screen9Submission = {
   generatedActorRows: Array<{
     actor: string;
     roleFromResponsibilityMap: string;
+    formalAuthorityLevel: string;
     influenceLevel: string;
     supportInterestLevel: string;
     likelyRoleInChange: string;
@@ -2852,9 +2896,14 @@ type Screen12PathwaySelection = {
   gap: string;
   decision: string;
   participationMethod?: string;
+  informationMethod?: string;
   supports: string[];
   responseChannel: string;
   responsibleActor: string;
+  responseMethod?: string;
+  explanationFollowUp?: string;
+  accessibilityRiskCheck?: string;
+  alternativeChannel?: string;
   designAdjustment: string;
   implementationWatchPoint?: string;
   customGroup?: string;
@@ -2917,10 +2966,13 @@ type Screen13RiskBoardSelection = {
   riskSituation: string;
   riskCategories: string[];
   affectedGroups: string[];
+  likelyCause: string;
   impactLevel: Screen13ImpactLevel | '';
   mitigationActions: string[];
   responsibleActor: string;
   watchSign: string;
+  alternativeChannel: string;
+  pauseStopReferralCondition: string;
   designAdjustment: string;
 };
 
@@ -2951,10 +3003,13 @@ type Screen13Submission = {
       riskSituation: string;
       riskCategory: string;
       whoMayBeAffected: string;
+      likelyCause: string;
       impactLevel: string;
       mitigationAction: string;
       responsibleActor: string;
       watchSign: string;
+      alternativeChannel: string;
+      pauseStopReferralCondition: string;
       designAdjustment: string;
       carryForwardUse: string;
     };
@@ -2965,6 +3020,36 @@ type Screen13Submission = {
   ownCsoPracticeOutput?: Screen13OwnCsoOutput;
   portfolioSummary: string;
   savedAt: string;
+};
+
+type Screen13VisualizationStatus = 'empty' | 'partial' | 'current' | 'stale';
+
+type Screen13VisualizationItem = {
+  label: string;
+  value: string;
+  safetyCritical?: boolean;
+};
+
+type Screen13VisualizationLane = {
+  id: 'risk' | 'response' | 'monitor';
+  number: 1 | 2 | 3;
+  title: string;
+  items: Screen13VisualizationItem[];
+};
+
+type Screen13VisualizationViewModel = {
+  status: Screen13VisualizationStatus;
+  statusLabel: string;
+  statusMessage: string;
+  meaning: string;
+  impactLevel: Screen13ImpactLevel | '';
+  impactLabel: string;
+  lanes: Screen13VisualizationLane[];
+  interpretationMessages: string[];
+  feedbackMessages: string[];
+  safetyConfirmation: string;
+  carryForwardNote: string;
+  orderingNote: string;
 };
 
 const screen12Assets = {
@@ -3415,6 +3500,8 @@ function getEmptyScreen10CauseMapDraft(): Screen10CauseMapDraft {
     directCause: '',
     deeperRootCause: '',
     capacityGap: '',
+    rightsHolderCapacityGap: '',
+    dutyBearerSystemCapacityGap: '',
     responsibilityGap: '',
     designImplication: '',
   };
@@ -3596,7 +3683,7 @@ const screen8GeneratedDefaults: Record<Screen8BarrierId, {
     supportOrAllyActor: 'Peer CSO, inclusion adviser, or partner support organization.',
     capacityGapToCheck: 'Weak facilitation, unclear consultation process, limited trust, or decisions shaped before consultation.',
     safeEngagementQuestion: 'How can Awra help lower-influence groups shape priorities without exposing individuals or creating confrontation?',
-    nextQuestion: 'Which actor has the most influence over priority-setting, and who may resist changing the process?',
+    nextQuestion: 'Which actor has the most influence over priority-setting, and what engagement considerations require verification?',
   },
   information_barrier: {
     rightsHolderGroupAffected: 'Groups who may not receive clear, timely, accessible, or trusted information.',
@@ -3860,7 +3947,7 @@ const screen8ActorsByLane: Record<'public' | 'service' | 'voice' | 'cso', Screen
     { id: 'community_volunteers_or_facilitators', label: 'Community volunteers or facilitators', category: 'rights_holder_voice_support' },
     {
       id: 'respected_leaders_possible_gatekeeper',
-      label: 'Respected community leaders or possible gatekeepers',
+      label: 'Respected community leaders or actors influencing access',
       category: 'rights_holder_voice_support',
       safeNote: 'Use carefully. This role may support access, but may also dominate or filter voice.',
     },
@@ -3876,8 +3963,59 @@ const screen8ActorsByLane: Record<'public' | 'service' | 'voice' | 'cso', Screen
 };
 
 const responsibilityMapIntroParagraphs = [
-  'After identifying rights-holder groups and barriers, a design team needs to ask who has responsibility to respond. HRBA project design should not leave responsibility vague or shift public obligations onto the CSO.',
-  'In the Jiru Amba case, some actors may have formal duties, some may manage services, some may influence decisions, and some may support community voice. A strong design clarifies what each actor should do and what role the CSO can safely and realistically play.',
+  'Rights-holders are the people or groups whose rights, access, participation, influence, or benefit are being examined. Primary duty-bearers are public institutions or officials with the relevant formal responsibility.',
+  'Supporting public or non-public actors may contribute services, coordination, information, resources, or follow-up. Community or customary actors may offer local knowledge or participation channels, but inclusion, appropriateness, and risk still require verification.',
+  'Private actors are relevant where a business, contractor, market actor, employer, or provider affects access, livelihoods, services, or implementation. A CSO role should remain supportive or facilitative and should not replace permanent public responsibility.',
+  'Responsibility and support are not the same. Not every public actor has the same mandate, not every gap results from unwillingness, and capacity is broader than training: authority, resources, coordination, incentives, willingness, and accountability may matter.',
+];
+
+const screen13LikelyCauses = [
+  'Information, timing, location, format, or communication does not match the barriers identified',
+  'Responsibility, review, response, or follow-up is unclear',
+  'One participation or feedback channel reinforces an existing power imbalance',
+  'The design collects more information than is necessary or assigns it outside an appropriate role',
+  'Agreed accessibility, mitigation, resources, or coordination are absent or not functioning',
+];
+
+const screen13AlternativeChannels = [
+  'Use an accessible individual or confidential channel instead of public discussion',
+  'Use local or remote outreach where the main venue excludes people',
+  'Use more than one information, participation, or feedback channel',
+  'Use the established appropriate institutional route where the issue is outside the project team’s role',
+];
+
+const screen13PauseStopReferralConditions = [
+  'Pause the method if participation appears to increase exposure or retaliation risk, pending responsible review',
+  'Stop collecting information that is unnecessary or cannot be appropriately protected',
+  'Use an alternative channel if the main channel excludes or exposes participants',
+  'Pause implementation where agreed mitigation is absent or not functioning',
+  'Refer through an established appropriate safeguarding, protection, service, or institutional route where relevant',
+];
+
+const screen12ResponseMethods = [
+  'Acknowledge receipt and review the issue against the relevant decision or service responsibility',
+  'Provide a direct response through the selected accessible channel',
+  'Publish a generalized response summary without identifying participants',
+  'Refer the issue to the appropriate responsible actor and track response',
+];
+
+const screen12ExplanationFollowUps = [
+  'Explain what changed, what did not change, why, and what happens next',
+  'Share an accessible decision note and follow-up date',
+  'Review whether the adaptation worked and revise the pathway where needed',
+];
+
+const screen12AccessibilityRiskChecks = [
+  'Check language, disability access, distance, cost, privacy, and power imbalance; provide another channel where needed',
+  'Check who may be excluded or exposed by the selected channel before use',
+  'Verify that information, participation, feedback, and response are accessible in practice',
+];
+
+const screen12AlternativeChannels = [
+  'Accessible individual or confidential channel',
+  'Local or remote outreach option',
+  'Phone or digital option where feasible and appropriate',
+  'Second facilitated channel that does not rely on one representative structure',
 ];
 
 const responsibilityMapKeyIdea =
@@ -3885,23 +4023,23 @@ const responsibilityMapKeyIdea =
 
 const responsibilityMapExplainCards = [
   {
-    title: 'What this section is about',
-    text: 'Map duty-bearers, service actors, supporting actors, and the CSO role connected to the barriers identified in the Jiru Amba case.',
+    title: 'Primary responsibility',
+    text: 'Keep the relevant public duty-bearer visible and verify the exact mandate where it is not established.',
     tone: 'amber',
   },
   {
-    title: 'Why this matters for CSOs',
-    text: 'Clear actor roles help CSOs avoid replacing duty-bearers while still supporting participation, evidence, coordination, capacity, and accountability.',
+    title: 'Supporting actors',
+    text: 'Separate service, community, customary, private, and other supporting contributions from primary responsibility.',
     tone: 'green',
   },
   {
-    title: 'What you will do',
-    text: 'Select actors and match them to responsibilities, support roles, and safe design actions.',
+    title: 'Realistic Awra role',
+    text: 'Awra may facilitate participation, accessible information, evidence, dialogue, coordination, monitoring, referral, or follow-up.',
     tone: 'blue',
   },
   {
-    title: 'What you will produce',
-    text: 'A draft Actor Responsibility Map that can be saved to your portfolio and used in later design screens.',
+    title: 'Capacity or response gap',
+    text: 'Check knowledge, authority, skills, resources, coordination, incentives, willingness, and accountability rather than assuming training is the answer.',
     tone: 'teal',
   },
 ];
@@ -3928,8 +4066,8 @@ const screen8SupportActors: Screen8ActorOption[] = [
 ];
 
 const screen8CarefulActors: Screen8ActorOption[] = [
-  { id: 'information_gatekeeper', label: 'Actor who controls information', category: 'careful_engagement_actor', useFor: 'may enable transparency or limit who receives information.' },
-  { id: 'high_influence_committee_leader', label: 'High-influence committee leader', category: 'careful_engagement_actor', useFor: 'may support change or resist transparency.' },
+  { id: 'information_gatekeeper', label: 'Actor who may influence information access', category: 'careful_engagement_actor', useFor: 'may enable transparency or affect who receives information; verify constructively.' },
+  { id: 'high_influence_committee_leader', label: 'High-influence committee leader', category: 'careful_engagement_actor', useFor: 'may contribute to change or present an engagement risk that requires verification.' },
   { id: 'informal_broker_careful', label: 'Informal broker', category: 'careful_engagement_actor', useFor: 'may shape access, trust, or participation risks.' },
 ];
 
@@ -4055,14 +4193,14 @@ const screen9DefaultActors: Module3Actor[] = [
   { actorId: 'remote_kebele_communities', label: 'Communities in remote kebeles', category: 'rights_holder_group', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
   { actorId: 'informal_workers', label: 'Informal workers', category: 'rights_holder_group', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
   { actorId: 'awra_cso_team', label: 'Awra CSO team', category: 'cso_role', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
-  { actorId: 'informal_brokers_gatekeepers', label: 'Informal brokers or gatekeepers', category: 'careful_engagement_actor', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
+  { actorId: 'informal_brokers_gatekeepers', label: 'Informal actors who may influence information or access', category: 'careful_engagement_actor', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
   { actorId: 'partner_support_organization', label: 'Partner or support organization', category: 'support_ally_actor', sourceScreen: 'screen9_default', linkedBarrierIds: [] },
 ];
 
 const likelyRoleOptions: Array<{ id: LikelyChangeRole; label: string }> = [
-  { id: 'enabler', label: 'Champion' },
-  { id: 'gatekeeper', label: 'Gatekeeper' },
-  { id: 'blocker', label: 'Blocker or delaying actor' },
+  { id: 'enabler', label: 'Possible enabling contribution' },
+  { id: 'gatekeeper', label: 'Possible influence over information or access' },
+  { id: 'blocker', label: 'Possible implementation or response risk' },
   { id: 'support_actor', label: 'Support actor' },
   { id: 'undecided_actor', label: 'Actor needing careful engagement' },
   { id: 'low_power_rights_holder_group', label: 'Actor needing voice strengthening' },
@@ -4116,6 +4254,78 @@ function getScreen8SavedOutput(state: LearningState): Screen8Submission | null {
   }
   if (record.screenId === 'M3-R08') return record as Screen8Submission;
   return null;
+}
+
+function getScreen9SavedOutput(state: LearningState): Screen9Submission | null {
+  const record = getPracticeState(state, 'M3-R09');
+  const nested = record.screen9;
+  if (nested && typeof nested === 'object' && (nested as Screen9Submission).screenId === 'M3-R09') {
+    return nested as Screen9Submission;
+  }
+  if (record.screenId === 'M3-R09') return record as Screen9Submission;
+  return null;
+}
+
+function getScreen10SavedOutput(state: LearningState): Screen10Submission | null {
+  const record = getPracticeState(state, 'M3-R10');
+  const nested = record.screen10;
+  if (nested && typeof nested === 'object' && (nested as Screen10Submission).screenId === 'M3-R10') {
+    return nested as Screen10Submission;
+  }
+  if (record.screenId === 'M3-R10') return record as Screen10Submission;
+  return null;
+}
+
+function getScreen11SavedOutput(state: LearningState): Screen11Submission | null {
+  const record = getPracticeState(state, 'M3-R11');
+  const nested = record.screen11;
+  if (nested && typeof nested === 'object' && (nested as Screen11Submission).screenId === 'M3-R11') return nested as Screen11Submission;
+  if (record.screenId === 'M3-R11') return record as Screen11Submission;
+  return null;
+}
+
+function getScreen12SavedOutput(state: LearningState): Screen12Submission | null {
+  const record = getPracticeState(state, 'M3-R12');
+  const nested = record.screen12;
+  if (nested && typeof nested === 'object' && (nested as Screen12Submission).screenId === 'M3-R12') return nested as Screen12Submission;
+  if (record.screenId === 'M3-R12') return record as Screen12Submission;
+  return null;
+}
+
+function getScreen13SavedOutput(state: LearningState): Screen13Submission | null {
+  const record = getPracticeState(state, 'M3-R13');
+  const nested = record.screen13;
+  if (nested && typeof nested === 'object' && (nested as Screen13Submission).screenId === 'M3-R13') return nested as Screen13Submission;
+  if (record.screenId === 'M3-R13') return record as Screen13Submission;
+  return null;
+}
+
+function restoreScreen8Mappings(output: Screen8Submission | null): Record<string, Screen8BarrierMapping> {
+  if (!output) return {};
+  return Object.fromEntries(output.barrierActorLinks.map((link) => {
+    const mapping = createEmptyScreen8Mapping();
+    link.actorSelections.forEach((selection) => {
+      const key: keyof Screen8BarrierMapping = selection.category === 'primary_public_responsibility'
+        ? 'publicActorIds'
+        : selection.category === 'service_or_local_implementation'
+          ? 'serviceActorIds'
+          : selection.category === 'community_influence_actor'
+            ? 'communityActorIds'
+            : selection.category === 'participation_actor'
+              ? 'participationActorIds'
+              : selection.category === 'rights_holder_voice_support'
+                ? 'voiceActorIds'
+                : selection.category === 'support_ally_actor'
+                  ? 'supportActorIds'
+                  : selection.category === 'careful_engagement_actor'
+                    ? 'carefulActorIds'
+                    : 'csoRoleIds';
+      mapping[key].push(selection.actorId);
+      mapping.actionIdsByActor[selection.actorId] = selection.actionIds;
+    });
+    mapping.capacityGapHintIds = link.capacityGapHintIds.filter((id) => screen8CapacityGapHints.some((hint) => hint.id === id));
+    return [link.barrierId, mapping];
+  }));
 }
 
 function getBarrierLabel(barrierId: Screen8BarrierId) {
@@ -4483,9 +4693,9 @@ const screen9ActorContent: Record<string, { role: string; implication: string; q
     question: 'What capacity does Awra need to support change safely: facilitation, accessibility, evidence handling, dialogue, advocacy, or monitoring?',
   },
   informal_brokers_gatekeepers: {
-    clue: 'Informal influence actor that may control information, access, trust, or who is heard. Handle carefully.',
-    role: 'Informal influence actor that may control information, access, trust, or who is heard.',
-    implication: 'The design should handle this actor carefully, avoid reinforcing gatekeeping, and create safer channels for rights-holder voice.',
+    clue: 'Informal actor who may influence information, access, trust, or who is heard. The pattern requires verification.',
+    role: 'Informal or relationship-based influence that may affect information, access, trust, or participation.',
+    implication: 'The design should engage constructively, check who may be excluded, and create more than one channel for rights-holder voice.',
     question: 'What root causes give this actor influence: information control, social norms, weak transparency, dependency, or lack of alternative channels?',
   },
   partner_support_organization: {
@@ -4516,6 +4726,7 @@ function getDefaultActorRating(actor: Module3Actor): Screen9ActorRating {
     actorLabel: actor.label,
     category: actor.category,
     roleFromResponsibilityMap: content.role,
+    formalAuthorityLevel: actor.category === 'primary_public_responsibility' ? 'high' : isPublicOrService ? 'medium' : 'low',
     influenceLevel: isPublicOrService || isGatekeeper ? 'high' : isSupport ? 'medium' : 'low',
     supportInterestLevel: isRightsHolder || isSupport ? 'high' : isGatekeeper ? 'uncertain' : 'uncertain',
     likelyChangeRole: isRightsHolder ? 'low_power_rights_holder_group' : isGatekeeper ? 'gatekeeper' : isPublicOrService ? 'undecided_actor' : isSupport ? 'support_actor' : 'undecided_actor',
@@ -4532,6 +4743,7 @@ function createEmptyActorRating(actor: Module3Actor): Screen9ActorRating {
     actorLabel: actor.label,
     category: actor.category,
     roleFromResponsibilityMap: defaultRating.roleFromResponsibilityMap,
+    formalAuthorityLevel: '',
     influenceLevel: '',
     supportInterestLevel: '',
     likelyChangeRole: '',
@@ -4543,7 +4755,8 @@ function createEmptyActorRating(actor: Module3Actor): Screen9ActorRating {
 
 function isScreen9RatingComplete(rating: Screen9ActorRating) {
   return Boolean(
-    rating.influenceLevel &&
+    rating.formalAuthorityLevel &&
+      rating.influenceLevel &&
       rating.supportInterestLevel &&
       rating.likelyChangeRole &&
       rating.engagementApproach,
@@ -4558,25 +4771,26 @@ function influenceScore(value: Screen9InfluenceLevel | '') {
 }
 
 function getPowerMapZone(rating: Screen9ActorRating): Screen9PowerMapZone['zoneId'] {
-  const score = influenceScore(rating.influenceLevel);
-  if (score === 3 && rating.supportInterestLevel === 'high') return 'work_closely';
-  if (score === 3 && rating.supportInterestLevel !== 'high') return 'engage_carefully';
-  if (score <= 2 && rating.supportInterestLevel === 'high') return 'strengthen_voice';
+  const authority = influenceScore(rating.formalAuthorityLevel);
+  const influence = influenceScore(rating.influenceLevel);
+  if (authority === 3 && influence === 3) return 'work_closely';
+  if (authority === 3) return 'engage_carefully';
+  if (influence === 3) return 'strengthen_voice';
   return 'monitor_lightly';
 }
 
 const powerMapZoneLabels: Record<Screen9PowerMapZone['zoneId'], string> = {
-  work_closely: 'High influence / high support or interest',
-  engage_carefully: 'High influence / uncertain or low support',
-  strengthen_voice: 'Low or medium influence / high support or interest',
-  monitor_lightly: 'Low or medium influence / low support or interest',
+  work_closely: 'High formal authority / high practical influence',
+  engage_carefully: 'High formal authority / lower practical influence',
+  strengthen_voice: 'Lower formal authority / high practical influence',
+  monitor_lightly: 'Lower formal authority / lower practical influence',
 };
 
 const powerMapZoneInterpretations: Record<Screen9PowerMapZone['zoneId'], string> = {
-  work_closely: 'These actors can help move change. Engage them early and clearly.',
-  engage_carefully: 'These actors can block, delay, filter, or weaken change. Build interest, clarify benefits, and reduce risk.',
-  strengthen_voice: 'Rights-holder groups or allies may care deeply but lack power. Support participation and collective voice safely.',
-  monitor_lightly: 'Keep aware, but do not spend most effort here unless their role changes.',
+  work_closely: 'These actors combine formal responsibility and practical influence. Engage early and clarify responsibility.',
+  engage_carefully: 'These actors hold formal responsibility but may need operational support, coordination, or mandate clarification.',
+  strengthen_voice: 'These actors have practical influence without equivalent formal authority. Verify how their influence affects access and participation.',
+  monitor_lightly: 'Keep the relationship proportionate and verify whether authority or influence changes.',
 };
 
 function generatePowerMapZones(ratings: Screen9ActorRating[]): Screen9PowerMapZone[] {
@@ -4620,7 +4834,7 @@ function getScreen9SummaryMessages(ratings: Screen9ActorRating[]) {
     messages.push('Careful engagement is needed. Your map includes actors who can enable or block change. The design should use constructive dialogue, clear evidence, and risk-aware engagement.');
   }
   if (ratings.some((rating) => rating.likelyChangeRole === 'gatekeeper')) {
-    messages.push('Gatekeeping may affect inclusion. The design should avoid relying on one channel for participation or information. It should create safer and more diverse ways for affected groups to be heard.');
+    messages.push('Influence over information or access may affect inclusion. Verify the pattern and avoid relying on one channel for participation or information. Create more diverse ways for affected groups to be heard.');
   }
   if (messages.length === 0) messages.push('Your map shows where engagement can support change and where the design should strengthen safe participation.');
   return messages;
@@ -4764,7 +4978,7 @@ Examples:
 - service committee;
 - community representative;
 - rights-holder group;
-- informal gatekeeper;
+- informal actor who may influence information or access;
 - CSO facilitator;
 - support organization.
 
@@ -4782,7 +4996,7 @@ How much can this actor shape decisions, resources, information, trust, access, 
 
 ## 5. Support or interest
 
-How likely is this actor to support change, resist it, ignore it, or be strongly affected by it?
+What contribution, interest, likely engagement, or possible risk should be verified for this actor?
 
 - Low support / low interest
 - Uncertain or mixed
@@ -4793,8 +5007,8 @@ How likely is this actor to support change, resist it, ignore it, or be strongly
 Choose the closest role:
 
 - enabler;
-- blocker;
-- gatekeeper;
+- possible implementation or response risk;
+- possible influence over information or access;
 - ally;
 - undecided actor;
 - low-power rights-holder group;
@@ -4832,7 +5046,7 @@ Examples:
 
 - Why does this group have low influence?
 - Why does this actor control information?
-- Why may this actor resist change?
+- What possible engagement risk requires verification?
 - What capacity gap affects response?
 - What local norms or systems keep the barrier in place?
 `;
@@ -4911,6 +5125,8 @@ function buildScreen10Submission(
   selections: Record<string, ProblemLayerId | undefined>,
   ownCsoOutput: Screen10OwnCsoOutput | null,
   generatedProblemLayersCanvas = screen10GeneratedPatterns,
+  carriedActors: string[] = [],
+  carriedCapacityGaps: string[] = [],
 ): Screen10Submission {
   const grouped = getScreen10GroupedStatements(selections);
   const feedbackState = getScreen10FeedbackState(selections);
@@ -4933,6 +5149,12 @@ function buildScreen10Submission(
       directCauses: grouped.direct.map((statement) => statement.statement),
       deeperRootCauses: grouped.root.map((statement) => statement.statement),
       capacityGaps: grouped.capacity.map((statement) => statement.statement),
+      rightsHolderCapacityGaps: generatedProblemLayersCanvas.map((row) => row.rightsHolderCapacityGap).filter(Boolean) as string[],
+      dutyBearerSystemCapacityGaps: Array.from(new Set([
+        ...generatedProblemLayersCanvas.map((row) => row.dutyBearerSystemCapacityGap).filter(Boolean) as string[],
+        ...carriedCapacityGaps,
+      ])),
+      connectedActors: carriedActors,
     },
     generatedProblemLayersCanvas,
     rootCauseCapacityGapMap: {
@@ -4947,6 +5169,12 @@ function buildScreen10Submission(
       directCauses: grouped.direct.map((statement) => statement.statement),
       deeperRootCauses: grouped.root.map((statement) => statement.statement),
       capacityGaps: grouped.capacity.map((statement) => statement.statement),
+      rightsHolderCapacityGaps: generatedProblemLayersCanvas.map((row) => row.rightsHolderCapacityGap).filter(Boolean) as string[],
+      dutyBearerSystemCapacityGaps: Array.from(new Set([
+        ...generatedProblemLayersCanvas.map((row) => row.dutyBearerSystemCapacityGap).filter(Boolean) as string[],
+        ...carriedCapacityGaps,
+      ])),
+      connectedActors: carriedActors,
       generatedProblemLayersCanvas,
       designImplications,
       questionsForLaterDesignRepair,
@@ -5079,9 +5307,14 @@ function getScreen12RequiredSignature(selection: Screen12PathwaySelection) {
     gap: selection.gap,
     decision: selection.decision,
     participationMethod: selection.participationMethod || '',
+    informationMethod: selection.informationMethod || '',
     supports: [...selection.supports].sort(),
     responseChannel: selection.responseChannel,
     responsibleActor: selection.responsibleActor,
+    responseMethod: selection.responseMethod || '',
+    explanationFollowUp: selection.explanationFollowUp || '',
+    accessibilityRiskCheck: selection.accessibilityRiskCheck || '',
+    alternativeChannel: selection.alternativeChannel || '',
     designAdjustment: selection.designAdjustment,
     implementationWatchPoint: selection.implementationWatchPoint || '',
     customGroup: selection.customGroup || '',
@@ -5095,9 +5328,14 @@ function isScreen12Valid(selection: Screen12PathwaySelection) {
     selection.gap &&
     selection.decision &&
     selection.participationMethod &&
+    selection.informationMethod &&
     selection.supports.length >= 1 &&
     selection.responseChannel &&
     selection.responsibleActor &&
+    selection.responseMethod &&
+    selection.explanationFollowUp &&
+    selection.accessibilityRiskCheck &&
+    selection.alternativeChannel &&
     selection.designAdjustment &&
     selection.implementationWatchPoint
   );
@@ -5112,8 +5350,8 @@ function getScreen12HelperText(
   if (submitted && formChanged) return 'Update your pathway before saving this screen.';
   if (submitted) return 'Your participation and accountability pathway is ready to save.';
   if (limitMessage) return limitMessage;
-  if (!selection.projectMoment || !selection.participationMethod || selection.supports.length < 1 || !selection.responseChannel || !selection.responsibleActor || !selection.designAdjustment || !selection.implementationWatchPoint) {
-    return 'Select one project moment and complete participation, information access, feedback, response, design adaptation, and watch-point fields.';
+  if (!selection.projectMoment || !selection.participationMethod || !selection.informationMethod || selection.supports.length < 1 || !selection.responseChannel || !selection.responsibleActor || !selection.responseMethod || !selection.explanationFollowUp || !selection.accessibilityRiskCheck || !selection.alternativeChannel || !selection.designAdjustment || !selection.implementationWatchPoint) {
+    return 'Complete information, participation, decision influence, feedback, recipient, response, explanation, follow-up, accessibility, risk, and alternative-channel fields.';
   }
   return 'Ready to generate your participation and accountability pathway.';
 }
@@ -5359,10 +5597,13 @@ function getEmptyRiskBoardSelection(): Screen13RiskBoardSelection {
     riskSituation: '',
     riskCategories: [],
     affectedGroups: [],
+    likelyCause: '',
     impactLevel: '',
     mitigationActions: [],
     responsibleActor: '',
     watchSign: '',
+    alternativeChannel: '',
+    pauseStopReferralCondition: '',
     designAdjustment: '',
   };
 }
@@ -5404,19 +5645,22 @@ function getScreen13ValidationMessages(selection: Screen13RiskBoardSelection) {
   if (!selection.riskSituation) messages.push('Please select one risk situation. A useful risk board starts with what could go wrong because of the design.');
   if (selection.riskCategories.length === 0) messages.push('Select at least one risk category so the board shows what type of harm, exclusion, unrealistic expectation, weak response, or role overload may occur.');
   if (selection.affectedGroups.length === 0) messages.push('Please identify who may be affected. A rights-based risk check should show who may face harm, exclusion, silence, or unrealistic expectations.');
+  if (!selection.likelyCause) messages.push('Identify the likely cause linking this risk to the selected project-design decision.');
   if (!selection.impactLevel) messages.push('Select an impact level. Rate impact from the rights-holder perspective, not only from the project delivery perspective.');
   if (selection.mitigationActions.length === 0) messages.push('Add a mitigation action. A risk check is useful only if it changes how the project will be designed or implemented.');
   if (!selection.responsibleActor) messages.push('Add a responsible actor. The risk board should show who acts, who responds, and who follows up.');
   if (isScreen13CsoOverload(selection)) messages.push('This mitigation gives too much responsibility to the CSO. Awra can facilitate, protect records, and support safe communication, but the public, service, committee, or sector actor connected to the issue should remain visible.');
   if (!selection.watchSign) messages.push('Add a watch sign. The project team needs to know what to monitor during implementation, such as silence from one group, repeated confusion, unsafe feedback, or exclusion from follow-up.');
+  if (!selection.alternativeChannel) messages.push('Add an alternative channel where the main participation, information, or feedback method may exclude or expose people.');
+  if (!selection.pauseStopReferralCondition) messages.push('Add a qualified pause, stop, or referral condition for responsible review where the risk increases or mitigation is absent.');
   return messages;
 }
 
 function getScreen13HelperText(selection: Screen13RiskBoardSelection, submitted: boolean, formChanged: boolean) {
   if (submitted && formChanged) return 'Update risk board before saving this screen.';
   if (submitted) return 'Your risk and do-no-harm board is ready to save.';
-  if (!selection.riskSituation || selection.riskCategories.length === 0 || selection.affectedGroups.length === 0 || !selection.impactLevel || selection.mitigationActions.length === 0 || !selection.responsibleActor || !selection.watchSign) {
-    return 'Select one design decision or activity and complete possible risk, affected group, risk level, mitigation or design adaptation, follow-up actor, and implementation watch-point fields.';
+  if (!selection.riskSituation || selection.riskCategories.length === 0 || selection.affectedGroups.length === 0 || !selection.likelyCause || !selection.impactLevel || selection.mitigationActions.length === 0 || !selection.responsibleActor || !selection.watchSign || !selection.alternativeChannel || !selection.pauseStopReferralCondition) {
+    return 'Complete the risk, affected group, likely cause, mitigation, responsible actor, monitoring sign, alternative channel, and pause, stop, or referral condition.';
   }
   return getScreen13ValidationMessages(selection)[0] || 'Ready to generate your risk and do-no-harm board.';
 }
@@ -5468,10 +5712,13 @@ function buildScreen13Submission(selection: Screen13RiskBoardSelection, ownCsoOu
         riskSituation: selection.riskSituation,
         riskCategory: selection.riskCategories.join('; '),
         whoMayBeAffected: selection.affectedGroups.join('; '),
+        likelyCause: selection.likelyCause,
         impactLevel: getRiskStatusLabel(selection.impactLevel),
         mitigationAction: selection.mitigationActions.join('; '),
         responsibleActor: getScreen13ResponsibleActorOutput(selection),
         watchSign: selection.watchSign,
+        alternativeChannel: selection.alternativeChannel,
+        pauseStopReferralCondition: selection.pauseStopReferralCondition,
         designAdjustment: selection.designAdjustment || selection.mitigationActions.join('; '),
         carryForwardUse: getScreen13CarryForwardUse(),
       },
@@ -5654,6 +5901,7 @@ type Screen14Submission = {
     feedbackMessages: string[];
   };
   designRepairPackage?: {
+    selectedIssueId?: string;
     repairedObjective: string;
     selectedActivityPackage: string[];
     interventionLogicChain: string[];
@@ -6149,6 +6397,13 @@ type Screen17Submission = {
   ownCsoPracticeOutput?: Screen17OwnCsoOutput;
   safetyConfirmation: string;
   portfolioSummary: string;
+  reviewNote?: Record<string, unknown>;
+  selectedDraftSections?: string[];
+  selectedGaps?: string[];
+  selectedStrengths?: string[];
+  gapReviews?: Record<string, { reason: string; source: string; repair: string; repairedWording: string }>;
+  repairedSection?: string;
+  ownCsoPractice?: Record<string, string>;
 };
 type Screen18Submission = {
   screenId: 'M3-R18';
@@ -6202,28 +6457,50 @@ type Screen18GapMapCard = {
   recommendedRepairMove: string;
   carryForward: string;
 };
-type Screen20QuestionId = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6' | 'Q7' | 'Q8';
-type Screen20OptionId = 'A' | 'B' | 'C' | 'D';
+type Screen20QuestionId =
+  | 'm3-akc-q01'
+  | 'm3-akc-q02'
+  | 'm3-akc-q03'
+  | 'm3-akc-q04'
+  | 'm3-akc-q05'
+  | 'm3-akc-q06'
+  | 'm3-akc-q07'
+  | 'm3-akc-q08'
+  | 'm3-akc-q09'
+  | 'm3-akc-q10';
+type Screen20OptionId = 'a' | 'b' | 'c' | 'd';
 type Screen20Question = {
   id: Screen20QuestionId;
-  title: string;
+  domain: string;
   scenario: string;
   prompt: string;
-  options: { id: Screen20OptionId; text: string }[];
+  options: { id: Screen20OptionId; text: string; feedback: string }[];
   correctAnswer: Screen20OptionId;
-  feedback: string;
-  incorrectFeedback: string;
-  designReminder: string;
-  strongArea: string;
-  reviewFlag: string;
+  designPrinciple: string;
+  tools: string[];
+  reviewTopic: string;
+};
+type Screen20QuestionResult = {
+  questionId: Screen20QuestionId;
+  selectedAnswer: Screen20OptionId;
+  correctAnswer: Screen20OptionId;
+  correct: boolean;
 };
 type Screen20Submission = {
-  answers: Record<string, string>;
-  correctAnswers: string[];
-  missedQuestions: string[];
+  answers: Partial<Record<Screen20QuestionId, Screen20OptionId>>;
+  questionResults: Screen20QuestionResult[];
+  correctAnswers: Screen20QuestionId[];
+  missedQuestions: Screen20QuestionId[];
   reviewFlags: string[];
+  reviewTopics: string[];
   score: number;
-  completedReviewOfMissedQuestions: boolean;
+  totalQuestions: number;
+  percentage: number;
+  assessmentResult: string;
+  resultGuidance: string;
+  attemptCount: number;
+  completed: true;
+  submittedAt: string;
   generatedAt: string;
 };
 type SnapshotFieldId =
@@ -6260,6 +6537,44 @@ type M3PortfolioSnapshot = Record<SnapshotFieldId, string> & {
   sourceScreensUsed: string[];
   learnerEditedFields: string[];
   savedAt: string;
+  snapshotStatus?: 'saved';
+  sourceSignature?: string;
+  snapshotSections?: FinalSnapshotSection[];
+  implementationWatchPoints?: string[];
+  assessmentSummary?: FinalSnapshotAssessmentSummary | null;
+  ownCsoNote?: string;
+};
+type FinalSnapshotSectionId =
+  | 'issue-context'
+  | 'standards-responsibilities'
+  | 'rights-holders-barriers'
+  | 'actors-cso-role'
+  | 'power-influence'
+  | 'causes-capacity'
+  | 'gender-disability'
+  | 'participation-accountability'
+  | 'risk-mitigation'
+  | 'objective-activities'
+  | 'logic-indicators-evidence'
+  | 'draft-plan-review'
+  | 'implementation-watch-points'
+  | 'assessment-summary';
+type FinalSnapshotSection = {
+  id: FinalSnapshotSectionId;
+  title: string;
+  sourceId: string;
+  sourceLabel: string;
+  content: string[];
+  complete: boolean;
+  missingReason?: string;
+};
+type FinalSnapshotAssessmentSummary = {
+  score: number;
+  totalQuestions: number;
+  percentage: number;
+  resultLabel: string;
+  targetedReview: string[];
+  attemptCount: number;
 };
 
 const proposalAssets = {
@@ -6753,152 +7068,164 @@ function buildScreen19Submission(sectionId: ProposalSectionId, moveIds: RepairMo
 
 const screen20Questions: Screen20Question[] = [
   {
-    id: 'Q1',
-    title: 'Diagnosing the hidden HRBA gap',
-    scenario:
-      'A CSO reviews a draft project plan for improving market services in Jiru Amba. The plan includes consultation meetings, training, small infrastructure support, and an attendance indicator. However, it does not show whether women vendors, persons with disabilities, youth, or remote kebele residents influenced the priorities.',
-    prompt: 'Which is the strongest HRBA design concern?',
+    id: 'm3-akc-q01',
+    domain: 'Context and inequality',
+    scenario: 'Awra notices that residents of remote kebeles and some persons with disabilities attend local planning meetings less often than people living near the town centre. A team member concludes that these groups are less interested.',
+    prompt: 'What is the most appropriate first design response?',
     options: [
-      { id: 'A', text: 'The plan should add more training sessions before implementation.' },
-      { id: 'B', text: 'The plan may look complete, but it does not yet show who influenced decisions or who faces barriers.' },
-      { id: 'C', text: 'The plan should avoid mentioning different groups because this could complicate implementation.' },
-      { id: 'D', text: 'The plan should focus on infrastructure first and address participation during monitoring.' },
+      { id: 'a', text: 'Schedule more meetings at the same venue and use the same notice method.', feedback: 'More meetings may not address the barriers. The design should first examine whether timing, distance, information or accessibility affects groups differently.' },
+      { id: 'b', text: 'Compare notice, distance, cost, accessibility and participation conditions across groups, and verify possible reasons using generalized, non-identifying evidence.', feedback: 'Correct. Context analysis distinguishes observed patterns from possible explanations and identifies information that should be verified safely.' },
+      { id: 'c', text: 'Use the total number of participants as sufficient evidence that access is equal.', feedback: 'Total attendance may hide unequal access among groups and locations. Disaggregated, proportionate analysis is needed.' },
+      { id: 'd', text: 'Ask local leaders to provide the names of people who are not interested.', feedback: 'Collecting names is unnecessary and may create privacy or participation risks. The course uses generalized and non-identifying evidence.' },
     ],
-    correctAnswer: 'B',
-    feedback: 'This identifies the deeper HRBA design issue: the plan lists activities but does not yet show meaningful influence, differentiated barriers, or design response.',
-    incorrectFeedback: 'This option focuses on an activity or simplification, but the main HRBA issue is whether the design responds to different rights-holder barriers and influence.',
-    designReminder: 'A complete-looking activity list is not the same as rights-based design logic.',
-    strongArea: 'Diagnosing hidden HRBA gaps beneath activity language',
-    reviewFlag: 'Strengthen hidden HRBA gap diagnosis',
+    correctAnswer: 'b',
+    designPrinciple: 'Context analysis should examine differentiated effects and avoid treating an assumption as a confirmed explanation.',
+    tools: ['Screen 5 — Context and Inequality Scan'],
+    reviewTopic: 'context-and-inequality',
   },
   {
-    id: 'Q2',
-    title: 'Participation before decisions',
-    scenario:
-      'A project team says: “We will hold a public meeting after the draft plan is prepared, explain the final priorities, and invite feedback.” Some groups may attend, but they will not shape the priorities before decisions are made.',
-    prompt: 'What is the strongest HRBA-informed repair?',
-    options: [
-      { id: 'A', text: 'Keep the public meeting but add a photo record and attendance list.' },
-      { id: 'B', text: 'Hold two public meetings instead of one so more people can hear the plan.' },
-      { id: 'C', text: 'Ask kebele leaders to confirm that the community was consulted.' },
-      { id: 'D', text: 'Share information earlier, create accessible ways for different groups to discuss options, and show how their priorities influence final choices.' },
-    ],
-    correctAnswer: 'D',
-    feedback: 'This moves participation from late information-sharing to meaningful influence before decisions are finalized.',
-    incorrectFeedback: 'This may improve documentation or outreach, but it does not ensure that rights-holders influence priorities before they are finalized.',
-    designReminder: 'Meaningful participation starts early enough to shape decisions.',
-    strongArea: 'Moving participation before final decisions',
-    reviewFlag: 'Strengthen early participation and influence',
-  },
-  {
-    id: 'Q3',
-    title: 'Using standards in practical design',
-    scenario:
-      'A CSO wants to use rights standards and policy commitments in a project design. The team worries that this will make the proposal too legal or unrealistic.',
-    prompt: 'What is the best way to use standards in the design?',
-    options: [
-      { id: 'A', text: 'Use standards as practical design anchors: what people should access, who has responsibility, what should be adjusted, and what must be followed up.' },
-      { id: 'B', text: 'Add a list of international conventions to the background section and leave the activities unchanged.' },
-      { id: 'C', text: 'Avoid standards unless the CSO can prove legal violations.' },
-      { id: 'D', text: 'Mention standards only in the risk section to show compliance.' },
-    ],
-    correctAnswer: 'A',
-    feedback: 'Standards are useful when they shape practical design questions, responsibilities, accessibility, accountability, and follow-up.',
-    incorrectFeedback: 'Listing standards without changing design choices does not make the project more HRBA-aligned.',
-    designReminder: 'Standards should guide design choices, not sit as decoration.',
-    strongArea: 'Using standards as practical design anchors',
-    reviewFlag: 'Use standards to shape design decisions',
-  },
-  {
-    id: 'Q4',
-    title: 'Clarifying responsibility and CSO role',
-    scenario:
-      'A draft plan says the CSO will “ensure local services become accountable and inclusive.” The plan does not identify what public offices, committees, service actors, community actors, or the CSO itself should each do.',
-    prompt: 'Which repair is strongest?',
-    options: [
-      { id: 'A', text: 'Keep the wording broad so the CSO has flexibility during implementation.' },
-      { id: 'B', text: 'Make the CSO responsible for all accountability actions because it is managing the project.' },
-      { id: 'C', text: 'Clarify who has public responsibility, who can support change, what capacity gaps exist, and what enabling role the CSO can realistically play.' },
-      { id: 'D', text: 'Remove duty-bearers from the plan to avoid conflict.' },
-    ],
-    correctAnswer: 'C',
-    feedback: 'HRBA design should clarify responsibility without shifting public obligations onto the CSO or hiding who must respond.',
-    incorrectFeedback: 'A broad or CSO-centred responsibility statement can make the project look active while leaving accountability unclear.',
-    designReminder: 'CSOs can enable accountability without replacing responsible actors.',
-    strongArea: 'Clarifying responsibility and realistic CSO role',
-    reviewFlag: 'Clarify responsibilities and CSO role',
-  },
-  {
-    id: 'Q5',
-    title: 'Power and influence',
-    scenario: 'A formal committee has responsibility for market decisions, but informal brokers often influence who receives information first. Women vendors say they hear about decisions late and are unsure whether speaking up will matter.',
-    prompt: 'What is the strongest design response?',
-    options: [
-      { id: 'A', text: 'Work only with the formal committee because it has the official mandate.' },
-      { id: 'B', text: 'Map formal responsibility and informal influence, then design safe ways to strengthen women vendors’ access to information and influence.' },
-      { id: 'C', text: 'Avoid mentioning informal influence because it may be sensitive.' },
-      { id: 'D', text: 'Ask informal brokers to represent women vendors in the next meeting.' },
-    ],
-    correctAnswer: 'B',
-    feedback: 'This uses power analysis constructively: it recognizes formal and informal influence while protecting rights-holder voice and safety.',
-    incorrectFeedback: 'Ignoring informal influence or asking powerful actors to represent affected groups can reproduce exclusion.',
-    designReminder: 'Power analysis should improve safe influence, not reinforce gatekeeping.',
-    strongArea: 'Using power analysis to protect rights-holder voice',
-    reviewFlag: 'Strengthen power and influence analysis',
-  },
-  {
-    id: 'Q6',
-    title: 'Indicator repair',
-    scenario: 'A proposed indicator says: “Number of people attending consultation meetings and trainings.” The project objective is to strengthen inclusive service-improvement decisions.',
-    prompt: 'Which indicator is strongest?',
-    options: [
-      { id: 'A', text: 'Percentage of participants from affected groups whose feedback is acted on or leads to a documented change or response in the plan.' },
-      { id: 'B', text: 'Number of consultation meetings completed on schedule.' },
-      { id: 'C', text: 'Number of people trained on local service improvement.' },
-      { id: 'D', text: 'Percentage of participants who say the meeting was well organized.' },
-    ],
-    correctAnswer: 'A',
-    feedback: 'This indicator measures influence and response, not only attendance or activity delivery.',
-    incorrectFeedback: 'This option may measure activity quality or participation volume, but it does not show whether rights-holder feedback influenced decisions or led to response.',
-    designReminder: 'Strong indicators show influence, response, access, or change.',
-    strongArea: 'Repairing indicators to show influence and response',
-    reviewFlag: 'Improve indicators and safe evidence',
-  },
-  {
-    id: 'Q7',
-    title: 'Feedback-response and accountability',
-    scenario: 'A CSO adds a suggestion box to a project plan. The plan does not explain who reviews feedback, how people receive answers, what happens with urgent concerns, or how changes are followed up.',
+    id: 'm3-akc-q02',
+    domain: 'Standards and responsibilities',
+    scenario: 'A draft plan refers generally to the right to water. It proposes that Awra will ensure that water-service complaints are resolved, but it does not identify which public or service actor has responsibility.',
     prompt: 'What is the strongest repair?',
     options: [
-      { id: 'A', text: 'Add more suggestion boxes in different locations.' },
-      { id: 'B', text: 'Tell community members that all feedback will be considered.' },
-      { id: 'C', text: 'Ask staff to summarize feedback at the end of the project.' },
-      { id: 'D', text: 'Define a safe feedback-response pathway with roles, timelines, referral or correction steps, and follow-up on what changed.' },
+      { id: 'a', text: 'Keep the wording because referring to a right is sufficient.', feedback: 'A rights reference should inform a practical responsibility and design question. General rights language alone does not clarify who should act.' },
+      { id: 'b', text: 'State that Awra will take permanent responsibility for resolving all water-service complaints.', feedback: 'Awra may support information, evidence, dialogue and follow-up, but it should not replace permanent public or service responsibility.' },
+      { id: 'c', text: 'Connect the issue to the relevant standard or policy reference, identify the appropriate responsible public or service actor, and define Awra’s supporting role.', feedback: 'Correct. The design should connect standards with responsibility and define a realistic supporting role for the CSO.' },
+      { id: 'd', text: 'Remove the reference to responsibility and decide during implementation.', feedback: 'Leaving responsibility unclear can weaken response and accountability. The design should clarify it before implementation.' },
     ],
-    correctAnswer: 'D',
-    feedback: 'Accountability is not just collecting feedback; it requires answerability, safe response, correction or referral, and follow-up.',
-    incorrectFeedback: 'More feedback collection does not create accountability unless there is a clear response and follow-up pathway.',
-    designReminder: 'Feedback becomes accountability when people receive response and follow-up.',
-    strongArea: 'Designing feedback-response and accountability pathways',
-    reviewFlag: 'Strengthen feedback-response and accountability',
+    correctAnswer: 'c',
+    designPrinciple: 'Human rights standards should inform responsibility, project-design questions and practical arrangements.',
+    tools: ['Screen 6 — Policy and Standards Map', 'Screen 8 — Duty-Bearer and Actor Responsibility Map'],
+    reviewTopic: 'standards-and-responsibility',
   },
   {
-    id: 'Q8',
-    title: 'Draft plan review note',
-    scenario: 'After completing the HRBA design analysis, the CSO needs to send a constructive note to its project team. The draft plan has weak participation, unclear responsibility, activity-focused indicators, and no feedback-response pathway.',
-    prompt: 'Which review note is most useful?',
+    id: 'm3-akc-q03',
+    domain: 'Rights-holders and barriers',
+    scenario: 'A project states that “community members will be invited” to one town-centre consultation. Earlier analysis identified different barriers for women, residents of remote kebeles, persons with disabilities and low-income households.',
+    prompt: 'Which revision best applies a rights-holder and barrier analysis?',
     options: [
-      { id: 'A', text: '“The proposal is not rights-based and should be rewritten completely.”' },
-      { id: 'B', text: '“The project should add more HRBA language in the objective and background.”' },
-      { id: 'C', text: '“The plan is ready to improve: clarify affected groups, move participation earlier, assign response roles, repair indicators, and add feedback-response follow-up.”' },
-      { id: 'D', text: '“The plan should focus on implementation first and address HRBA issues during monitoring.”' },
+      { id: 'a', text: 'Identify the relevant groups, connect each group to its priority barriers, and adjust information, access and participation arrangements accordingly.', feedback: 'Correct. Rights-holder analysis should identify specific groups, their barriers and the resulting project-design implications.' },
+      { id: 'b', text: 'Increase the number of invitations without changing the consultation method.', feedback: 'More invitations do not necessarily address distance, accessibility, timing, cost or influence barriers.' },
+      { id: 'c', text: 'Ask one representative to speak for all community groups.', feedback: 'One representative may not reflect different experiences and may reproduce existing exclusions.' },
+      { id: 'd', text: 'Replace the barrier analysis with a general stakeholder count.', feedback: 'A stakeholder count does not explain who faces barriers or what the project should change.' },
     ],
-    correctAnswer: 'C',
-    feedback: 'This is constructive, specific, and action-oriented. It turns analysis into practical design repairs.',
-    incorrectFeedback: 'The review note should not be only critical, cosmetic, or delayed until monitoring. It should guide practical design improvement before implementation.',
-    designReminder: 'A useful review note turns analysis into practical repairs.',
-    strongArea: 'Writing constructive draft plan repair notes',
-    reviewFlag: 'Strengthen draft plan repair note',
+    correctAnswer: 'a',
+    designPrinciple: 'Broad terms such as “the community” may hide different barriers and participation conditions.',
+    tools: ['Screen 7 — Rights-Holders and Barriers'],
+    reviewTopic: 'rights-holders-and-barriers',
+  },
+  {
+    id: 'm3-akc-q04',
+    domain: 'Duty-bearers and realistic CSO roles',
+    scenario: 'A draft plan places feedback boxes at service points. Awra is expected to collect feedback, decide what action is required, provide the service response and report completion. The relevant service office has authority to make the service decision.',
+    prompt: 'What is the most appropriate allocation of roles?',
+    options: [
+      { id: 'a', text: 'Make Awra the permanent complaint and service-response authority.', feedback: 'This would transfer public or service responsibility to the CSO.' },
+      { id: 'b', text: 'Ask a community leader to make every service decision.', feedback: 'A community actor may support communication or participation, but should not automatically replace the responsible authority.' },
+      { id: 'c', text: 'Leave the responsible actor unnamed so that the arrangement remains flexible.', feedback: 'An unnamed responsibility can cause feedback to remain unanswered.' },
+      { id: 'd', text: 'Assign receipt, review and response responsibility to the appropriate public or service actor, while Awra supports accessible channels, documentation, monitoring and follow-up.', feedback: 'Correct. Primary responsibility and the CSO’s supporting role should remain distinct.' },
+    ],
+    correctAnswer: 'd',
+    designPrinciple: 'CSOs may facilitate participation, information, evidence, dialogue and follow-up without replacing duty-bearers.',
+    tools: ['Screen 8 — Duty-Bearers, Supporting Actors, and CSO Roles'],
+    reviewTopic: 'duty-bearers-and-cso-role',
+  },
+  {
+    id: 'm3-akc-q05',
+    domain: 'Power and influence',
+    scenario: 'The woreda planning office has formal authority over a planning decision. A respected local actor has no formal mandate but strongly influences who receives information and who attends discussions.',
+    prompt: 'How should the project analyze this situation?',
+    options: [
+      { id: 'a', text: 'Treat the respected local actor as the formal duty-bearer.', feedback: 'Influence does not automatically create formal responsibility.' },
+      { id: 'b', text: 'Map formal authority and practical influence separately, and plan constructive engagement and alternative participation channels.', feedback: 'Correct. Formal authority and practical influence may differ and should inform engagement, participation and risk decisions.' },
+      { id: 'c', text: 'Exclude the local actor from analysis because the actor has no official title.', feedback: 'Actors without formal authority may still influence information, access or decisions.' },
+      { id: 'd', text: 'Label the local actor as hostile and avoid all engagement.', feedback: 'Power analysis should avoid unsupported labels and use constructive, risk-aware engagement.' },
+    ],
+    correctAnswer: 'b',
+    designPrinciple: 'Responsibility and influence are related but not identical.',
+    tools: ['Screen 9 — Power and Influence Map'],
+    reviewTopic: 'power-and-influence',
+  },
+  {
+    id: 'm3-akc-q06',
+    domain: 'Causes and capacity gaps',
+    scenario: 'Feedback responses are repeatedly late. The project team immediately proposes general training for all officials.',
+    prompt: 'What should the team do before deciding that training is the appropriate response?',
+    options: [
+      { id: 'a', text: 'Provide the training immediately because delay always results from limited knowledge.', feedback: 'Training is appropriate only where a specific knowledge or skill gap contributes to the problem.' },
+      { id: 'b', text: 'Assume that the delay proves unwillingness.', feedback: 'Delay may relate to several factors. Unwillingness should not be assumed without evidence.' },
+      { id: 'c', text: 'Distinguish the visible problem from underlying and deeper causes, and examine mandate, skills, resources, coordination, incentives, willingness and accountability.', feedback: 'Correct. Capacity analysis should examine more than knowledge and should connect the response to the identified cause.' },
+      { id: 'd', text: 'Transfer all response duties to Awra.', feedback: 'Transferring responsibility does not address the underlying institutional or capacity issue.' },
+    ],
+    correctAnswer: 'c',
+    designPrinciple: 'Capacity includes authority, skills, resources, coordination, incentives, willingness and accountability—not only training.',
+    tools: ['Screen 10 — Root-Cause and Capacity-Gap Map'],
+    reviewTopic: 'causes-and-capacity',
+  },
+  {
+    id: 'm3-akc-q07',
+    domain: 'Gender, disability, accessibility, and inclusion',
+    scenario: 'A draft says: “Women and persons with disabilities will be invited. Accessible arrangements will be used where possible.” It does not assign responsibility, resources or monitoring.',
+    prompt: 'Which repair most clearly integrates inclusion into project design?',
+    options: [
+      { id: 'a', text: 'Identify differentiated barriers, specify accessible information and participation arrangements, provide reasonable accommodation where required, assign responsibility and resources, and monitor whether the measures function.', feedback: 'Correct. Inclusion should affect practical arrangements, responsibility, resources and monitoring.' },
+      { id: 'b', text: 'Add the word “inclusive” to the objective.', feedback: 'General inclusion language does not show how the project design will change.' },
+      { id: 'c', text: 'Use participant totals as the only inclusion indicator.', feedback: 'Attendance totals do not show accessibility, accommodation or influence.' },
+      { id: 'd', text: 'Collect the diagnoses and medical details of every participant.', feedback: 'Personal medical information is unnecessary for this course activity and may create privacy and safeguarding risks.' },
+    ],
+    correctAnswer: 'a',
+    designPrinciple: 'Gender and disability should be integrated into design decisions rather than only mentioned.',
+    tools: ['Screen 11 — Gender and Disability Design Check'],
+    reviewTopic: 'gender-disability-and-inclusion',
+  },
+  {
+    id: 'm3-akc-q08',
+    domain: 'Participation and accountability',
+    scenario: 'A project will hold consultations and install suggestion boxes. The draft does not state which decision participants can influence, who receives feedback, how a response is provided or how people learn what changed.',
+    prompt: 'What is the strongest repair?',
+    options: [
+      { id: 'a', text: 'Add more suggestion boxes.', feedback: 'Additional channels do not complete the accountability process without receipt, response, explanation and follow-up.' },
+      { id: 'b', text: 'Report only the number of people attending consultations.', feedback: 'Attendance does not demonstrate influence or accountability.' },
+      { id: 'c', text: 'Invite senior community representatives instead of defining a response process.', feedback: 'Representation alone does not show how wider input affects decisions or receives a response.' },
+      { id: 'd', text: 'Define accessible information, participation methods, a decision-influence point, a responsible recipient, review, response, explanation and follow-up.', feedback: 'Correct. Meaningful participation and accountability require influence, responsibility, response, explanation and follow-up.' },
+    ],
+    correctAnswer: 'd',
+    designPrinciple: 'Participation is more than attendance, and feedback collection is incomplete without response and follow-up.',
+    tools: ['Screen 12 — Participation and Accountability Pathway'],
+    reviewTopic: 'participation-and-accountability',
+  },
+  {
+    id: 'm3-akc-q09',
+    domain: 'Risk and do-no-harm',
+    scenario: 'A public meeting is proposed so residents can discuss exclusion from a service. Speaking publicly may expose some participants to unwanted attention or repercussions.',
+    prompt: 'What is the most appropriate design response?',
+    options: [
+      { id: 'a', text: 'Continue with the public meeting and state that the activity is safe.', feedback: 'No method should be described as automatically safe. Risk should be assessed and monitored.' },
+      { id: 'b', text: 'Assess who may be affected, use appropriate alternative or confidential channels, assign mitigation and monitoring responsibility, and define pause, stop or referral conditions where relevant.', feedback: 'Correct. Risk management should connect the design choice with affected groups, mitigation, monitoring, alternatives and conditions for review or pause.' },
+      { id: 'c', text: 'Cancel all participation activities permanently.', feedback: 'Risk analysis should improve the design rather than automatically remove all participation.' },
+      { id: 'd', text: 'Collect participants’ names so that the project can monitor individual risk.', feedback: 'Collecting names may increase exposure and is not necessary for generalized course evidence.' },
+    ],
+    correctAnswer: 'b',
+    designPrinciple: 'Risk analysis should lead to specific prevention, mitigation, monitoring and alternative arrangements without guaranteeing safety.',
+    tools: ['Screen 13 — Risk and Do-No-Harm'],
+    reviewTopic: 'risk-and-do-no-harm',
+  },
+  {
+    id: 'm3-akc-q10',
+    domain: 'Intervention logic and project-design repair',
+    scenario: 'A draft objective is: “Conduct four consultations and train 30 officials.” The indicators count consultations, participants and people trained.',
+    prompt: 'Which revision best strengthens the intervention logic?',
+    options: [
+      { id: 'a', text: 'Keep the activities as the objective because completed activities demonstrate change.', feedback: 'Consultations and training are activities or outputs, not the intended change.' },
+      { id: 'b', text: 'Add the phrase “rights-based and inclusive” without changing the logic or indicators.', feedback: 'HRBA terminology does not replace a connected intervention logic.' },
+      { id: 'c', text: 'Connect the barrier and cause to responsible actors, activities, outputs and an expected change, then add a change-focused indicator, safe evidence, an assumption and an implementation risk.', feedback: 'Correct. The logic should explain how activities contribute to a meaningful change and how that change will be assessed.' },
+      { id: 'd', text: 'Add more activity-count indicators.', feedback: 'Activity counts may remain useful, but they do not show whether access, influence, response, quality or responsible-actor practice changed.' },
+    ],
+    correctAnswer: 'c',
+    designPrinciple: 'Project design should connect issue, cause, actor, activity, output, expected change, indicator, evidence, assumption and risk.',
+    tools: ['Screen 14 — HRBA Project Design Repair', 'Screen 15 — Draft Plan Review and Repair'],
+    reviewTopic: 'intervention-logic-and-repair',
   },
 ];
 
@@ -6907,15 +7234,6 @@ const screen20CarryForward =
 
 const screen21SafetyNote =
   'Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people. For your own work, write general section names and safe design notes.';
-
-const implementationWatchPointOptions = [
-  'participation is not influencing decisions',
-  'duty-bearers are not responding',
-  'excluded groups are not reached',
-  'feedback is collected but not answered',
-  'risk mitigation is not being followed',
-  'indicators only count activities',
-];
 
 const snapshotSections: SnapshotSection[] = [
   {
@@ -7069,42 +7387,87 @@ const snapshotSections: SnapshotSection[] = [
 
 function getScreen20SavedOutput(state: LearningState): Screen20Submission | null {
   const record = getPracticeState(state, 'M3-R20');
-  const nested = record.appliedKnowledgeCheck;
-  if (nested && typeof nested === 'object') return nested as Screen20Submission;
+  if (record.attemptInProgress === true) return null;
+  const nested = record.assessmentResult || record.appliedKnowledgeCheck || record.screen20;
+  if (nested && typeof nested === 'object') {
+    const candidate = nested as Partial<Screen20Submission>;
+    const answers = normalizeScreen20Answers(candidate.answers);
+    if (Object.keys(answers).length === screen20Questions.length) {
+      return buildScreen20Submission(answers, Math.max(1, Number(candidate.attemptCount) || 1), candidate.submittedAt || candidate.generatedAt);
+    }
+  }
   return null;
 }
 
 function getScreen21SavedSnapshot(state: LearningState): M3PortfolioSnapshot | null {
   const record = getPracticeState(state, 'M3-R21');
-  const nested = record.module3PortfolioSnapshot || record.m3ProjectDesignImprovementSnapshot;
+  const nested = record.finalSnapshot || record.module3PortfolioSnapshot || record.m3ProjectDesignImprovementSnapshot;
   if (nested && typeof nested === 'object' && typeof (nested as M3PortfolioSnapshot).savedAt === 'string') {
-    return nested as M3PortfolioSnapshot;
+    const candidate = nested as M3PortfolioSnapshot;
+    const hasRecognizedContent = Boolean(candidate.snapshotSections?.length)
+      || snapshotSections.some((section) => section.fields.some((field) => typeof candidate[field.id] === 'string'));
+    if (hasRecognizedContent) return candidate;
   }
   return null;
 }
 
-function getScreen20ScoreMessage(score: number) {
-  if (score >= 7) return 'Strong progress. You are ready to carry these applied design judgments into your snapshot.';
-  if (score >= 5) return 'Good progress. Review the areas below before moving on.';
-  return 'You can still continue, but these are useful areas to revisit before you build your snapshot.';
+function isScreen20QuestionId(value: string): value is Screen20QuestionId {
+  return screen20Questions.some((question) => question.id === value);
 }
 
-function buildScreen20Submission(answers: Record<string, string>, completedReviewOfMissedQuestions: boolean): Screen20Submission {
+function isScreen20OptionId(value: unknown): value is Screen20OptionId {
+  return value === 'a' || value === 'b' || value === 'c' || value === 'd';
+}
+
+function normalizeScreen20Answers(value: unknown): Partial<Record<Screen20QuestionId, Screen20OptionId>> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+  return Object.entries(value).reduce<Partial<Record<Screen20QuestionId, Screen20OptionId>>>((valid, [questionId, optionId]) => {
+    if (isScreen20QuestionId(questionId) && isScreen20OptionId(optionId)) valid[questionId] = optionId;
+    return valid;
+  }, {});
+}
+
+function getScreen20ResultGuidance(score: number) {
+  if (score >= 9) return { title: 'Strong application', guidance: 'You applied the main Module 3 reasoning consistently. Review any question you missed before finalizing your snapshot.' };
+  if (score >= 7) return { title: 'Applied foundation with targeted review', guidance: 'You applied most of the Module 3 tools appropriately. Review the identified topics before finalizing your snapshot.' };
+  if (score >= 5) return { title: 'Developing application', guidance: 'You have applied several important ideas. Review the identified tools and compare the explanations with your saved project-design work.' };
+  return { title: 'Further review recommended', guidance: 'Review the identified Module 3 tools before finalizing the snapshot. Focus on how analysis should change responsibilities, activities, participation, risk controls and indicators.' };
+}
+
+function getScreen20ReviewTools(missedQuestions: Screen20QuestionId[]) {
+  return Array.from(new Set(screen20Questions.filter((question) => missedQuestions.includes(question.id)).flatMap((question) => question.tools)));
+}
+
+function buildScreen20Submission(
+  answers: Partial<Record<Screen20QuestionId, Screen20OptionId>>,
+  attemptCount: number,
+  submittedAt = new Date().toISOString(),
+): Screen20Submission {
   const correctAnswers = screen20Questions.filter((question) => answers[question.id] === question.correctAnswer).map((question) => question.id);
   const missedQuestions = screen20Questions.filter((question) => answers[question.id] !== question.correctAnswer).map((question) => question.id);
+  const result = getScreen20ResultGuidance(correctAnswers.length);
   return {
     answers,
+    questionResults: screen20Questions.map((question) => ({
+      questionId: question.id,
+      selectedAnswer: answers[question.id] as Screen20OptionId,
+      correctAnswer: question.correctAnswer,
+      correct: answers[question.id] === question.correctAnswer,
+    })),
     correctAnswers,
     missedQuestions,
-    reviewFlags: screen20Questions.filter((question) => missedQuestions.includes(question.id)).map((question) => question.reviewFlag),
+    reviewFlags: getScreen20ReviewTools(missedQuestions),
+    reviewTopics: screen20Questions.filter((question) => missedQuestions.includes(question.id)).map((question) => question.reviewTopic),
     score: correctAnswers.length,
-    completedReviewOfMissedQuestions,
-    generatedAt: new Date().toISOString(),
+    totalQuestions: screen20Questions.length,
+    percentage: correctAnswers.length * 10,
+    assessmentResult: result.title,
+    resultGuidance: result.guidance,
+    attemptCount,
+    completed: true,
+    submittedAt,
+    generatedAt: submittedAt,
   };
-}
-
-function flattenSnapshotFields() {
-  return snapshotSections.flatMap((section) => section.fields);
 }
 
 function notYetSaved(label: string) {
@@ -7262,6 +7625,145 @@ function getDefaultSnapshotValues(state: LearningState): Record<SnapshotFieldId,
   };
 }
 
+const finalSnapshotSourceIds = ['M3-R05', 'M3-R06', 'M3-R07', 'M3-R08', 'M3-R09', 'M3-R10', 'M3-R11', 'M3-R12', 'M3-R13', 'M3-R14', 'M3-R17', 'M3-R20'];
+
+function uniqueSnapshotItems(values: Array<unknown>) {
+  const seen = new Set<string>();
+  return values
+    .flatMap((value) => Array.isArray(value) ? value : [value])
+    .flatMap((value) => String(value || '').split(/\n+/))
+    .map((value) => value.trim())
+    .filter((value) => value && !/not yet saved|select one implementation watch-point/i.test(value))
+    .filter((value) => {
+      const key = value.toLocaleLowerCase().replace(/\s+/g, ' ');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function stableSnapshotSerialize(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableSnapshotSerialize).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, nested]) => `${JSON.stringify(key)}:${stableSnapshotSerialize(nested)}`)
+      .join(',')}}`;
+  }
+  return JSON.stringify(value) || 'null';
+}
+
+function getFinalSnapshotSourceSignature(state: LearningState) {
+  const serialized = stableSnapshotSerialize(Object.fromEntries(finalSnapshotSourceIds.map((screenId) => [screenId, getPracticeState(state, screenId)])));
+  let hash = 2166136261;
+  for (let index = 0; index < serialized.length; index += 1) {
+    hash ^= serialized.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `m3-final-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+}
+
+function getFinalSnapshotSections(state: LearningState): FinalSnapshotSection[] {
+  const values = getDefaultSnapshotValues(state);
+  const screen5 = getPracticeState(state, 'M3-R05');
+  const screen6 = getPracticeState(state, 'M3-R06');
+  const screen7 = getScreen7SavedOutput(state);
+  const screen8 = getScreen8SavedOutput(state);
+  const screen9 = getScreen9SavedOutput(state);
+  const screen10 = getScreen10SavedOutput(state);
+  const screen11 = getScreen11SavedOutput(state);
+  const screen12 = getScreen12SavedOutput(state);
+  const screen13 = getScreen13SavedOutput(state);
+  const screen14 = getScreen14SavedOutput(state);
+  const screen17 = getScreen17SavedOutput(state);
+  const assessment = getScreen20SavedOutput(state);
+  const watchPoints = uniqueSnapshotItems([
+    screen13?.riskDoNoHarmBoard?.generatedBoard.watchSign,
+    screen13?.riskDoNoHarmBoard?.generatedBoard.pauseStopReferralCondition,
+    screen14?.designRepairPackage?.implementationWatchPoint,
+    screen11?.carryForwardQuestion,
+    screen12?.participationAccountabilityPathway?.followUpMethod,
+    screen17?.appliedCheckReview?.implementationWatchPoint,
+    screen9?.generatedActorRows?.map((row) => row.designImplication),
+  ]).slice(0, 8);
+  const makeSection = (
+    id: FinalSnapshotSectionId,
+    title: string,
+    sourceId: string,
+    sourceLabel: string,
+    content: Array<unknown>,
+    sourceValid: boolean,
+  ): FinalSnapshotSection => {
+    const cleanContent = uniqueSnapshotItems(content);
+    return {
+      id,
+      title,
+      sourceId,
+      sourceLabel,
+      content: cleanContent,
+      complete: sourceValid && cleanContent.length > 0,
+      missingReason: sourceValid && cleanContent.length === 0
+        ? 'The saved record does not contain the required current output.'
+        : !sourceValid ? `Complete and save ${sourceLabel} before finalizing the snapshot.` : undefined,
+    };
+  };
+
+  return [
+    makeSection('issue-context', 'Issue and context', 'M3-R05', 'Screen 5 — Context and Inequality Scan', [values.contextInequalityFocus], Boolean(screen5.contextInequalityScan)),
+    makeSection('standards-responsibilities', 'Standards and responsibilities', 'M3-R06', 'Screen 6 — Policy and Standards Map', [values.policyStandardsSources, screen8?.responsibilitySummary], Boolean(screen6.policyStandardsMap || (Array.isArray(screen6.generatedMapRows) && screen6.generatedMapRows.length))),
+    makeSection('rights-holders-barriers', 'Rights-holders and barriers', 'M3-R07', 'Screen 7 — Rights-Holders and Barriers', [values.rightsHolderBarrierFocus], Boolean(screen7)),
+    makeSection('actors-cso-role', 'Duty-bearers, supporting actors, and CSO role', 'M3-R08', 'Screen 8 — Duty-Bearers, Supporting Actors, and CSO Roles', [values.dutyBearersSupportingActorsCsoRole], Boolean(screen8)),
+    makeSection('power-influence', 'Power and influence', 'M3-R09', 'Screen 9 — Power and Influence Map', [screen9?.generatedActorRows?.map((row) => `${row.actor}: ${row.designImplication}`), screen9?.powerMapSummary], Boolean(screen9)),
+    makeSection('causes-capacity', 'Causes and capacity gaps', 'M3-R10', 'Screen 10 — Root-Cause and Capacity-Gap Map', [screen10?.rootCauseSummary, screen10?.rootCauseCapacityGapMap?.designImplications], Boolean(screen10)),
+    makeSection('gender-disability', 'Gender, disability, accessibility, and accommodation', 'M3-R11', 'Screen 11 — Gender and Disability Design Check', [screen11?.markerLiteDashboard?.selectedRepairRows?.map((row) => row.repairSelected), screen11?.portfolioSummary, screen11?.carryForwardQuestion], Boolean(screen11)),
+    makeSection('participation-accountability', 'Participation and accountability', 'M3-R12', 'Screen 12 — Participation and Accountability Pathway', [values.participationAccountabilityPathway], Boolean(screen12)),
+    makeSection('risk-mitigation', 'Risk and mitigation', 'M3-R13', 'Screen 13 — Risk and Do-No-Harm Board', [values.riskDoNoHarmWatchPoint], Boolean(screen13)),
+    makeSection('objective-activities', 'Repaired objective and activity package', 'M3-R14', 'Screen 14 — HRBA Project Design Repair', [screen14?.repairedObjective?.repairedHrbaObjective, screen14?.repairedActivityPackage?.repairedActivities?.map((activity) => activity.repairedActivity), screen14?.designRepairPackage?.carryForwardNote], Boolean(screen14)),
+    makeSection('logic-indicators-evidence', 'Intervention logic, indicators, and evidence', 'M3-R14', 'Screen 14 — HRBA Project Design Repair', [screen14?.interventionLogicIndicators?.outcome, screen14?.interventionLogicIndicators?.indicator, screen14?.interventionLogicIndicators?.safeEvidenceSource, screen14?.interventionLogicIndicators?.assumptionRisk], Boolean(screen14)),
+    makeSection('draft-plan-review', 'Draft-plan review findings', 'M3-R17', 'Screen 15 — Draft Plan Review and Repair', [values.activityDraftPlanRepair, values.draftPlanReviewNote, (screen17?.reviewNote as { remainingVerificationQuestions?: string[] } | undefined)?.remainingVerificationQuestions], Boolean(screen17)),
+    makeSection('implementation-watch-points', 'Implementation watch-points', 'M3-R13', 'Screens 9, 11–15 — implementation watch-points', watchPoints, watchPoints.length > 0),
+    makeSection('assessment-summary', 'Applied Knowledge Check summary', 'M3-R20', 'Screen 16 — Applied Knowledge Check', assessment ? [`Score: ${assessment.score}/${assessment.totalQuestions} (${assessment.percentage}%). Result: ${assessment.assessmentResult}. Attempt: ${assessment.attemptCount}.`, assessment.reviewFlags.length ? `Targeted review: ${assessment.reviewFlags.join('; ')}` : 'No priority review topic was identified.'] : [], Boolean(assessment)),
+  ];
+}
+
+function getFinalSnapshotAssessmentSummary(state: LearningState): FinalSnapshotAssessmentSummary | null {
+  const assessment = getScreen20SavedOutput(state);
+  return assessment ? {
+    score: assessment.score,
+    totalQuestions: assessment.totalQuestions,
+    percentage: assessment.percentage,
+    resultLabel: assessment.assessmentResult,
+    targetedReview: assessment.reviewFlags,
+    attemptCount: assessment.attemptCount,
+  } : null;
+}
+
+function isFinalSnapshotCurrent(state: LearningState, snapshot: M3PortfolioSnapshot | null) {
+  return Boolean(
+    snapshot?.snapshotStatus === 'saved'
+    && snapshot.sourceSignature === getFinalSnapshotSourceSignature(state)
+    && snapshot.snapshotSections?.length === 14
+    && snapshot.snapshotSections.every((section) => section.complete),
+  );
+}
+
+function buildFinalSnapshotMarkdown(snapshot: M3PortfolioSnapshot) {
+  const sections = snapshot.snapshotSections || [];
+  return `# HRBA Project Design Improvement Snapshot
+
+Fictional practice case: Jiru Amba
+Reviewed and saved: ${snapshot.savedAt}
+
+This snapshot reflects the learner's selected Module 3 practice outputs.
+
+${sections.map((section) => `## ${section.title}\nSource: ${section.sourceLabel}\n\n${section.content.map((item) => `- ${item}`).join('\n')}`).join('\n\n')}
+
+## Optional own-CSO note
+${snapshot.ownCsoNote || 'No optional own-CSO note was recorded.'}
+
+Use generalized, non-identifying information. Remaining verification questions and implementation watch-points should be reviewed during implementation.`;
+}
+
 function getSnapshotSourceScreensUsed(state: LearningState) {
   const sources: string[] = [];
   ['M3-R05', 'M3-R06', 'M3-R07', 'M3-R08', 'M3-R09', 'M3-R10', 'M3-R11', 'M3-R12', 'M3-R13', 'M3-R14', 'M3-R17', 'M3-R20'].forEach((screenId) => {
@@ -7412,7 +7914,7 @@ function GuidedWorkspaceStageNav({
             data-testid={stage.testId}
             onClick={() => onSelect(stage.id)}
           >
-            <span aria-hidden="true">{stage.complete ? '✓' : stage.id}</span>
+            <span aria-hidden="true">{(className === 'm3-orientation-stepper' ? stage.complete && !active : stage.complete) ? '✓' : stage.id}</span>
             {stage.label}
             {stage.helper && <small>{stage.helper}</small>}
           </button>
@@ -7436,7 +7938,132 @@ function PlaceholderNote({ screen }: { screen: Module3RevisedScreen }) {
   );
 }
 
-function IntroVideoScaffold({
+function LightIntroVideoScreen({
+  screen,
+  state,
+  onChangeState,
+  onComplete,
+}: {
+  screen: Module3RevisedScreen;
+  state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
+  onComplete: () => void;
+}) {
+  const saved = getPracticeState(state, screen.id);
+  const savedAnswers = typeof saved.lightAnswers === 'object' && saved.lightAnswers !== null
+    ? saved.lightAnswers as Record<string, string>
+    : {};
+  const [answers, setAnswers] = useState<Record<string, string>>(savedAnswers);
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const transcriptId = `${screen.id}-transcript`;
+  const questions = [
+    {
+      id: 'sequence',
+      prompt: 'When should HRBA analysis influence a project design?',
+      correct: 'B',
+      options: [
+        ['A', 'After the main activities and indicators have already been finalized.'],
+        ['B', 'From the beginning, before and while objectives, activities, indicators, and implementation arrangements are decided.'],
+        ['C', 'Only when a donor specifically requests human rights language.'],
+      ],
+      correctFeedback: 'Correct. Analysis should shape the design from the beginning.',
+      incorrectFeedback: 'Not yet. HRBA is not wording added to an already completed design.',
+    },
+    {
+      id: 'actors',
+      prompt: 'What does HRBA add to a general stakeholder analysis?',
+      correct: 'C',
+      options: [
+        ['A', 'A list of everyone invited to project meetings.'],
+        ['B', 'A plan for the CSO to permanently replace public institutions.'],
+        ['C', 'Clear rights-holders, duty-bearers, supporting actors, power relationships, barriers, and capacity gaps.'],
+      ],
+      correctFeedback: 'Correct. HRBA clarifies rights, responsibilities, barriers, influence, and capacity.',
+      incorrectFeedback: 'Not yet. The analysis must go beyond attendance lists or transferring public responsibility to the CSO.',
+    },
+    {
+      id: 'carry-forward',
+      prompt: 'What should happen to findings from the Analysis Phase?',
+      correct: 'A',
+      options: [
+        ['A', 'They should improve the objective, activities, participation and accountability arrangements, indicators, risk measures, and implementation plan.'],
+        ['B', 'They should remain in the background section while the original design stays unchanged.'],
+        ['C', 'They should be saved only as optional reference notes.'],
+      ],
+      correctFeedback: 'Correct. Findings are useful when they change practical project-design decisions.',
+      incorrectFeedback: 'Not yet. Analysis must carry forward into the project design rather than remain separate.',
+    },
+  ] as const;
+  const correctCount = questions.filter((question) => answers[question.id] === question.correct).length;
+  const complete = correctCount === questions.length;
+  const save = (patch: Record<string, unknown>) => onChangeState((prev) => ({
+    ...prev,
+    practiceCheckState: {
+      ...prev.practiceCheckState,
+      [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), interactionProgressVersion: 4, ...patch },
+    },
+  }));
+  useEffect(() => {
+    save({ lightAnswers: answers, screen1Complete: complete, correct: complete });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers, complete]);
+  const chooseAnswer = (questionId: string, value: string) => {
+    const next = { ...answers, [questionId]: value };
+    setAnswers(next);
+    save({ lightAnswers: next });
+  };
+  const shifts = [
+    ['Needs and general target groups', 'Rights, specific rights-holders, and patterns of exclusion'],
+    ['Passive beneficiaries and stakeholder lists', 'Rights-holders, duty-bearers, influence, and capacity'],
+    ['Activities selected before analysis', 'Design choices shaped by evidence'],
+  ];
+
+  return (
+    <main className="m3-screen m3-intro-video-screen m3-light-orientation" aria-labelledby={`${screen.id}-title`}>
+      <article className="m3-light-orientation__canvas">
+        <header className="m3-light-orientation__header">
+          <p className="m3-context-label">MODULE ORIENTATION</p>
+          <h1 id={`${screen.id}-title`}>From Analysis to Rights-Based Project Design</h1>
+          <p>See how Module 3 moves from HRBA foundations to practical project-design analysis and planning.</p>
+        </header>
+
+        <section className="m3-light-video" aria-labelledby={`${screen.id}-video-title`}>
+          <div className="m3-light-video__heading"><span aria-hidden="true">▶</span><div><p>START HERE</p><h2 id={`${screen.id}-video-title`}>Module 3 intro video</h2></div></div>
+          <div className="m3-video-container">{videoLoaded ? <div className="m3-video-frame"><iframe src={module3OrientationAssets.videoEmbed} title="Module 3 intro video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div> : <div className="m3-video-preview"><span className="m3-video-preview__icon" aria-hidden="true">▶</span><button type="button" className="m3-primary-button" onClick={() => { setVideoLoaded(true); save({ introResourceReviewed: true }); }}>Play intro video</button></div>}<div className="m3-video-links"><button type="button" className="m3-secondary-button" aria-expanded={transcriptOpen} aria-controls={transcriptId} onClick={() => setTranscriptOpen(!transcriptOpen)}>{transcriptOpen ? 'Hide transcript' : 'View transcript'}</button><a href={module3OrientationAssets.videoWatch} target="_blank" rel="noreferrer">Open video on YouTube — opens in a new tab</a></div>{transcriptOpen && <div id={transcriptId} className="m3-video-transcript__body"><h3>Intro video transcript</h3>{module3IntroTranscript.map(([speaker,text]) => <p key={text}><strong>{speaker}:</strong><br />{text}</p>)}</div>}</div>
+        </section>
+
+        <section className="m3-light-section" aria-labelledby={`${screen.id}-change-title`}>
+          <div className="m3-light-section__heading"><p>THE DESIGN SHIFT</p><h2 id={`${screen.id}-change-title`}>How HRBA changes project design</h2></div>
+          <p>HRBA analysis is completed before the main design choices are finalized. It changes who the project focuses on, how responsibility is understood, and how evidence shapes objectives, activities, indicators, and implementation.</p>
+          <div className="m3-light-shifts">{shifts.map(([from,to],index) => <article key={from}><span>{index + 1}</span><div><small>From</small><strong>{from}</strong></div><b aria-hidden="true">→</b><div><small>To</small><strong>{to}</strong></div></article>)}</div>
+          <div className="m3-light-principles" aria-label="HRBA design checks">{['Participation','Accountability','Non-discrimination and equality','Empowerment and capacity','Legality'].map((item,index) => <span key={item}><b>{index + 1}</b>{item}</span>)}</div>
+        </section>
+
+        <section className="m3-light-section" aria-labelledby={`${screen.id}-work-title`}>
+          <div className="m3-light-section__heading"><p>YOUR LEARNING FLOW</p><h2 id={`${screen.id}-work-title`}>How you will learn and work</h2></div>
+          <div className="m3-light-work-grid">
+            <article><span aria-hidden="true">1</span><h3>Analyse first</h3><p>Use the fictional Jiru Amba case to examine context, standards, rights-holders, responsibilities, barriers, power, causes, capacity, inclusion, accountability, and risk.</p></article>
+            <article><span aria-hidden="true">2</span><h3>Improve the design</h3><p>Carry the findings into the objective, activities, intervention logic, participation arrangements, indicators, evidence questions, and implementation measures.</p></article>
+            <article><span aria-hidden="true">3</span><h3>Review and prepare</h3><p>Review the design, save the cumulative snapshot, and identify implementation watch-points for Module 4.</p></article>
+          </div>
+          <p className="m3-light-method"><strong>Your simple working rhythm:</strong> Review → Practise → Generate → Interpret → Carry forward</p>
+          <aside className="m3-light-safe"><div><strong>Practice safely</strong><p>Practise first with Jiru Amba. For later own-context reflection, use only generalized, non-identifying information.</p></div><a href={module3OrientationAssets.guide} download>Download the Module 3 Orientation Guide (PDF)</a></aside>
+        </section>
+
+        <section className="m3-light-check" aria-labelledby={`${screen.id}-check-title`}>
+          <div className="m3-light-section__heading"><p>THREE QUICK QUESTIONS</p><h2 id={`${screen.id}-check-title`}>Check your understanding</h2></div>
+          <p>Choose one answer for each question. Feedback appears immediately, and you can change an answer if needed.</p>
+          <div className="m3-light-question-list">{questions.map((question,index) => { const selected = answers[question.id]; const isCorrect = selected === question.correct; return <fieldset key={question.id}><legend><span>{index + 1}</span>{question.prompt}</legend>{question.options.map(([id,text]) => <label className={`m3-check-option ${selected === id ? 'is-selected' : ''}`} key={id}><input type="radio" name={`m3-s1-${question.id}`} value={id} checked={selected === id} onChange={() => chooseAnswer(question.id,id)} /><span><strong>{id}.</strong> {text}</span></label>)}{selected && <div className={`m3-light-question-feedback ${isCorrect ? 'is-correct' : ''}`} role="status">{isCorrect ? question.correctFeedback : question.incorrectFeedback}</div>}</fieldset>; })}</div>
+        </section>
+
+        <footer className="m3-light-footer"><div><strong>{correctCount} of 3 questions correct</strong><p>{complete ? 'Orientation complete. You can continue to the learning objectives.' : 'Answer all three questions correctly to continue.'}</p></div><PrimaryButton disabled={!complete} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></footer>
+      </article>
+    </main>
+  );
+}
+
+export function IntroVideoScaffold({
   screen,
   state,
   onChangeState,
@@ -7453,18 +8080,82 @@ function IntroVideoScaffold({
   const [stage, setStage] = useState(savedStage);
   const [maxStageReached, setMaxStageReached] = useState(savedMaxStage);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [activeTopic, setActiveTopic] = useState(0);
+  const [activeDesignCheck, setActiveDesignCheck] = useState(0);
+  const [activeAnalysisStep, setActiveAnalysisStep] = useState(0);
+  const [activePlanningStep, setActivePlanningStep] = useState(0);
+  const [contextOpen, setContextOpen] = useState(true);
+  const [safetyOpen, setSafetyOpen] = useState(false);
+  const [stage2Open, setStage2Open] = useState([true, false, false]);
+  const [activePathStep, setActivePathStep] = useState(0);
+  const [activeMethodStep, setActiveMethodStep] = useState(0);
+  const [activeProductGroup, setActiveProductGroup] = useState(0);
+  const topicTabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const safeEvidenceHeadingRef = useRef<HTMLHeadingElement>(null);
+  const normalizeIds = (value: unknown, approved: readonly string[]) => Array.from(new Set(Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string' && approved.includes(id)) : []));
+  const designCheckIds = ['participation','accountability','non-discrimination-and-equality','empowerment-and-capacity','legality'] as const;
+  const analysisStepIds = ['context-and-inequality','policy-and-standards','rights-duty-capacity','causality-and-power','risk-and-do-no-harm','local-knowledge-and-evidence'] as const;
+  const planningStepIds = ['intervention-logic','gender-disability-integration','objectives-and-activities','indicators-and-evidence','review-and-implementation'] as const;
+  const contextSectionIds = ['ethiopian-context','safe-evidence'] as const;
+  const pathwayStepIds = ['practise-with-jiru-amba','complete-analysis-phase','translate-findings','define-indicators-evidence','review-save-prepare'] as const;
+  const methodStepIds = ['review','practise','generate','interpret','carry-forward'] as const;
+  const productGroupIds = ['analysis-products','planning-products','cumulative-product'] as const;
+  const [designChecksReviewed,setDesignChecksReviewed] = useState(() => normalizeIds(saved.designChecksReviewed,designCheckIds));
+  const [analysisStepsReviewed,setAnalysisStepsReviewed] = useState(() => normalizeIds(saved.analysisStepsReviewed,analysisStepIds));
+  const [planningStepsReviewed,setPlanningStepsReviewed] = useState(() => normalizeIds(saved.planningStepsReviewed,planningStepIds));
+  const [contextSectionsReviewed,setContextSectionsReviewed] = useState(() => normalizeIds(saved.contextSectionsReviewed,contextSectionIds));
+  const [introResourceReviewed,setIntroResourceReviewed] = useState(saved.introResourceReviewed === true);
+  const [guideResourceReviewed,setGuideResourceReviewed] = useState(saved.guideResourceReviewed === true);
+  const [guideOverviewOpen,setGuideOverviewOpen] = useState(false);
+  const [pathwayStepsReviewed,setPathwayStepsReviewed] = useState(() => normalizeIds(saved.pathwayStepsReviewed,pathwayStepIds));
+  const [methodStepsReviewed,setMethodStepsReviewed] = useState(() => normalizeIds(saved.methodStepsReviewed,methodStepIds));
+  const [productGroupsReviewed,setProductGroupsReviewed] = useState(() => normalizeIds(saved.productGroupsReviewed,productGroupIds));
+  const [progressAnnouncement,setProgressAnnouncement] = useState('');
+  const topicIds = ['design-shift','analysis-phase','planning-phase','context-safe-evidence'] as const;
+  const stage2SectionIds = ['learning-pathway','section-method','products'] as const;
+  const [topicsReviewed,setTopicsReviewed] = useState(() => Array.from(new Set(['design-shift', ...normalizeIds(saved.topicsReviewed,topicIds)])));
+  const [stage2SectionsReviewed,setStage2SectionsReviewed] = useState(() => normalizeIds(saved.stage2SectionsReviewed,stage2SectionIds));
   const [answer, setAnswer] = useState(String(saved.answer || ''));
   const [feedback, setFeedback] = useState(saved.correct === true ? 'Completed — correct answer recorded.' : '');
   const [correct, setCorrect] = useState(saved.correct === true);
   const transcriptId = `${screen.id}-transcript`;
   const save = (value: Record<string, unknown>) => onChangeState((prev) => ({ ...prev, practiceCheckState: { ...prev.practiceCheckState, [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), ...value } } }));
+  const stage1AreasComplete = topicIds.filter(id => topicsReviewed.includes(id)).length;
+  const stage1Complete = topicIds.every(id => topicsReviewed.includes(id));
+  const stage2AreasComplete = stage2SectionIds.filter(id => stage2SectionsReviewed.includes(id)).length;
+  const stage2Complete = stage2SectionIds.every(id => stage2SectionsReviewed.includes(id));
+  const screen1Complete = stage1Complete && stage2Complete && correct;
+  const markReviewed = (field: string, current: string[], setter: (value: string[]) => void, id: string, message: string) => {
+    const next = Array.from(new Set([...current,id]));
+    setter(next);
+    save({ interactionProgressVersion: 3, [field]: next });
+    setProgressAnnouncement(message);
+  };
+  useEffect(() => {
+    const highestUnlocked = stage2Complete ? 3 : stage1Complete ? 2 : 1;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (stage > highestUnlocked) { setStage(highestUnlocked); save({ stage: highestUnlocked, maxStageReached: highestUnlocked }); }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage1Complete,stage2Complete]);
+  useEffect(() => { save({ interactionProgressVersion: 3, screen1Complete });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen1Complete]);
+  useEffect(() => {
+    if (Object.keys(saved).length > 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStage(1); setMaxStageReached(1); setAnswer(''); setFeedback(''); setCorrect(false);
+    setDesignChecksReviewed([]); setAnalysisStepsReviewed([]); setPlanningStepsReviewed([]); setContextSectionsReviewed([]);
+    setIntroResourceReviewed(false); setGuideResourceReviewed(false); setPathwayStepsReviewed([]); setMethodStepsReviewed([]); setProductGroupsReviewed([]);
+    setTopicsReviewed(['design-shift']); setStage2SectionsReviewed([]);
+  }, [saved]);
   const focusStageHeading = () => requestAnimationFrame(() => {
     const heading = document.querySelector<HTMLElement>('.m3-intro-video-screen .m3-orientation-stage h2');
     heading?.setAttribute('tabindex', '-1');
     heading?.focus();
   });
   const selectStage = (next: number) => {
-    if (next > maxStageReached + 1) return;
+    if ((next === 2 && !stage1Complete) || (next === 3 && !stage2Complete)) return;
     const nextMax = Math.max(maxStageReached, next);
     setMaxStageReached(nextMax);
     setStage(next);
@@ -7472,6 +8163,12 @@ function IntroVideoScaffold({
     focusStageHeading();
   };
   const continueToStage = (next: number) => {
+    if (next === 2 && !stage1Complete) return;
+    if (next === 2 && !stage2SectionsReviewed.includes('learning-pathway')) {
+      const reviewed = [...stage2SectionsReviewed, 'learning-pathway'];
+      setStage2SectionsReviewed(reviewed);
+      save({ interactionProgressVersion: 3, stage2SectionsReviewed: reviewed });
+    }
     const nextMax = Math.max(maxStageReached, next);
     setMaxStageReached(nextMax);
     setStage(next);
@@ -7480,46 +8177,146 @@ function IntroVideoScaffold({
   };
   const check = () => {
     const messages: Record<string, string> = {
-      A: 'This is not correct. HRBA should guide project analysis and design from the beginning. It should not be added after the main project decisions have already been made.',
-      B: 'Correct. HRBA guides the full analysis and design process. The findings should influence the project objective, activities, participation and accountability arrangements, risks, indicators, evidence, and implementation planning.',
-      C: 'This is not correct. Human rights instruments may provide important references, but HRBA requires more than listing them. It also requires analysis of rights-holders, duty-bearers, barriers, power, participation, accountability, risk, and expected change.',
-      D: 'This is not correct. CSOs may support participation, evidence, dialogue, capacity development, and accountability. They should not automatically replace the responsibilities of public institutions and other duty-bearers.',
+      A: 'This is not correct. HRBA analysis should take place before the main project choices are finalized. Human rights references should not be added after an unchanged design has already been completed.',
+      B: 'Correct. Module 3 begins with the Analysis Phase and then carries the findings into the Planning Phase. The analysis should influence the objective, activities, participation and accountability arrangements, intervention logic, indicators, risk measures, and preparation for implementation.',
+      C: 'This is not correct. Immediate service needs are important, but HRBA also examines rights, responsibilities, barriers, structural causes, capacities, power, and accountability. A CSO should not automatically replace public responsibilities.',
+      D: 'This is not correct. HRBA is not a separate activity added to the project. It should influence the main design decisions.',
     };
     setFeedback(messages[answer]);
     const isCorrect = answer === 'B';
     setCorrect(isCorrect);
     save({ answer, correct: isCorrect, stage: 3, maxStageReached });
   };
+  const designShifts = [
+    ['From needs and general target groups', 'To rights, specific rights-holders, and patterns of exclusion', 'The project examines who is affected differently, which rights and standards apply, and what barriers limit access, participation, influence, benefit, safety, or follow-up.'],
+    ['From passive beneficiaries and general stakeholder lists', 'To rights-holders, duty-bearers, supporting actors, power, and capacity gaps', 'The project distinguishes people entitled to claim and enjoy rights from institutions and actors with responsibilities, while examining the capacities and conditions that affect action.'],
+    ['From activities selected before analysis', 'To objectives, activities, indicators, and implementation arrangements shaped by evidence', 'Findings about standards, inequality, root causes, power, participation, accountability, capacity, and risk are carried into the project design.'],
+  ];
+  const designChecks = [
+    ['Participation', 'Can rights-holders influence decisions rather than only attend activities?'],
+    ['Accountability', 'Are information, feedback, response, explanation, and follow-up built into the design?'],
+    ['Non-discrimination and equality', 'Does the design identify and respond to different experiences of exclusion?'],
+    ['Empowerment and capacity', 'Does the design strengthen the ability of rights-holders to claim rights and duty-bearers to meet responsibilities?'],
+    ['Legality', 'Are project choices connected to relevant human rights standards, laws, policies, strategies, and service commitments?'],
+  ];
+  const analysisSteps = [
+    ['Context and inequality analysis', 'Examine the local environment, intersecting inequalities, access barriers, and patterns of exclusion.'],
+    ['Policy and standards analysis', 'Connect the issue to relevant human rights standards, laws, policies, strategies, service commitments, and public responsibilities.'],
+    ['Rights-holder, duty-bearer, and capacity analysis', 'Identify specific rights-holders, responsible institutions and actors, supporting actors, and capacity gaps.'],
+    ['Causality and power analysis', 'Trace visible problems to immediate, underlying, and root causes, while examining formal and informal influence.'],
+    ['Risk and do-no-harm analysis', 'Identify possible risks, mitigation measures, monitoring signs, and response conditions.'],
+    ['Local knowledge and evidence', 'Use verified contextual knowledge and non-identifying evidence to refine the analysis.'],
+  ];
+  const planningSteps = [
+    ['Intervention logic', 'Define the pathway from activities to outputs, outcomes, and the intended change.'],
+    ['Gender and disability integration', 'Translate inclusion findings into practical design measures, accommodations, responsibilities, budgets, and monitoring.'],
+    ['Objectives and activity package', 'Revise the objective and activities so they respond to identified rights, barriers, responsibilities, causes, capacities, and risks.'],
+    ['Indicators and evidence', 'Define indicators and evidence questions that measure participation, access, accountability, capacity, inclusion, and change.'],
+    ['Review and preparation for implementation', 'Review the complete design, identify remaining gaps, save the final snapshot, and prepare implementation watch-points.'],
+  ];
+  const contextDimensions = [
+    ['People, place, and access', 'Consider rural, urban, and remote conditions; language and literacy; disability and accessibility; gender and age; displacement; distance; livelihood; and economic barriers.'],
+    ['Institutions and responsibilities', 'Examine woreda, kebele, service-provider, committee, and other public responsibilities, together with available capacity, resources, coordination, incentives, and willingness to act.'],
+    ['Formal and customary systems', 'Identify where formal institutions, community structures, customary mechanisms, professional groups, and civil society actors may support access, participation, dialogue, or accountability. Do not assume that any channel is automatically inclusive or safe.'],
+    ['Power and influence', 'Distinguish formal mandate from practical influence. Consider who controls information, who shapes priorities, whose knowledge is recognized, and who may have limited opportunity to influence decisions.'],
+  ];
+  const appropriateEvidence = ['non-identifying summaries of patterns and barriers;', 'generalized descriptions of roles, services, and institutional conditions;', 'verified observations that do not identify individuals;', 'capacity gaps, evidence questions, and design implications;', 'draft objectives, activities, indicators, and implementation watch-points.'];
+  const prohibitedEvidence = ['real names or identifying details;', 'exact sensitive locations;', 'identifiable complaint details;', 'survivor stories or case narratives;', 'political accusations;', 'sensitive personal information.'];
+  const learningPath = [
+    ['Practise with Jiru Amba', 'Begin with a fictional Ethiopian project case so that the analysis can be completed without using sensitive real-world information.'],
+    ['Complete the Analysis Phase', 'Examine context, standards, rights-holders, responsibilities, power, root causes, capacity gaps, local knowledge, and risk.'],
+    ['Translate findings into the design', 'Use the analysis to improve the objective, activity package, participation and accountability arrangements, intervention logic, and implementation measures.'],
+    ['Define indicators and evidence', 'Identify what should be monitored and what evidence is needed to assess access, participation, accountability, capacity, inclusion, and change.'],
+    ['Review, save, and prepare', 'Review the complete design, save selected outputs, complete the final snapshot, and identify implementation watch-points for Module 4.'],
+  ];
+  const repeatedMethod = [
+    ['Review', 'Read a concise explanation and examine the design question.'],
+    ['Practise', 'Apply the question to the Jiru Amba case.'],
+    ['Generate', 'Create a structured map, check, pathway, board, or revised design output.'],
+    ['Interpret', 'Review what the output shows and what it means for the project.'],
+    ['Carry forward', 'Save the relevant finding or output for use in the next design stage.'],
+  ];
+  const analysisOutputs = [
+    ['Context and Inequality Scan'],
+    ['Policy and Standards Map'],
+    ['Rights-Holder and Barrier Map', 'Duty-Bearer and Actor Responsibility Map', 'Root-Cause and Capacity-Gap Map'],
+    ['Power and Influence Map', 'Root-Cause and Capacity-Gap Map'],
+    ['Risk and Do-No-Harm Board'],
+    ['Evidence questions carried into later design work'],
+  ];
+  const planningOutputs = [
+    ['Improved intervention logic'],
+    ['Gender and Disability Design Check'],
+    ['Revised project objective', 'Revised activity package'],
+    ['Improved indicators and evidence questions'],
+    ['Draft Plan Review Note', 'HRBA Project Design Improvement Snapshot', 'Module 4 implementation watch-points'],
+  ];
+  const topicLabels = ['The design shift', 'Analysis Phase', 'Planning Phase', 'Context and safe evidence'];
+  const selectTopic = (index: number, moveFocus = false) => {
+    setActiveTopic(index);
+    const nextReviewed = Array.from(new Set([...topicsReviewed, topicIds[index]]));
+    setTopicsReviewed(nextReviewed);
+    save({ interactionProgressVersion: 3, topicsReviewed: nextReviewed });
+    setProgressAnnouncement(`Stage 1 topics: ${nextReviewed.length} of 4 reviewed.`);
+    if (moveFocus) requestAnimationFrame(() => topicTabRefs.current[index]?.focus());
+  };
+  const onTopicKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>, index: number) => {
+    let next: number;
+    if (event.key === 'ArrowRight') next = (index + 1) % topicLabels.length;
+    else if (event.key === 'ArrowLeft') next = (index - 1 + topicLabels.length) % topicLabels.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = topicLabels.length - 1;
+    else return;
+    event.preventDefault();
+    selectTopic(next, true);
+  };
+  const reviewSafeEvidence = () => {
+    setStage(1);
+    setActiveTopic(3);
+    requestAnimationFrame(() => safeEvidenceHeadingRef.current?.focus());
+  };
 
   return (
     <main className="m3-screen m3-intro-video-screen" aria-labelledby={`${screen.id}-title`}>
       <article className="m3-orientation-shell">
         <div className="m3-title-block m3-intro-video-copy">
-          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
-          <p className="m3-context-label">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>{screen.title}</h1>
-          <p>This section introduces how human rights standards and principles are applied in project analysis, design, review, and preparation for implementation.</p>
+          <p className="m3-context-label">MODULE ORIENTATION</p>
+          <h1 id={`${screen.id}-title`}>From Analysis to Rights-Based Project Design</h1>
+          <p>Module 3 guides you through the analysis and planning steps used to turn human rights standards and principles into practical project-design decisions.</p>
         </div>
-        <GuidedWorkspaceStageNav activeStage={stage} onSelect={selectStage} stages={[{ id: 1, label: 'What applying HRBA means', complete: maxStageReached > 1 }, { id: 2, label: 'How this module works', unlocked: maxStageReached >= 2, complete: maxStageReached > 2 }, { id: 3, label: 'Check your understanding', unlocked: maxStageReached >= 3, complete: correct }]} />
+        <GuidedWorkspaceStageNav className="m3-orientation-stepper" activeStage={stage} onSelect={selectStage} stages={[{ id: 1, label: 'From analysis to design', complete: stage1Complete }, { id: 2, label: 'How you will work', unlocked: stage1Complete, complete: stage2Complete }, { id: 3, label: 'Check your understanding', unlocked: stage2Complete, complete: correct }]} />
+        <div className="m3-progress-announcer" aria-live="polite">{progressAnnouncement}</div>
 
-        {stage === 1 && <section className="m3-orientation-stage m3-orientation-stage--opening"><div className="m3-orientation-concepts"><section className="m3-orientation-concept"><h2>From HRBA foundations to project design</h2>
-          <p>In Module 2, you examined the foundations and core principles of the Human Rights-Based Approach. In Module 3, you will apply those foundations to project design.</p>
-          <p>Applying HRBA in project design means using human rights standards and principles to guide project decisions from the beginning. HRBA should inform situation analysis, project planning, preparation for implementation, monitoring, evaluation, accountability, and learning.</p>
-          <p>It is not an additional paragraph, a separate activity, or a statement added after the project has already been designed.</p>
-          <p>An HRBA project-design process examines:</p><ul><li>the rights and standards connected to the issue;</li><li>the people and groups who hold those rights;</li><li>the public institutions and other actors that have responsibilities;</li><li>the barriers that affect access, participation, influence, benefit, safety, and follow-up;</li><li>the capacity of rights-holders to know, claim, and enjoy their rights;</li><li>the capacity of duty-bearers to respect, protect, and fulfil rights;</li><li>participation, accountability, transparency, and access to information;</li><li>power relationships, causes, risks, and evidence;</li><li>the changes that should be reflected in objectives, activities, indicators, and implementation arrangements.</li></ul>
-          <p>The local context is the starting point. Before finalizing activities, the project team should understand the situation, the people affected, the responsibilities of relevant actors, and the conditions that may support or limit change.</p>
-          </section><section className="m3-orientation-concept"><h3>Relevance to Ethiopian local and grassroots CSOs</h3><p>Local and grassroots CSOs in Ethiopia work in different regional, linguistic, administrative, social, and service-delivery contexts.</p><p>A method that is appropriate in one setting may need to be adjusted in another. Project teams may need to consider:</p><ul><li>rural, urban, and remote conditions;</li><li>access to public services and information;</li><li>woreda, kebele, service-provider, committee, and community roles;</li><li>formal responsibilities and informal influence;</li><li>language, literacy, disability, gender, age, distance, and economic barriers;</li><li>the capacity and resources of public institutions and community actors;</li><li>appropriate and safe participation methods;</li><li>constructive engagement and accountability arrangements.</li></ul><p>Adapting HRBA to context does not remove human rights standards or public responsibility. It means applying those standards and responsibilities in a practical way that reflects the setting, the people involved, and the risks that need to be managed.</p><p>This module uses a fictional Ethiopian setting so that these questions can be examined safely and practically.</p></section></div>
-          <section className="m3-host-video"><h3>Martha and Dawit introduce Module 3</h3><p>Listen to Martha and Dawit explain how this module connects HRBA foundations with practical project-design work.</p><div className="m3-video-frame"><iframe src={module3OrientationAssets.videoEmbed} title="Martha and Dawit introduce Module 3" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div><p><a href={module3OrientationAssets.videoWatch} target="_blank" rel="noreferrer">Open video on YouTube — opens in a new tab</a></p><div className="m3-video-transcript"><button type="button" className="m3-secondary-button" aria-expanded={transcriptOpen} aria-controls={transcriptId} onClick={() => setTranscriptOpen(!transcriptOpen)}>{transcriptOpen ? 'Hide transcript' : 'Read transcript'}</button>{transcriptOpen && <div id={transcriptId} className="m3-video-transcript__body"><h4>Transcript: Martha and Dawit Introduce Module 3</h4>{module3IntroTranscript.map(([speaker, text]) => <p key={text}><strong>{speaker}:</strong><br />{text}</p>)}</div>}</div></section>
-          <div className="m3-stage-actions"><PrimaryButton onClick={() => continueToStage(2)}>Continue to how this module works</PrimaryButton></div></section>}
+        {stage === 1 && <section className="m3-orientation-stage m3-methodology-stage">
+          <h2>How HRBA changes project design</h2>
+          <p className="m3-stage-lead">Integrating HRBA into project design is a conscious and systematic process. The analysis should influence the design itself—not be added after the main project decisions have already been made.</p>
+          <section className="m3-topic-workspace" aria-label="Project-design methodology topics">
+            <div className="m3-topic-tabs" role="tablist" aria-label="Methodology topics">{topicLabels.map((label,index) => <button key={label} ref={(node) => { topicTabRefs.current[index] = node; }} type="button" role="tab" id={`${screen.id}-topic-tab-${index}`} aria-selected={activeTopic === index} aria-controls={`${screen.id}-topic-panel-${index}`} tabIndex={activeTopic === index ? 0 : -1} onClick={() => selectTopic(index)} onKeyDown={(event) => onTopicKeyDown(event,index)}>{index + 1}. {label}</button>)}</div>
+            {activeTopic === 0 && <div role="tabpanel" tabIndex={0} id={`${screen.id}-topic-panel-0`} aria-labelledby={`${screen.id}-topic-tab-0`} className="m3-topic-panel"><h3>The project-design shift</h3><p>HRBA changes how a project team moves from an issue to a project design.</p><div className="m3-design-shift__rows">{designShifts.map(([from,to,explanation], index) => <article key={from}><div className="m3-shift-side m3-shift-side--from"><small>From</small><strong>{from.replace('From ', '')}</strong></div><span className="m3-shift-arrow" aria-hidden="true">→</span><div className="m3-shift-side m3-shift-side--to"><small>To</small><strong>{to.replace('To ', '')}</strong></div><p>{explanation}</p><span className="m3-shift-number" aria-hidden="true">{index + 1}</span></article>)}</div><section className="m3-selector-section"><h4>Principles used as design checks</h4><div className="m3-selector-buttons" aria-label="Design checks">{designChecks.map(([title],index) => <button key={title} type="button" className={`${activeDesignCheck === index ? 'is-selected' : ''} ${designChecksReviewed.includes(designCheckIds[index]) ? 'is-reviewed' : ''}`} aria-pressed={activeDesignCheck === index} onClick={() => { setActiveDesignCheck(index); markReviewed('designChecksReviewed',designChecksReviewed,setDesignChecksReviewed,designCheckIds[index], `Design checks: ${Math.min(5,designChecksReviewed.length + (designChecksReviewed.includes(designCheckIds[index]) ? 0 : 1))} of 5 reviewed.`); }}>{title}</button>)}</div><div className="m3-shared-detail" aria-live="polite"><strong>{designChecks[activeDesignCheck][0]}</strong><p>{designChecks[activeDesignCheck][1]}</p></div></section></div>}
+            {activeTopic === 1 && <div role="tabpanel" tabIndex={0} id={`${screen.id}-topic-panel-1`} aria-labelledby={`${screen.id}-topic-tab-1`} className="m3-topic-panel"><h3>Analysis Phase</h3><p>The Analysis Phase establishes the evidence and reasoning before activities are selected or finalized.</p><div className="m3-step-navigator"><div className="m3-step-buttons" aria-label="Analysis steps">{analysisSteps.map(([title],index) => <button key={title} type="button" className={`${activeAnalysisStep === index ? 'is-selected' : ''} ${analysisStepsReviewed.includes(analysisStepIds[index]) ? 'is-reviewed' : ''}`} aria-pressed={activeAnalysisStep === index} onClick={() => { setActiveAnalysisStep(index); markReviewed('analysisStepsReviewed',analysisStepsReviewed,setAnalysisStepsReviewed,analysisStepIds[index], `Analysis Phase: ${Math.min(6,analysisStepsReviewed.length + (analysisStepsReviewed.includes(analysisStepIds[index]) ? 0 : 1))} of 6 steps reviewed.`); }}><span>{index + 1}</span>{['Context and inequality','Policy and standards','Rights-holders, duty-bearers, and capacity','Causality and power','Risk and do-no-harm','Local knowledge and evidence'][index]}</button>)}</div><article className="m3-step-detail" aria-live="polite"><p className="m3-card-kicker">Analysis step {activeAnalysisStep + 1}</p><h4>{analysisSteps[activeAnalysisStep][0]}</h4><p>{activeAnalysisStep === 0 ? 'Examine what is happening, who is affected differently, which barriers exist, and what evidence needs verification.' : activeAnalysisStep === 3 ? 'Trace visible problems to immediate, underlying, and root causes, and examine formal responsibility and practical influence.' : activeAnalysisStep === 5 ? 'Use verified contextual knowledge and non-identifying evidence to refine the analysis and identify information that still needs to be checked.' : analysisSteps[activeAnalysisStep][1]}</p><strong>{analysisOutputs[activeAnalysisStep].length > 1 ? 'Outputs' : 'Output'}</strong><ul>{analysisOutputs[activeAnalysisStep].map(item => <li key={item}>{item}</li>)}</ul></article></div><footer className="m3-panel-footer">The Analysis Phase informs every later project-design decision.</footer></div>}
+            {activeTopic === 2 && <div role="tabpanel" tabIndex={0} id={`${screen.id}-topic-panel-2`} aria-labelledby={`${screen.id}-topic-tab-2`} className="m3-topic-panel"><h3>Planning Phase</h3><p>The Planning Phase converts the analysis into a structured project design.</p><div className="m3-step-navigator"><div className="m3-step-buttons" aria-label="Planning steps">{planningSteps.map(([title],index) => <button key={title} type="button" className={`is-planning ${activePlanningStep === index ? 'is-selected' : ''} ${planningStepsReviewed.includes(planningStepIds[index]) ? 'is-reviewed' : ''}`} aria-pressed={activePlanningStep === index} onClick={() => { setActivePlanningStep(index); markReviewed('planningStepsReviewed',planningStepsReviewed,setPlanningStepsReviewed,planningStepIds[index], `Planning Phase: ${Math.min(5,planningStepsReviewed.length + (planningStepsReviewed.includes(planningStepIds[index]) ? 0 : 1))} of 5 reviewed.`); }}><span>{index + 1}</span>{['Intervention logic','Gender and disability integration','Objectives and activities','Indicators and evidence','Review and implementation preparation'][index]}</button>)}</div><article className="m3-step-detail m3-step-detail--planning" aria-live="polite"><p className="m3-card-kicker">Planning step {activePlanningStep + 1}</p><h4>{planningSteps[activePlanningStep][0]}</h4><p>{activePlanningStep === 1 ? 'Translate inclusion findings into practical measures, accommodations, responsibilities, budgets, participation arrangements, and monitoring.' : activePlanningStep === 2 ? 'Revise the objective and activities so they respond to identified rights, barriers, responsibilities, causes, capacities, power relationships, and risks.' : activePlanningStep === 3 ? 'Define indicators and evidence questions that examine access, participation, accountability, capacity, inclusion, and change.' : planningSteps[activePlanningStep][1]}</p><strong>{planningOutputs[activePlanningStep].length > 1 ? 'Outputs' : 'Output'}</strong><ul>{planningOutputs[activePlanningStep].map(item => <li key={item}>{item}</li>)}</ul></article></div><footer className="m3-panel-footer m3-panel-footer--planning">Analysis must carry forward into planning. A finding is useful when it informs a project decision, responsibility, activity, indicator, risk measure, or implementation arrangement.</footer></div>}
+            {activeTopic === 3 && <div role="tabpanel" tabIndex={0} id={`${screen.id}-topic-panel-3`} aria-labelledby={`${screen.id}-topic-tab-3`} className="m3-topic-panel"><h3 ref={safeEvidenceHeadingRef} tabIndex={-1}>Apply the method to the context</h3><p>The same human rights standards and public responsibilities apply across settings, but the methods used to gather evidence, support participation, engage institutions, and manage risk may need to be adapted.</p><div className="m3-context-accordions"><section><button type="button" aria-expanded={contextOpen} aria-controls={`${screen.id}-context-accordion`} onClick={() => { setContextOpen(!contextOpen); markReviewed('contextSectionsReviewed',contextSectionsReviewed,setContextSectionsReviewed,'ethiopian-context','Ethiopian contextual application reviewed.'); }}>Applying the process in Ethiopian CSO settings <span aria-hidden="true">⌄</span></button>{contextOpen && <div id={`${screen.id}-context-accordion`} className="m3-context-quadrants">{contextDimensions.map(([title,text],index) => <article key={title}><span aria-hidden="true">{index + 1}</span><h4>{title}</h4><p>{text}</p></article>)}<p className="m3-context-principle">Contextual adaptation may change the method, but it does not remove human rights standards, public responsibility, or the need for accountability.</p></div>}</section><section><button type="button" aria-expanded={safetyOpen} aria-controls={`${screen.id}-safety-accordion`} onClick={() => { setSafetyOpen(!safetyOpen); markReviewed('contextSectionsReviewed',contextSectionsReviewed,setContextSectionsReviewed,'safe-evidence','Safe-evidence guidance reviewed.'); }}>Use evidence safely <span aria-hidden="true">⌄</span></button>{safetyOpen && <div id={`${screen.id}-safety-accordion`} className="m3-safe-evidence__columns"><article><h4>Appropriate for the learning portfolio</h4><ul>{appropriateEvidence.map(item => <li key={item}>{item}</li>)}</ul></article><article><h4>Do not record</h4><ul>{prohibitedEvidence.map(item => <li key={item}>{item}</li>)}</ul></article><footer>Use generalized, non-identifying information throughout the module.</footer></div>}</section></div></div>}
+          </section>
+          <section className="m3-orientation-resources" aria-labelledby={`${screen.id}-resources`}><h3 id={`${screen.id}-resources`}>Orientation resources</h3><div><article className="m3-resource-card"><h4>Intro video</h4><p>Watch this short introduction to how Module 3 moves from HRBA foundations to practical project-design analysis and planning.</p><div className="m3-video-container">{videoLoaded ? <div className="m3-video-frame"><iframe src={module3OrientationAssets.videoEmbed} title="Intro video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div> : <div className="m3-video-preview"><span className="m3-video-preview__icon" aria-hidden="true">▶</span><button type="button" className="m3-primary-button" onClick={() => { setVideoLoaded(true); setIntroResourceReviewed(true); save({interactionProgressVersion:2,introResourceReviewed:true}); }}>Play intro video</button></div>}<div className="m3-video-links"><button type="button" className="m3-secondary-button" aria-expanded={transcriptOpen} aria-controls={transcriptId} onClick={() => { setTranscriptOpen(!transcriptOpen); setIntroResourceReviewed(true); save({interactionProgressVersion:2,introResourceReviewed:true}); }}>{transcriptOpen ? 'Hide transcript' : 'View transcript'}</button><a href={module3OrientationAssets.videoWatch} target="_blank" rel="noreferrer">Open video on YouTube — opens in a new tab</a></div>{transcriptOpen && <div id={transcriptId} className="m3-video-transcript__body"><h5>Intro video transcript</h5>{module3IntroTranscript.map(([speaker,text]) => <p key={text}><strong>{speaker}:</strong><br />{text}</p>)}</div>}</div></article><article className="m3-resource-card m3-guide-card"><span className="m3-guide-icon" aria-hidden="true">PDF</span><h4>Module 3 Orientation Guide</h4><p>Download this presentation before starting the practice screens. It explains the Analysis Phase, the Planning Phase, how the tools connect, and what each output is used for.</p><p className="m3-resource-meta">PDF · 24 pages · approximately 1.3 MB</p><button type="button" className="m3-secondary-button" aria-expanded={guideOverviewOpen} onClick={() => { setGuideOverviewOpen(!guideOverviewOpen); setGuideResourceReviewed(true); save({interactionProgressVersion:2,guideResourceReviewed:true}); }}>View what the guide covers</button>{guideOverviewOpen && <ul className="m3-guide-overview"><li>the project-design shift;</li><li>the Analysis Phase;</li><li>the Planning Phase;</li><li>how the Module 3 tools connect;</li><li>outputs and preparation for implementation.</li></ul>}<a className="m3-primary-button" href={module3OrientationAssets.guide} download><span aria-hidden="true">↓</span> Download orientation guide (PDF)</a><small>Keep the guide available as a reference while you work through Module 3.</small></article></div></section>
+          <span className="m3-visually-hidden">Optional resources reviewed: {(introResourceReviewed ? 1 : 0) + (guideResourceReviewed ? 1 : 0)} of 2.</span><div className="m3-stage-actions m3-stage-footer"><div><p>Stage 1 topics: {stage1AreasComplete} of 4 reviewed</p>{!stage1Complete && <small>Open each of the four topic tabs once to continue. The detailed buttons and resources are optional.</small>}</div><PrimaryButton disabled={!stage1Complete} onClick={() => continueToStage(2)}>Continue to how you will work</PrimaryButton></div>
+        </section>}
 
-        {stage === 2 && <section className="m3-orientation-stage"><h2>How you will work in this module</h2><p>Module 3 is organized as a guided project-design process.</p><p>You will first practise with the fictional Jiru Amba case. The case will help you examine a project issue without entering sensitive information from real people or locations.</p><p>After practising with the case, some screens will allow you to apply the same questions to a generalized example from your own CSO work.</p><p>You will:</p><ol><li>review a short explanation;</li><li>examine a worked example;</li><li>complete a structured practice task;</li><li>generate a map, check, pathway, board, or design output;</li><li>review what the output shows;</li><li>save selected work to your portfolio;</li><li>download outputs for later team discussion or further development.</li></ol><p className="m3-safety-note">You should not enter names, exact locations, identifiable complaints, survivor stories, political accusations, or sensitive personal information.</p><h3>What you will produce</h3><p>This module will produce several connected project-design outputs.</p><div className="m3-product-grid"><div><h4>Analysis products</h4><ul><li>Context and Inequality Scan</li><li>Policy and Standards Map</li><li>Rights-Holder and Barrier Map</li><li>Duty-Bearer and Actor Responsibility Map</li><li>Power and Influence Map</li><li>Root-Cause and Capacity-Gap Map</li></ul></div><div><h4>Design-process products</h4><ul><li>Gender and Disability Design Check</li><li>Participation and Accountability Pathway</li><li>Risk and Do-No-Harm Board</li></ul></div><div><h4>Project-design products</h4><ul><li>revised project objective;</li><li>revised activity package;</li><li>improved intervention logic;</li><li>improved indicators and evidence questions;</li><li>draft-plan review note.</li></ul></div></div><h4>Cumulative product</h4><p>The outputs will be brought together in your HRBA Project Design Improvement Snapshot.</p><p>The snapshot is a draft learning and project-design product. It does not replace technical, legal, safeguarding, management, or organizational review.</p><p>It can support:</p><ul><li>later discussion with colleagues;</li><li>further project development;</li><li>preparation for implementation;</li><li>Module 4 learning;</li><li>future facilitated peer exchange or collaborative review where such arrangements are available.</li></ul><ol className="m3-process-strip"><li>Practise with Jiru Amba</li><li>Apply safely to a generalized context</li><li>Generate and review outputs</li><li>Save and carry forward</li></ol><div className="m3-stage-actions"><SecondaryButton onClick={() => selectStage(1)}>Previous stage</SecondaryButton><PrimaryButton onClick={() => selectStage(3)}>Continue to check your understanding</PrimaryButton></div></section>}
+        {stage === 2 && <section className="m3-orientation-stage m3-how-work-stage">
+          <h2>How you will work in this module</h2>
+          <p className="m3-stage-lead">You will follow the same sequence that a project team should use: analyze the situation before finalizing the design, then use the findings to improve the project and prepare for implementation.</p>
+          <div className="m3-stage2-accordions">{['Your learning pathway','The method used in each section','Products you will create'].map((title,index) => <section key={title}><button type="button" className="m3-accordion-trigger" aria-expanded={stage2Open[index]} aria-controls={`${screen.id}-stage2-accordion-${index}`} onClick={() => { setStage2Open(current => current.map((value,itemIndex) => itemIndex === index ? !value : value)); const nextReviewed = Array.from(new Set([...stage2SectionsReviewed,stage2SectionIds[index]])); setStage2SectionsReviewed(nextReviewed); save({interactionProgressVersion:3,stage2SectionsReviewed:nextReviewed}); setProgressAnnouncement(`Stage 2 sections: ${nextReviewed.length} of 3 reviewed.`); }}><span>{index + 1}. {title}</span><span aria-hidden="true">⌄</span></button>{stage2Open[index] && <div id={`${screen.id}-stage2-accordion-${index}`} className="m3-accordion-panel">{index === 0 && <><div className="m3-path-selector">{learningPath.map(([title],pathIndex) => <button key={title} type="button" className={activePathStep === pathIndex ? 'is-selected' : ''} aria-pressed={activePathStep === pathIndex} onClick={() => { setActivePathStep(pathIndex); markReviewed('pathwayStepsReviewed',pathwayStepsReviewed,setPathwayStepsReviewed,pathwayStepIds[pathIndex], 'Learning pathway progress updated.'); }}><span>{pathIndex + 1}</span>{title}</button>)}</div><div className="m3-shared-detail" aria-live="polite"><strong>{learningPath[activePathStep][0]}</strong><p>{learningPath[activePathStep][1]}</p></div></>}{index === 1 && <><div className="m3-method-selector">{repeatedMethod.map(([title],methodIndex) => <button key={title} type="button" className={activeMethodStep === methodIndex ? 'is-selected' : ''} onClick={() => { setActiveMethodStep(methodIndex); markReviewed('methodStepsReviewed',methodStepsReviewed,setMethodStepsReviewed,methodStepIds[methodIndex], 'Method progress updated.'); }}><span>{methodIndex + 1}</span>{title}</button>)}</div><div className="m3-shared-detail"><strong>{repeatedMethod[activeMethodStep][0]}</strong><p>{repeatedMethod[activeMethodStep][1]}</p></div></>}{index === 2 && <><div className="m3-product-tabs">{['Analysis Phase products','Planning and design products','Cumulative product'].map((label,productIndex) => <button key={label} type="button" className={activeProductGroup === productIndex ? 'is-selected' : ''} aria-pressed={activeProductGroup === productIndex} onClick={() => { setActiveProductGroup(productIndex); markReviewed('productGroupsReviewed',productGroupsReviewed,setProductGroupsReviewed,productGroupIds[productIndex], 'Product groups progress updated.'); }}>{label}</button>)}</div><div className="m3-product-detail">{activeProductGroup === 0 && <ul>{['Context and Inequality Scan','Policy and Standards Map','Rights-Holder and Barrier Map','Duty-Bearer and Actor Responsibility Map','Power and Influence Map','Root-Cause and Capacity-Gap Map','Risk and Do-No-Harm Board'].map(item => <li key={item}>{item}</li>)}</ul>}{activeProductGroup === 1 && <ul>{['Gender and Disability Design Check','Participation and Accountability Pathway','revised project objective','revised activity package','improved intervention logic','improved indicators and evidence questions','Draft Plan Review Note'].map(item => <li key={item}>{item}</li>)}</ul>}{activeProductGroup === 2 && <><p>The outputs will be brought together in the HRBA Project Design Improvement Snapshot.</p><p>The snapshot is a draft learning and project-design product. It does not replace technical, legal, safeguarding, management, or organizational review.</p><p>It may support project-team discussion, further development, preparation for implementation, Module 4 learning, and future facilitated peer review or collaborative refinement where those arrangements are available.</p></>}</div></>}</div>}</section>)}</div>
+          <aside className="m3-safe-reminder"><p>Use generalized, non-identifying information when applying selected questions to your own CSO context.</p><button type="button" className="m3-secondary-button" onClick={reviewSafeEvidence}>Review safe-evidence guidance</button><a href={module3OrientationAssets.guide} download>Download the Module 3 Orientation Guide (PDF)</a></aside>
+          <div className="m3-stage-actions m3-stage-footer"><div><p>Stage 2 sections: {stage2AreasComplete} of 3 reviewed</p>{!stage2Complete && <small>Open each of the three section headings once to continue. The detailed selectors are optional.</small>}</div><SecondaryButton onClick={() => selectStage(1)}>Previous stage</SecondaryButton><PrimaryButton disabled={!stage2Complete} onClick={() => selectStage(3)}>Continue to check your understanding</PrimaryButton></div>
+        </section>}
 
-        {stage === 3 && <section className="m3-orientation-stage"><h2>Check your understanding</h2><fieldset><legend>Select the statement that best explains how HRBA is applied in project design.</legend>{[['A','HRBA is added as a separate human rights activity after the main project plan has been completed.'],['B','HRBA uses human rights standards and principles throughout analysis and design, and the findings shape objectives, activities, participation, accountability, risks, indicators, and evidence.'],['C','HRBA mainly requires the project team to list international human rights instruments in the proposal.'],['D','HRBA transfers the responsibilities of public institutions to the CSO implementing the project.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s1-check" value={id} checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); setCorrect(false); }} /> <span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-secondary-button" disabled={!answer || correct} onClick={check}>Submit answer</button>{feedback && <div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} role="status">{feedback}</div>}<div className="m3-stage-actions"><SecondaryButton onClick={() => selectStage(2)}>Previous stage</SecondaryButton><PrimaryButton disabled={!correct} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></div></section>}
+        {stage === 3 && <section className="m3-orientation-stage m3-assessment-stage"><div className="m3-assessment-card"><h2>Check your understanding</h2><fieldset><legend>Select the statement that best describes the HRBA project-design process used in Module 3.</legend>{[['A','The project team selects the main activities first and adds human rights references to the proposal after the design is complete.'],['B','The project team analyzes context, standards, rights-holders, duty-bearers, capacities, power, root causes, and risks, and then uses the findings to shape the objective, activities, intervention logic, indicators, and implementation arrangements.'],['C','The project team focuses mainly on immediate service needs and assigns the CSO permanent responsibility for services that public institutions are expected to provide.'],['D','The project team completes a separate human rights activity while leaving the main project objective, activities, indicators, and accountability arrangements unchanged.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s1-check" value={id} checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); setCorrect(false); }} /> <span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-primary-button" disabled={!answer || correct} onClick={check}>Submit answer</button>{feedback && <div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} role="status">{feedback}</div>}</div><div className="m3-stage-actions m3-stage-footer">{correct && <p>Stage 3 of 3 completed</p>}<SecondaryButton onClick={() => selectStage(2)}>Previous stage</SecondaryButton><PrimaryButton disabled={!correct} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></div></section>}
       </article>
     </main>
   );
 }
 
+/* The JSX detail branch passes React state (not a ref) through card navigation callbacks. */
+/* eslint-disable react-hooks/refs */
 function LearningRoadmapScreen({
   screen,
   state,
@@ -7535,9 +8332,10 @@ function LearningRoadmapScreen({
   const approvedAreaIds = module3ObjectiveAreas.map((area) => area.id as string);
   const normalizedReviewed = Array.from(new Set(Array.isArray(saved.reviewed) ? (saved.reviewed as string[]).filter((id) => approvedAreaIds.includes(id)) : []));
   const [reviewed, setReviewed] = useState<string[]>(normalizedReviewed);
-  const [active, setActive] = useState<number | null>(null);
+  const savedActive = approvedAreaIds.indexOf(String(saved.activeId || ''));
+  const [active, setActive] = useState<number | null>(savedActive >= 0 ? savedActive : null);
   const [answer, setAnswer] = useState(String(saved.answer || ''));
-  const [feedback, setFeedback] = useState(saved.correct === true ? 'Completed — correct answer recorded.' : '');
+  const [feedback, setFeedback] = useState(saved.correct === true ? 'Correct. In Module 3, analysis informs the objective, activities, intervention logic, indicators, review, final snapshot and preparation for implementation.' : '');
   const [correct, setCorrect] = useState(saved.correct === true);
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
   const checkHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -7549,28 +8347,36 @@ function LearningRoadmapScreen({
     // Normalize legacy or malformed saved IDs once when this screen initializes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const openArea = (index: number) => { const next = Array.from(new Set([...reviewed, module3ObjectiveAreas[index].id])); setReviewed(next); setActive(index); save({ reviewed: next }); requestAnimationFrame(() => detailHeadingRef.current?.focus()); };
-  const closeArea = () => { const previous = active; setActive(null); requestAnimationFrame(() => { if (previous !== null) cardRefs.current[previous]?.focus(); }); };
-  useEffect(() => { if (active === null) return; const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { const previous = active; setActive(null); requestAnimationFrame(() => cardRefs.current[previous]?.focus()); } }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [active]);
-  const check = () => { const messages: Record<string,string> = { A: 'This is not correct. A context finding should influence later analysis and design decisions. It should not remain only in the background section.', B: 'This is incomplete. More meetings may not solve the problem if information, timing, language, accessibility, influence, response, and follow-up are not addressed.', C: 'Correct. The finding should carry forward into standards, rights-holder and barrier analysis, actor responsibility, participation and accountability design, activities, and indicators.', D: 'This is not correct. The CSO may facilitate communication, participation, evidence, or coordination, but it should not automatically replace the responsibilities of public institutions and other duty-bearers.' }; const isCorrect = answer === 'C'; setCorrect(isCorrect); setFeedback(messages[answer]); save({ reviewed, answer, correct: isCorrect }); };
+  const openArea = (index: number) => { const next = Array.from(new Set([...reviewed, module3ObjectiveAreas[index].id])); setReviewed(next); setActive(index); save({ reviewed: next, activeId: module3ObjectiveAreas[index].id }); requestAnimationFrame(() => detailHeadingRef.current?.focus({ preventScroll: true })); };
+  const closeArea = () => { const previous = active; setActive(null); save({ activeId: null }); requestAnimationFrame(() => { if (previous !== null) cardRefs.current[previous]?.focus({ preventScroll: true }); }); };
+  // The listener is intentionally rebound only when the active card changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (active === null) return; const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { const previous = active; setActive(null); save({ activeId: null }); requestAnimationFrame(() => cardRefs.current[previous]?.focus()); } }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, [active]);
+  const check = () => { const messages: Record<string,string> = { A: 'Not yet. Adding human rights wording after the design is complete does not make the design rights-based. The analysis should shape the design from the beginning.', B: 'Correct. In Module 3, analysis informs the objective, activities, intervention logic, indicators, review, final snapshot and preparation for implementation.', C: 'Not yet. Attendance alone does not demonstrate meaningful influence, inclusion, accountability or response.' }; const isCorrect = answer === 'B'; setCorrect(isCorrect); setFeedback(messages[answer]); save({ reviewed, answer, correct: isCorrect, status: isCorrect ? 'completed' : 'in_progress' }); };
   const allReviewed = approvedAreaIds.every((id) => reviewed.includes(id));
-  const continueToCheck = () => { setActive(null); requestAnimationFrame(() => checkHeadingRef.current?.focus()); };
+  const iconPaths = [
+    <><circle cx="25" cy="32" r="18" opacity=".16"/><path d="M8 32h34M25 14c6 6 9 12 9 18s-3 12-9 18c-6-6-9-12-9-18s3-12 9-18Z" fill="none" stroke="currentColor" strokeWidth="3.5"/><path d="M39 12h16v22H39zM43 19h8M43 25h6" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinejoin="round"/></>,
+    <><circle cx="22" cy="23" r="7"/><circle cx="42" cy="23" r="7"/><path d="M9 47c1-9 6-14 13-14s12 5 13 14M32 47c1-9 5-14 10-14 7 0 12 5 13 14" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/><path d="M29 10v44" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="4 4"/></>,
+    <><circle cx="19" cy="19" r="7"/><circle cx="46" cy="18" r="6"/><circle cx="33" cy="43" r="8"/><path d="M24 23l6 13m12-13-6 13M26 45H13m38 0H40" fill="none" stroke="currentColor" strokeWidth="4"/></>,
+    <><path d="M32 8l20 8v14c0 13-8 21-20 26C20 51 12 43 12 30V16z" opacity=".16"/><path d="M21 32l7 7 15-17" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/></>,
+    <><path d="M12 13h33v39H12z" opacity=".16"/><path d="M20 23h18M20 32h13M20 41h20M43 13l9 9-19 19-10 2 2-10z" fill="none" stroke="currentColor" strokeWidth="4" strokeLinejoin="round"/><path d="M44 44h11" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></>,
+    <><path d="M17 12h30v42H17z" opacity=".16"/><path d="M25 12V8h14v4M24 24h16M24 33h16M24 42h9m7 1 4 4 8-10" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></>,
+  ];
 
   return (
-    <main className="m3-screen m3-objectives-screen" aria-labelledby={titleId}>
-      <article className="m3-orientation-shell">
-        <header><p className="m3-context-label">{screen.eyebrow}</p><h1 id={titleId}>{screen.title}</h1><p className="m3-supporting-line">The module follows a connected process from situation analysis to project-design improvement and preparation for implementation.</p><p>By the end of this module, you will be able to apply HRBA to the analysis and design of a CSO project.</p><p>You will work through six connected learning areas. Each area produces an output that will be used in later screens and included in the final HRBA Project Design Improvement Snapshot.</p><p>Select each card to review the learning area, the task, the output, and how it will be used later.</p></header>
-        <p className="m3-reviewed-count" aria-live="polite"><strong>{reviewed.length} of 6</strong> learning areas reviewed</p>
-        {active === null ? <section className="m3-learning-area-grid" aria-label="Module 3 learning areas">{module3ObjectiveAreas.map((area,index) => { const isReviewed = reviewed.includes(area.id); return <article className={`m3-learning-area-card ${isReviewed ? 'is-reviewed' : ''}`} key={area.id}><span className="m3-learning-area-number">{index + 1}</span><img src={`${module3OrientationAssets.objectiveBase}/${area.image}`} alt={area.alt} /><h2>{area.title}</h2><p>{area.action}</p><button ref={(node) => { cardRefs.current[index] = node; }} type="button" className="m3-secondary-button" onClick={() => openArea(index)}>{isReviewed ? `Review ${area.title}` : `Open ${area.title}`}</button><span className="m3-reviewed-label">{isReviewed ? 'Reviewed ✓' : 'Not yet reviewed'}</span></article>; })}</section> : (() => { const area = module3ObjectiveAreas[active]; return <section className="m3-learning-detail" aria-labelledby={`${area.id}-heading`}><p className="m3-card-kicker">Learning area {active + 1} of 6</p><h2 id={`${area.id}-heading`} ref={detailHeadingRef} tabIndex={-1}>{area.title}</h2><img src={`${module3OrientationAssets.objectiveBase}/${area.image}`} alt={area.alt} /><h3>What you will learn</h3><p>{area.learn}</p><h3>What you will do</h3><p>{area.do}</p><h3>What you will produce</h3><ul>{area.produce.map(item => <li key={item}>{item}</li>)}</ul><h3>How you will use it later</h3><p>{area.later}</p><h3>Context note</h3><p>{area.context}</p><div className="m3-detail-navigation"><button type="button" className="m3-secondary-button" disabled={active === 0} onClick={() => openArea(active - 1)}>Previous learning area</button><button type="button" className="m3-secondary-button" disabled={active === 5} onClick={() => openArea(active + 1)}>Next learning area</button><button type="button" className="m3-secondary-button" onClick={closeArea}>Back to learning areas</button>{allReviewed && active === 5 && <button type="button" className="m3-primary-button" onClick={continueToCheck}>Continue to the knowledge check</button>}</div></section>; })()}
-
-        {active === null && <><aside className="m3-host-callout" aria-label="Martha and Dawit"><p><strong>Martha:</strong> The six learning areas are connected. Each one prepares information or decisions that you will use later.</p><p><strong>Dawit:</strong> For example, a barrier identified during the context analysis should later influence the responsible actors, the activity package, the participation method, and the indicators.</p><p><strong>Martha:</strong> Keep the pathway in mind as you work. The purpose is to bring the findings together into one practical project-design output.</p></aside>
-        {allReviewed && <section className="m3-applied-check"><h2 ref={checkHeadingRef} tabIndex={-1}>Check the connected process</h2><p>Read the situation and select the response that best follows the Module 3 process.</p><p><strong>Situation:</strong> During the context scan, a CSO finds that people living in remote kebeles often receive information late and have limited opportunity to influence project priorities.</p><fieldset><legend>How should this finding be used in the later project-design process?</legend>{[['A','Keep it only as background information because the project activities have already been planned.'],['B','Add more community meetings without checking who can access them, who can influence decisions, or how feedback will receive a response.'],['C','Connect the finding to relevant standards and responsibilities, identify the affected rights-holder groups and barriers, clarify responsible actors, design accessible information and participation arrangements, and reflect the changes in activities and indicators.'],['D','Ask the CSO to take permanent responsibility for public information and participation because the affected kebeles are remote.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s2-check" checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); setCorrect(false); }} /> <span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-secondary-button" disabled={!answer || correct} onClick={check}>Submit answer</button>{feedback && <div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} role="status">{feedback}</div>}</section>}
-        <section className="m3-guide-download"><h2>Module 3 orientation guide</h2><p>This short guide summarizes the HRBA project-design process, the six learning areas, the products you will develop, safe-use guidance, and selected resources for further reading.</p><a className="m3-secondary-button" href={module3OrientationAssets.guide} download>Download Module 3 orientation guide (PDF)</a></section>
-        <div className="m3-roadmap-actions"><PrimaryButton disabled={!allReviewed || !correct} onClick={() => onComplete()}>Start the first design lesson</PrimaryButton></div></>}
+    <main className="m3-screen m3-objectives-screen m3-flip-screen" aria-labelledby={titleId}>
+      <article className="m3-flip-canvas">
+        {active === null ? <div className="m3-flip-landing">
+          <header className="m3-flip-header"><p className="m3-context-label">MODULE 3 | LEARNING OBJECTIVES</p><h1 id={titleId}>Module 3 Learning Objectives</h1><p>Explore the six connected learning areas. Each one shows what you will practise, the output you will produce, and how that output supports the next project-design stage.</p><p className="m3-flip-method">Review <span>→</span> Practise with Jiru Amba <span>→</span> Generate <span>→</span> Interpret <span>→</span> Carry forward</p><p className="m3-flip-instruction">Open all six objective cards before completing the understanding check.</p><div className="m3-flip-status" role="status" aria-live="polite">{reviewed.length} of 6 objectives explored</div></header>
+          <section className="m3-flip-grid" aria-label="Module 3 learning objectives">{module3ObjectiveAreas.map((area,index) => { const isReviewed = reviewed.includes(area.id); return <button ref={(node) => { cardRefs.current[index] = node; }} type="button" className={`m3-flip-card ${isReviewed ? 'is-explored' : ''}`} key={area.id} aria-label={`Objective ${index + 1} of 6: ${area.title}`} onClick={() => openArea(index)}><span className="m3-flip-card-top"><span className="m3-flip-number">{index + 1}</span><span className="m3-flip-explored">{isReviewed ? '✓ Explored' : 'Open'}</span></span><span className="m3-flip-visual"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">{iconPaths[index]}</svg></span><span className="m3-flip-card-copy"><strong>{area.title}</strong><span>{area.prompt}</span><em>{isReviewed ? 'Review objective' : 'Explore objective'} <span aria-hidden="true">→</span></em></span></button>; })}</section>
+          {allReviewed && <section className="m3-flip-check" aria-labelledby="m3-s2-check-heading"><h2 id="m3-s2-check-heading" ref={checkHeadingRef} tabIndex={-1}>Check your understanding</h2><fieldset><legend>Which statement best describes the HRBA project-design process used in Module 3?</legend>{[['A','The project team selects the main activities first and adds human rights references after the project design is complete.'],['B','The project team analyzes context, standards, rights-holders, duty-bearers, barriers, power, causes, capacity, inclusion, participation, accountability and risk, and then uses the findings to improve the project design and prepare for implementation.'],['C','The project team invites different groups to meetings and treats their attendance as sufficient evidence that the project design is rights-based.']].map(([id,text]) => <label className="m3-check-option" key={id}><input type="radio" name="m3-s2-check" value={id} checked={answer === id} disabled={correct} onChange={() => { setAnswer(id); setFeedback(''); }} /><span><strong>{id}.</strong> {text}</span></label>)}</fieldset><button type="button" className="m3-primary-button" disabled={!answer || correct} onClick={check}>Check answer</button><div className={`m3-check-feedback ${correct ? 'is-correct' : ''}`} aria-live="polite">{feedback}</div></section>}
+          <footer className="m3-flip-footer"><p>{!allReviewed ? 'Explore all six objectives to unlock the understanding check.' : !correct ? 'Complete the understanding check to continue.' : 'All six objectives explored and understanding check complete.'}</p><PrimaryButton disabled={!allReviewed || !correct} onClick={() => onComplete()}>{screen.continueLabel}</PrimaryButton></footer>
+        </div> : (() => { const area = module3ObjectiveAreas[active]; return <div className={`m3-flip-detail-view objective-${active + 1}`}><nav className="m3-flip-rail" aria-label="Objective navigation">{module3ObjectiveAreas.map((item,index) => { const visited = reviewed.includes(item.id); return <button type="button" key={item.id} className={`${index === active ? 'is-active' : ''} ${visited ? 'is-explored' : ''}`} aria-current={index === active ? 'step' : undefined} onClick={() => openArea(index)}><span>{index + 1}</span><span>{item.title}<small>{visited ? 'Explored' : 'Not explored'}</small></span></button>; })}</nav><article className="m3-flip-detail" aria-labelledby={`${area.id}-heading`} aria-live="polite"><div className="m3-flip-detail-art"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">{iconPaths[active]}</svg><span>{active + 1}</span></div><div className="m3-flip-detail-copy"><p className="m3-context-label">OBJECTIVE {active + 1} OF 6</p><h2 id={`${area.id}-heading`} ref={detailHeadingRef} tabIndex={-1}>{area.title}</h2><p className="m3-flip-lead">{area.lead}</p><h3>What you will do</h3><p>{area.do}</p><h3>What you will produce</h3><ul>{area.produce.map(item => <li key={item}>{item}</li>)}</ul><h3>How this carries forward</h3><p>{area.later}</p><aside className="m3-flip-safe"><strong>Practice safely</strong><span>Practise first with the fictional Jiru Amba case. In later own-context reflection, use only generalized, non-identifying information.</span></aside><div className="m3-flip-detail-actions"><button type="button" className="m3-primary-button" onClick={() => openArea((active + 1) % module3ObjectiveAreas.length)}>Next objective <span aria-hidden="true">→</span></button><button type="button" className="m3-secondary-button" onClick={closeArea}>Back to all objectives</button></div></div></article></div>; })()}
       </article>
     </main>
   );
 }
+/* eslint-enable react-hooks/refs */
 
 function TextScaffold({
   screen,
@@ -7639,7 +8445,7 @@ function CaseReaderScaffold({
   );
 }
 
-function CaseIntroductionScreen({
+export function CaseIntroductionScreen({
   screen,
   onComplete,
 }: {
@@ -7708,7 +8514,7 @@ function CaseIntroductionScreen({
   );
 }
 
-function SnapshotPreviewScreen({
+export function SnapshotPreviewScreen({
   screen,
   onComplete,
 }: {
@@ -7801,42 +8607,200 @@ function SnapshotPreviewScreen({
   );
 }
 
+type ContextSnapshotStatus = 'empty' | 'partial' | 'current' | 'stale';
+
+type ContextSnapshotBand = {
+  id: 'groups' | 'barriers' | 'evidence' | 'implications';
+  title: string;
+  items: string[];
+  emptyGuidance: string;
+};
+
+type ContextSnapshotViewModel = {
+  status: ContextSnapshotStatus;
+  statusLabel: string;
+  statusMessage: string;
+  meaning: string;
+  bands: ContextSnapshotBand[];
+  contextSummary: string;
+  carryForwardNote: string;
+  orderingNote: string;
+};
+
+function buildContextSnapshotViewModel({
+  status,
+  affectedGroups,
+  barriers,
+  evidence,
+  designImplications,
+  contextSummary,
+  carryForwardNote,
+  orderingNote,
+}: {
+  status: ContextSnapshotStatus;
+  affectedGroups: string[];
+  barriers: string[];
+  evidence: string[];
+  designImplications: string[];
+  contextSummary: string;
+  carryForwardNote: string;
+  orderingNote: string;
+}): ContextSnapshotViewModel {
+  const statusCopy: Record<ContextSnapshotStatus, { label: string; message: string }> = {
+    empty: {
+      label: 'Snapshot not started',
+      message: 'Select context signals to see how affected groups, possible barriers, safe evidence, and design implications connect.',
+    },
+    partial: {
+      label: 'Snapshot in progress',
+      message: 'This preview reflects your current selections. Generate the scan when the required signal types are represented.',
+    },
+    current: {
+      label: 'Generated snapshot',
+      message: 'This snapshot reflects the current generated scan and is ready for review.',
+    },
+    stale: {
+      label: 'Snapshot needs update',
+      message: 'Your selections changed after generation. Regenerate the scan before saving so the output matches your choices.',
+    },
+  };
+
+  return {
+    status,
+    statusLabel: statusCopy[status].label,
+    statusMessage: statusCopy[status].message,
+    meaning: 'Read from left to right: the selected context signals identify who may be affected differently, which barriers need testing, what evidence can be checked safely, and what the project design may need to change.',
+    bands: [
+      { id: 'groups', title: 'Affected groups', items: affectedGroups, emptyGuidance: 'No affected-group signals selected yet.' },
+      { id: 'barriers', title: 'Possible barriers to test', items: barriers, emptyGuidance: 'No possible barriers identified yet.' },
+      { id: 'evidence', title: 'Safe evidence to verify', items: evidence, emptyGuidance: 'No safe evidence needs identified yet.' },
+      { id: 'implications', title: 'Design implications', items: designImplications, emptyGuidance: 'Generate the scan to see a design implication.' },
+    ],
+    contextSummary,
+    carryForwardNote,
+    orderingNote,
+  };
+}
+
+function ContextInequalitySnapshot({
+  viewModel,
+  validationMessage,
+}: {
+  viewModel: ContextSnapshotViewModel;
+  validationMessage?: string;
+}) {
+  const displayedStatusMessage = validationMessage || viewModel.statusMessage;
+  return (
+    <section className={`m3-context-snapshot is-${viewModel.status}`} aria-labelledby="m3-context-snapshot-title">
+      <header className="m3-context-snapshot-header">
+        <div>
+          <p className="m3-context-snapshot-eyebrow">READ-ONLY VISUAL SUMMARY</p>
+          <h3 id="m3-context-snapshot-title">Context and Inequality Snapshot</h3>
+        </div>
+        <span className="m3-context-snapshot-status">{viewModel.statusLabel}</span>
+      </header>
+      <p className="m3-context-snapshot-status-message" aria-live="polite">
+        {displayedStatusMessage}
+      </p>
+      <p className="m3-context-snapshot-meaning"><strong>What this shows:</strong> {viewModel.meaning}</p>
+      <ol className="m3-context-snapshot-bands" aria-label="Context and inequality relationship summary">
+        {viewModel.bands.map((band, index) => (
+          <li key={band.id} className={`m3-context-snapshot-band is-${band.id}`}>
+            <div className="m3-context-snapshot-band-heading">
+              <span aria-hidden="true">{index + 1}</span>
+              <h4>{band.title} ({band.items.length} {band.items.length === 1 ? 'item' : 'items'})</h4>
+            </div>
+            {band.items.length > 0 ? (
+              <ul>{band.items.map((item) => <li key={item}>{item}</li>)}</ul>
+            ) : (
+              <p className="m3-context-snapshot-empty">{band.emptyGuidance}</p>
+            )}
+            {index < viewModel.bands.length - 1 && <span className="m3-context-snapshot-connector" aria-hidden="true">informs</span>}
+          </li>
+        ))}
+      </ol>
+      <section className="m3-context-snapshot-text" aria-labelledby="m3-context-snapshot-text-title">
+        <h4 id="m3-context-snapshot-text-title">Complete text version</h4>
+        <p className="m3-context-snapshot-text-status">
+          <strong>Output status:</strong> {viewModel.statusLabel}. {displayedStatusMessage}
+        </p>
+        <div className="m3-context-snapshot-text-grid">
+          {viewModel.bands.map((band, index) => (
+            <article key={band.id}>
+              <h5>{index + 1}. {band.title} ({band.items.length} {band.items.length === 1 ? 'item' : 'items'})</h5>
+              {band.items.length > 0 ? <ul>{band.items.map((item) => <li key={item}>{item}</li>)}</ul> : <p>{band.emptyGuidance}</p>}
+            </article>
+          ))}
+        </div>
+        {viewModel.contextSummary && <p className="m3-context-snapshot-summary"><strong>Context summary:</strong> {viewModel.contextSummary}</p>}
+        {viewModel.carryForwardNote && <p className="m3-context-snapshot-carry"><strong>Carry forward:</strong> {viewModel.carryForwardNote}</p>}
+      </section>
+      <p className="m3-context-snapshot-ordering">{viewModel.orderingNote}</p>
+    </section>
+  );
+}
+
 function ContextInequalityScanScreen({
   screen,
+  state,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   type ContextScanStageId = 1 | 2 | 3 | 4 | 5 | 6;
   type ContextScanFilter = 'influence' | 'access' | 'evidence' | 'accountability' | 'all';
 
-  const [selected, setSelected] = useState<string[]>([]);
-  const [generatedSelected, setGeneratedSelected] = useState<string[]>([]);
-  const [submitted, setSubmitted] = useState(false);
+  const savedScreen5 = getPracticeState(state, screen.id);
+  const savedSelectedContextSignals = Array.isArray(savedScreen5.selectedContextSignals)
+    ? Array.from(new Set((savedScreen5.selectedContextSignals as unknown[])
+      .filter((value): value is string => typeof value === 'string' && module3ContextChoices.some((choice) => choice.id === value))))
+    : [];
+  const hasSavedScan = savedScreen5.submitted === true
+    && savedSelectedContextSignals.length >= 3
+    && Boolean(savedScreen5.contextInequalityScan && typeof savedScreen5.contextInequalityScan === 'object');
+  const savedContextScan = hasSavedScan
+    ? savedScreen5.contextInequalityScan as Record<string, unknown>
+    : null;
+  const savedOwnScan = hasSavedScan
+    && savedContextScan?.optionalOwnCsoScan
+    && typeof savedContextScan.optionalOwnCsoScan === 'object'
+      ? savedContextScan.optionalOwnCsoScan as Record<string, unknown>
+      : null;
+
+  const [selected, setSelected] = useState<string[]>(savedSelectedContextSignals);
+  const [generatedSelected, setGeneratedSelected] = useState<string[]>(hasSavedScan ? savedSelectedContextSignals : []);
+  const [submitted, setSubmitted] = useState(hasSavedScan);
   const [validationMessage, setValidationMessage] = useState('');
-  const [activeStage, setActiveStage] = useState<ContextScanStageId>(1);
-  const [understandComplete, setUnderstandComplete] = useState(false);
+  const [activeStage, setActiveStage] = useState<ContextScanStageId>(hasSavedScan ? 5 : 1);
+  const [understandComplete, setUnderstandComplete] = useState(hasSavedScan);
   const [contextTranscriptOpen, setContextTranscriptOpen] = useState(false);
   const [contextTranscript, setContextTranscript] = useState('');
-  const [exampleComplete, setExampleComplete] = useState(false);
+  const [exampleComplete, setExampleComplete] = useState(hasSavedScan);
   const [activeFilter, setActiveFilter] = useState<ContextScanFilter>('influence');
   const [expandedSignalIds, setExpandedSignalIds] = useState<string[]>([]);
-  const [checkMatches, setCheckMatches] = useState<Record<string, string>>({});
-  const [bestQuestionAnswer, setBestQuestionAnswer] = useState('');
-  const [unsafeEvidenceAnswer, setUnsafeEvidenceAnswer] = useState('');
+  const [checkMatches, setCheckMatches] = useState<Record<string, string>>(hasSavedScan ? {
+    visible: 'What can be seen first',
+    affected: 'Who may experience the issue differently',
+    barrier: 'What blocks access, participation, benefit, influence, or follow-up',
+    assumption: 'What the project believes but has not verified',
+    safe: 'What can be checked without exposing people',
+  } : {});
+  const [bestQuestionAnswer, setBestQuestionAnswer] = useState(hasSavedScan ? 'influence' : '');
+  const [unsafeEvidenceAnswer, setUnsafeEvidenceAnswer] = useState(hasSavedScan ? 'names' : '');
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [copyStatus, setCopyStatus] = useState('');
   const [ownScan, setOwnScan] = useState({
-    projectIdea: '',
-    visible: '',
-    affectedDifferently: '',
-    barriers: '',
-    assumptions: '',
-    safeEvidence: '',
-    designChange: '',
+    projectIdea: typeof savedOwnScan?.projectIdea === 'string' ? savedOwnScan.projectIdea : '',
+    visible: typeof savedOwnScan?.visible === 'string' ? savedOwnScan.visible : '',
+    affectedDifferently: typeof savedOwnScan?.affectedDifferently === 'string' ? savedOwnScan.affectedDifferently : '',
+    barriers: typeof savedOwnScan?.barriers === 'string' ? savedOwnScan.barriers : '',
+    assumptions: typeof savedOwnScan?.assumptions === 'string' ? savedOwnScan.assumptions : '',
+    safeEvidence: typeof savedOwnScan?.safeEvidence === 'string' ? savedOwnScan.safeEvidence : '',
+    designChange: typeof savedOwnScan?.designChange === 'string' ? savedOwnScan.designChange : '',
   });
-  const [ownSubmitted, setOwnSubmitted] = useState(false);
+  const [ownSubmitted, setOwnSubmitted] = useState(Boolean(savedOwnScan));
   const [ownValidationMessage, setOwnValidationMessage] = useState('');
   const outputRef = useRef<HTMLElement>(null);
   const titleId = `${screen.id}-title`;
@@ -7892,6 +8856,70 @@ function ContextInequalityScanScreen({
     `${module3ContextCarryForward[0].text} Carry this scan into the next tools. The standards map will help clarify which rights, policies, and public responsibilities are connected to the issue. The rights-holder and barrier map will help identify the affected groups more precisely. Later, the design repair screens will use these findings to improve objectives, activities, accountability, risk, and indicators.`;
   const contextScanSummary =
     'You completed a first HRBA context and inequality scan. You looked beyond the visible plan and identified who may be affected differently, what barriers may exist, what assumptions should be verified safely, and what this may mean for the design. You will use this scan in the next step to connect the issue to relevant rights, standards, policies, and public responsibilities.';
+  const readSavedSnapshotItems = (field: string) => {
+    const value = savedContextScan?.[field];
+    return Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+      : [];
+  };
+  const useSavedSnapshotOrdering = Boolean(
+    hasSavedScan && generatedSignature === savedSelectedContextSignals.join('|'),
+  );
+  const orderedSnapshotChoices = outputSelection
+    .map((choiceId) => module3ContextChoices.find((choice) => choice.id === choiceId))
+    .filter((choice): choice is (typeof module3ContextChoices)[number] => Boolean(choice));
+  const orderedSnapshotGroups = Array.from(new Set(orderedSnapshotChoices.flatMap((choice) => choice.affectedGroups)));
+  const orderedSnapshotBarriers = Array.from(new Set(orderedSnapshotChoices.flatMap((choice) => choice.barriers)));
+  const orderedSnapshotEvidence = Array.from(new Set([
+    ...orderedSnapshotChoices.flatMap((choice) => choice.evidence),
+    ...(orderedSnapshotChoices.length > 0 ? ['No names, complaint details, exact sensitive locations, survivor stories, political accusations, or identifiable personal information'] : []),
+  ]));
+  const snapshotStatus: ContextSnapshotStatus = outputIsStale
+    ? 'stale'
+    : submitted
+      ? 'current'
+      : selected.length > 0
+        ? 'partial'
+        : 'empty';
+  const snapshotAffectedGroups = useSavedSnapshotOrdering
+    ? readSavedSnapshotItems('selectedJiruAmbaAffectedGroups')
+    : submitted
+      ? selectedAffectedGroups
+      : orderedSnapshotGroups;
+  const snapshotBarriers = useSavedSnapshotOrdering
+    ? readSavedSnapshotItems('selectedBarriers')
+    : submitted
+      ? selectedBarriers
+      : orderedSnapshotBarriers;
+  const snapshotEvidence = useSavedSnapshotOrdering
+    ? readSavedSnapshotItems('safeEvidenceToVerify')
+    : submitted
+      ? selectedEvidence
+      : orderedSnapshotEvidence;
+  const snapshotDesignImplication = useSavedSnapshotOrdering
+    && typeof savedContextScan?.generatedDesignImplications === 'string'
+    && savedContextScan.generatedDesignImplications.trim()
+      ? savedContextScan.generatedDesignImplications
+      : designImplication;
+  const snapshotContextSummary = useSavedSnapshotOrdering
+    && typeof savedScreen5.contextScanSummary === 'string'
+    && savedScreen5.contextScanSummary.trim()
+      ? savedScreen5.contextScanSummary
+      : contextScanSummary;
+  const contextSnapshotViewModel = buildContextSnapshotViewModel({
+    status: snapshotStatus,
+    affectedGroups: snapshotAffectedGroups,
+    barriers: snapshotBarriers,
+    evidence: snapshotEvidence,
+    designImplications: submitted ? [snapshotDesignImplication] : [],
+    contextSummary: submitted ? snapshotContextSummary : '',
+    carryForwardNote: submitted ? carryForwardText : '',
+    orderingNote: useSavedSnapshotOrdering
+      ? 'Ordering source for all four bands: saved generated order.'
+      : submitted
+        ? 'Ordering source for all four bands: the current generated output order, which follows the existing Screen 5 option order.'
+        : 'Ordering source for all four bands: stable learner-selection order; the original Screen 5 option order is the fallback when no selection sequence is available.',
+  });
   const ownScanText = Object.values(ownScan).join(' ');
   const unsafeOwnDetail = /\b[A-Z][a-z]+ [A-Z][a-z]+\b|\b\d{3,}\b|complaint|survivor|abuse|assault|rape|exact location|kebele \d+|woreda office/i.test(ownScanText);
   const matchPrompts = [
@@ -8113,7 +9141,7 @@ function ContextInequalityScanScreen({
   const safeEvidenceWarning = (
     <div className="m3-context-scan-safe-inline" role="note">
       <strong>Keep the scan safe.</strong>
-      <span>Do not enter names, exact locations, complaints, survivor stories, political accusations, disability or medical details, or identifiable personal information.</span>
+      <span>Do not enter names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other sensitive identifying information.</span>
     </div>
   );
 
@@ -8197,10 +9225,10 @@ function ContextInequalityScanScreen({
             </div>
             <section className="m3-context-method-card" aria-labelledby={`${screen.id}-questions-title`}>
               <div>
-                <h2 id={`${screen.id}-questions-title`}>Five questions for the scan</h2>
+                <h2 id={`${screen.id}-questions-title`}>Four practical questions for the scan</h2>
                 <p>Use these questions to slow down the design process before selecting activities.</p>
               </div>
-              <div className="m3-context-method-strip" aria-label="Five-step context scan method">
+              <div className="m3-context-method-strip" aria-label="Four-question context scan method">
                 {module3ContextEvidence.map((layer, index) => <article key={layer.label}><span aria-hidden="true">{index + 1}</span><h3>{layer.label.replace(/^\d+\.\s*/, '')}</h3><p>{layer.items[0]}</p></article>)}
               </div>
             </section>
@@ -8397,6 +9425,10 @@ function ContextInequalityScanScreen({
                   );
                 })}
               </div>
+              <ContextInequalitySnapshot
+                viewModel={contextSnapshotViewModel}
+                validationMessage={validationMessage}
+              />
             </div>
             {renderScanPanel()}
             <div className="m3-context-mobile-drawer">{renderScanPanel()}</div>
@@ -8420,13 +9452,16 @@ function ContextInequalityScanScreen({
               </div>
               <strong>{outputIsStale ? 'Scan needs update' : 'Scan generated'}</strong>
             </div>
+            <ContextInequalitySnapshot viewModel={contextSnapshotViewModel} />
             <div className="m3-context-review-grid">
-              <article><h3>1. What the plan already shows</h3><p>{selectedVisibleEvidence.length > 0 ? selectedVisibleEvidence.join(' ') : 'The plan includes activities, budget lines, and indicators, but it does not yet show whether lower-influence groups shaped priorities.'}</p></article>
-              <article><h3>2. Who may be affected differently</h3><p>{selectedAffectedGroups.length > 0 ? selectedAffectedGroups.join(', ') : 'Women, persons with disabilities, youth, low-income households, informal workers, and remote residents may face different access, information, timing, livelihood, influence, or feedback barriers.'}</p><p className="m3-context-support-note">Women — in the context of household water responsibilities and water-service decisions.</p></article>
-              <article><h3>3. Barriers to test</h3><ul>{(selectedBarriers.length > 0 ? selectedBarriers : ['Unequal influence', 'Time and care-work barriers', 'Livelihood and information barriers', 'Weak feedback response', 'Safety and confidentiality concerns']).map((item) => <li key={item}>{item}</li>)}</ul></article>
-              <article><h3>4. Evidence to verify safely</h3><ul>{selectedEvidence.map((item) => <li key={item}>{item}</li>)}</ul></article>
-              <article><h3>5. Design implications</h3><p>{designImplication}</p></article>
-              <article><h3>6. What to carry forward</h3><p>{carryForwardText}</p></article>
+              <article>
+                <h3>Existing scan detail: Observation or case signal</h3>
+                <p>{selectedVisibleEvidence.join(' ') || 'No visible-evidence detail is included in this generated scan.'}</p>
+              </article>
+              <article>
+                <h3>Interpretation safeguard</h3>
+                <p className="m3-context-support-note">The possible barriers and implications are interpretations of the selected signals, not established facts.</p>
+              </article>
             </div>
             <div className="m3-context-quality-strip" aria-label="Scan quality check">
               <h3>Scan quality check</h3>
@@ -8531,8 +9566,25 @@ function PolicyStandardsMapScreen({
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selectedAnchorIds, setSelectedAnchorIds] = useState<PolicyAnchorId[]>([]);
-  const [signalReferenceMatches, setSignalReferenceMatches] = useState<Record<JiruAmbaSignalId, PolicyAnchorId | ''>>({
+  const savedScreen6 = getPracticeState(state, screen.id);
+  const validSavedAnchorIds = Array.isArray(savedScreen6.selectedAnchorIds)
+    ? Array.from(new Set((savedScreen6.selectedAnchorIds as unknown[])
+      .filter((value): value is PolicyAnchorId => typeof value === 'string' && policyAnchors.some((anchor) => anchor.id === value))))
+    : [];
+  const validSavedMatches = Array.isArray(savedScreen6.signalReferenceMatches)
+    ? (savedScreen6.signalReferenceMatches as unknown[]).filter((value): value is SignalReferenceMatch => {
+      if (!value || typeof value !== 'object') return false;
+      const match = value as Record<string, unknown>;
+      return typeof match.signalId === 'string'
+        && screen6ContextSignalIds.includes(match.signalId as JiruAmbaSignalId)
+        && typeof match.anchorId === 'string'
+        && validSavedAnchorIds.includes(match.anchorId as PolicyAnchorId);
+    })
+    : [];
+  const savedMatchRecord = validSavedMatches.reduce<Record<JiruAmbaSignalId, PolicyAnchorId | ''>>((matches, match) => {
+    matches[match.signalId] = match.anchorId;
+    return matches;
+  }, {
     presence_without_influence: '',
     different_barriers_across_groups: '',
     disability_access_barriers: '',
@@ -8541,20 +9593,34 @@ function PolicyStandardsMapScreen({
     unclear_livelihood_pathway: '',
     service_improvement_uncertainty: '',
   });
-  const [submittedOutput, setSubmittedOutput] = useState<Record<string, unknown> | null>(null);
+  const hasSavedPolicyMap = savedScreen6.submitted === true
+    && validSavedAnchorIds.length >= 3
+    && validSavedMatches.length >= 3
+    && Array.isArray(savedScreen6.generatedMapRows)
+    && savedScreen6.generatedMapRows.length >= 3;
+  const savedPolicyMap = savedScreen6.policyStandardsMap && typeof savedScreen6.policyStandardsMap === 'object'
+    ? savedScreen6.policyStandardsMap as Record<string, unknown>
+    : null;
+  const savedOwnMap = savedPolicyMap?.ownCsoPracticeOutput && typeof savedPolicyMap.ownCsoPracticeOutput === 'object'
+    ? savedPolicyMap.ownCsoPracticeOutput as Record<string, unknown>
+    : null;
+
+  const [selectedAnchorIds, setSelectedAnchorIds] = useState<PolicyAnchorId[]>(validSavedAnchorIds);
+  const [signalReferenceMatches, setSignalReferenceMatches] = useState<Record<JiruAmbaSignalId, PolicyAnchorId | ''>>(savedMatchRecord);
+  const [submittedOutput, setSubmittedOutput] = useState<Record<string, unknown> | null>(hasSavedPolicyMap ? savedScreen6 : null);
   const [validationMessage, setValidationMessage] = useState('');
   const [ownMap, setOwnMap] = useState({
-    projectIssue: '',
-    contextSignal: '',
-    referenceSource: '',
-    designQuestion: '',
-    responsibilityQuestion: '',
-    designImplication: '',
-    safeSource: '',
+    projectIssue: typeof savedOwnMap?.projectIssue === 'string' ? savedOwnMap.projectIssue : '',
+    contextSignal: typeof savedOwnMap?.contextSignal === 'string' ? savedOwnMap.contextSignal : '',
+    referenceSource: typeof savedOwnMap?.referenceSource === 'string' ? savedOwnMap.referenceSource : '',
+    designQuestion: typeof savedOwnMap?.designQuestion === 'string' ? savedOwnMap.designQuestion : '',
+    responsibilityQuestion: typeof savedOwnMap?.responsibilityQuestion === 'string' ? savedOwnMap.responsibilityQuestion : '',
+    designImplication: typeof savedOwnMap?.designImplication === 'string' ? savedOwnMap.designImplication : '',
+    safeSource: typeof savedOwnMap?.safeSource === 'string' ? savedOwnMap.safeSource : '',
   });
-  const [ownSubmitted, setOwnSubmitted] = useState(false);
+  const [ownSubmitted, setOwnSubmitted] = useState(Boolean(savedOwnMap));
   const [ownValidationMessage, setOwnValidationMessage] = useState('');
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(hasSavedPolicyMap ? 4 : validSavedAnchorIds.length > 0 ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [activeReferenceFilter, setActiveReferenceFilter] = useState<PolicyAnchorCategory>('all');
   const outputRef = useRef<HTMLHeadingElement>(null);
@@ -8952,7 +10018,7 @@ function PolicyStandardsMapScreen({
 
             <section className="m3-policy-map-safe-note" aria-labelledby={`${screen.id}-safe`}>
               <h2 id={`${screen.id}-safe`}>Safe use of design lenses and sources to check</h2>
-              <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
+              <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other information that could identify people.</p>
             </section>
           </div>
           <div className="m3-guided-stage-actions">
@@ -9012,7 +10078,6 @@ function PolicyStandardsMapScreen({
                     </div>
                     <div className="m3-policy-map-anchor-copy">
                       <strong>{anchor.title}</strong>
-                      <span><strong>Sources to check:</strong> {compactPolicyMapLine(anchor.sourcesToCheck)}</span>
                       <span><strong>Use when:</strong> {compactPolicyMapLine(anchor.useWhen)}</span>
                     </div>
                     <div className="m3-policy-map-anchor-actions">
@@ -9091,7 +10156,7 @@ function PolicyStandardsMapScreen({
                           </option>
                         ))}
                       </select>
-                      <em>{selectedAnchor ? `${matchHint}: ${compactPolicyMapLine(selectedAnchor.designQuestion, 110)}` : `Hint: strongest match is ${getAnchorById(logic.strongest)?.title}.`}</em>
+                      <em>{selectedAnchor ? `${matchHint}: ${compactPolicyMapLine(selectedAnchor.designQuestion, 110)}` : 'Consider which reference helps clarify responsibility, inclusion, participation, accountability, access, or risk in this situation.'}</em>
                     </label>
                   );
                 })}
@@ -9142,16 +10207,13 @@ function PolicyStandardsMapScreen({
             <div className="m3-policy-map-output-grid">
               {generatedRows.map((row) => (
                 <article key={`${row.signalId}-${row.anchorId}`} className="m3-policy-map-output-row" data-testid="m3-s06-generated-map-row">
-                  <div>
-                    <span>1. Context signal</span>
+                  <div className="m3-policy-map-relationship-step is-context">
+                    <span className="m3-policy-map-step-label">1. Context signal</span>
                     <p>{row.signalLabel}</p>
                   </div>
-                  <div>
-                    <span>2. Design lens</span>
-                    <p>{row.sourceLayer}</p>
-                  </div>
-                  <div>
-                    <span>3. Policy/standards sources to check</span>
+                  <div className="m3-policy-map-relationship-step is-reference">
+                    <span className="m3-policy-map-step-label">2. Reference and design lens</span>
+                    <p className="m3-policy-map-source-layer"><strong>{row.sourceLayer}</strong></p>
                     <p>{row.sourcesToCheck}</p>
                     <span className="m3-policy-map-output-references" aria-label={`Related references for ${row.anchorTitle}`}>
                       {row.relatedReferences.map((reference) => (
@@ -9159,17 +10221,22 @@ function PolicyStandardsMapScreen({
                       ))}
                     </span>
                   </div>
-                  <div>
-                    <span>4. Design question</span>
-                    <p>{row.designQuestion}</p>
-                  </div>
-                  <div>
-                    <span>5. Responsibility question</span>
-                    <p>{row.responsibilityQuestion}</p>
-                  </div>
-                  <div>
-                    <span>6. What this means for project design</span>
-                    <p>{row.designImplication}</p>
+                  <div className="m3-policy-map-relationship-step is-design-use">
+                    <span className="m3-policy-map-step-label">3. Practical design use</span>
+                    <dl className="m3-policy-map-design-use-list">
+                      <div>
+                        <dt>Design question</dt>
+                        <dd>{row.designQuestion}</dd>
+                      </div>
+                      <div>
+                        <dt>Responsibility question</dt>
+                        <dd>{row.responsibilityQuestion}</dd>
+                      </div>
+                      <div>
+                        <dt>Design implication</dt>
+                        <dd>{row.designImplication}</dd>
+                      </div>
+                    </dl>
                   </div>
                 </article>
               ))}
@@ -9343,29 +10410,65 @@ function PolicyStandardsMapScreen({
 
 function RightsHolderBarrierMapScreen({
   screen,
+  state,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selectedGroupIds, setSelectedGroupIds] = useState<RightsHolderGroupId[]>([]);
-  const [customGroupLabel, setCustomGroupLabel] = useState('');
-  const [groupBarrierLinks, setGroupBarrierLinks] = useState<Record<RightsHolderGroupId, BarrierTagId[]>>(emptyBarrierMap);
-  const [submittedOutput, setSubmittedOutput] = useState<Screen7Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const savedScreen7 = getScreen7SavedOutput(state);
+  const validSavedGroupIds = savedScreen7
+    ? Array.from(new Set(savedScreen7.selectedGroupIds.filter((groupId) => rightsHolderGroups.some((group) => group.id === groupId))))
+    : [];
+  const savedCustomGroupLabel = savedScreen7?.customGroupLabel || '';
+  const savedCustomValidation = validateCustomGroupLabel(savedCustomGroupLabel);
+  const validSavedSpecificGroupIds = getSpecificGroupIds(
+    orderedRightsHolderGroupIds(validSavedGroupIds),
+    savedCustomValidation.isValid,
+  );
+  const validBarrierIds = new Set(barrierTags.map((barrier) => barrier.id));
+  const restoredBarrierLinks = savedScreen7?.groupBarrierLinks.reduce<Record<RightsHolderGroupId, BarrierTagId[]>>((links, link) => {
+    if (!validSavedSpecificGroupIds.includes(link.groupId)) return links;
+    links[link.groupId] = Array.from(new Set(link.barrierIds.filter((barrierId) => validBarrierIds.has(barrierId))));
+    return links;
+  }, { ...emptyBarrierMap }) || { ...emptyBarrierMap };
+  const savedOwnCsoOutput = savedScreen7?.ownCsoOutput || null;
+  const hasSavedRightsHolderMap = Boolean(
+    savedScreen7?.submitted
+    && validSavedSpecificGroupIds.length >= 2
+    && validSavedSpecificGroupIds.every((groupId) => restoredBarrierLinks[groupId].length > 0 && restoredBarrierLinks[groupId].length <= 3)
+    && savedScreen7.generatedMapRows.length >= 2,
+  );
+  const restoredSignature = hasSavedRightsHolderMap ? JSON.stringify({
+    selectedGroupIds: orderedRightsHolderGroupIds(validSavedGroupIds),
+    selectedSpecificGroupIds: validSavedSpecificGroupIds,
+    customGroupLabel: validSavedGroupIds.includes('custom_group') && savedCustomValidation.isValid ? savedCustomValidation.trimmed : undefined,
+    groupBarrierLinks: validSavedSpecificGroupIds.map((groupId) => ({
+      groupId,
+      barrierIds: restoredBarrierLinks[groupId],
+    })),
+    ownCsoOutput: savedOwnCsoOutput,
+  }) : null;
+
+  const [selectedGroupIds, setSelectedGroupIds] = useState<RightsHolderGroupId[]>(validSavedGroupIds);
+  const [customGroupLabel, setCustomGroupLabel] = useState(savedCustomGroupLabel);
+  const [groupBarrierLinks, setGroupBarrierLinks] = useState<Record<RightsHolderGroupId, BarrierTagId[]>>(restoredBarrierLinks);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen7Submission | null>(hasSavedRightsHolderMap ? savedScreen7 : null);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen7OwnCsoOutput>({
-    projectIdea: '',
-    group: '',
-    affectedBenefit: '',
-    priorityBarrier: '',
-    whatBarrierMayBlock: '',
-    designResponse: '',
-    actorQuestion: '',
+    projectIdea: savedOwnCsoOutput?.projectIdea || '',
+    group: savedOwnCsoOutput?.group || '',
+    affectedBenefit: savedOwnCsoOutput?.affectedBenefit || '',
+    priorityBarrier: savedOwnCsoOutput?.priorityBarrier || '',
+    whatBarrierMayBlock: savedOwnCsoOutput?.whatBarrierMayBlock || '',
+    designResponse: savedOwnCsoOutput?.designResponse || '',
+    actorQuestion: savedOwnCsoOutput?.actorQuestion || '',
   });
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen7OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen7OwnCsoOutput | null>(savedOwnCsoOutput);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(hasSavedRightsHolderMap ? 4 : validSavedGroupIds.length > 0 ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -9682,7 +10785,7 @@ function RightsHolderBarrierMapScreen({
 
           <section className="m3-rights-map-safe-note" aria-labelledby={`${screen.id}-safe`} data-testid="m3-s07-safety-note">
             <h2 id={`${screen.id}-safe`}>Safe evidence</h2>
-            <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, or information that could identify people.</p>
+            <p>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other information that could identify people.</p>
             <p><strong>Safe evidence prompt:</strong> What can be checked without exposing people?</p>
             <div className="m3-rights-map-safe-grid">
               <div>
@@ -9918,26 +11021,59 @@ function RightsHolderBarrierMapScreen({
               This map shows which rights-holder groups and barriers should shape the next design decisions. It is a learning output, not a full assessment.
             </p>
 
-            <section className="m3-rights-map-matrix" aria-labelledby={`${screen.id}-matrix`}>
-              <h3 id={`${screen.id}-matrix`}>Barrier pattern summary</h3>
-              <div className="m3-rights-map-matrix-table" role="table" aria-label="Barrier pattern summary">
-                <div role="row" className="m3-rights-map-matrix-row m3-rights-map-matrix-row--head">
-                  <span role="columnheader">Rights-holder group</span>
-                  {barrierCategoryOrder.map((category) => (
-                    <span key={category} role="columnheader">{barrierCategoryLabels[category]}</span>
-                  ))}
+            <section className="m3-rights-map-polished-matrix" aria-labelledby={`${screen.id}-matrix`}>
+              <div className="m3-rights-map-polished-matrix-header">
+                <div>
+                  <p className="m3-rights-map-output-kicker">GROUP-BY-GROUP ANALYSIS</p>
+                  <h3 id={`${screen.id}-matrix`}>Barrier pattern and design response</h3>
                 </div>
-                {generatedRows.map((row) => (
-                  <div key={row.groupId} role="row" className="m3-rights-map-matrix-row">
-                    <span role="rowheader">{row.groupLabel}</span>
+                <p>Each record keeps the written barrier category visible. “Not selected in this exercise” does not mean that no barrier exists.</p>
+              </div>
+              <div className="m3-rights-map-generated-card-grid">
+              {generatedRows.map((row) => (
+                <article key={row.groupId} className="m3-rights-map-generated-card" data-testid="m3-s07-generated-map-row">
+                  <header className="m3-rights-map-group-header">
+                    <span>Rights-holder group</span>
+                    <h4>{row.groupLabel}</h4>
+                    <p><strong>Affected benefit or opportunity:</strong> {row.affectedBenefit}</p>
+                  </header>
+                  <div className="m3-rights-map-category-grid" aria-label={`Barrier categories for ${row.groupLabel}`}>
                     {barrierCategoryOrder.map((category) => {
-                      const count = row.barrierIds.filter((barrierId) => getBarrierById(barrierId)?.category === category).length;
+                      const categoryBarriers = row.barrierIds
+                        .map((barrierId) => getBarrierById(barrierId))
+                        .filter((barrier): barrier is BarrierTag => Boolean(barrier && barrier.category === category));
                       return (
-                        <span key={category} role="cell">{count > 0 ? `Selected (${count})` : 'Not selected'}</span>
+                        <section key={category} className={`m3-rights-map-category is-${category}${categoryBarriers.length === 0 ? ' is-neutral' : ''}`}>
+                          <h5>{barrierCategoryLabels[category]}</h5>
+                          {categoryBarriers.length > 0 ? (
+                            <ul>
+                              {categoryBarriers.map((barrier) => <li key={barrier.id}>{barrier.label}</li>)}
+                            </ul>
+                          ) : <p>Not selected in this exercise</p>}
+                        </section>
                       );
                     })}
                   </div>
-                ))}
+                  <dl className="m3-rights-map-design-details">
+                    <div>
+                      <dt>What the barriers may block</dt>
+                      <dd>{row.whatBarrierMayBlock}</dd>
+                    </div>
+                    <div>
+                      <dt>Design question</dt>
+                      <dd>What should the project adjust so {row.groupLabel} can access, participate, influence, benefit, or receive follow-up?</dd>
+                    </div>
+                    <div className="is-response">
+                      <dt>Design response before finalizing</dt>
+                      <dd>{row.designResponse}</dd>
+                    </div>
+                    <div className="is-next-question">
+                      <dt>Next actor and responsibility question</dt>
+                      <dd>{row.screen8Question}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
               </div>
               {generatedRows.some((row) => generatedRows.some((other) => other.groupId !== row.groupId && other.barrierIds.some((id) => row.barrierIds.includes(id)))) && (
                 <p className="m3-rights-map-overlap-note">
@@ -9945,38 +11081,6 @@ function RightsHolderBarrierMapScreen({
                 </p>
               )}
             </section>
-
-            <div className="m3-rights-map-generated-card-grid">
-              {generatedRows.map((row) => (
-                <article key={row.groupId} className="m3-rights-map-generated-card" data-testid="m3-s07-generated-map-row">
-                  <h3>{row.groupLabel}</h3>
-                  <div>
-                    <span>Rights-holder group</span>
-                    <p>{row.groupLabel}</p>
-                  </div>
-                  <div>
-                    <span>Priority barriers</span>
-                    <p>{row.barrierLabels.join(', ')}</p>
-                  </div>
-                  <div>
-                    <span>What the barrier means for design</span>
-                    <p>{row.whatBarrierMayBlock}</p>
-                  </div>
-                  <div>
-                    <span>Design question</span>
-                    <p>What should the project adjust so {row.groupLabel} can access, participate, influence, benefit, or receive follow-up?</p>
-                  </div>
-                  <div>
-                    <span>What should change before finalizing the project</span>
-                    <p>{row.designResponse}</p>
-                  </div>
-                  <div>
-                    <span>Carry forward to duty-bearers and roles</span>
-                    <p>{row.screen8Question}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
 
 
             <section className="m3-rights-map-insight" aria-labelledby={`${screen.id}-insight`}>
@@ -10207,9 +11311,18 @@ function ResponsibilityMapScreen({
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   const barrierOptions = getScreen8BarrierOptions(state);
-  const [selectedBarrierIds, setSelectedBarrierIds] = useState<Screen8BarrierId[]>([]);
-  const [mappings, setMappings] = useState<Record<string, Screen8BarrierMapping>>({});
-  const [optionalReflection, setOptionalReflection] = useState('');
+  const savedOutput = getScreen8SavedOutput(state);
+  const restoredBarrierIds = (savedOutput?.mappedBarrierIds || []).filter((id): id is Screen8BarrierId =>
+    barrierOptions.some((barrier) => barrier.id === id),
+  ).slice(0, 2);
+  const restoredMappings = restoreScreen8Mappings(savedOutput);
+  const restoredSignature = savedOutput ? JSON.stringify({
+    selectedBarrierIds: restoredBarrierIds,
+    mappings: restoredBarrierIds.map((barrierId) => [barrierId, getScreen8Mapping(restoredMappings, barrierId)]),
+  }) : null;
+  const [selectedBarrierIds, setSelectedBarrierIds] = useState<Screen8BarrierId[]>(restoredBarrierIds);
+  const [mappings, setMappings] = useState<Record<string, Screen8BarrierMapping>>(restoredMappings);
+  const [optionalReflection, setOptionalReflection] = useState(savedOutput?.optionalReflection || '');
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen8OwnCsoOutput>({
     projectIssueOrBarrier: '',
     rightsHolderGroupAffected: '',
@@ -10220,11 +11333,11 @@ function ResponsibilityMapScreen({
     capacityGap: '',
     safeEngagementQuestion: '',
   });
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen8OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen8OwnCsoOutput | null>(savedOutput?.ownCsoOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen8Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [activeStage, setActiveStage] = useState(1);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen8Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredBarrierIds.length ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -10235,7 +11348,7 @@ function ResponsibilityMapScreen({
   const selectedMappings = selectedBarrierIds.map((barrierId) => getScreen8Mapping(mappings, barrierId));
   const allSelectedBarriersHavePublicResponsibility =
     selectedMappings.length > 0 && selectedMappings.every((mapping) => mapping.publicActorIds.length > 0);
-  const hasSupportingOrServiceActor = selectedMappings.some((mapping) =>
+  const allSelectedBarriersHaveSupportingActor = selectedMappings.length > 0 && selectedMappings.every((mapping) =>
     mapping.serviceActorIds.length > 0 ||
     mapping.communityActorIds.length > 0 ||
     mapping.participationActorIds.length > 0 ||
@@ -10243,13 +11356,14 @@ function ResponsibilityMapScreen({
     mapping.supportActorIds.length > 0 ||
     mapping.carefulActorIds.length > 0,
   );
+  const allSelectedBarriersHaveCsoRole = selectedMappings.length > 0 && selectedMappings.every((mapping) => mapping.csoRoleIds.length === 1);
   const allSelectedBarriersHaveCapacityHint =
     selectedMappings.length > 0 && selectedMappings.every((mapping) => mapping.capacityGapHintIds.length > 0);
   const canSubmit =
     hasSelectedBarrier &&
     allSelectedBarriersHavePublicResponsibility &&
-    hasSupportingOrServiceActor &&
-    feedbackDraft.hasCsoRole &&
+    allSelectedBarriersHaveSupportingActor &&
+    allSelectedBarriersHaveCsoRole &&
     allSelectedBarriersHaveCapacityHint &&
     !feedbackDraft.overloadWarning;
   const currentSignature = JSON.stringify({
@@ -10273,10 +11387,10 @@ function ResponsibilityMapScreen({
               ? 'This map gives too much responsibility to the CSO. Add the actor who has responsibility for the service, decision, information, or feedback process.'
               : !allSelectedBarriersHavePublicResponsibility
                 ? 'Add a duty-bearer or responsible public actor for each selected barrier.'
-                : !hasSupportingOrServiceActor
-                  ? 'Add at least one service, community, rights-holder voice, support, or careful-engagement actor.'
-                  : !feedbackDraft.hasCsoRole
-                    ? 'Add at least one realistic CSO role.'
+                : !allSelectedBarriersHaveSupportingActor
+                  ? 'Add at least one supporting actor for each selected barrier.'
+                  : !allSelectedBarriersHaveCsoRole
+                    ? 'Add one realistic Awra role for each selected barrier.'
                     : !allSelectedBarriersHaveCapacityHint
                       ? 'Choose one capacity-gap hint for each selected barrier.'
                       : 'Generate a draft responsibility map from your selections.';
@@ -10371,7 +11485,7 @@ function ResponsibilityMapScreen({
       carryForward: {
         snapshotField: 'dutyBearerActorResponsibilityMap',
         issue: 'The Jiru Amba barriers cannot be solved by Awra alone. A rights-based design needs to show which public or service actors should respond, which actors influence access, and what role Awra can realistically play.',
-        nextUse: 'Use this map in the next screen to analyze power and influence. Ask who has authority, who has influence, who may support change, and who may resist or delay action.',
+      nextUse: 'Use this map in the next screen to analyze formal authority and practical influence. Ask what each actor may contribute, what engagement considerations require verification, and whose voice needs strengthening.',
       },
     };
   };
@@ -10549,6 +11663,10 @@ function ResponsibilityMapScreen({
       });
       return {
         ...mapping,
+        publicActorIds: lane === 'public' ? (actorId ? [actorId] : []) : mapping.publicActorIds.filter((id) => id !== actorId),
+        serviceActorIds: lane === 'service' ? (actorId ? [actorId] : []) : mapping.serviceActorIds.filter((id) => id !== actorId),
+        communityActorIds: lane === 'community' ? (actorId ? [actorId] : []) : mapping.communityActorIds.filter((id) => id !== actorId),
+        csoRoleIds: lane === 'cso' ? (actorId ? [actorId] : []) : mapping.csoRoleIds.filter((id) => id !== actorId),
         [laneKey]: actorId ? [actorId] : [],
         actionIdsByActor,
       };
@@ -10895,41 +12013,51 @@ function ResponsibilityMapScreen({
             <div className="m3-responsibility-map-review-rows" aria-label="Draft responsibility role map">
               {generatedRows.map((row, index) => (
                 <article key={`${row.barrierId}-${index}`} className="m3-responsibility-map-review-row" data-testid="m3-s08-generated-map-row">
-                  <div>
-                    <span>Priority barrier</span>
-                    <p>{row.barrierLabel}</p>
-                  </div>
-                  <div>
-                    <span>Relevant actor</span>
-                    <p>{[
-                      ...row.primaryPublicResponsibility,
-                      ...row.serviceOrSectorActors,
-                      ...row.communityOrInfluenceActors,
-                    ].filter(Boolean).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].primaryPublicResponsibility}</p>
-                  </div>
-                  <div>
-                    <span>Actor role type</span>
-                    <p>{getSubmittedSelections(row, ['primary_public_responsibility', 'service_or_local_implementation', 'community_influence_actor', 'participation_actor', 'rights_holder_voice_support', 'support_ally_actor', 'careful_engagement_actor']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Public or service responsibility to clarify'}</p>
-                  </div>
-                  <div>
-                    <span>Responsibility or contribution</span>
-                    <p>{getSubmittedActions(row).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].serviceOrSectorActor}</p>
-                  </div>
-                  <div>
-                    <span>Capacity or support gap</span>
-                    <p>{row.capacityGapHints.map(getCapacityGapLabel).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].capacityGapToCheck}</p>
-                  </div>
-                  <div>
-                    <span>Appropriate CSO role</span>
-                    <p>{row.csoRoles.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].realisticCsoRole}</p>
-                  </div>
-                  <div>
-                    <span>Design implication</span>
-                    <p>{getSubmittedActions(row).length > 0 ? getSubmittedActions(row).join(', ') : 'Clarify the actor role, response step, and follow-up measure before implementation.'}</p>
-                  </div>
-                  <div>
-                    <span>Carry forward to power and influence analysis</span>
-                    <p>{row.nextQuestion}</p>
+                  <header className="m3-responsibility-map-record-header">
+                    <span>Responsibility record {index + 1}</span>
+                    <h3>{row.barrierLabel}</h3>
+                  </header>
+                  <div className="m3-responsibility-map-lanes">
+                    <section className="m3-responsibility-map-lane is-rights-holder">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">1</span>
+                      <h4>Rights-holder group and barrier</h4>
+                      <p><strong>Group affected:</strong> {row.rightsHolderGroupAffected}</p>
+                      <p><strong>Priority barrier:</strong> {row.barrierLabel}</p>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-public">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">2</span>
+                      <h4>Primary public responsibility</h4>
+                      <p>{row.primaryPublicResponsibility.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].primaryPublicResponsibility}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['primary_public_responsibility']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Formal public responsibility'}</small>
+                      <small>Primary responsibility remains with the relevant public or service actor.</small>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-service">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">3</span>
+                      <h4>Service or sector implementation role</h4>
+                      <p>{row.serviceOrSectorActors.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].serviceOrSectorActor}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['service_or_local_implementation']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Service or local implementation role'}</small>
+                      <p className="m3-responsibility-map-lane-detail"><strong>Selected contribution:</strong> {getSubmittedActions(row).join(', ') || 'Clarify the response step and follow-up measure before implementation.'}</p>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-community">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">4</span>
+                      <h4>Community or influence role</h4>
+                      <p>{[...row.communityOrInfluenceActors, ...row.supportOrAllyActors].filter(Boolean).join(', ') || 'Verify which community, participation, voice, or support actor can influence access and response.'}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['community_influence_actor', 'participation_actor', 'rights_holder_voice_support', 'support_ally_actor', 'careful_engagement_actor']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'Community influence or voice-support role'}</small>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-cso">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">5</span>
+                      <h4>Realistic CSO support role</h4>
+                      <p>{row.csoRoles.join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].realisticCsoRole}</p>
+                      <small><strong>Actor role type:</strong> {getSubmittedSelections(row, ['cso_role']).map((selection) => actorRoleTypeLabels[selection.category]).join(', ') || 'CSO support role'}</small>
+                      <small>Support and facilitation do not replace duty-bearer responsibility.</small>
+                    </section>
+                    <section className="m3-responsibility-map-lane is-gap">
+                      <span className="m3-responsibility-map-lane-number" aria-hidden="true">6</span>
+                      <h4>Capacity gap and safe engagement question</h4>
+                      <p><strong>Capacity gap:</strong> {row.capacityGapHints.map(getCapacityGapLabel).join(', ') || screen8GeneratedDefaults[row.barrierId as Screen8BarrierId].capacityGapToCheck}</p>
+                      <p><strong>Safe engagement:</strong> {row.safeEngagementQuestion}</p>
+                      <p className="m3-responsibility-map-next-question"><strong>Carry forward:</strong> {row.nextQuestion}</p>
+                    </section>
                   </div>
                 </article>
               ))}
@@ -10980,7 +12108,7 @@ function ResponsibilityMapScreen({
             <div className="m3-responsibility-map-carry-grid">
               <div><span>Learning from the Jiru Amba case</span><p>The Jiru Amba barriers cannot be solved by Awra alone. A rights-based design needs to show which public or service actors should respond, which actors influence access, and what role Awra can realistically play.</p></div>
               <div><span>Responsibility questions to carry forward</span><p>Carry forward your selected barriers, responsible actors, CSO role, and capacity gaps.</p></div>
-              <div><span>Next use</span><p>Use this map in the next screen to analyze power and influence. Ask who has authority, who has influence, who may support change, and who may resist or delay action.</p></div>
+              <div><span>Next use</span><p>Use this map in the next screen to analyze formal authority and practical influence. Ask what each actor may contribute, what engagement considerations require verification, and whose voice needs strengthening.</p></div>
             </div>
           </section>
         )}
@@ -11099,19 +12227,32 @@ function PowerInfluenceMapScreen({
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
   const baseActors = getScreen9ActorOptions(state);
-  const [actorOptions, setActorOptions] = useState<Module3Actor[]>(baseActors);
-  const [selectedActorIds, setSelectedActorIds] = useState<string[]>([]);
-  const [actorRatings, setActorRatings] = useState<Record<string, Screen9ActorRating>>({});
+  const savedOutput = getScreen9SavedOutput(state);
+  const restoredCustomActors: Module3Actor[] = (savedOutput?.actorRatings || [])
+    .filter((rating) => !baseActors.some((actor) => actor.actorId === rating.actorId))
+    .map((rating) => ({ actorId: rating.actorId, label: rating.actorLabel, category: rating.category, sourceScreen: 'custom', linkedBarrierIds: [], safeCustom: true }));
+  const restoredActorOptions = [...baseActors, ...restoredCustomActors];
+  const restoredActorIds = (savedOutput?.selectedActorIds || []).filter((id) => restoredActorOptions.some((actor) => actor.actorId === id)).slice(0, 6);
+  const restoredRatings = Object.fromEntries((savedOutput?.actorRatings || [])
+    .filter((rating) => restoredActorIds.includes(rating.actorId))
+    .map((rating) => [rating.actorId, {
+      ...rating,
+      formalAuthorityLevel: rating.formalAuthorityLevel || (rating.category === 'primary_public_responsibility' ? 'high' : rating.category === 'service_or_local_implementation' ? 'medium' : 'low'),
+    }]));
+  const restoredSignature = savedOutput ? JSON.stringify({ selectedActorIds: restoredActorIds, actorRatings: restoredActorIds.map((id) => restoredRatings[id]) }) : null;
+  const [actorOptions, setActorOptions] = useState<Module3Actor[]>(restoredActorOptions);
+  const [selectedActorIds, setSelectedActorIds] = useState<string[]>(restoredActorIds);
+  const [actorRatings, setActorRatings] = useState<Record<string, Screen9ActorRating>>(restoredRatings);
   const [customActorLabel, setCustomActorLabel] = useState('');
   const [customActorCategory, setCustomActorCategory] = useState<ActorCategory>('service_or_local_implementation');
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen9OwnCsoDraft>(getEmptyScreen9OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen9OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen9OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen9Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
-  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [understandAnswer, setUnderstandAnswer] = useState('');
-  const [exampleReviewed, setExampleReviewed] = useState(false);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen9Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
+  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(savedOutput ? 4 : restoredActorIds.length ? 3 : 1);
+  const [understandAnswer, setUnderstandAnswer] = useState(savedOutput ? 'informal' : '');
+  const [exampleReviewed, setExampleReviewed] = useState(Boolean(savedOutput));
   const [activeActorFilter, setActiveActorFilter] = useState<'public' | 'service' | 'rights' | 'community' | 'support' | 'custom' | 'all'>('public');
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [copyStatus, setCopyStatus] = useState('');
@@ -11229,6 +12370,7 @@ function PowerInfluenceMapScreen({
     const generatedActorRows = ratingsForOutput.map((rating) => ({
       actor: rating.actorLabel,
       roleFromResponsibilityMap: rating.roleFromResponsibilityMap,
+      formalAuthorityLevel: getScreen9InfluenceLabel(rating.formalAuthorityLevel),
       influenceLevel: getScreen9InfluenceLabel(rating.influenceLevel),
       supportInterestLevel: getScreen9SupportLabel(rating.supportInterestLevel),
       likelyRoleInChange: getScreen9RoleLabel(rating.likelyChangeRole),
@@ -11393,10 +12535,16 @@ Use role categories and generalized group labels. Do not record names, accusatio
     return '◎';
   };
   const getQuadrantDisplayLabel = (zoneId: Screen9PowerMapZone['zoneId']) => {
-    if (zoneId === 'work_closely') return 'High influence / high support';
-    if (zoneId === 'engage_carefully') return 'High influence / uncertain or low support';
-    if (zoneId === 'strengthen_voice') return 'Low or medium influence / high support';
-    return 'Low or medium influence / low support';
+    if (zoneId === 'work_closely') return 'High formal authority / high practical influence';
+    if (zoneId === 'engage_carefully') return 'High formal authority / lower practical influence';
+    if (zoneId === 'strengthen_voice') return 'Lower formal authority / high practical influence';
+    return 'Lower formal authority / lower practical influence';
+  };
+  const getQuadrantActionLabel = (zoneId: Screen9PowerMapZone['zoneId']) => {
+    if (zoneId === 'work_closely') return 'Work closely';
+    if (zoneId === 'engage_carefully') return 'Engage carefully';
+    if (zoneId === 'strengthen_voice') return 'Strengthen voice';
+    return 'Monitor lightly';
   };
   const copyMapSummary = () => {
     if (!submittedOutput) return;
@@ -11424,11 +12572,24 @@ Use role categories and generalized group labels. Do not record names, accusatio
     if (stage?.unlocked) setActiveStage(stageId);
   };
   const renderQuadrantBoard = (zones: Screen9PowerMapZone[], compact = false) => (
-    <div className={compact ? 'm3-power-studio-quadrants is-compact' : 'm3-power-studio-quadrants'} aria-label="Power and influence quadrant map">
+    <div className={compact ? 'm3-power-studio-quadrant-frame is-compact' : 'm3-power-studio-quadrant-frame'}>
+      {!compact && (
+        <div className="m3-b9-axis-legend" aria-label="How to read this map">
+          <span><strong>Vertical organizing concept:</strong> formal authority</span>
+          <span><strong>Horizontal organizing concept:</strong> practical influence</span>
+        </div>
+      )}
+      <div className={compact ? 'm3-power-studio-quadrants is-compact' : 'm3-power-studio-quadrants'} aria-label="Four-zone power and influence map">
       {zones.map((zone) => (
-        <section key={zone.zoneId} className={`m3-power-studio-quadrant m3-power-studio-quadrant--${zone.zoneId}`} data-testid="m3-s09-quadrant">
-          <h3>{getQuadrantDisplayLabel(zone.zoneId)}</h3>
-          {!compact && <p>{powerMapZoneInterpretations[zone.zoneId]}</p>}
+        <section key={zone.zoneId} className={`m3-power-studio-quadrant m3-power-studio-quadrant--${zone.zoneId}`} data-testid="m3-s09-quadrant" aria-labelledby={`${screen.id}-${compact ? 'preview-' : ''}${zone.zoneId}`}>
+          <header className="m3-b9-zone-header">
+            <div>
+              <p className="m3-b9-zone-position">{getQuadrantDisplayLabel(zone.zoneId)}</p>
+              <h3 id={`${screen.id}-${compact ? 'preview-' : ''}${zone.zoneId}`}>{getQuadrantActionLabel(zone.zoneId)}</h3>
+            </div>
+            <span className="m3-b9-zone-count">{zone.actorIds.length} {zone.actorIds.length === 1 ? 'actor' : 'actors'}</span>
+          </header>
+          {!compact && <p className="m3-b9-zone-guidance">{powerMapZoneInterpretations[zone.zoneId]}</p>}
           <div className="m3-power-studio-quadrant-actors">
             {zone.actorIds.length > 0 ? zone.actorIds.map((actorId) => {
               const rating = (submittedOutput?.actorRatings || completedRatings).find((item) => item.actorId === actorId) || actorRatings[actorId];
@@ -11439,14 +12600,26 @@ Use role categories and generalized group labels. Do not record names, accusatio
                   <span aria-hidden="true">{getActorIcon(actor?.category || rating.category)}</span>
                   <div>
                     <strong>{rating.actorLabel}</strong>
-                    <small>{getScreen9RoleLabel(rating.likelyChangeRole)}</small>
+                    {compact ? <small>{getScreen9RoleLabel(rating.likelyChangeRole)}</small> : (
+                      <dl className="m3-b9-actor-details">
+                        <div><dt>Role or responsibility</dt><dd>{rating.roleFromResponsibilityMap}</dd></div>
+                        <div><dt>Formal authority</dt><dd>{getScreen9InfluenceLabel(rating.formalAuthorityLevel)}</dd></div>
+                        <div><dt>Practical influence</dt><dd>{getScreen9InfluenceLabel(rating.influenceLevel)}</dd></div>
+                        <div><dt>Support or interest</dt><dd>{getScreen9SupportLabel(rating.supportInterestLevel)}</dd></div>
+                        <div><dt>Likely role in change</dt><dd>{getScreen9RoleLabel(rating.likelyChangeRole)}</dd></div>
+                        <div><dt>Engagement approach</dt><dd>{getScreen9ApproachLabel(rating.engagementApproach)}</dd></div>
+                        {rating.designImplication && <div><dt>Design implication</dt><dd>{rating.designImplication}</dd></div>}
+                        {rating.questionForScreen10 && <div><dt>Carry forward to Screen 10</dt><dd>{rating.questionForScreen10}</dd></div>}
+                      </dl>
+                    )}
                   </div>
                 </article>
               );
-            }) : <div className="m3-power-studio-empty-quadrant">No actors in this quadrant</div>}
+            }) : <div className="m3-power-studio-empty-quadrant">No actors are assigned to this zone in the saved map.</div>}
           </div>
         </section>
       ))}
+      </div>
     </div>
   );
   const renderPowerPanel = () => (
@@ -11488,7 +12661,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
         <header className="m3-power-map-header m3-power-studio-header">
           <p className="m3-power-map-eyebrow">{screen.eyebrow}</p>
           <h1 id={titleId}>Power and Influence Map</h1>
-          <p className="m3-power-map-subtitle">See who can enable change, who may block it, and how rights-holder voice can be strengthened safely.</p>
+          <p className="m3-power-map-subtitle">Compare formal authority and practical influence, then choose constructive, proportionate, and risk-aware engagement.</p>
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <nav className="m3-power-studio-stage-nav" aria-label="Power mapping stages">
             {stageDefinitions.map((stage) => (
@@ -11539,7 +12712,7 @@ Use role categories and generalized group labels. Do not record names, accusatio
               <section className="m3-power-studio-explain-grid" aria-label="Screen purpose and output">
                 {[
                   ['What this section is about', 'Map actors by their formal power and practical influence so the project can engage them safely and strategically.', 'amber'],
-                  ['Why this matters for CSOs', 'Power analysis helps CSOs avoid shallow participation, identify hidden blockers or enablers, and strengthen rights-holder influence without creating unnecessary risk.', 'green'],
+                  ['Why this matters for CSOs', 'Power analysis helps CSOs avoid shallow participation, examine possible influence and engagement risks, and strengthen rights-holder influence without making unsupported claims.', 'green'],
                   ['What you will do', 'Select actors from the Jiru Amba case, rate their power and influence, and choose a safe engagement approach.', 'blue'],
                   ['What you will produce', 'A draft Power and Influence Map that can be saved to your portfolio and used in later design screens.', 'teal'],
                 ].map(([title, text, tone]) => (
@@ -11593,10 +12766,10 @@ Use role categories and generalized group labels. Do not record names, accusatio
               {[
                 ['Actor', 'Market committee'],
                 ['Connected barrier', 'Market priorities may be shaped before women vendors and informal workers can influence decisions.'],
-                ['Influence level', 'High influence'],
-                ['Support or interest', 'Uncertain support'],
-                ['Likely role', 'Gatekeeper or blocker'],
-                ['Engagement approach', 'Engage carefully, clarify shared responsibility, use transparent consultation, and avoid relying on one actor to represent all market users.'],
+                ['Formal authority', 'Formal responsibility requires verification.'],
+                ['Practical influence', 'May have strong influence over market information and access.'],
+                ['Interest or likely engagement', 'Requires constructive verification; no positive or negative behavior is assumed.'],
+                ['Engagement approach', 'Engage constructively, clarify responsibility, use transparent consultation, and avoid relying on one actor to represent all market users.'],
                 ['Design implication', 'Use more than one participation channel and check whether lower-influence market users shaped priorities before final decisions.'],
               ].map(([label, text]) => (
                 <article key={label}>
@@ -11671,14 +12844,21 @@ Use role categories and generalized group labels. Do not record names, accusatio
                             </div>
                           </div>
                           <label>
-                            <span>Influence level</span>
+                            <span>Formal authority or decision responsibility</span>
+                            <select value={rating.formalAuthorityLevel} onChange={(event) => updateRating(actor.actorId, 'formalAuthorityLevel', event.target.value)} data-testid="m3-s09-authority-select">
+                              <option value="">Choose formal authority</option>
+                              {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label.replace('influence', 'formal authority')}</option>)}
+                            </select>
+                          </label>
+                          <label>
+                            <span>Practical influence over decisions, access, or implementation</span>
                             <select value={rating.influenceLevel} onChange={(event) => updateRating(actor.actorId, 'influenceLevel', event.target.value)} data-testid="m3-s09-influence-select">
-                              <option value="">Choose influence</option>
+                              <option value="">Choose practical influence</option>
                               {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                             </select>
                           </label>
                           <label>
-                            <span>Support/resistance or engagement risk</span>
+                            <span>Interest, likely engagement, or possible risk</span>
                             <select value={rating.supportInterestLevel} onChange={(event) => updateRating(actor.actorId, 'supportInterestLevel', event.target.value)} data-testid="m3-s09-support-select">
                               <option value="">Choose support or risk</option>
                               {screen9SupportOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -11725,24 +12905,17 @@ Use role categories and generalized group labels. Do not record names, accusatio
               <strong>{formChanged ? 'Map needs update' : 'Map generated'}</strong>
             </div>
             {renderQuadrantBoard(outputZones)}
-            <section className="m3-power-studio-table-wrap" aria-label="Actor engagement strategy">
-              <h3>Actor engagement strategy</h3>
-              <table>
-                <thead><tr><th>Actor</th><th>Role or responsibility</th><th>Influence level</th><th>Support/resistance or engagement risk</th><th>Capacity or support gap</th><th>Strategy implication</th><th>Carry forward to design repair</th></tr></thead>
-                <tbody>
-                  {submittedRows.map((row) => (
-                      <tr key={row.actor} data-testid="m3-s09-generated-map-row">
-                        <td>{row.actor}</td>
-                        <td>{row.roleFromResponsibilityMap}</td>
-                        <td>{row.influenceLevel}</td>
-                        <td>{row.supportInterestLevel}</td>
-                        <td>{row.likelyRoleInChange}</td>
-                        <td>{row.designImplication}</td>
-                        <td>{row.questionForScreen10}</td>
-                      </tr>
-                  ))}
-                </tbody>
-              </table>
+            <section className="m3-b9-carry-list" aria-labelledby={`${screen.id}-actor-carry-forward`}>
+              <h3 id={`${screen.id}-actor-carry-forward`}>Actor responsibility and carry-forward questions</h3>
+              <div>
+                {submittedRows.map((row) => (
+                  <article key={row.actor}>
+                    <h4>{row.actor}</h4>
+                    <p><strong>Role or responsibility:</strong> {row.roleFromResponsibilityMap}</p>
+                    <p><strong>Question for Screen 10:</strong> {row.questionForScreen10}</p>
+                  </article>
+                ))}
+              </div>
             </section>
             <section className="m3-power-studio-summary">
               <h3>What this power map suggests</h3>
@@ -12049,22 +13222,295 @@ function PortfolioScaffold({
   );
 }
 
-function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
+function buildScreen11VisualizationViewModel({
+  submittedOutput,
+  formChanged,
+  classifications,
+  selectedDesignArea,
+  inclusionCheckDraft,
+  helperText,
+}: {
+  submittedOutput: Screen11Submission | null;
+  formChanged: boolean;
+  classifications: Partial<Record<M3Screen11SignalId, InclusionStatus>>;
+  selectedDesignArea: Screen11DashboardRow | undefined;
+  inclusionCheckDraft: Screen11InclusionCheckDraft;
+  helperText: string;
+}): Screen11VisualizationViewModel {
+  const hasDraftContent = Object.keys(classifications).length > 0
+    || Boolean(selectedDesignArea)
+    || Object.values(inclusionCheckDraft).some(Boolean);
+  const status: Screen11VisualizationStatus = submittedOutput
+    ? formChanged ? 'stale' : 'current'
+    : hasDraftContent ? 'partial' : 'empty';
+  const statusCopy: Record<Screen11VisualizationStatus, { label: string; message: string }> = {
+    empty: {
+      label: 'Dashboard not started',
+      message: helperText,
+    },
+    partial: {
+      label: 'Dashboard in progress',
+      message: helperText,
+    },
+    current: {
+      label: 'Generated dashboard',
+      message: 'This dashboard reflects the current generated inclusion check.',
+    },
+    stale: {
+      label: 'Dashboard needs update',
+      message: helperText,
+    },
+  };
+  const savedInclusionRows = submittedOutput
+    ? submittedOutput.inclusionCheckRows || submittedOutput.markerLiteDashboard.inclusionCheckRows || []
+    : [];
+  const rows: Screen11VisualizationRow[] = submittedOutput
+    ? submittedOutput.markerLiteDashboard.rows.map((row) => {
+      const inclusionRow = savedInclusionRows.find((item) => item.designAreaReviewed === row.designArea);
+      const markerResult = submittedOutput.classifications[row.signalId];
+      return {
+        id: row.signalId,
+        designArea: row.designArea,
+        status: markerResult,
+        statusLabel: inclusionStatusLabels[markerResult],
+        explanation: row.whatIsWeakOrStrong,
+        genderConsideration: inclusionRow?.genderRelatedConsideration || '',
+        disabilityConsideration: inclusionRow?.disabilityAccessibilityConsideration || '',
+        selectedRepair: inclusionRow?.designAdaptation || '',
+        responsibleRole: inclusionRow?.responsibleActorOrRole || '',
+        resourceOrAccommodationImplication: '',
+        monitoringPoint: inclusionRow?.implementationWatchPoint || '',
+        carryForwardUse: inclusionRow?.carryForwardToParticipationAccountabilityRisk || row.carryForwardUse,
+      };
+    })
+    : screen11Signals
+      .filter((signal) => Boolean(classifications[signal.id]) || selectedDesignArea?.signalId === signal.id)
+      .map((signal) => {
+        const markerResult = classifications[signal.id] || null;
+        const isSelectedArea = selectedDesignArea?.signalId === signal.id;
+        return {
+          id: signal.id,
+          designArea: screen11DashboardRows.find((row) => row.signalId === signal.id)?.designArea || signal.title,
+          status: markerResult,
+          statusLabel: markerResult ? inclusionStatusLabels[markerResult] : 'Not yet classified',
+          explanation: markerResult ? signal.implication[markerResult] : '',
+          genderConsideration: isSelectedArea ? inclusionCheckDraft.genderConsideration : '',
+          disabilityConsideration: isSelectedArea ? inclusionCheckDraft.disabilityConsideration : '',
+          selectedRepair: isSelectedArea ? inclusionCheckDraft.designAdaptation : '',
+          responsibleRole: isSelectedArea ? inclusionCheckDraft.responsibleRole : '',
+          resourceOrAccommodationImplication: '',
+          monitoringPoint: isSelectedArea ? inclusionCheckDraft.watchPoint : '',
+          carryForwardUse: '',
+        };
+      });
+  const overallStatuses: Screen11VisualizationViewModel['overallStatuses'] = submittedOutput ? [
+    {
+      id: 'gender',
+      label: 'Gender',
+      status: submittedOutput.genderDesignStatus,
+      statusLabel: getScreen11StatusLabel(submittedOutput.genderDesignStatus),
+      description: getScreen11StatusDescription('gender', submittedOutput.genderDesignStatus),
+    },
+    {
+      id: 'disability',
+      label: 'Disability and accessibility',
+      status: submittedOutput.disabilityDesignStatus,
+      statusLabel: getScreen11StatusLabel(submittedOutput.disabilityDesignStatus),
+      description: getScreen11StatusDescription('disability', submittedOutput.disabilityDesignStatus),
+    },
+  ] : [];
+  const warnings = submittedOutput
+    ? submittedOutput.warningIds
+      .map((warningId) => screen11Warnings.find((warning) => warning.id === warningId))
+      .filter((warning): warning is (typeof screen11Warnings)[number] => Boolean(warning))
+      .map(({ id, title, text }) => ({ id, title, text }))
+    : [];
+  const feedback = submittedOutput ? screen11FeedbackText[submittedOutput.primaryFeedbackState] : null;
+
+  return {
+    status,
+    statusLabel: statusCopy[status].label,
+    statusMessage: statusCopy[status].message,
+    meaning: 'This design check shows where gender and disability or accessibility considerations are integrated, partial, or still missing—and what repair is needed.',
+    overallStatuses,
+    rows,
+    repairs: submittedOutput?.markerLiteDashboard.selectedRepairRows || [],
+    warnings,
+    interpretationTitle: feedback?.title || '',
+    interpretationText: feedback?.text || '',
+    carryForwardNote: submittedOutput?.carryForwardQuestion || '',
+    orderingNote: submittedOutput
+      ? 'Ordering source: saved generated dashboard-row order and saved repair-row order.'
+      : 'Ordering source: current classifications follow the original Screen 11 option order.',
+  };
+}
+
+function GenderDisabilityDashboardVisualization({
+  viewModel,
+  idPrefix,
+  headingRef,
+}: {
+  viewModel: Screen11VisualizationViewModel;
+  idPrefix: string;
+  headingRef?: RefObject<HTMLHeadingElement | null>;
+}) {
+  const statusIcon = (status: InclusionStatus | Screen11GenderStatus | Screen11DisabilityStatus | null) => {
+    if (status === 'built' || status === 'strongerDesign') return '✓';
+    if (status === 'mentioned' || status === 'visibleNotBuiltIn' || status === 'partlyBuiltIn') return '◐';
+    if (status === 'missing' || status === 'needsDesignRepair') return '!';
+    return '…';
+  };
+  const rowDetails = (row: Screen11VisualizationRow) => ([
+    ['Strength or weakness explanation', row.explanation],
+    ['Gender consideration', row.genderConsideration],
+    ['Disability/accessibility consideration', row.disabilityConsideration],
+    ['Selected repair', row.selectedRepair],
+    ['Responsible role', row.responsibleRole],
+    ['Resource or accommodation implication', row.resourceOrAccommodationImplication],
+    ['Monitoring point', row.monitoringPoint],
+    ['Where this is used next', row.carryForwardUse],
+  ] as Array<[string, string]>).filter(([, value]) => Boolean(value));
+
+  return (
+    <section className={`m3-s11-dashboard m3-s11-visualization is-${viewModel.status}`} aria-labelledby={`${idPrefix}-title`}>
+      <header className="m3-s11-visualization-header">
+        <div>
+          <p className="m3-s11-visualization-eyebrow">READ-ONLY DESIGN-CHECK DASHBOARD</p>
+          <h2 id={`${idPrefix}-title`} ref={headingRef} tabIndex={headingRef ? -1 : undefined}>Gender and Disability Design Check Dashboard</h2>
+        </div>
+        <span className="m3-s11-visualization-output-status">{viewModel.statusLabel}</span>
+      </header>
+      <p className="m3-s11-visualization-status-message" aria-live="polite">{viewModel.statusMessage}</p>
+      <p className="m3-s11-visualization-meaning"><strong>What this shows:</strong> {viewModel.meaning}</p>
+
+      {viewModel.overallStatuses.length > 0 ? (
+        <section aria-labelledby={`${idPrefix}-overall`}>
+          <h3 id={`${idPrefix}-overall`}>Overall status summary</h3>
+          <div className="m3-s11-dashboard-summary">
+            {viewModel.overallStatuses.map((item) => (
+              <article key={item.id} className={`m3-s11-status-card is-${item.status}`}>
+                <span>{item.label}</span>
+                <div className="m3-s11-status-heading">
+                  <strong aria-hidden="true">{statusIcon(item.status)}</strong>
+                  <h4>{item.statusLabel}</h4>
+                </div>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <p className="m3-s11-visualization-empty">Overall gender and disability/accessibility statuses will appear after the existing generation requirements are complete.</p>
+      )}
+
+      <section aria-labelledby={`${idPrefix}-areas`}>
+        <h3 id={`${idPrefix}-areas`}>Design-area check</h3>
+        {viewModel.rows.length > 0 ? (
+          <ol className="m3-s11-visual-area-list">
+            {viewModel.rows.map((row, index) => (
+              <li key={row.id}>
+                <article className={`m3-s11-visual-area-card is-${row.status || 'pending'}`}>
+                  <header>
+                    <span className="m3-s11-visual-area-number" aria-hidden="true">{index + 1}</span>
+                    <div>
+                      <h4>{row.designArea}</h4>
+                      <p className="m3-s11-visual-area-status"><span aria-hidden="true">{statusIcon(row.status)}</span>{row.statusLabel}</p>
+                    </div>
+                  </header>
+                  {rowDetails(row).length > 0 && (
+                    <dl>{rowDetails(row).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+                  )}
+                </article>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="m3-s11-visualization-empty">Classify a design statement to begin the dashboard. No learner output has been generated yet.</p>
+        )}
+      </section>
+
+      {viewModel.repairs.length > 0 && (
+        <section className="m3-s11-visual-repairs" aria-labelledby={`${idPrefix}-repairs`}>
+          <h3 id={`${idPrefix}-repairs`}>Selected design repairs</h3>
+          <ul>{viewModel.repairs.map((repair) => <li key={repair.repairSelected}><strong>{repair.repairSelected}</strong><span>{repair.whyItMatters}</span><span><strong>Use next:</strong> {repair.whereToUseItNext}</span></li>)}</ul>
+        </section>
+      )}
+
+      {viewModel.warnings.length > 0 && (
+        <section className="m3-s11-warning-list m3-s11-visual-warnings" aria-labelledby={`${idPrefix}-warnings`}>
+          <h3 id={`${idPrefix}-warnings`}>Warnings and attention points</h3>
+          <ul>{viewModel.warnings.map((warning) => <li key={warning.id}><span aria-hidden="true">!</span><div><strong>{warning.title}</strong><p>{warning.text}</p></div></li>)}</ul>
+        </section>
+      )}
+
+      <section className="m3-s11-visualization-text" aria-labelledby={`${idPrefix}-text`}>
+        <h3 id={`${idPrefix}-text`}>Complete text version</h3>
+        <p><strong>Output status:</strong> {viewModel.statusLabel}. {viewModel.statusMessage}</p>
+        {viewModel.overallStatuses.map((item) => <p key={item.id}><strong>{item.label}:</strong> {item.statusLabel}. {item.description}</p>)}
+        {viewModel.rows.length > 0 ? (
+          <ol className="m3-s11-inclusion-output-grid">
+            {viewModel.rows.map((row, index) => (
+              <li key={row.id}>
+                <article>
+                  <h4>{index + 1}. {row.designArea}</h4>
+                  <p><strong>Status:</strong> {row.statusLabel}</p>
+                  {rowDetails(row).length > 0 && <dl>{rowDetails(row).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+                </article>
+              </li>
+            ))}
+          </ol>
+        ) : <p>No classified design areas are available yet.</p>}
+        {viewModel.repairs.length > 0 && (
+          <section className="m3-s11-selected-repair-grid" aria-labelledby={`${idPrefix}-text-repairs`}>
+            <h4 id={`${idPrefix}-text-repairs`}>Selected repairs</h4>
+            {viewModel.repairs.map((repair) => <article key={repair.repairSelected}><h5>{repair.repairSelected}</h5><p><strong>Why it matters:</strong> {repair.whyItMatters}</p><p><strong>Where to use it next:</strong> {repair.whereToUseItNext}</p></article>)}
+          </section>
+        )}
+        {viewModel.warnings.length > 0 && <section><h4>Warnings</h4><ul>{viewModel.warnings.map((warning) => <li key={warning.id}><strong>{warning.title}:</strong> {warning.text}</li>)}</ul></section>}
+        {viewModel.interpretationText && <section className="m3-s11-feedback"><h4>{viewModel.interpretationTitle}</h4><p>{viewModel.interpretationText}</p></section>}
+        {viewModel.carryForwardNote && <section className="m3-s11-carry-forward"><h4>Carry this into Screen 12</h4><p>{viewModel.carryForwardNote}</p></section>}
+      </section>
+      <p className="m3-s11-visualization-ordering">{viewModel.orderingNote}</p>
+    </section>
+  );
+}
+
+function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [classifications, setClassifications] = useState<Partial<Record<M3Screen11SignalId, InclusionStatus>>>({});
-  const [selectedRepairs, setSelectedRepairs] = useState<M3Screen11RepairId[]>([]);
-  const [selectedDesignAreaId, setSelectedDesignAreaId] = useState<M3Screen11SignalId | ''>('');
-  const [inclusionCheckDraft, setInclusionCheckDraft] = useState<Screen11InclusionCheckDraft>(getEmptyScreen11InclusionCheckDraft());
+  const savedOutput = getScreen11SavedOutput(state);
+  const carriedScreen7 = getScreen7SavedOutput(state);
+  const carriedScreen8 = getScreen8SavedOutput(state);
+  const carriedScreen9 = getScreen9SavedOutput(state);
+  const carriedScreen10 = getScreen10SavedOutput(state);
+  const validSignalIds = new Set(screen11Signals.map((signal) => signal.id));
+  const validStatuses = new Set<InclusionStatus>(['missing', 'mentioned', 'built']);
+  const restoredClassifications = Object.fromEntries(Object.entries(savedOutput?.classifications || {}).filter(([id, status]) => validSignalIds.has(id as M3Screen11SignalId) && validStatuses.has(status as InclusionStatus))) as Partial<Record<M3Screen11SignalId, InclusionStatus>>;
+  const restoredRepairs = (savedOutput?.selectedRepairs || []).filter((id) => screen11Repairs.some((repair) => repair.id === id));
+  const restoredRow = savedOutput?.inclusionCheckRows?.[0];
+  const restoredAreaId = restoredRow ? screen11DashboardRows.find((row) => row.designArea === restoredRow.designAreaReviewed)?.signalId || '' : '';
+  const restoredDraft: Screen11InclusionCheckDraft = restoredRow ? {
+    genderConsideration: restoredRow.genderRelatedConsideration,
+    disabilityConsideration: restoredRow.disabilityAccessibilityConsideration,
+    designAdaptation: restoredRow.designAdaptation,
+    responsibleRole: restoredRow.responsibleActorOrRole,
+    watchPoint: restoredRow.implementationWatchPoint,
+  } : getEmptyScreen11InclusionCheckDraft();
+  const restoredSignature = savedOutput ? JSON.stringify({ selectedDesignAreaId: restoredAreaId, inclusionCheckDraft: restoredDraft, classifications: restoredClassifications, selectedRepairs: [...restoredRepairs].sort() }) : null;
+  const [classifications, setClassifications] = useState<Partial<Record<M3Screen11SignalId, InclusionStatus>>>(restoredClassifications);
+  const [selectedRepairs, setSelectedRepairs] = useState<M3Screen11RepairId[]>(restoredRepairs);
+  const [selectedDesignAreaId, setSelectedDesignAreaId] = useState<M3Screen11SignalId | ''>(restoredAreaId);
+  const [inclusionCheckDraft, setInclusionCheckDraft] = useState<Screen11InclusionCheckDraft>(restoredDraft);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen11OwnCsoDraft>(getEmptyScreen11OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen11OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen11OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen11Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen11Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHero, setShowHero] = useState(true);
   const [showScale, setShowScale] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredAreaId ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -12072,8 +13518,9 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
   const selectedDesignArea = screen11DashboardRows.find((row) => row.signalId === selectedDesignAreaId);
   const completedCheckFields = Object.values(inclusionCheckDraft).filter(Boolean).length;
   const checkComplete = Boolean(selectedDesignArea && completedCheckFields === 5);
+  const allRequiredClassificationsComplete = screen11Signals.every((signal) => validStatuses.has(classifications[signal.id] as InclusionStatus));
   const completedCheckCount = checkComplete ? 1 : 0;
-  const canSubmit = checkComplete;
+  const canSubmit = checkComplete && allRequiredClassificationsComplete;
   const currentSignature = JSON.stringify({ selectedDesignAreaId, inclusionCheckDraft, classifications, selectedRepairs: [...selectedRepairs].sort() });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
   const canContinue = Boolean(submittedOutput && !formChanged);
@@ -12083,9 +13530,18 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
       : submittedOutput && !formChanged
         ? 'Your inclusion check is ready to save.'
         : 'Ready to generate your inclusion check.'
-    : 'Select one design area and complete gender, disability/accessibility, adaptation, responsible role, and watch-point fields.';
+    : !allRequiredClassificationsComplete
+      ? `Classify all ${screen11Signals.length} design statements before generating the inclusion check.`
+      : 'Select one design area and complete gender, disability/accessibility, adaptation, responsible role, and watch-point fields.';
   const dashboardClassifications = submittedOutput?.classifications;
-  const warnings = dashboardClassifications ? getScreen11Warnings(dashboardClassifications) : [];
+  const screen11VisualizationViewModel = buildScreen11VisualizationViewModel({
+    submittedOutput,
+    formChanged,
+    classifications,
+    selectedDesignArea,
+    inclusionCheckDraft,
+    helperText,
+  });
 
   const selectDesignArea = (signalId: M3Screen11SignalId) => {
     setSelectedDesignAreaId((current) => current === signalId ? '' : signalId);
@@ -12098,9 +13554,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
 
   const submitDashboard = () => {
     if (!canSubmit || !selectedDesignArea) return;
-    const generatedClassifications = Object.fromEntries(
-      screen11DashboardRows.map((row) => [row.signalId, row.signalId === selectedDesignArea.signalId ? 'built' : row.markerResult]),
-    ) as Record<M3Screen11SignalId, InclusionStatus>;
+    const generatedClassifications = Object.fromEntries(screen11Signals.map((signal) => [signal.id, classifications[signal.id]])) as Record<M3Screen11SignalId, InclusionStatus>;
     const selectedAdaptationRepair = screen11Repairs.find((repair) => repair.title === inclusionCheckDraft.designAdaptation);
     const generatedRepairs = Array.from(new Set([
       selectedAdaptationRepair?.id,
@@ -12108,6 +13562,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
       selectedDesignArea.signalId === 'feedbackChannels' ? 'strengthenFeedbackChannels' : undefined,
       selectedDesignArea.signalId === 'disabilityAccessibility' ? 'improveAccessibilityAccommodation' : undefined,
       selectedDesignArea.signalId === 'womensInfluence' ? 'strengthenWomensInfluence' : undefined,
+      ...screen11Signals.filter((signal) => generatedClassifications[signal.id] !== 'built').map((signal) => signal.id === 'disabilityAccessibility' ? 'improveAccessibilityAccommodation' : signal.id === 'womensInfluence' ? 'strengthenWomensInfluence' : signal.id === 'feedbackChannels' ? 'strengthenFeedbackChannels' : signal.id === 'indicatorsFollowUp' ? 'addInfluenceFollowUpIndicators' : 'checkParticipationBarriers'),
     ].filter(Boolean))) as M3Screen11RepairId[];
     const inclusionCheckRows: Screen11InclusionCheckRow[] = [{
       designAreaReviewed: selectedDesignArea.designArea,
@@ -12214,6 +13669,13 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           <p>Check whether gender and disability are missing, only mentioned, or built into the project design through participation, accessibility, responsibilities, budget, indicators, feedback, and follow-up.</p>
         </header>
 
+        <section className="m3-b5-carried-findings" aria-labelledby={`${screen.id}-carried-findings`}>
+          <h2 id={`${screen.id}-carried-findings`}>Findings carried into this design check</h2>
+          <p><strong>Groups and barriers:</strong> {carriedScreen7?.generatedMapRows?.map((row) => row.groupLabel).join(', ') || 'Review the specific rights-holder groups and barriers identified earlier.'}</p>
+          <p><strong>Responsibility and influence:</strong> {carriedScreen8?.exportedActorsForScreen9?.map((actor) => actor.label).slice(0, 5).join(', ') || carriedScreen9?.powerInfluenceMap?.selectedActors?.slice(0, 5).join(', ') || 'Verify which actors hold responsibility and practical influence.'}</p>
+          <p><strong>Causes and capacity:</strong> {carriedScreen10?.rootCauseCapacityGapMap?.dutyBearerSystemCapacityGaps?.slice(0, 3).join(', ') || 'Check accessibility, participation, response, resources, and monitoring implications.'}</p>
+        </section>
+
         <nav className="m3-s11-stage-nav" aria-label="Gender and disability design check stages">
           {genderDisabilityStages.map((stage) => {
             const unlocked = stage.unlocked !== false;
@@ -12306,11 +13768,14 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           {showScale && <img className="m3-s11-scale-visual" src={module3Screen11Assets.scale.src} alt={module3Screen11Assets.scale.alt} onError={() => setShowScale(false)} />}
           <div className="m3-s11-example-grid">
             {[
-              ['Design signal', 'The plan says women and persons with disabilities were invited to consultation.'],
-              ['Classification', 'Mentioned but not built in.'],
-              ['Why it matters', 'Invitation does not prove meaningful influence, accessible participation, accommodation, safe feedback, budget, or follow-up.'],
-              ['Design repair', 'Add accessible information, reasonable accommodation, consultation timing that fits livelihood and care responsibilities, and a feedback pathway that explains what changed.'],
-              ['Carry-forward question', 'Who needs to participate, what support do they need, how can they influence decisions, and how will they receive feedback?'],
+              ['Design statement', 'The plan says women and persons with disabilities were invited to consultation.'],
+              ['What is missing', 'Invitation does not yet show meaningful influence, accessible participation, accommodation, safe feedback, budget, or follow-up.'],
+              ['Gender consideration', 'Consultation timing and methods should account for livelihood and care responsibilities and whether women can influence decisions.'],
+              ['Disability and accessibility consideration', 'Provide accessible information, communication and participation formats, reasonable accommodation, and an alternative feedback route.'],
+              ['Design repair', 'Add accessible information, reasonable accommodation, suitable consultation timing, and a feedback pathway that explains what changed.'],
+              ['Responsible role', 'The planning office coordinates the decision and response, with service and CSO support roles clearly assigned.'],
+              ['Resource or accommodation implication', 'Budget for accessible formats, facilitation, venue or transport support, and reasonable accommodation where required.'],
+              ['Monitoring point', 'Check who participated, whose priorities influenced the decision, whether accommodations worked, and whether feedback received a response.'],
             ].map(([label, text]) => (
               <article key={label}>
                 <span>{label}</span>
@@ -12339,7 +13804,25 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           </div>
 
           <section className="m3-s11-practice-step" aria-labelledby={`${screen.id}-design-area-step`}>
-            <h3 id={`${screen.id}-design-area-step`}>Step 1: Select design area or activity to check</h3>
+            <h3 id={`${screen.id}-classification-step`}>Step 1: Classify every required design statement</h3>
+            <p>Use Missing, Mentioned but not integrated, or Integrated into design. Gender and disability remain separate considerations even where barriers overlap.</p>
+            <div className="m3-s11-classification-list">
+              {screen11Signals.map((signal) => (
+                <label key={signal.id}>
+                  <span><strong>{signal.title}</strong><small>{signal.text}</small></span>
+                  <select aria-label={`Classification for ${signal.title}`} value={classifications[signal.id] || ''} onChange={(event) => setClassifications((current) => ({ ...current, [signal.id]: event.target.value as InclusionStatus }))}>
+                    <option value="">Choose classification</option>
+                    <option value="missing">Missing</option>
+                    <option value="mentioned">Mentioned but not integrated</option>
+                    <option value="built">Integrated into design</option>
+                  </select>
+                </label>
+              ))}
+            </div>
+          </section>
+
+          <section className="m3-s11-practice-step" aria-labelledby={`${screen.id}-design-area-step`}>
+            <h3 id={`${screen.id}-design-area-step`}>Step 2: Select design area or activity to repair</h3>
             <div className="m3-s11-design-area-tiles" role="group" aria-label="Design area options">
               {screen11DashboardRows.map((row) => {
                 const selected = selectedDesignAreaId === row.signalId;
@@ -12363,7 +13846,7 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
           </section>
 
           <section className={`m3-s11-practice-step ${!selectedDesignArea ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-check-row`}>
-            <h3 id={`${screen.id}-check-row`}>Step 2: Complete inclusion-check row</h3>
+            <h3 id={`${screen.id}-check-row`}>Step 3: Complete inclusion-check row</h3>
             {selectedDesignArea ? (
               <article className="m3-s11-inclusion-row" data-testid="m3-s11-inclusion-check-row">
                 <div>
@@ -12398,6 +13881,10 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
             <p aria-live="polite">{helperText}</p>
           </div>
         </section>
+        <GenderDisabilityDashboardVisualization
+          viewModel={screen11VisualizationViewModel}
+          idPrefix={`${screen.id}-practice-visualization`}
+        />
           </div>
           <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-gender-live`}>
             <h2 id={`${screen.id}-gender-live`}>Inclusion check so far</h2>
@@ -12420,90 +13907,15 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
         )}
 
         {activeStage === 4 && submittedOutput && dashboardClassifications && (
-          <section className="m3-s11-dashboard" aria-live="polite" aria-labelledby={dashboardId}>
-            <h2 id={dashboardId} ref={outputRef} tabIndex={-1}>Your Gender and Disability Inclusion Check</h2>
-            <p>This inclusion check shows how the selected design area should respond to gender-related and disability/accessibility barriers before activities are finalized. It is a learning output, not formal donor marker scoring.</p>
-            <div className="m3-s11-dashboard-summary">
-              {[
-                ['Gender design status', submittedOutput.genderDesignStatus, getScreen11StatusDescription('gender', submittedOutput.genderDesignStatus)],
-                ['Disability design status', submittedOutput.disabilityDesignStatus, getScreen11StatusDescription('disability', submittedOutput.disabilityDesignStatus)],
-              ].map(([title, status, description]) => (
-                <article key={title} className="m3-s11-status-card">
-                  <span>{title}</span>
-                  <h3>{getScreen11StatusLabel(status as Screen11GenderStatus | Screen11DisabilityStatus)}</h3>
-                  <p>{description}</p>
-                </article>
-              ))}
-            </div>
-            <section aria-labelledby={`${screen.id}-review`}>
-              <h3 id={`${screen.id}-review`}>Review inclusion check</h3>
-              <div className="m3-s11-inclusion-output-grid">
-                {(submittedOutput.inclusionCheckRows || submittedOutput.markerLiteDashboard.inclusionCheckRows || []).map((row) => {
-                  return (
-                    <article key={row.designAreaReviewed} data-testid="m3-s11-generated-dashboard-row">
-                      <h4>{row.designAreaReviewed}</h4>
-                      <dl>
-                        <div><dt>Design area or activity reviewed</dt><dd>{row.designAreaReviewed}</dd></div>
-                        <div><dt>Gender-related consideration</dt><dd>{row.genderRelatedConsideration}</dd></div>
-                        <div><dt>Disability/accessibility consideration</dt><dd>{row.disabilityAccessibilityConsideration}</dd></div>
-                        <div><dt>Design adaptation</dt><dd>{row.designAdaptation}</dd></div>
-                        <div><dt>Responsible actor or role</dt><dd>{row.responsibleActorOrRole}</dd></div>
-                        <div><dt>Implementation watch-point</dt><dd>{row.implementationWatchPoint}</dd></div>
-                        <div><dt>Carry forward to participation, accountability, and risk checks</dt><dd>{row.carryForwardToParticipationAccountabilityRisk}</dd></div>
-                      </dl>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-            <section aria-labelledby={`${screen.id}-selected-repairs`}>
-              <h3 id={`${screen.id}-selected-repairs`}>Design repairs to carry forward</h3>
-              <div className="m3-s11-selected-repair-grid">
-                {submittedOutput.markerLiteDashboard.selectedRepairRows.map((repair) => (
-                  <article key={repair.repairSelected}>
-                    <h4>{repair.repairSelected}</h4>
-                    <p><strong>Why it matters:</strong> {repair.whyItMatters}</p>
-                    <p><strong>Where to use it next:</strong> {repair.whereToUseItNext}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-            <section className="m3-s11-carry-forward" aria-labelledby={`${screen.id}-dashboard-suggests`}>
-              <h3 id={`${screen.id}-dashboard-suggests`}>What your dashboard suggests</h3>
-              <p>{submittedOutput.markerLiteDashboard.dashboardInterpretation}</p>
-            </section>
-            <section className="m3-s11-carry-forward" aria-labelledby={`${screen.id}-carry-question`}>
-              <h3 id={`${screen.id}-carry-question`}>Carry this into Screen 12</h3>
-              <p>{submittedOutput.carryForwardQuestion}</p>
-            </section>
-          </section>
+          <GenderDisabilityDashboardVisualization
+            viewModel={screen11VisualizationViewModel}
+            idPrefix={dashboardId}
+            headingRef={outputRef}
+          />
         )}
 
         {activeStage === 4 && submittedOutput && (
-          <>
-            <section className="m3-s11-feedback" aria-labelledby={`${screen.id}-feedback`}>
-              <h2 id={`${screen.id}-feedback`}>Feedback and interpretation</h2>
-              <h3>{screen11FeedbackText[submittedOutput.primaryFeedbackState].title}</h3>
-              <p>{screen11FeedbackText[submittedOutput.primaryFeedbackState].text}</p>
-              {warnings.length > 0 && (
-                <div className="m3-s11-warning-list">
-                  <h3>What to check next</h3>
-                  <ul>
-                    {warnings.map((warning) => (
-                      <li key={warning.id}>
-                        <span aria-hidden="true">!</span>
-                        <div>
-                          <strong>{warning.title}</strong>
-                          <p>{warning.text}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </section>
-
-            <section className="m3-s11-save-confirmation" aria-labelledby={`${screen.id}-save`}>
+          <section className="m3-s11-save-confirmation" aria-labelledby={`${screen.id}-save`}>
               <h2 id={`${screen.id}-save`}>Case-study learning to carry forward</h2>
               <div className="m3-s11-save-grid">
                 <article>
@@ -12520,7 +13932,6 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
                 </article>
               </div>
             </section>
-          </>
         )}
 
         {activeStage === 4 && submittedOutput && (
@@ -12608,30 +14019,50 @@ function GenderDisabilityDesignCheckScreen({ screen, onComplete }: {
   );
 }
 
-function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
+function ParticipationAccountabilityPathwayScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selection, setSelection] = useState<Screen12PathwaySelection>({
+  const emptySelection: Screen12PathwaySelection = {
     projectMoment: '',
     group: '',
     gap: '',
     decision: '',
     participationMethod: '',
+    informationMethod: '',
     supports: [],
     responseChannel: '',
     responsibleActor: '',
+    responseMethod: '',
+    explanationFollowUp: '',
+    accessibilityRiskCheck: '',
+    alternativeChannel: '',
     designAdjustment: '',
     implementationWatchPoint: '',
     customGroup: '',
-  });
+  };
+  const savedOutput = getScreen12SavedOutput(state);
+  const carriedScreen11 = getScreen11SavedOutput(state);
+  const savedPathway = savedOutput?.participationAccountabilityPathway;
+  const restoredSelection: Screen12PathwaySelection = savedPathway ? {
+    ...emptySelection,
+    ...savedPathway,
+    group: savedPathway.group || savedPathway.rightsHolderGroup || '',
+    gap: savedPathway.gap || savedPathway.participationAccountabilityGap || '',
+    decision: savedPathway.decision || savedPathway.decisionToInfluence || '',
+    supports: Array.isArray(savedPathway.supports) ? savedPathway.supports.filter((value) => screen12Supports.includes(value)) : [],
+    informationMethod: savedPathway.informationMethod || savedPathway.supports?.[0] || '',
+  } : emptySelection;
+  const restoredSignature = savedOutput ? getScreen12RequiredSignature(restoredSelection) : null;
+  const [selection, setSelection] = useState<Screen12PathwaySelection>(restoredSelection);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen12OwnCsoDraft>(getEmptyScreen12OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen12OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen12OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen12Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen12Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHero, setShowHero] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredSelection.projectMoment ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -12643,41 +14074,28 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   const selectedProjectMoment = screen12ProjectMoments.find((moment) => moment.label === selection.projectMoment);
   const completedPathwayFields = [
     selection.participationMethod,
+    selection.informationMethod,
     selection.supports[0],
     selection.responseChannel,
     selection.responsibleActor,
+    selection.responseMethod,
+    selection.explanationFollowUp,
+    selection.accessibilityRiskCheck,
+    selection.alternativeChannel,
     selection.designAdjustment,
     selection.implementationWatchPoint,
   ].filter(Boolean).length;
   const completedPathwayRowCount = isValid ? 1 : 0;
   const selectProjectMoment = (moment: Screen12ProjectMoment) => {
-    setSelection((current) => current.projectMoment === moment.label ? {
-      projectMoment: '',
-      group: '',
-      gap: '',
-      decision: '',
-      participationMethod: '',
-      supports: [],
-      responseChannel: '',
-      responsibleActor: '',
-      designAdjustment: '',
-      implementationWatchPoint: '',
-      customGroup: '',
-    } : {
+    setSelection((current) => current.projectMoment === moment.label ? emptySelection : {
+      ...emptySelection,
       projectMoment: moment.label,
       group: moment.group,
       gap: moment.gap,
       decision: moment.decision,
-      participationMethod: '',
-      supports: [],
-      responseChannel: '',
-      responsibleActor: '',
-      designAdjustment: '',
-      implementationWatchPoint: '',
-      customGroup: '',
     });
   };
-  const updatePathwayField = (field: 'participationMethod' | 'responseChannel' | 'responsibleActor' | 'designAdjustment' | 'implementationWatchPoint', value: string) => {
+  const updatePathwayField = (field: 'participationMethod' | 'informationMethod' | 'responseChannel' | 'responsibleActor' | 'responseMethod' | 'explanationFollowUp' | 'accessibilityRiskCheck' | 'alternativeChannel' | 'designAdjustment' | 'implementationWatchPoint', value: string) => {
     setSelection((current) => ({ ...current, [field]: value }));
   };
   const updateAccessSupport = (value: string) => {
@@ -12755,10 +14173,15 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
     ['Watch-point', selection.implementationWatchPoint || ''],
   ];
   const pathwayRowFields: Array<{ label: string; value: string; onChange: (value: string) => void; options: string[]; testId: string }> = [
+    { label: 'Information method', value: selection.informationMethod || '', onChange: (value) => updatePathwayField('informationMethod', value), options: screen12Supports, testId: 'm3-s12-information-method-select' },
     { label: 'Participation method', value: selection.participationMethod || '', onChange: (value) => updatePathwayField('participationMethod', value), options: screen12ParticipationMethods, testId: 'm3-s12-participation-method-select' },
     { label: 'Information/access measure', value: selection.supports[0] || '', onChange: updateAccessSupport, options: screen12Supports, testId: 'm3-s12-access-measure-select' },
     { label: 'Feedback or concern channel', value: selection.responseChannel, onChange: (value) => updatePathwayField('responseChannel', value), options: screen12ResponseChannels, testId: 'm3-s12-feedback-channel-select' },
     { label: 'Response/follow-up actor or role', value: selection.responsibleActor, onChange: (value) => updatePathwayField('responsibleActor', value), options: screen12ResponsibleActors, testId: 'm3-s12-response-actor-select' },
+    { label: 'Response method', value: selection.responseMethod || '', onChange: (value) => updatePathwayField('responseMethod', value), options: screen12ResponseMethods, testId: 'm3-s12-response-method-select' },
+    { label: 'Explanation and follow-up', value: selection.explanationFollowUp || '', onChange: (value) => updatePathwayField('explanationFollowUp', value), options: screen12ExplanationFollowUps, testId: 'm3-s12-explanation-follow-up-select' },
+    { label: 'Accessibility, inclusion, and risk check', value: selection.accessibilityRiskCheck || '', onChange: (value) => updatePathwayField('accessibilityRiskCheck', value), options: screen12AccessibilityRiskChecks, testId: 'm3-s12-accessibility-risk-select' },
+    { label: 'Alternative channel', value: selection.alternativeChannel || '', onChange: (value) => updatePathwayField('alternativeChannel', value), options: screen12AlternativeChannels, testId: 'm3-s12-alternative-channel-select' },
     { label: 'Design adaptation', value: selection.designAdjustment, onChange: (value) => updatePathwayField('designAdjustment', value), options: screen12DesignAdjustments, testId: 'm3-s12-design-adaptation-select' },
     { label: 'Implementation watch-point', value: selection.implementationWatchPoint || '', onChange: (value) => updatePathwayField('implementationWatchPoint', value), options: screen12ImplementationWatchPoints, testId: 'm3-s12-watch-point-select' },
   ];
@@ -12772,6 +14195,11 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
           <h1 id={titleId}>Participation and Accountability Pathway</h1>
           <p className="m3-participation-subtitle">Design how rights-holders access information, influence decisions, receive response, and see what changed.</p>
         </header>
+
+        <section className="m3-b5-carried-findings" aria-labelledby={`${screen.id}-carried-findings`}>
+          <h2 id={`${screen.id}-carried-findings`}>Inclusion findings carried into the pathway</h2>
+          <p>{carriedScreen11?.selectedRepairs?.map((id) => screen11Repairs.find((repair) => repair.id === id)?.title).filter(Boolean).slice(0, 6).join(', ') || 'Use accessible information, participation, reasonable accommodation, responsibility, and feedback findings from the previous design check.'}</p>
+        </section>
 
         <nav className="m3-participation-stage-nav" aria-label="Participation and accountability stages">
           {participationStages.map((stage) => {
@@ -12848,18 +14276,21 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
         <section className="m3-participation-grid-two">
           <article className="m3-participation-card">
             <h2>Worked example: women traders</h2>
-            <div className="m3-participation-example-grid">
+            <ol className="m3-participation-example-grid" aria-label="Participation and accountability pathway example">
               {[
-                ['Rights-holder group', 'Women traders.'],
-                ['Gap', 'They attended a meeting, but the final market priorities may already have been shaped.'],
-                ['Decision to influence', 'Market service priorities, fee arrangements, information-sharing, and feedback follow-up.'],
-                ['Access support', 'Clear information before decisions, consultation time that fits livelihood and care responsibilities, and a trusted facilitator.'],
-                ['Influence method', 'Small-group discussion before final decisions, with documented non-identifying priorities carried to the planning team.'],
-                ['Response channel', 'Public response note and safe feedback route explaining what changed, what did not change, and why.'],
-                ['Responsible actor', 'Woreda planning office with support from the market committee and CSO facilitator.'],
-                ['Design adjustment', 'Add early consultation, feedback-response steps, and an indicator showing whether women traders influenced decisions before finalization.'],
-              ].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}
-            </div>
+                ['Accessible information', 'Share clear information before decisions in formats and at times women traders can use.'],
+                ['Participation method', 'Use a facilitated small-group discussion that fits livelihood and care responsibilities.'],
+                ['Decision-influence point', 'Carry documented, non-identifying priorities into market service, fee, information and feedback decisions before finalization.'],
+                ['Feedback or concern channel', 'Provide a safe feedback route and a public response note.'],
+                ['Responsible recipient', 'The Woreda planning office receives the priorities, supported by the market committee and CSO facilitator.'],
+                ['Review and response', 'The planning team reviews the priorities and records what can change.'],
+                ['Explanation', 'Explain what changed, what did not change, and why.'],
+                ['Follow-up or adaptation', 'Follow up on agreed actions and adapt the pathway when participation is not influencing decisions.'],
+                ['Accessibility and inclusion check', 'Check whether timing, language, format and facilitation enable women traders and persons with disabilities to participate.'],
+                ['Alternative channel', 'Offer a confidential or assisted route for people who cannot safely or practically use the main channel.'],
+                ['Risk or implementation watch-point', 'Monitor whether priorities are gathered before decisions and whether responses reach participants.'],
+              ].map(([label, value], index) => <li key={label}><span aria-hidden="true">{index + 1}</span><div><strong>{label}</strong><p>{value}</p></div></li>)}
+            </ol>
             <p className="m3-participation-note">Notice: The example does not only say “women traders attended.” It shows the decision they influence, the support they need, who responds, and how they know what changed.</p>
             <div className="m3-guided-stage-actions">
               <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(1)}>Back to Understand</button>
@@ -12966,18 +14397,65 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
             <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Participation and Accountability Pathway</h2>
             <p>This pathway shows how a selected rights-holder group can receive information, access participation, influence a decision, receive a response, and see what changed. It is a learning output, not a complaint record or formal accountability finding.</p>
             <div className="m3-participation-badge-row">{pathway.badges.map((badge) => <span key={badge}>{badge}</span>)}</div>
-            <div className="m3-participation-pathway">
+            <section className="m3-b12-pathway-context" aria-labelledby={`${screen.id}-pathway-context`}>
+              <h3 id={`${screen.id}-pathway-context`}>Pathway context</h3>
+              <dl>
+                <div><dt>Project moment strengthened</dt><dd>{pathway.projectMoment || pathway.decisionToInfluence}</dd></div>
+                <div><dt>Rights-holder or participant group</dt><dd>{pathway.rightsHolderGroup}</dd></div>
+                <div><dt>Participation or accountability gap</dt><dd>{pathway.participationAccountabilityGap}</dd></div>
+                <div><dt>Decision to influence</dt><dd>{pathway.decisionToInfluence}</dd></div>
+              </dl>
+            </section>
+            <div className="m3-participation-pathway m3-b12-phased-pathway" aria-label="Eleven-step participation and accountability pathway">
               {[
-                ['Project moment strengthened', pathway.projectMoment || pathway.decisionToInfluence],
-                ['Rights-holder or participant group', pathway.rightsHolderGroup],
-                ['Participation method', pathway.influenceMethod],
-                ['Information/access measure', pathway.accessSupport.join('; ')],
-                ['Feedback or concern channel', pathway.responseChannel],
-                ['Response/follow-up actor or role', pathway.responsibleActor],
-                ['Design adaptation', pathway.designAdjustment],
-                ['Implementation watch-point', pathway.implementationWatchPoint || pathway.indicatorEvidenceQuestion],
-                ['Carry forward to risk and do-no-harm check', 'Use this pathway in the next screen to check whether participation or feedback could expose people, create unmet expectations, exclude lower-influence groups, or leave response responsibility unclear.'],
-              ].map(([label, value], index) => <article key={label} data-testid="m3-s12-generated-pathway-row"><span>{index + 1}</span><h3>{label}</h3><p>{value}</p></article>)}
+                {
+                  phase: 'Prepare access and information',
+                  steps: [
+                    ['Information method', pathway.informationMethod || pathway.accessSupport[0]],
+                  ],
+                },
+                {
+                  phase: 'Enable influence before the decision',
+                  steps: [
+                    ['Participation or influence method', pathway.participationMethod || pathway.influenceMethod],
+                    ['Information and access support', pathway.accessSupport.join('; ')],
+                  ],
+                },
+                {
+                  phase: 'Receive and respond to feedback',
+                  steps: [
+                    ['Feedback or concern channel', pathway.responseChannel],
+                    ['Responsible response or follow-up actor', pathway.responsibleActor],
+                    ['Response method', pathway.responseMethod],
+                  ],
+                },
+                {
+                  phase: 'Explain, follow up, adapt, and monitor',
+                  steps: [
+                    ['Explanation and follow-up', pathway.explanationFollowUp || pathway.followUpMethod],
+                    ['Accessibility, inclusion, and risk check', pathway.accessibilityRiskCheck],
+                    ['Alternative channel', pathway.alternativeChannel],
+                    ['Design adjustment', pathway.designAdjustment],
+                    ['Implementation watch-point', pathway.implementationWatchPoint || pathway.indicatorEvidenceQuestion],
+                  ],
+                },
+              ].map((phase, phaseIndex) => {
+                const priorStepCount = [0, 1, 3, 6][phaseIndex];
+                return (
+                  <section key={phase.phase} className={`m3-b12-phase m3-b12-phase--${phaseIndex + 1}`} aria-labelledby={`${screen.id}-phase-${phaseIndex + 1}`}>
+                    <header><span>Phase {phaseIndex + 1}</span><h3 id={`${screen.id}-phase-${phaseIndex + 1}`}>{phase.phase}</h3></header>
+                    <div>
+                      {phase.steps.map(([label, value], stepIndex) => (
+                        <article key={label} data-testid="m3-s12-generated-pathway-row">
+                          <span>{priorStepCount + stepIndex + 1}</span>
+                          <h4>{label}</h4>
+                          <p>{value || 'No additional value was saved for this step.'}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
             <section className="m3-participation-suggests" aria-labelledby={`${screen.id}-suggests`}>
               <h3 id={`${screen.id}-suggests`}>What your pathway suggests</h3>
@@ -13090,18 +14568,213 @@ function ParticipationAccountabilityPathwayScreen({ screen, onComplete }: {
   );
 }
 
-function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
+function buildScreen13VisualizationViewModel({
+  submittedOutput,
+  formChanged,
+  selection,
+  helperText,
+}: {
+  submittedOutput: Screen13Submission | null;
+  formChanged: boolean;
+  selection: Screen13RiskBoardSelection;
+  helperText: string;
+}): Screen13VisualizationViewModel {
+  const hasDraftContent = Boolean(
+    selection.riskSituation
+    || selection.riskCategories.length
+    || selection.affectedGroups.length
+    || selection.likelyCause
+    || selection.impactLevel
+    || selection.mitigationActions.length
+    || selection.responsibleActor
+    || selection.watchSign
+    || selection.alternativeChannel
+    || selection.pauseStopReferralCondition
+    || selection.designAdjustment,
+  );
+  const status: Screen13VisualizationStatus = submittedOutput
+    ? formChanged ? 'stale' : 'current'
+    : hasDraftContent ? 'partial' : 'empty';
+  const statusCopy: Record<Screen13VisualizationStatus, { label: string; message: string }> = {
+    empty: {
+      label: 'Board not started',
+      message: helperText,
+    },
+    partial: {
+      label: 'Board in progress',
+      message: helperText,
+    },
+    current: {
+      label: 'Generated board',
+      message: 'This board reflects the current generated risk and do-no-harm check.',
+    },
+    stale: {
+      label: 'Board needs update',
+      message: helperText,
+    },
+  };
+  const savedBoard = submittedOutput?.riskDoNoHarmBoard.generatedBoard;
+  const impactLevel = submittedOutput?.riskDoNoHarmBoard.selection.impactLevel || selection.impactLevel;
+  const riskItems: Screen13VisualizationItem[] = [
+    ['Situation or decision', savedBoard?.riskSituation || selection.riskSituation],
+    ['Risk category', savedBoard?.riskCategory || selection.riskCategories.join('; ')],
+    ['Affected group', savedBoard?.whoMayBeAffected || selection.affectedGroups.join('; ')],
+    ['Likely cause', savedBoard?.likelyCause || selection.likelyCause],
+  ].map(([label, value]) => ({ label, value })).filter((item) => Boolean(item.value));
+  const responseItems: Screen13VisualizationItem[] = [
+    ['Mitigation or design adaptation', savedBoard?.mitigationAction || selection.mitigationActions.join('; ')],
+    ['Responsible actor', savedBoard?.responsibleActor || selection.responsibleActor],
+    ['Alternative channel', savedBoard?.alternativeChannel || selection.alternativeChannel],
+    ['Design adjustment', savedBoard?.designAdjustment || selection.designAdjustment],
+  ].map(([label, value]) => ({ label, value })).filter((item) => Boolean(item.value));
+  const monitorItems: Screen13VisualizationItem[] = [
+    { label: 'Monitoring sign', value: savedBoard?.watchSign || selection.watchSign },
+    { label: 'Pause, stop, review, or referral condition', value: savedBoard?.pauseStopReferralCondition || selection.pauseStopReferralCondition, safetyCritical: true },
+    { label: 'Carry-forward use', value: savedBoard?.carryForwardUse || '', safetyCritical: true },
+  ].filter((item) => Boolean(item.value));
+
+  return {
+    status,
+    statusLabel: statusCopy[status].label,
+    statusMessage: statusCopy[status].message,
+    meaning: 'This board brings together the risk, the planned response, and the signs that indicate when the project should pause, stop, review, or refer.',
+    impactLevel,
+    impactLabel: savedBoard?.impactLevel || getRiskStatusLabel(selection.impactLevel),
+    lanes: [
+      { id: 'risk', number: 1, title: 'Risk', items: riskItems },
+      { id: 'response', number: 2, title: 'Response', items: responseItems },
+      { id: 'monitor', number: 3, title: 'Monitor and escalate', items: monitorItems },
+    ],
+    interpretationMessages: submittedOutput?.riskDoNoHarmBoard.interpretationMessages || [],
+    feedbackMessages: submittedOutput?.feedbackMessages || [],
+    safetyConfirmation: submittedOutput?.riskDoNoHarmBoard.safetyConfirmation || '',
+    carryForwardNote: savedBoard?.carryForwardUse || '',
+    orderingNote: submittedOutput
+      ? 'Ordering source: saved generated-board field order.'
+      : 'Ordering source: current learner selections follow the original Screen 13 field order.',
+  };
+}
+
+function RiskDoNoHarmBoardVisualization({
+  viewModel,
+  idPrefix,
+  headingRef,
+}: {
+  viewModel: Screen13VisualizationViewModel;
+  idPrefix: string;
+  headingRef?: RefObject<HTMLHeadingElement | null>;
+}) {
+  const hasBoardContent = viewModel.lanes.some((lane) => lane.items.length > 0);
+
+  return (
+    <section className={`m3-risk-output m3-s13-visualization is-${viewModel.status}`} aria-labelledby={`${idPrefix}-title`}>
+      <header className="m3-s13-visualization-header">
+        <div>
+          <p className="m3-s13-visualization-eyebrow">READ-ONLY SAFETY DECISION BOARD</p>
+          <h2 id={`${idPrefix}-title`} ref={headingRef} tabIndex={headingRef ? -1 : undefined}>Risk and Do-No-Harm Board</h2>
+        </div>
+        <span className="m3-s13-visualization-status">{viewModel.statusLabel}</span>
+      </header>
+      <p className="m3-s13-visualization-status-message" aria-live="polite">{viewModel.statusMessage}</p>
+      <p className="m3-s13-visualization-meaning"><strong>What this shows:</strong> {viewModel.meaning}</p>
+
+      {hasBoardContent ? (
+        <div className="m3-s13-board" aria-label="Three-lane risk and do-no-harm board">
+          {viewModel.lanes.map((lane) => (
+            <section key={lane.id} className={`m3-s13-lane m3-s13-lane--${lane.id}`} aria-labelledby={`${idPrefix}-${lane.id}`}>
+              <header>
+                <span aria-hidden="true">{lane.number}</span>
+                <h3 id={`${idPrefix}-${lane.id}`}>{lane.title}</h3>
+              </header>
+              {lane.id === 'risk' && viewModel.impactLabel && (
+                <p className={`m3-s13-impact is-${viewModel.impactLevel || 'pending'}`}>
+                  <span aria-hidden="true">{viewModel.impactLevel === 'high' ? '!' : viewModel.impactLevel === 'medium' ? '◐' : '○'}</span>
+                  <strong>Impact:</strong> {viewModel.impactLabel}
+                </p>
+              )}
+              {lane.items.length > 0 ? (
+                <dl>
+                  {lane.items.map((item) => (
+                    <div key={item.label} className={item.safetyCritical ? 'is-safety-critical' : undefined}>
+                      <dt>{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : <p className="m3-s13-visualization-empty">No information is available for this lane yet.</p>}
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p className="m3-s13-visualization-empty">Select a risk situation to begin the board. No learner output has been generated yet.</p>
+      )}
+
+      {viewModel.interpretationMessages.length > 0 && (
+        <section className="m3-s13-interpretation" aria-labelledby={`${idPrefix}-interpretation`}>
+          <h3 id={`${idPrefix}-interpretation`}>What the board suggests</h3>
+          <ul>{viewModel.interpretationMessages.map((message) => <li key={message}>{message}</li>)}</ul>
+        </section>
+      )}
+      {viewModel.feedbackMessages.length > 0 && (
+        <section className="m3-s13-feedback" aria-labelledby={`${idPrefix}-feedback`}>
+          <h3 id={`${idPrefix}-feedback`}>Feedback</h3>
+          <ul>{viewModel.feedbackMessages.map((message) => <li key={message}>{message}</li>)}</ul>
+        </section>
+      )}
+      {viewModel.safetyConfirmation && (
+        <section className="m3-s13-safety-confirmation" aria-labelledby={`${idPrefix}-safety`}>
+          <h3 id={`${idPrefix}-safety`}>Safety confirmation</h3>
+          <p>{viewModel.safetyConfirmation}</p>
+        </section>
+      )}
+
+      <section className="m3-s13-text-equivalent" aria-labelledby={`${idPrefix}-text`}>
+        <h3 id={`${idPrefix}-text`}>Complete text version</h3>
+        <p><strong>Output status:</strong> {viewModel.statusLabel}. {viewModel.statusMessage}</p>
+        {viewModel.lanes.map((lane) => (
+          <section key={lane.id} aria-labelledby={`${idPrefix}-text-${lane.id}`}>
+            <h4 id={`${idPrefix}-text-${lane.id}`}>{lane.number}. {lane.title}</h4>
+            {lane.id === 'risk' && viewModel.impactLabel && <p><strong>Impact:</strong> {viewModel.impactLabel}</p>}
+            {lane.items.length > 0 ? (
+              <dl>{lane.items.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+            ) : <p>No information is available for this lane yet.</p>}
+          </section>
+        ))}
+        {viewModel.interpretationMessages.length > 0 && <section><h4>Interpretation</h4><ul>{viewModel.interpretationMessages.map((message) => <li key={message}>{message}</li>)}</ul></section>}
+        {viewModel.feedbackMessages.length > 0 && <section><h4>Feedback</h4><ul>{viewModel.feedbackMessages.map((message) => <li key={message}>{message}</li>)}</ul></section>}
+        {viewModel.safetyConfirmation && <section><h4>Safety confirmation</h4><p>{viewModel.safetyConfirmation}</p></section>}
+        {viewModel.carryForwardNote && <section><h4>Carry this into Screen 14</h4><p>{viewModel.carryForwardNote}</p></section>}
+      </section>
+      {viewModel.carryForwardNote && <p className="m3-s13-carry-forward"><strong>Carry this into Screen 14:</strong> {viewModel.carryForwardNote}</p>}
+      <p className="m3-s13-ordering">{viewModel.orderingNote}</p>
+    </section>
+  );
+}
+
+function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selection, setSelection] = useState<Screen13RiskBoardSelection>(getEmptyRiskBoardSelection());
+  const savedOutput = getScreen13SavedOutput(state);
+  const carriedScreen12 = getScreen12SavedOutput(state);
+  const savedSelection = savedOutput?.riskDoNoHarmBoard.selection;
+  const restoredSelection: Screen13RiskBoardSelection = savedSelection ? {
+    ...getEmptyRiskBoardSelection(),
+    ...savedSelection,
+    riskCategories: savedSelection.riskCategories.filter((value) => screen13RiskCategories.includes(value)),
+    affectedGroups: savedSelection.affectedGroups.filter((value) => screen13AffectedGroups.some((group) => group.label === value)),
+    mitigationActions: savedSelection.mitigationActions.filter((value) => screen13Mitigations.includes(value)),
+  } : getEmptyRiskBoardSelection();
+  const restoredSignature = savedOutput ? getScreen13RequiredSignature(restoredSelection) : null;
+  const [selection, setSelection] = useState<Screen13RiskBoardSelection>(restoredSelection);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen13OwnCsoDraft>(getEmptyScreen13OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen13OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen13OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen13Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen13Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHero, setShowHero] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredSelection.riskSituation ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -13111,6 +14784,12 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
   const isValid = validationMessages.length === 0;
   const canContinue = Boolean(submittedOutput && !formChanged);
   const helperText = getScreen13HelperText(selection, Boolean(submittedOutput), formChanged);
+  const screen13VisualizationViewModel = buildScreen13VisualizationViewModel({
+    submittedOutput,
+    formChanged,
+    selection,
+    helperText,
+  });
   const selectRiskSituation = (riskSituation: string) => {
     setSelection((current) => current.riskSituation === riskSituation
       ? getEmptyRiskBoardSelection()
@@ -13185,18 +14864,24 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
     ['Decision/activity', selection.riskSituation],
     ['Possible risk', selection.riskCategories.join('; ')],
     ['Affected group', selection.affectedGroups.join('; ')],
+    ['Likely cause', selection.likelyCause],
     ['Risk level', getRiskStatusLabel(selection.impactLevel)],
     ['Mitigation', selection.mitigationActions.join('; ')],
     ['Follow-up actor', selection.responsibleActor],
     ['Watch-point', selection.watchSign],
+    ['Alternative channel', selection.alternativeChannel],
+    ['Pause/stop/referral', selection.pauseStopReferralCondition],
   ];
   const completedRiskFields = [
     selection.riskCategories[0],
     selection.affectedGroups[0],
+    selection.likelyCause,
     selection.impactLevel,
     selection.mitigationActions[0],
     selection.responsibleActor,
     selection.watchSign,
+    selection.alternativeChannel,
+    selection.pauseStopReferralCondition,
   ].filter(Boolean).length;
   const completedRiskRowCount = isValid ? 1 : 0;
   const riskRowFields: Array<{
@@ -13208,10 +14893,13 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
   }> = [
     { key: 'riskCategories', label: 'Possible risk or unintended harm', value: selection.riskCategories[0] || '', options: screen13RiskCategories, testId: 'm3-s13-risk-category-select' },
     { key: 'affectedGroups', label: 'Who may be affected', value: selection.affectedGroups[0] || '', options: screen13AffectedGroups.map((group) => group.label), testId: 'm3-s13-affected-group-select' },
+    { key: 'likelyCause', label: 'Likely cause', value: selection.likelyCause, options: screen13LikelyCauses, testId: 'm3-s13-likely-cause-select' },
     { key: 'impactLevel', label: 'Risk level', value: selection.impactLevel, options: screen13ImpactLevels.map((level) => ({ value: level.value, label: level.label })), testId: 'm3-s13-impact-select' },
     { key: 'mitigationActions', label: 'Mitigation or design adaptation', value: selection.mitigationActions[0] || '', options: screen13Mitigations, testId: 'm3-s13-mitigation-select' },
     { key: 'responsibleActor', label: 'Follow-up actor or role', value: selection.responsibleActor, options: screen13ResponsibleActors, testId: 'm3-s13-responsible-actor-select' },
     { key: 'watchSign', label: 'Implementation watch-point', value: selection.watchSign, options: screen13WatchSigns, testId: 'm3-s13-watch-sign-select' },
+    { key: 'alternativeChannel', label: 'Alternative channel', value: selection.alternativeChannel, options: screen13AlternativeChannels, testId: 'm3-s13-alternative-channel-select' },
+    { key: 'pauseStopReferralCondition', label: 'Pause, stop, or referral condition', value: selection.pauseStopReferralCondition, options: screen13PauseStopReferralConditions, testId: 'm3-s13-pause-stop-referral-select' },
   ];
 
   return (
@@ -13223,6 +14911,12 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
           <h1 id={titleId}>Risk and Do-No-Harm in Project Design</h1>
           <p className="m3-risk-subtitle">Check what could exclude, expose, silence, or harm people before the project is implemented.</p>
         </header>
+
+        <section className="m3-b5-carried-findings" aria-labelledby={`${screen.id}-carried-findings`}>
+          <h2 id={`${screen.id}-carried-findings`}>Pathway findings carried into risk analysis</h2>
+          <p><strong>Participation and feedback:</strong> {carriedScreen12?.participationAccountabilityPathway?.participationMethod || 'Review the selected participation method'}, {carriedScreen12?.participationAccountabilityPathway?.responseChannel || 'feedback channel'}, and {carriedScreen12?.participationAccountabilityPathway?.responsibleActor || 'responsible recipient'}.</p>
+          <p>Check whether the pathway excludes or exposes anyone, whether another channel is needed, and what condition requires pause, stop, referral, or responsible review.</p>
+        </section>
 
         <nav className="m3-risk-stage-nav" aria-label="Risk and do-no-harm stages">
           {riskStages.map((stage) => (
@@ -13383,7 +15077,7 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
                   </span>
                 ))}
               </div>
-              <p className="m3-guided-helper">Completed fields: {completedRiskFields} of 6</p>
+              <p className="m3-guided-helper">Completed fields: {completedRiskFields} of 9</p>
               <p className="m3-guided-helper">{helperText}</p>
               <button type="button" className="m3-risk-submit" disabled={!isValid} onClick={submitBoard}>
                 {submittedOutput ? 'Update risk check' : 'Generate risk check'}
@@ -13394,40 +15088,23 @@ function RiskDoNoHarmBoardScreen({ screen, onComplete }: {
         </section>
         )}
 
+        {activeStage === 3 && (
+          <RiskDoNoHarmBoardVisualization
+            viewModel={screen13VisualizationViewModel}
+            idPrefix={`${screen.id}-practice-visualization`}
+          />
+        )}
+
         {activeStage === 4 && submittedOutput && generatedBoard && (
-          <section className="m3-risk-output" aria-live="polite" aria-labelledby={`${screen.id}-output`}>
-            <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Risk and Do-No-Harm Check</h2>
-            <p>This board shows what could exclude, expose, silence, overload, or harm people before implementation, and what should change in the design. It is a learning output, not a complaint record, investigation, or formal risk assessment.</p>
-            <div className="m3-risk-output-grid m3-risk-output-grid--board">
-              {[
-                ['Design decision or activity reviewed', generatedBoard.riskSituation],
-                ['Possible risk or unintended harm', generatedBoard.riskCategory],
-                ['Who may be affected', generatedBoard.whoMayBeAffected],
-                ['Risk level', generatedBoard.impactLevel],
-                ['Mitigation or design adaptation', generatedBoard.mitigationAction],
-                ['Follow-up actor or role', generatedBoard.responsibleActor],
-                ['Implementation watch-point', generatedBoard.watchSign],
-                ['Carry forward to design repair', generatedBoard.carryForwardUse],
-              ].map(([label, value]) => (
-                <article key={label} className="m3-risk-output-card" data-testid="m3-s13-generated-board-row">
-                  <h3>{label}</h3>
-                  <p>{value}</p>
-                </article>
-              ))}
-            </div>
-          </section>
+          <RiskDoNoHarmBoardVisualization
+            viewModel={screen13VisualizationViewModel}
+            idPrefix={`${screen.id}-output`}
+            headingRef={outputRef}
+          />
         )}
 
         {activeStage === 4 && submittedOutput && (
           <>
-            <section className="m3-risk-feedback">
-              <h2>What your risk board suggests</h2>
-              <ul>{submittedOutput.riskDoNoHarmBoard.interpretationMessages.map((message) => <li key={message}>{message}</li>)}</ul>
-            </section>
-            <section className="m3-risk-feedback">
-              <h2>Feedback</h2>
-              <ul>{submittedOutput.feedbackMessages.map((message) => <li key={message}>{message}</li>)}</ul>
-            </section>
             <section className="m3-risk-carry-forward">
               <h2>Case-study learning to carry forward</h2>
               <div className="m3-risk-carry-grid">
@@ -13559,7 +15236,7 @@ function downloadDesignRepairTemplate(markdown: string, filename: string, format
   URL.revokeObjectURL(url);
 }
 
-type Screen14StageId = 1 | 2 | 3 | 4 | 5;
+type Screen14StageId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 function uniqueNonEmpty(values: Array<string | null | undefined>, fallback: string[]) {
   const cleaned = values.map((value) => String(value || '').trim()).filter(Boolean);
@@ -13599,6 +15276,7 @@ function buildScreen14CarryForward(state: LearningState) {
   const watchPoint = screen13.riskDoNoHarmBoard?.generatedBoard.watchSign || screen12.participationAccountabilityPathway?.followUpMethod || 'participation may remain late or symbolic without response and follow-up';
 
   return {
+    missingScreens: [5, 6, 7, 8, 9, 10, 11, 12, 13].filter((number) => Object.keys(getPracticeState(state, `M3-R${String(number).padStart(2, '0')}`)).length === 0),
     chips: [
       { label: 'Rights-holder groups', value: rightsHolders.join(', ') },
       { label: 'Barriers', value: barriers.join(', ') },
@@ -13648,23 +15326,41 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
     actorRole: '',
     watchPoint: '',
   };
-  const [stage, setStage] = useState<Screen14StageId>(1);
-  const [selectedIssueId, setSelectedIssueId] = useState('');
-  const [repairDraft, setRepairDraft] = useState(initialRepairDraft);
+  const savedScreen14 = getScreen14SavedOutput(state);
+  const savedPackage = savedScreen14?.designRepairPackage;
+  const savedLogic = savedScreen14?.interventionLogicIndicators;
+  const restoredIssueId = savedPackage?.selectedIssueId || (savedScreen14 ? 'lateParticipation' : '');
+  const restoredRepairDraft = savedScreen14 ? {
+    evidenceSource: savedPackage?.interventionLogicChain.find((item) => item.startsWith('Evidence or analysis used:'))?.replace('Evidence or analysis used:', '').trim() || '',
+    weakFeature: savedScreen14.repairedObjective.whatWasMissing || '',
+    repairedStatement: savedScreen14.repairedObjective.repairedHrbaObjective || '',
+    designChange: savedLogic?.repairedActivity || savedScreen14.repairedActivityPackage?.generatedSummary || '',
+    actorRole: savedPackage?.interventionLogicChain.find((item) => item.startsWith('Responsible actor or role:'))?.replace('Responsible actor or role:', '').trim() || '',
+    watchPoint: savedPackage?.implementationWatchPoint || savedLogic?.implementationWatchPoint || '',
+  } : initialRepairDraft;
+  const [stage, setStage] = useState<Screen14StageId>(savedScreen14 ? 8 : 1);
+  const [selectedIssueId, setSelectedIssueId] = useState(restoredIssueId);
+  const [repairDraft, setRepairDraft] = useState(restoredRepairDraft);
+  const [selectedActivityIds, setSelectedActivityIds] = useState<string[]>(savedScreen14?.repairedActivityPackage?.selectedActionIds.filter((id) => activityRepairActions.some((action) => action.id === id)) || []);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen14OwnCsoDraft>(getEmptyScreen14OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen14OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen14OwnCsoOutput | null>(savedScreen14?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen14Submission | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen14Submission | null>(savedScreen14);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const selectedIssue = designIssues.find((issue) => issue.id === selectedIssueId);
   const completedRepairFields = Object.values(repairDraft).filter(Boolean).length;
-  const repairComplete = Boolean(selectedIssue && completedRepairFields === 6);
+  const objectiveReady = Boolean(selectedIssue && repairDraft.evidenceSource && repairDraft.weakFeature && repairDraft.repairedStatement && repairDraft.actorRole);
+  const activityPackageReady = selectedActivityIds.length >= 3 && selectedActivityIds.length <= 5;
+  const repairComplete = Boolean(objectiveReady && activityPackageReady && repairDraft.watchPoint);
   const stages: Array<{ id: Screen14StageId; label: string; qa: string; complete: boolean; available: boolean }> = [
-    { id: 1, label: 'Understand', qa: 'm3-s14-stage-understand', complete: stage > 1, available: true },
-    { id: 2, label: 'Example', qa: 'm3-s14-stage-example', complete: stage > 2, available: true },
-    { id: 3, label: 'Practice', qa: 'm3-s14-stage-practice', complete: Boolean(submittedOutput), available: true },
-    { id: 4, label: 'Review repair', qa: 'm3-s14-stage-review', complete: Boolean(submittedOutput) && stage > 4, available: Boolean(submittedOutput) },
-    { id: 5, label: 'Apply/Download', qa: 'm3-s14-stage-apply', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
+    { id: 1, label: 'Understand', qa: 'm3-s14-stage-understand', complete: stage > 1 || Boolean(submittedOutput), available: true },
+    { id: 2, label: 'Review carried findings', qa: 'm3-s14-stage-findings', complete: stage > 2 || Boolean(submittedOutput), available: true },
+    { id: 3, label: 'Repair objective', qa: 'm3-s14-stage-objective', complete: objectiveReady, available: true },
+    { id: 4, label: 'Repair activity package', qa: 'm3-s14-stage-activities', complete: activityPackageReady, available: objectiveReady },
+    { id: 5, label: 'Connect intervention logic', qa: 'm3-s14-stage-logic', complete: activityPackageReady, available: activityPackageReady },
+    { id: 6, label: 'Repair indicators and watch-points', qa: 'm3-s14-stage-indicators', complete: Boolean(submittedOutput), available: activityPackageReady },
+    { id: 7, label: 'Review package', qa: 'm3-s14-stage-review', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
+    { id: 8, label: 'Apply/Download', qa: 'm3-s14-stage-apply', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
   ];
   const goToStage = (target: Screen14StageId) => {
     const item = stages.find((candidate) => candidate.id === target);
@@ -13673,6 +15369,12 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
   const selectIssue = (issueId: string) => {
     setSelectedIssueId((current) => current === issueId ? '' : issueId);
     setRepairDraft(initialRepairDraft);
+    setSubmittedOutput(null);
+  };
+  const toggleActivity = (activityId: string) => {
+    setSelectedActivityIds((current) => current.includes(activityId)
+      ? current.filter((id) => id !== activityId)
+      : current.length < 5 ? [...current, activityId] : current);
     setSubmittedOutput(null);
   };
   const updateRepairDraft = (field: keyof typeof repairDraft, value: string) => {
@@ -13688,6 +15390,9 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
   });
   const generateRepair = () => {
     if (!repairComplete || !selectedIssue) return;
+    const repairedActivities = activityRepairActions.filter((action) => selectedActivityIds.includes(action.id));
+    const principalActivity = repairedActivities[0];
+    const designChange = repairedActivities.map((action) => action.repairedActivity).join(' ');
     const selections = getRepairSelections();
     const base = buildScreen14Submission(selections, ownCsoOutput);
     const output: Screen14Submission = {
@@ -13697,42 +15402,49 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
         originalWeakObjective: 'Improve local services through consultation, training, and infrastructure support.',
         repairedHrbaObjective: repairDraft.repairedStatement,
         whatWasMissing: repairDraft.weakFeature,
-        hrbaDesignLogic: `This repair uses ${repairDraft.evidenceSource} to connect the design issue to a concrete activity change, responsible actor, and implementation watch-point.`,
+        hrbaDesignLogic: `This repair uses ${repairDraft.evidenceSource} to connect the issue and its cause to responsible actors, activities, outputs, an outcome, an indicator, safe evidence, assumptions, risk, and an implementation watch-point.`,
         carryIntoActivityRepair: 'Use this repair in the draft plan review to check whether the proposal text, budget, indicators, and responsibilities are aligned.',
       },
       repairedActivityPackage: {
-        selectedActionIds: [selectedIssue.id],
-        repairedActivities: activityRepairActions.slice(0, 1),
-        generatedSummary: repairDraft.designChange,
+        selectedActionIds: selectedActivityIds,
+        repairedActivities,
+        generatedSummary: designChange,
         feedbackMessages: ['The repair links earlier analysis to objective wording, activity design, responsibility, and follow-up.'],
         repairedObjectiveUsed: repairDraft.repairedStatement,
       },
       interventionLogicIndicators: {
         barrierRootCause: repairDraft.weakFeature,
         repairedObjective: repairDraft.repairedStatement,
-        repairedActivity: repairDraft.designChange,
-        output: 'Repaired design statement and activity change documented before implementation.',
-        outcome: 'The project design responds more clearly to rights-holder barriers, responsibility, participation, accountability, and risk.',
-        indicator: 'Evidence that the repaired design is reflected in at least one objective, activity, responsibility, or follow-up commitment.',
-        safeEvidenceSource: 'Non-identifying design review notes, activity package changes, and follow-up records.',
-        assumptionRisk: 'The repair may remain only wording unless roles, budget, and implementation follow-up are updated.',
+        repairedActivity: principalActivity.repairedActivity,
+        output: 'A repaired objective, three-to-five linked activities, assigned public/service responsibilities, and accessible response arrangements are documented before implementation.',
+        outcome: 'Selected rights-holder groups influence priorities and receive accessible responses while relevant public and service actors retain responsibility.',
+        indicator: 'Number and proportion of selected design priorities raised through accessible channels that receive a documented responsible-actor response or lead to a project adjustment.',
+        safeEvidenceSource: 'Non-identifying priority summaries, design decision logs, accessible response records, and adjustment notes.',
+        assumptionRisk: 'Responsible actors have authority and resources to respond; monitor exclusion, symbolic participation, exposure, and responsibility shifting to Awra.',
         implementationWatchPoint: repairDraft.watchPoint,
         logicQualitySummary: 'Strong repair row. The design issue is linked to analysis, objective wording, activity change, responsibility, and a watch-point.',
         feedbackMessages: ['The repair connects analysis to a practical design change and carry-forward check.'],
       },
       designRepairPackage: {
+        selectedIssueId: selectedIssue.id,
         repairedObjective: repairDraft.repairedStatement,
-        selectedActivityPackage: [repairDraft.designChange],
+        selectedActivityPackage: repairedActivities.map((action) => action.repairedActivity),
         interventionLogicChain: [
           `Design issue repaired: ${selectedIssue.label}`,
           `Evidence or analysis used: ${repairDraft.evidenceSource}`,
           `Weak design feature: ${repairDraft.weakFeature}`,
-          `Activity or design change: ${repairDraft.designChange}`,
+          `Cause: ${repairDraft.weakFeature}`,
+          `Activity: ${principalActivity.repairedActivity}`,
+          'Output: repaired design package and accessible response arrangements documented',
+          'Outcome: rights-holder influence and responsible-actor response improve',
+          'Indicator: priorities receiving a response or leading to adjustment',
+          'Evidence: non-identifying decision and response records',
+          'Assumption and risk: responsible actors can respond without shifting responsibility to Awra',
           `Responsible actor or role: ${repairDraft.actorRole}`,
         ],
-        indicatorSignOfChange: 'The repaired statement and activity change are reflected in the draft plan before implementation.',
-        safeEvidenceSource: 'Non-identifying design review notes and updated activity package.',
-        riskAssumption: 'A repair may not change implementation unless responsibility and follow-up are visible.',
+        indicatorSignOfChange: 'Number and proportion of selected priorities that receive a responsible-actor response or lead to a documented design adjustment.',
+        safeEvidenceSource: 'Non-identifying decision logs, response records, accessibility checks, and adjustment notes.',
+        riskAssumption: 'Public and service actors need adequate mandate, resources, coordination, and willingness; pause or adapt if exclusion, exposure, or missing mitigation is observed.',
         implementationWatchPoint: repairDraft.watchPoint,
         carryForwardNote: 'Use this package in the draft plan review to check whether the proposal text, budget, indicators, and responsibilities are aligned.',
         generatedAt: new Date().toISOString(),
@@ -13741,7 +15453,7 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
       savedAt: new Date().toISOString(),
     };
     setSubmittedOutput(output);
-    setStage(4);
+    setStage(7);
   };
   const updateOwnCso = (field: keyof Screen14OwnCsoDraft, value: string) => {
     setOwnCsoDraft((current) => ({ ...current, [field]: value }));
@@ -13766,7 +15478,7 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
   const finalPackage = submittedOutput?.designRepairPackage;
   const helperText = repairComplete
     ? submittedOutput ? 'Your repair is ready to review or update.' : 'Ready to generate your repair.'
-    : 'Select one design issue and complete evidence, weak feature, repaired statement, activity/design change, responsible actor, and watch-point fields.';
+    : 'Complete the objective repair, select 3–5 linked activities, and choose an implementation watch-point.';
   const repairRowFields: Array<{ field: keyof typeof repairDraft; label: string; options: string[]; testId: string }> = [
     { field: 'evidenceSource', label: 'Evidence or analysis used', options: evidenceOptions, testId: 'm3-s14-evidence-source-select' },
     { field: 'weakFeature', label: 'Weak design feature', options: weakFeatureOptions, testId: 'm3-s14-weak-feature-select' },
@@ -13775,6 +15487,65 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
     { field: 'actorRole', label: 'Responsible actor or role', options: actorRoleOptions, testId: 'm3-s14-actor-role-select' },
     { field: 'watchPoint', label: 'Implementation watch-point', options: watchPointOptions, testId: 'm3-s14-watch-point-select' },
   ];
+  const renderDesignRepairArtifact = () => {
+    if (!submittedOutput || !finalPackage) return null;
+    const logic = submittedOutput.interventionLogicIndicators;
+    const repairedActivities = submittedOutput.repairedActivityPackage?.repairedActivities || [];
+    const logicSteps = [
+      ['Barrier or root cause', logic?.barrierRootCause || submittedOutput.repairedObjective.whatWasMissing],
+      ['Activity', logic?.repairedActivity || 'Not yet generated'],
+      ['Output', logic?.output || 'Not yet generated'],
+      ['Outcome', logic?.outcome || 'Not yet generated'],
+    ];
+
+    return (
+      <section className="m3-c14-artifact" aria-label="HRBA project design repair package">
+        <section className="m3-c14-before-after" aria-labelledby={`${screen.id}-objective-comparison`}>
+          <h3 id={`${screen.id}-objective-comparison`}>Objective repair: before and after</h3>
+          <div>
+            <article className="is-before"><span>Before · weak objective</span><p>{submittedOutput.repairedObjective.originalWeakObjective}</p></article>
+            <article className="is-after"><span>After · repaired HRBA objective</span><p>{submittedOutput.repairedObjective.repairedHrbaObjective}</p></article>
+          </div>
+        </section>
+
+        <section className="m3-c14-activity-package" aria-labelledby={`${screen.id}-activity-repairs`}>
+          <header><p>Activity repair package</p><h3 id={`${screen.id}-activity-repairs`}>{repairedActivities.length} linked design repair{repairedActivities.length === 1 ? '' : 's'}</h3></header>
+          <div>
+            {repairedActivities.map((activity, index) => (
+              <article key={activity.id}>
+                <span className="m3-c14-card-number">Repair {index + 1}</span>
+                <h4>{activity.repairedActivity}</h4>
+                <dl>
+                  <div><dt>Original activity</dt><dd>{activity.originalActivity}</dd></div>
+                  <div><dt>Linked barrier or root cause</dt><dd>{activity.barrier}</dd></div>
+                  <div><dt>Rights-holder group</dt><dd>{activity.rightsHolderGroup}</dd></div>
+                  <div><dt>Responsible role</dt><dd>{activity.responsibleActorCsoRole}</dd></div>
+                  <div><dt>Inclusion or accountability adjustment</dt><dd>{activity.riskAccountabilityAdjustment}</dd></div>
+                  <div><dt>Evidence or verification question</dt><dd>{activity.safeEvidenceQuestion}</dd></div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="m3-c14-logic" aria-labelledby={`${screen.id}-logic-chain`}>
+          <header><p>Intervention logic chain</p><h3 id={`${screen.id}-logic-chain`}>Follow the saved pathway from analysis to outcome</h3></header>
+          <ol>{logicSteps.map(([label, value], index) => <li key={label}><span>{index + 1}</span><div><strong>{label}</strong><p>{value}</p></div></li>)}</ol>
+        </section>
+
+        <section className="m3-c14-assurance" aria-labelledby={`${screen.id}-assurance`}>
+          <header><p>Assurance</p><h3 id={`${screen.id}-assurance`}>Evidence, risk, and implementation checks</h3></header>
+          <dl>
+            <div><dt>Indicator</dt><dd>{logic?.indicator || finalPackage.indicatorSignOfChange}</dd></div>
+            <div><dt>Safe evidence</dt><dd>{logic?.safeEvidenceSource || finalPackage.safeEvidenceSource}</dd></div>
+            <div><dt>Risk or assumption</dt><dd>{logic?.assumptionRisk || finalPackage.riskAssumption}</dd></div>
+            <div><dt>Implementation watch-point</dt><dd>{logic?.implementationWatchPoint || finalPackage.implementationWatchPoint}</dd></div>
+          </dl>
+          <p className="m3-c14-carry"><strong>Carry forward to draft plan review:</strong> {finalPackage.carryForwardNote}</p>
+        </section>
+      </section>
+    );
+  };
 
   return (
     <main className="m3-screen m3-design-repair-screen m3-integrated-repair-screen" aria-labelledby={titleId} data-qa="m3-s14-design-repair">
@@ -13797,6 +15568,16 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
 
         {stage === 1 && (
           <>
+            <section className="m3-integrated-section-card m3-s14-transition" aria-labelledby={`${screen.id}-transition-title`} data-qa="m3-s14-transition">
+              <h2 id={`${screen.id}-transition-title`}>From analysis to project design</h2>
+              <dl>
+                <div><dt>Martha</dt><dd>“You have completed the main analysis. You have examined context, barriers, responsibility, influence, inclusion, participation, accountability, capacity and risk.”</dd></div>
+                <div><dt>Dawit</dt><dd>“The next step is to make that analysis change the project design. A stronger analysis is not enough if the objective, activities and indicators remain the same.”</dd></div>
+                <div><dt>Martha</dt><dd>“Use your findings to repair the project objective, activity package, intervention logic and indicators.”</dd></div>
+                <div><dt>Dawit</dt><dd>“Each repair should respond to a finding from the earlier tools. Awra can support participation, evidence, dialogue and follow-up, but it should not replace public responsibility.”</dd></div>
+                <div><dt>Martha</dt><dd>“The completed package will be used to review the draft plan on the next screen.”</dd></div>
+              </dl>
+            </section>
             <section className="m3-integrated-payoff-card">
               <div className="m3-integrated-payoff-icon" aria-hidden="true">✓</div>
               <div>
@@ -13804,15 +15585,6 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
                 <p>You have examined context, standards, rights-holders, barriers, responsibilities, power, root causes, inclusion, participation, accountability, and risk. In this section, you will use that analysis to repair the project design.</p>
               </div>
               <aside>The goal is not to add HRBA words. The goal is to make the design stronger.</aside>
-            </section>
-            <section className="m3-analysis-forward" data-qa="m3-s14-analysis-carried-forward">
-              <div>
-                <h2>Analysis carried forward</h2>
-                <p>This repair uses your earlier analysis: context signals, standards, rights-holder groups, barriers, responsible actors, power patterns, root causes, inclusion checks, participation/accountability pathway, and risk watch-points.</p>
-              </div>
-              <div className="m3-analysis-forward-grid">
-                {carriedAnalysis.chips.map((item) => <article key={item.label}><strong>{item.label}</strong><span>{item.value}</span></article>)}
-              </div>
             </section>
             <section className="m3-integrated-pathway" aria-label="Project design repair pathway">
               {['Objective', 'Activity package', 'Logic chain', 'Indicator', 'Watch-point'].map((item) => <article key={item}><span aria-hidden="true">→</span><strong>{item}</strong></article>)}
@@ -13823,23 +15595,23 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
               <article><h2>What you will do</h2><p>Select one design issue, use earlier analysis, and build one practical repair row.</p></article>
               <article><h2>What you will produce</h2><p>A portfolio-ready HRBA Project Design Repair for the draft plan review.</p></article>
             </section>
-            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>See worked example</button></div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>Review carried findings</button></div>
           </>
         )}
 
         {stage === 2 && (
           <section className="m3-integrated-section-card">
-            <h2>Worked example: repair one weak design issue</h2>
-            <p className="m3-integrated-info">Before repairing the design, notice the difference between a design that lists activities and a design that responds to barriers, responsibilities, participation, risk, and accountability.</p>
-            <div className="m3-s14-example-grid">
-              <article><h3>Design issue</h3><p>Participation is too late or weak.</p></article>
-              <article><h3>Evidence or analysis used</h3><p>Participation and accountability pathway; risk and do-no-harm check.</p></article>
-              <article><h3>Weak design feature</h3><p>Final public meeting happens after priorities are mostly shaped.</p></article>
-              <article><h3>Repaired statement</h3><p>{strongObjective}</p></article>
-              <article><h3>Activity or design change</h3><p>Add early information, accessible pre-consultation, response timeline, and follow-up responsibility before implementation.</p></article>
-              <article><h3>Implementation watch-point</h3><p>Check whether selected groups influenced at least one priority before implementation.</p></article>
+            <h2>Review the findings carried into this repair</h2>
+            <p className="m3-integrated-info">These are read-only summaries from your saved work. A clearly marked “not yet saved” state is shown when an earlier output is unavailable.</p>
+            {carriedAnalysis.missingScreens.length > 0 && <p className="m3-risk-empty-note" role="status">Not yet saved: Screen{carriedAnalysis.missingScreens.length > 1 ? 's' : ''} {carriedAnalysis.missingScreens.join(', ')}. Generalized Jiru Amba examples are shown only as orientation and are not presented as your saved findings.</p>}
+            <div className="m3-s14-example-grid" data-qa="m3-s14-analysis-carried-forward">
+              <article><h3>A. Context, standards and rights-holders</h3><p>{carriedAnalysis.chips.slice(0, 2).map((item) => `${item.label}: ${item.value}`).join(' • ')}</p></article>
+              <article><h3>B. Barriers, responsibility and influence</h3><p>{carriedAnalysis.chips.slice(2, 4).map((item) => `${item.label}: ${item.value}`).join(' • ')}</p></article>
+              <article><h3>C. Root causes and capacity gaps</h3><p>{carriedAnalysis.compact[1].value}</p></article>
+              <article><h3>D. Inclusion, participation and accountability</h3><p>{carriedAnalysis.compact[2].value}</p></article>
+              <article><h3>E. Risk and do-no-harm watch-points</h3><p>{carriedAnalysis.chips[3].value}</p></article>
             </div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Start practice</button></div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Repair the objective</button></div>
           </section>
         )}
 
@@ -13847,8 +15619,8 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
           <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-practice`}>
             <div className="m3-s14-practice-layout">
               <div className="m3-guided-stage-main">
-                <h2 id={`${screen.id}-practice`}>Practice: repair one design issue</h2>
-                <p className="m3-integrated-info">Select a weak design issue, then complete one repair row. Generate stays disabled until the row is complete.</p>
+                <h2 id={`${screen.id}-practice`}>Repair the project objective</h2>
+                <p className="m3-integrated-info">Select a weak design issue and connect the repaired objective to earlier evidence, a responsible actor and a specific change. Adding “rights-based” or “inclusive” alone is not a repair.</p>
                 <section className="m3-s14-practice-step" aria-labelledby={`${screen.id}-issue-step`}>
                   <p className="m3-risk-step-label">Step 1</p>
                   <h3 id={`${screen.id}-issue-step`}>Select the design issue to repair</h3>
@@ -13871,7 +15643,7 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
                   {selectedIssue ? (
                     <div className="m3-s14-repair-row" data-testid="m3-s14-repair-row">
                       <div><span>Selected design issue</span><p>{selectedIssue.label}</p></div>
-                      {repairRowFields.map(({ field, label, options, testId }) => (
+                      {repairRowFields.filter(({ field }) => ['evidenceSource', 'weakFeature', 'repairedStatement', 'actorRole'].includes(field)).map(({ field, label, options, testId }) => (
                         <label key={field}>
                           <span>{label}</span>
                           <select value={repairDraft[field]} onChange={(event) => updateRepairDraft(field, event.target.value)} data-testid={testId}>
@@ -13885,10 +15657,7 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
                     <p className="m3-risk-empty-note">Select one design issue first. The repair row will appear here.</p>
                   )}
                 </section>
-                <div className="m3-risk-submit-row">
-                  <button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateRepair} data-testid="m3-s14-generate-repair">{submittedOutput ? 'Update repair' : 'Generate repair'}</button>
-                  <p aria-live="polite">{helperText}</p>
-                </div>
+                <div className="m3-risk-submit-row"><button type="button" className="m3-design-repair-submit" disabled={!objectiveReady} onClick={() => setStage(4)}>Continue to activity package</button></div>
               </div>
               <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-repair-live`}>
                 <h2 id={`${screen.id}-repair-live`}>Repair draft so far</h2>
@@ -13902,36 +15671,78 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
                   <span className={repairDraft.watchPoint ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Watch-point: {repairDraft.watchPoint || 'Not selected'}</span>
                 </div>
                 <p className="m3-guided-helper">Completed repair rows: {repairComplete ? 1 : 0}</p>
-                <p className="m3-guided-helper">Completed fields: {completedRepairFields} of 6</p>
+                <p className="m3-guided-helper">Objective fields completed: {Math.min(completedRepairFields, 4)} of 4</p>
                 <p className="m3-guided-helper">{helperText}</p>
-                <button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateRepair}>{submittedOutput ? 'Update repair' : 'Generate repair'}</button>
+                <button type="button" className="m3-design-repair-submit" disabled={!objectiveReady} onClick={() => setStage(4)}>Continue</button>
               </aside>
             </div>
           </section>
         )}
 
-        {stage === 4 && finalPackage && selectedIssue && (
-          <section className="m3-integrated-section-card" data-qa="m3-s14-generated-package">
-            <h2>Your HRBA Project Design Repair</h2>
-            <p>This repair shows how the analysis changes one weak part of the design before implementation.</p>
-            <div className="m3-s14-review-grid">
-              {[
-                ['Design issue repaired', selectedIssue.label],
-                ['Evidence or analysis used', repairDraft.evidenceSource],
-                ['Weak design feature', repairDraft.weakFeature],
-                ['Repaired objective or design statement', repairDraft.repairedStatement],
-                ['Activity or design change', repairDraft.designChange],
-                ['Responsible actor or role', repairDraft.actorRole],
-                ['Implementation watch-point', repairDraft.watchPoint],
-                ['Carry forward to draft plan review', finalPackage.carryForwardNote],
-              ].map(([label, value]) => <article key={label} data-testid="m3-s14-generated-repair-row"><h3>{label}</h3><p>{value}</p></article>)}
+        {stage === 4 && (
+          <section className="m3-integrated-section-card" data-qa="m3-s14-activity-package">
+            <h2>Repair the activity package</h2>
+            <p className="m3-integrated-info">Select three to five linked activities. Together they must respond to a finding, identify affected groups and responsible actors, support inclusion and accountability, include mitigation and produce safe monitoring evidence.</p>
+            <div className="m3-s14-issue-tiles">
+              {activityRepairActions.map((activity) => {
+                const selected = selectedActivityIds.includes(activity.id);
+                return <button key={activity.id} type="button" className={`m3-s14-issue-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => toggleActivity(activity.id)}>
+                  <span>{selected ? 'Selected' : 'Select activity'}</span><strong>{activity.originalActivity}</strong><small>{activity.repairedActivity}</small><small><b>Responsibility:</b> {activity.responsibleActorCsoRole}</small><small><b>Mitigation / accountability:</b> {activity.riskAccountabilityAdjustment}</small>
+                </button>;
+              })}
             </div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit repair</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(5)}>Go to Apply/Download</button></div>
+            <p aria-live="polite">{selectedActivityIds.length} selected. Choose 3–5.</p>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Back to objective</button><button type="button" className="m3-design-repair-submit" disabled={!activityPackageReady} onClick={() => setStage(5)}>Connect intervention logic</button></div>
           </section>
         )}
 
-        {stage === 5 && finalPackage && (
+        {stage === 5 && activityPackageReady && (
+          <section className="m3-integrated-section-card" data-qa="m3-s14-intervention-logic">
+            <h2>Connect the intervention logic</h2>
+            <p className="m3-integrated-info">Check that the pathway is causal and complete. Each step should explain why the next one is plausible.</p>
+            <div className="m3-s14-review-grid">
+              {[
+                ['Issue', selectedIssue?.label || 'Design issue'], ['Cause', repairDraft.weakFeature], ['Actor', repairDraft.actorRole],
+                ['Activity', activityRepairActions.find((item) => selectedActivityIds.includes(item.id))?.repairedActivity || ''],
+                ['Output', 'Repaired design package and accessible response arrangements documented'],
+                ['Outcome', 'Rights-holder influence and responsible-actor response improve'],
+                ['Indicator', 'Selected priorities receiving a response or leading to a documented adjustment'],
+                ['Evidence', 'Non-identifying decision logs, response records and accessibility checks'],
+                ['Assumption', 'Responsible actors have mandate, resources, coordination and willingness'],
+                ['Risk', 'Exclusion, exposure, symbolic participation or responsibility shifting to Awra'],
+              ].map(([label, value]) => <article key={label}><h3>{label}</h3><p>{value}</p></article>)}
+            </div>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Back to activities</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(6)}>Repair indicator and watch-points</button></div>
+          </section>
+        )}
+
+        {stage === 6 && activityPackageReady && (
+          <section className="m3-integrated-section-card" data-qa="m3-s14-indicator-watchpoints">
+            <h2>Repair the indicator and implementation watch-points</h2>
+            <p className="m3-integrated-info">The repaired indicator measures influence and response—not attendance alone. Select the watch-point that will trigger adaptation.</p>
+            <div className="m3-s14-example-grid">
+              <article><h3>Indicator</h3><p>Number and proportion of selected design priorities raised through accessible channels that receive a documented responsible-actor response or lead to a project adjustment.</p></article>
+              <article><h3>Safe evidence</h3><p>Use non-identifying priority summaries, decision logs, response records and accessibility checks. Do not collect names or sensitive case details.</p></article>
+              <article><h3>Alternative channel</h3><p>{screen13AlternativeChannels[2]}</p></article>
+              <article><h3>Pause, stop or refer</h3><p>{screen13PauseStopReferralConditions[0]}; {screen13PauseStopReferralConditions[4]}.</p></article>
+            </div>
+            <label className="m3-s14-watchpoint-select"><span>Implementation watch-point</span><select value={repairDraft.watchPoint} onChange={(event) => updateRepairDraft('watchPoint', event.target.value)} data-testid="m3-s14-watch-point-select"><option value="">Choose one</option>{watchPointOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(5)}>Back to logic</button><button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateRepair} data-testid="m3-s14-generate-repair">{submittedOutput ? 'Regenerate package' : 'Generate repair package'}</button></div>
+          </section>
+        )}
+
+        {stage === 7 && finalPackage && selectedIssue && (
+          <section className="m3-integrated-section-card" data-qa="m3-s14-generated-package">
+            <h2>Your HRBA Project Design Repair</h2>
+            <p>This repair shows how the analysis changes one weak part of the design before implementation.</p>
+            {renderDesignRepairArtifact()}
+            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit repair</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(8)}>Go to Apply/Download</button></div>
+          </section>
+        )}
+
+        {stage === 8 && finalPackage && (
           <section className="m3-integrated-section-card">
+            {renderDesignRepairArtifact()}
             <article className="m3-integrated-continue-card">
               <div><h3>Required repair ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
               <button type="button" className="m3-primary-button" data-testid="m3-s14-final-continue" data-qa="m3-s14-final-continue" onClick={() => submittedOutput && onComplete({ designRepairPackage: submittedOutput.designRepairPackage, repairedObjective: submittedOutput.repairedObjective, repairedActivityPackage: submittedOutput.repairedActivityPackage, interventionLogicIndicators: submittedOutput.interventionLogicIndicators, screen14: submittedOutput })}>{screen.continueLabel}</button>
@@ -14862,9 +16673,12 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
   const titleId = `${screen.id}-title`;
   const outputHeadingRef = useRef<HTMLHeadingElement | null>(null);
   type Screen17StageId = 1 | 2 | 3 | 4 | 5 | 6;
-  type DraftSectionId = 'objective' | 'activities' | 'indicator' | 'participationAccessibilityFeedback' | 'riskFollowup';
+  type DraftSectionId = 'context' | 'objective' | 'activities' | 'responsibilities' | 'participation' | 'inclusionRisk' | 'logic' | 'indicators';
   type GapThemeId = 'rightsHoldersUnclear' | 'participationTooLate' | 'accessibilityMissing' | 'responsibilityUnclear' | 'responsePathwayWeak' | 'indicatorTooWeak' | 'riskWatchpointNotVisible' | 'analysisNotUsed';
-  type RepairOptionId = 'attendance' | 'participationFeedback' | 'influenceResponse' | '';
+  type RepairOptionId = 'influenceResponse' | '';
+  type StrengthId = 'differentBarriers' | 'multipleChannels' | 'publicRoles' | 'safeEvidence' | 'responseTiming';
+  type GapReview = { reason: string; source: string; repair: string; repairedWording: string };
+  type ReviewFinding = GapReview & { gapId: GapThemeId; category: string; draftEvidence: string; whyItMatters: string; verificationQuestion: string };
   type Screen17ReviewNote = {
     generatedAt: string;
     priorityGap: string;
@@ -14876,29 +16690,45 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
     selectedGaps: GapThemeId[];
     repairFocus: GapThemeId;
     repairOption: RepairOptionId;
+    strengths: StrengthId[];
+    findings: ReviewFinding[];
+    repairedSection: string;
+    remainingVerificationQuestions: string[];
   };
 
   const screen14Package = getScreen14SavedOutput(state);
-  const [stage, setStage] = useState<Screen17StageId>(1);
-  const [understood, setUnderstood] = useState(false);
-  const [reviewedSections, setReviewedSections] = useState<DraftSectionId[]>([]);
+  const savedScreen15 = getScreen17SavedOutput(state);
+  const savedReviewNote = savedScreen15?.reviewNote as Screen17ReviewNote | undefined;
+  const validGapIds: GapThemeId[] = ['rightsHoldersUnclear', 'participationTooLate', 'accessibilityMissing', 'responsibilityUnclear', 'responsePathwayWeak', 'indicatorTooWeak', 'riskWatchpointNotVisible', 'analysisNotUsed'];
+  const validStrengthIds: StrengthId[] = ['differentBarriers', 'multipleChannels', 'publicRoles', 'safeEvidence', 'responseTiming'];
+  const restoredGaps = (savedScreen15?.selectedGaps || savedReviewNote?.selectedGaps || []).filter((id): id is GapThemeId => validGapIds.includes(id as GapThemeId)).slice(0, 4);
+  const restoredStrengths = (savedScreen15?.selectedStrengths || savedReviewNote?.strengths || []).filter((id): id is StrengthId => validStrengthIds.includes(id as StrengthId)).slice(0, 3);
+  const restoredSections = (savedScreen15?.selectedDraftSections || []).filter((id): id is DraftSectionId => ['context', 'objective', 'activities', 'responsibilities', 'participation', 'inclusionRisk', 'logic', 'indicators'].includes(id)).slice(0, 8);
+  const restoredGapReviews = Object.fromEntries(Object.entries(savedScreen15?.gapReviews || {}).filter(([id]) => validGapIds.includes(id as GapThemeId))) as Partial<Record<GapThemeId, GapReview>>;
+  const [stage, setStage] = useState<Screen17StageId>(savedReviewNote ? 5 : restoredGaps.length >= 3 ? 3 : restoredSections.length ? 2 : 1);
+  const [understood, setUnderstood] = useState(Boolean(savedReviewNote || restoredSections.length));
+  const [reviewedSections, setReviewedSections] = useState<DraftSectionId[]>(restoredSections);
   const [activeDraftSection, setActiveDraftSection] = useState<DraftSectionId | null>(null);
-  const [selectedGaps, setSelectedGaps] = useState<GapThemeId[]>([]);
-  const [repairFocus, setRepairFocus] = useState<GapThemeId | ''>('indicatorTooWeak');
-  const [repairOption, setRepairOption] = useState<RepairOptionId>('');
-  const [reviewNote, setReviewNote] = useState<Screen17ReviewNote | null>(null);
+  const [selectedStrengths, setSelectedStrengths] = useState<StrengthId[]>(restoredStrengths);
+  const [selectedGaps, setSelectedGaps] = useState<GapThemeId[]>(restoredGaps);
+  const [gapReviews, setGapReviews] = useState<Partial<Record<GapThemeId, GapReview>>>(restoredGapReviews);
+  const [repairFocus, setRepairFocus] = useState<GapThemeId | ''>(savedReviewNote?.repairFocus || restoredGaps[0] || '');
+  const [reviewNote, setReviewNote] = useState<Screen17ReviewNote | null>(savedReviewNote || null);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
-  const [ownCsoDraft, setOwnCsoDraft] = useState({ planSection: '', weakness: '', missingIssue: '', safeRepair: '', monitor: '', evidenceNote: '' });
+  const [ownCsoDraft, setOwnCsoDraft] = useState({ planSection: '', weakness: '', missingIssue: '', safeRepair: '', monitor: '', evidenceNote: '', ...(savedScreen15?.ownCsoPractice || {}) });
   const [ownCsoError, setOwnCsoError] = useState('');
 
   const carryForwardChips = ['Participation', 'Accessibility', 'Accountability', 'Risk', 'Rights-holder voice', 'Responsibility', 'Response', 'Safe evidence'];
   const analysisSources = ['Context and inequality scan', 'Standards and policy map', 'Rights-holder and barrier map', 'Actor responsibility map', 'Power and influence map', 'Root-cause and capacity-gap map', 'Gender and disability design check', 'Participation and accountability pathway', 'Risk and do-no-harm board', screen14Package ? 'Integrated design repair package' : 'Design repair package'];
   const draftSections: Array<{ id: DraftSectionId; qa: string; title: string; text: ReactNode; feedback: string; gap: GapThemeId }> = [
-    { id: 'objective', qa: 'm3-s17-draft-section-objective', title: 'Objective', text: 'Improve market services through consultation, training, and small infrastructure support.', feedback: 'This objective names activities but does not show which rights-holder groups face barriers, what decision or service should change, or who must respond.', gap: 'rightsHoldersUnclear' },
-    { id: 'activities', qa: 'm3-s17-draft-section-activities', title: 'Activities', text: <ul><li>Hold one public consultation meeting</li><li>Train selected community representatives</li><li>Improve market space</li><li>Share results at the end</li></ul>, feedback: 'These activities may be useful, but they do not yet show early information, accessible participation, duty-bearer response, safe feedback-response, or follow-up.', gap: 'participationTooLate' },
-    { id: 'indicator', qa: 'm3-s17-draft-section-indicator', title: 'Indicator', text: 'Number of people attending meetings and training sessions.', feedback: 'This indicator counts attendance only. It does not show whether affected groups influenced a priority, received a response, or saw a design adjustment.', gap: 'indicatorTooWeak' },
-    { id: 'participationAccessibilityFeedback', qa: 'm3-s17-draft-section-participation-accessibility-feedback', title: 'Participation / accessibility / feedback-response', text: 'One public meeting is planned. Information will be shared at the end. No clear plan for feedback, response, or accessibility for different groups.', feedback: 'This section is weak because it does not show who is affected differently, how participation will influence decisions, or how response and follow-up will happen.', gap: 'responsePathwayWeak' },
-    { id: 'riskFollowup', qa: 'm3-s17-draft-section-risk-followup', title: 'Risk / follow-up', text: 'Some risks are noted, such as delays and weather. There is no clear plan for how rights-holder priorities will shape decisions or how follow-up will be done.', feedback: 'The risk section does not yet monitor exclusion, symbolic participation, accessibility gaps, unanswered feedback, or accountability follow-up.', gap: 'riskWatchpointNotVisible' },
+    { id: 'context', qa: 'm3-s17-draft-context', title: 'A. Context and analysis', text: 'Jiru Amba includes a small town and several rural kebeles. Access to planning information, water services, market opportunities and local health services differs across locations and groups. The draft recognizes that women, youth, persons with disabilities, residents of remote kebeles and low-income households may experience different barriers. Initial consultations suggest late notice, travel constraints, inaccessible venues and limited follow-up after meetings. These findings require further generalized verification before implementation.', feedback: 'A genuine strength is the differentiated context and qualified evidence. The draft should still show how this analysis changes design choices.', gap: 'analysisNotUsed' },
+    { id: 'objective', qa: 'm3-s17-draft-section-objective', title: 'B. Draft objective', text: 'Improve inclusive participation and local-service responsiveness in Jiru Amba through community consultations, capacity support, accessible information and small-scale service improvements.', feedback: 'The objective is credible but combines activities with an unclear intended institutional or rights-related change.', gap: 'rightsHoldersUnclear' },
+    { id: 'activities', qa: 'm3-s17-draft-section-activities', title: 'C. Proposed activities', text: <ol><li>Awra will organize quarterly consultations with woreda and kebele representatives, service providers and community groups.</li><li>Relevant officials and service actors will receive training on participation and accessibility.</li><li>Project information will be shared through local meetings, noticeboards and community facilitators.</li><li>Feedback boxes will be placed at selected service points, and feedback will be discussed during quarterly review meetings.</li><li>Small grants will support selected livelihood or local-service improvements identified through the planning process.</li></ol>, feedback: 'The activities offer multiple channels, but training and consultation need clearer barrier, capacity, responsibility and expected-change links.', gap: 'participationTooLate' },
+    { id: 'responsibilities', qa: 'm3-s17-draft-responsibilities', title: 'D. Responsibilities and implementation arrangements', text: 'The woreda planning office will provide oversight. Relevant sector offices will provide technical input. Kebele administrations will support local communication and participation. Awra will coordinate consultations, document concerns, support training, monitor feedback and follow up with responsible offices.', feedback: 'Public and local roles are named, but Awra may absorb too much coordination, feedback and follow-up responsibility.', gap: 'responsibilityUnclear' },
+    { id: 'participation', qa: 'm3-s17-draft-participation', title: 'E. Participation and accountability', text: 'Women, youth, persons with disabilities and remote-kebele residents will be invited to consultations. Meeting summaries will be shared with relevant offices. Participants may provide feedback through meetings or feedback boxes. Priority feedback will be discussed during quarterly reviews.', feedback: 'The draft has multiple feedback channels but does not yet define which decision input influences, who responds, what explanation is given, or how adaptation is followed up.', gap: 'responsePathwayWeak' },
+    { id: 'inclusionRisk', qa: 'm3-s17-draft-inclusion-risk', title: 'F. Inclusion and risk', text: 'Accessible venues and communication formats will be used where possible. Alternative participation arrangements will be considered where needed. Facilitators will encourage respectful participation. Sensitive personal information will not be requested. Participation and implementation risks will be monitored and addressed as they arise.', feedback: 'The non-identifying orientation is a strength. Accessibility, resources, responsible actors, monitoring signs and alternative or pause conditions need more precision.', gap: 'accessibilityMissing' },
+    { id: 'logic', qa: 'm3-s17-draft-logic', title: 'G. Draft intervention logic', text: 'Improved information, consultation and staff capacity will increase awareness and participation. This will contribute to more responsive local planning and services.', feedback: 'The logic is plausible but does not clearly connect cause, actor, output, outcome, assumption and risk.', gap: 'riskWatchpointNotVisible' },
+    { id: 'indicators', qa: 'm3-s17-draft-section-indicator', title: 'H. Draft indicators', text: <ul><li>Number of consultations conducted</li><li>Number of participants from identified groups</li><li>Number of officials or service actors trained</li><li>Number of feedback items received</li><li>Percentage of priority feedback items acknowledged within 20 working days</li><li>Number of selected service or livelihood improvements completed</li></ul>, feedback: 'The acknowledgement indicator is useful, but most indicators count activity or output rather than influence, response quality, accessibility or changed practice.', gap: 'indicatorTooWeak' },
   ];
   const gapThemes: Array<{ id: GapThemeId; qa: string; label: string; feedback: string; summary: string }> = [
     { id: 'rightsHoldersUnclear', qa: 'm3-s17-gap-rights-holders-unclear', label: 'Rights-holders unclear', feedback: 'The plan does not clearly show which groups are affected differently or how different barriers shape access, voice, benefit, or follow-up.', summary: 'The draft plan does not clearly show who is affected and how.' },
@@ -14910,31 +16740,54 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
     { id: 'riskWatchpointNotVisible', qa: 'm3-s17-gap-risk-watchpoint-not-visible', label: 'Risk or watch-point not visible', feedback: 'The plan does not identify what should be monitored during implementation to prevent symbolic participation, exclusion, or unanswered feedback.', summary: 'Risk and implementation watch-points are not visible enough.' },
     { id: 'analysisNotUsed', qa: 'm3-s17-gap-analysis-not-used', label: 'Earlier analysis not used in design', feedback: 'The plan does not clearly show how the context scan, standards map, rights-holder analysis, actor map, power analysis, or risk analysis changed the design.', summary: 'Earlier HRBA analysis is not clearly used in design decisions.' },
   ];
-  const repairNotes: Record<GapThemeId, string> = {
-    rightsHoldersUnclear: 'Strengthen the objective so it names specific affected groups and the change they should experience.',
-    participationTooLate: 'Move participation earlier, share information before decisions, and show how priorities influence the plan.',
-    accessibilityMissing: 'Add practical accessibility and accommodation measures for information, venues, timing, language, transport, and participation support.',
-    responsibilityUnclear: 'Clarify who must act, who supports, who follows up, and what role the CSO can realistically play.',
-    responsePathwayWeak: 'Add a safe feedback-response pathway with answerability, referral or correction, and follow-up.',
-    indicatorTooWeak: 'Revise the indicator so it measures meaningful change.',
-    riskWatchpointNotVisible: 'Add implementation watch-points for exclusion, symbolic participation, accessibility barriers, unanswered feedback, and safety risks.',
-    analysisNotUsed: 'Add a design note showing how context, standards, rights-holder barriers, actor responsibilities, power, root causes, and risks changed the plan.',
-  };
-  const repairOptions = [
-    { id: 'attendance' as const, qa: 'm3-s17-repair-option-attendance', title: 'Measure attendance only', text: 'Number of people attending meetings and training sessions.', tag: 'Measures activity', feedback: 'This still measures activity and attendance. It does not show influence, response, or change.' },
-    { id: 'participationFeedback' as const, qa: 'm3-s17-repair-option-participation-feedback', title: 'Measure participation and feedback', text: '% of participants who provide feedback or ask questions during meetings.', tag: 'Adds feedback', feedback: 'This is better than attendance, but it still does not show whether feedback influenced decisions or led to a response.' },
-    { id: 'influenceResponse' as const, qa: 'm3-s17-repair-option-influence-response', title: 'Measure influence and response', text: '% of participants from affected groups whose feedback is acted on or leads to a change or adjustment in the plan.', tag: 'Links feedback to action', feedback: 'This revision is stronger because it measures influence over decisions, not only attendance, and it links feedback to response or adjustment.' },
+  const strengthOptions: Array<{ id: StrengthId; label: string }> = [
+    { id: 'differentBarriers', label: 'Recognizes that groups may experience different barriers' },
+    { id: 'multipleChannels', label: 'Uses more than one information or feedback channel' },
+    { id: 'publicRoles', label: 'Names public, sector, kebele and CSO roles' },
+    { id: 'safeEvidence', label: 'Avoids requesting sensitive personal information' },
+    { id: 'responseTiming', label: 'Includes a response-timeliness indicator' },
   ];
+  const reviewLenses = [
+    ['Analysis and evidence', 'Are observations, assumptions and verification needs distinguished?'],
+    ['Rights-holder specificity', 'Does the draft show who experiences which barrier?'],
+    ['Duty-bearer responsibility and CSO role', 'Does public responsibility remain visible and Awra’s role realistic?'],
+    ['Barriers', 'Does each activity respond to a defined barrier or cause?'],
+    ['Participation and decision influence', 'Does participation affect a real decision?'],
+    ['Accountability, response and follow-up', 'Does each channel have a recipient, response, explanation and follow-up?'],
+    ['Gender, disability and accessibility', 'Are accommodation, responsibility, resources and monitoring specified?'],
+    ['Risk and do-no-harm', 'Are mitigation, monitoring signs and alternative or pause conditions clear?'],
+    ['Objective', 'Does the objective express change rather than list activities?'],
+    ['Activities', 'Are activity, actor, output and expected change connected?'],
+    ['Intervention logic', 'Are issue, cause, actor, output, outcome, assumption and risk connected?'],
+    ['Indicators and evidence', 'Do indicators measure meaningful change as well as delivery?'],
+  ];
+  const reasonOptions = ['Likely effect on equitable access', 'Likely effect on meaningful influence', 'Unclear public responsibility', 'Incomplete accountability', 'Exclusion or accessibility concern', 'Implementation feasibility', 'Risk or do-no-harm concern', 'Weak intervention logic', 'Inability to measure meaningful change'];
+  const sourceOptions = [
+    ['screen5', 'Screen 5 context and inequality scan'], ['screen6', 'Screen 6 policy and standards map'], ['screen7', 'Screen 7 rights-holder and barrier map'], ['screen8', 'Screen 8 responsibility map'], ['screen9', 'Screen 9 power and influence map'], ['screen10', 'Screen 10 root-cause and capacity-gap map'], ['screen11', 'Screen 11 accessibility repair'], ['screen12', 'Screen 12 participation pathway'], ['screen13', 'Screen 13 monitoring and stop condition'], ['screen14', screen14Package ? 'Screen 14 design repair package' : 'Screen 14 design repair package — not yet saved'],
+  ];
+  const repairByGap: Record<GapThemeId, { repair: string; wording: string; evidence: string; verification: string }> = {
+    rightsHoldersUnclear: { repair: 'Name relevant rights-holder groups, different access conditions and the responsible actor.', wording: screen14Package?.repairedObjective.repairedHrbaObjective || 'Strengthen access and influence for women, youth, persons with disabilities, remote-kebele residents and low-income households while responsible public and service actors respond to identified barriers.', evidence: 'Draft objective', verification: 'Which groups experience each priority barrier differently?' },
+    participationTooLate: { repair: 'Specify the decision, provide timely accessible information, use multiple channels and explain how input is considered.', wording: 'Before priorities are finalized, the woreda planning office will review generalized input gathered through accessible consultations and alternative channels, document its response and explain resulting adjustments.', evidence: 'Activities and participation sections', verification: 'Which planning or service decision can participants influence?' },
+    accessibilityMissing: { repair: 'Assign accessible information, accommodation resources, responsibility and monitoring.', wording: 'Relevant public and service actors will budget and monitor accessible information, venues and reasonable accommodation linked to identified barriers; Awra will facilitate access checks and follow-up.', evidence: 'Inclusion and risk section', verification: 'Which accommodation is required, who provides it and what resources are available?' },
+    responsibilityUnclear: { repair: 'State primary public responsibility, supporting roles and a bounded Awra facilitation role.', wording: 'The woreda planning office and relevant sector offices retain decision and response responsibility. Kebele administrations support access; Awra facilitates participation, generalized evidence, dialogue and follow-up.', evidence: 'Responsibilities section', verification: 'Which office has authority for each decision and response?' },
+    responsePathwayWeak: { repair: 'Define recipient, review responsibility, response, explanation, follow-up and adaptation.', wording: 'Each feedback channel will name a responsible recipient and review date. The responsible office will acknowledge, respond, explain what changed or did not change, and record follow-up or adaptation without identifying participants.', evidence: 'Participation and accountability section', verification: 'How will participants receive an accessible explanation and follow-up?' },
+    indicatorTooWeak: { repair: 'Retain necessary output counts and add change indicators with safe evidence.', wording: 'Add the number and proportion of selected priorities that receive a responsible-actor response or lead to a documented adjustment, verified through non-identifying decision and response records.', evidence: 'Draft indicators', verification: 'What feasible evidence will show influence or changed responsible-actor practice?' },
+    riskWatchpointNotVisible: { repair: 'Specify mitigation, responsibility, monitoring signs, alternative channels and pause or referral conditions.', wording: 'Monitor exclusion, silence, inaccessible channels, exposure and absent mitigation. Use an alternative channel and pause or refer through an appropriate route when participation may increase risk.', evidence: 'Inclusion, risk and intervention logic sections', verification: 'Which observable sign should trigger adaptation, pause or referral?' },
+    analysisNotUsed: { repair: 'Connect qualified findings and verification questions to objective, activities and indicators.', wording: 'Use generalized findings on late notice, travel, accessibility and follow-up to select adaptations, while marking assumptions and questions that require further verification before implementation.', evidence: 'Context and analysis section', verification: 'Which generalized finding is sufficiently supported to change the design now?' },
+  };
   const selectedGapObjects = gapThemes.filter((gap) => selectedGaps.includes(gap.id));
   const selectedRepairFocus = repairFocus ? gapThemes.find((gap) => gap.id === repairFocus) || gapThemes[5] : null;
-  const selectedRepairOption = repairOption ? repairOptions.find((option) => option.id === repairOption) : null;
-  const reviewStageReady = selectedGaps.length >= 3 && Boolean(repairFocus) && Boolean(repairOption);
+  const selectedReviewsComplete = selectedGaps.length >= 3 && selectedGaps.every((gapId) => {
+    const review = gapReviews[gapId];
+    return Boolean(review?.reason && review.source && review.repair && review.repairedWording.trim().length > 20);
+  });
+  const reviewStageReady = selectedStrengths.length >= 1 && selectedGaps.length >= 3 && selectedGaps.length <= 4 && selectedReviewsComplete;
   const stages: Array<{ id: Screen17StageId; qa: string; label: string; complete: boolean; available: boolean }> = [
     { id: 1, qa: 'm3-s17-stage-understand', label: 'Understand', complete: understood, available: true },
-    { id: 2, qa: 'm3-s17-stage-review-draft', label: 'Review draft', complete: reviewedSections.length > 0, available: understood || reviewedSections.length > 0 },
+    { id: 2, qa: 'm3-s17-stage-review-draft', label: 'Review draft', complete: reviewedSections.length > 0 && selectedStrengths.length > 0, available: understood || reviewedSections.length > 0 },
     { id: 3, qa: 'm3-s17-stage-identify-gaps', label: 'Identify gaps', complete: selectedGaps.length >= 3, available: reviewedSections.length > 0 },
-    { id: 4, qa: 'm3-s17-stage-repair-section', label: 'Repair section', complete: Boolean(repairFocus && repairOption), available: selectedGaps.length >= 3 },
-    { id: 5, qa: 'm3-s17-stage-review-note', label: 'Review note', complete: Boolean(reviewNote), available: Boolean(repairFocus && repairOption) },
+    { id: 4, qa: 'm3-s17-stage-repair-section', label: 'Repair section', complete: selectedReviewsComplete, available: selectedGaps.length >= 3 },
+    { id: 5, qa: 'm3-s17-stage-review-note', label: 'Review note', complete: Boolean(reviewNote), available: reviewStageReady },
     { id: 6, qa: 'm3-s17-stage-apply-download', label: 'Apply / Download', complete: Boolean(reviewNote), available: Boolean(reviewNote) },
   ];
 
@@ -14943,23 +16796,43 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
     setReviewedSections((current) => current.includes(sectionId) ? current : [...current, sectionId]);
   };
   const toggleGap = (gapId: GapThemeId) => {
-    setSelectedGaps((current) => current.includes(gapId) ? current.filter((id) => id !== gapId) : [...current, gapId]);
+    setSelectedGaps((current) => current.includes(gapId) ? current.filter((id) => id !== gapId) : current.length < 4 ? [...current, gapId] : current);
     setReviewNote(null);
     if (repairFocus === '') setRepairFocus(gapId);
   };
+  const toggleStrength = (strengthId: StrengthId) => {
+    setSelectedStrengths((current) => current.includes(strengthId) ? current.filter((id) => id !== strengthId) : current.length < 3 ? [...current, strengthId] : current);
+    setReviewNote(null);
+  };
+  const updateGapReview = (gapId: GapThemeId, field: keyof GapReview, value: string) => {
+    const defaults = repairByGap[gapId];
+    setGapReviews((current) => ({ ...current, [gapId]: { reason: '', source: '', repair: defaults.repair, repairedWording: defaults.wording, ...current[gapId], [field]: value } }));
+    setReviewNote(null);
+  };
   const generateReviewNote = () => {
-    if (!reviewStageReady || !selectedRepairFocus || !selectedRepairOption) return;
+    if (!reviewStageReady || !selectedRepairFocus) return;
+    const findings: ReviewFinding[] = selectedGaps.map((gapId) => {
+      const gap = gapThemes.find((item) => item.id === gapId)!;
+      const review = gapReviews[gapId]!;
+      const defaults = repairByGap[gapId];
+      return { gapId, category: gap.label, draftEvidence: defaults.evidence, whyItMatters: gap.feedback, verificationQuestion: defaults.verification, ...review };
+    });
+    const repairedSection = findings.map((finding) => `${finding.category}: ${finding.repairedWording}`).join('\n\n');
     const note: Screen17ReviewNote = {
       generatedAt: new Date().toISOString(),
-      priorityGap: `${selectedRepairFocus.label}. Current indicator counts attendance only and does not show influence or changes made.`,
-      whyItMatters: 'Counting attendance does not show whether people can influence decisions or whether feedback leads to action.',
-      suggestedRepair: `Use an indicator that measures influence and response, for example: ${repairOptions[2].text}`,
-      whatToMonitor: ['Who provided feedback, disaggregated where safe', 'What changes were made and by whom', 'Timeline for action and follow-up', 'Whether feedback remains accessible to different groups'],
+      priorityGap: findings.map((finding) => finding.category).join('; '),
+      whyItMatters: findings.map((finding) => finding.reason).join('; '),
+      suggestedRepair: findings.map((finding) => finding.repair).join(' '),
+      whatToMonitor: findings.map((finding) => finding.verificationQuestion),
       carryForwardQuestion: 'How will you make sure feedback from affected groups continues to shape decisions throughout implementation?',
       safeEvidenceNote: 'Collect and store feedback data safely and respect confidentiality. Do not share personal information without consent.',
       selectedGaps,
       repairFocus: selectedRepairFocus.id,
-      repairOption,
+      repairOption: 'influenceResponse',
+      strengths: selectedStrengths,
+      findings,
+      repairedSection,
+      remainingVerificationQuestions: findings.map((finding) => finding.verificationQuestion),
     };
     setReviewNote(note);
     if (typeof window !== 'undefined') window.setTimeout(() => outputHeadingRef.current?.focus(), 0);
@@ -14976,6 +16849,63 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
     const item = stages.find((candidate) => candidate.id === target);
     if (item?.available) setStage(target);
   };
+  const completedReviewMarkdown = reviewNote ? `# Draft Plan Review Note and repaired section\n\n## Draft reviewed\nJiru Amba Inclusive Local Development and Service Improvement Plan — Draft design section.\n\n## Strengths retained\n${reviewNote.strengths.map((id) => `- ${strengthOptions.find((item) => item.id === id)?.label}`).join('\n')}\n\n## Priority findings and repairs\n${reviewNote.findings.map((finding) => `### ${finding.category}\n- Draft evidence: ${finding.draftEvidence}\n- Priority reason: ${finding.reason}\n- Earlier tool: ${sourceOptions.find(([id]) => id === finding.source)?.[1]}\n- Repair: ${finding.repair}\n- Repaired wording: ${finding.repairedWording}\n- Verification: ${finding.verificationQuestion}`).join('\n\n')}\n\n## Repaired section\n${reviewNote.repairedSection}\n\nThis repair addresses the selected priority findings. Other sections may still require review.` : '';
+  const renderReviewLedger = () => reviewNote ? (
+    <section className="m3-c17-ledger" data-qa="m3-s17-generated-review-note" aria-live="polite">
+      <header className="m3-c17-ledger-header">
+        <p>Professional review ledger</p>
+        <h3 ref={outputHeadingRef} tabIndex={-1}>Draft Plan Review Note</h3>
+        <span>{reviewNote.findings.length} priority finding{reviewNote.findings.length === 1 ? '' : 's'} · {reviewNote.strengths.length} strength{reviewNote.strengths.length === 1 ? '' : 's'} retained</span>
+      </header>
+
+      <section className="m3-c17-status-overview" aria-labelledby={`${screen.id}-section-status`}>
+        <h4 id={`${screen.id}-section-status`}>Section status overview</h4>
+        <div>{draftSections.filter((section) => reviewedSections.includes(section.id)).map((section) => {
+          const needsCheck = selectedGaps.includes(section.gap);
+          return <article key={section.id}><span className={needsCheck ? 'needs-check' : 'ready-now'}>{needsCheck ? 'Needs HRBA check' : 'Ready for now'}</span><strong>{section.title}</strong></article>;
+        })}</div>
+      </section>
+
+      <section className="m3-c17-strengths" aria-labelledby={`${screen.id}-strengths-retained`}>
+        <h4 id={`${screen.id}-strengths-retained`}>Strengths retained</h4>
+        <ul>{reviewNote.strengths.map((id) => <li key={id}>{strengthOptions.find((item) => item.id === id)?.label}</li>)}</ul>
+      </section>
+
+      <section className="m3-c17-findings" aria-labelledby={`${screen.id}-priority-findings`}>
+        <header><p>Priority findings</p><h4 id={`${screen.id}-priority-findings`}>Evidence-led repairs</h4></header>
+        <div>{reviewNote.findings.map((finding, index) => (
+          <article key={finding.gapId}>
+            <header><span>Finding {index + 1}</span><h5>{finding.category}</h5></header>
+            <dl>
+              <div><dt>Plan section or evidence</dt><dd>{finding.draftEvidence}</dd></div>
+              <div><dt>Issue or gap</dt><dd>{finding.whyItMatters}</dd></div>
+              <div><dt>Priority reason</dt><dd>{finding.reason}</dd></div>
+              <div><dt>Evidence source</dt><dd>{sourceOptions.find(([id]) => id === finding.source)?.[1]}</dd></div>
+              <div><dt>Proposed repair</dt><dd>{finding.repair}</dd></div>
+            </dl>
+            <div className="m3-c17-before-after">
+              <section className="is-before"><span>Before · draft evidence</span><p>{finding.draftEvidence}</p></section>
+              <section className="is-after"><span>After · repaired wording</span><p>{finding.repairedWording}</p></section>
+            </div>
+            <p className="m3-c17-verification"><strong>Remaining verification:</strong> {finding.verificationQuestion}</p>
+          </article>
+        ))}</div>
+      </section>
+
+      <section className="m3-c17-repaired-section" aria-labelledby={`${screen.id}-repaired-section`}>
+        <h4 id={`${screen.id}-repaired-section`}>Repaired section</h4>
+        {reviewNote.repairedSection.split('\n\n').map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        <p><em>This repair addresses the selected priority findings. Other sections may still require review.</em></p>
+      </section>
+
+      <section className="m3-c17-watch" aria-labelledby={`${screen.id}-remaining-review`}>
+        <h4 id={`${screen.id}-remaining-review`}>Remaining verification and watch-points</h4>
+        <ul>{reviewNote.remainingVerificationQuestions.map((item) => <li key={item}>{item}</li>)}</ul>
+        {reviewNote.whatToMonitor.length > 0 && <><h5>Implementation watch-points</h5><ul>{reviewNote.whatToMonitor.map((item) => <li key={item}>{item}</li>)}</ul></>}
+        <p><strong>Carry forward:</strong> Use these findings in the applied knowledge check and final Module 3 snapshot.</p>
+      </section>
+    </section>
+  ) : null;
 
   return (
     <main className="m3-screen m3-proposal-screen m3-s17-screen" aria-labelledby={titleId} data-qa="m3-s17-screen">
@@ -14990,18 +16920,20 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
         <nav className="m3-s17-stage-nav" aria-label="Draft plan review stages">
           {stages.map((item) => <button key={item.id} type="button" data-qa={item.qa} className={`${stage === item.id ? 'is-active' : ''} ${item.complete ? 'is-complete' : ''} ${!item.available ? 'is-locked' : ''}`} disabled={!item.available} onClick={() => goToStage(item.id)}><span aria-hidden="true">{item.complete ? '✓' : item.id}</span>{item.label}</button>)}
         </nav>
+        {savedReviewNote && !reviewNote && stage >= 4 && <p className="m3-risk-empty-note" role="status">Your saved review note is out of date. Regenerate it from the revised findings before continuing.</p>}
 
         {stage === 1 && <><section className="m3-s17-payoff"><div className="m3-s17-payoff-icon" aria-hidden="true">✓</div><div><h2>You have already done the hard analysis. Now comes the payoff.</h2><p>You have examined context, standards, rights-holders, barriers, responsibilities, power, root causes, inclusion, participation, accountability, and risk. Now you will check whether the draft plan actually uses that analysis.</p></div><aside>The goal is not to add HRBA words. The goal is to make the plan stronger.</aside></section><section className="m3-s17-carry-forward" aria-label="Earlier analysis used"><h3>Based on your earlier analysis</h3><div className="m3-s17-chip-row">{carryForwardChips.map((chip) => <span key={chip}>{chip}</span>)}</div><div className="m3-s17-source-grid">{analysisSources.map((source) => <span key={source}>{source}</span>)}</div></section><section className="m3-s17-info-grid"><article><h3>What this section is about</h3><p>Review a draft plan, identify HRBA gaps, repair one priority section, and produce a draft plan review note.</p></article><article><h3>Why this matters for CSOs</h3><p>A project plan can look complete on paper but still miss who is affected differently, who must respond, and how feedback changes decisions.</p></article><article><h3>What you will do</h3><p>Select gaps in the draft plan, choose a stronger repair, and generate a practical review note.</p></article><article><h3>What you will produce</h3><p>A short HRBA draft plan review note for your portfolio and future draft plan review.</p></article></section><div className="m3-s17-actions"><button type="button" className="m3-proposal-submit" onClick={() => { setUnderstood(true); setStage(2); }}>Start reviewing the draft plan</button></div></>}
 
-        {stage === 2 && <section className="m3-s17-panel"><h2>Review the draft plan</h2><p className="m3-s17-instruction">Click each section to check whether the draft plan uses the earlier HRBA analysis. Add at least three gap themes to your review note.</p><div className="m3-s17-workspace"><section className="m3-s17-draft-list" aria-label="Draft plan under review"><h3>Draft plan under review</h3>{draftSections.map((section) => { const reviewed = reviewedSections.includes(section.id); const active = activeDraftSection === section.id; return <button key={section.id} type="button" data-qa={section.qa} className={`m3-s17-draft-card ${active ? 'is-active' : ''} ${reviewed ? 'is-reviewed' : ''}`} aria-pressed={active} onClick={() => markDraftSection(section.id)}><strong>{section.title}</strong><span>{section.text}</span></button>; })}{activeDraftSection && <article className="m3-s17-feedback" aria-live="polite"><h3>Your feedback on this section</h3><p>{draftSections.find((section) => section.id === activeDraftSection)?.feedback}</p></article>}</section><aside className="m3-s17-note-panel"><h3>HRBA review note so far</h3><p>Build your note as you identify gaps.</p><h4>Draft sections reviewed ({reviewedSections.length})</h4><div className="m3-s17-chip-column">{reviewedSections.length ? reviewedSections.map((id) => <span key={id}>{draftSections.find((section) => section.id === id)?.title}</span>) : <span>No sections reviewed yet.</span>}</div><h4>Emerging gap themes</h4><ul>{reviewedSections.map((id) => draftSections.find((section) => section.id === id)?.gap).filter(Boolean).map((gapId) => <li key={gapId}>{gapThemes.find((gap) => gap.id === gapId)?.label}</li>)}</ul><p className="m3-s17-note-tip">{reviewedSections.length < 3 ? 'You can continue after one section, but reviewing more sections will make the note stronger.' : 'Good coverage. You have enough draft review context to identify priority gaps.'}</p></aside></div><div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-proposal-submit" disabled={reviewedSections.length < 1} onClick={() => setStage(3)}>Continue to identify gaps</button></div></section>}
+        {stage === 2 && <section className="m3-s17-panel"><h2>Jiru Amba Inclusive Local Development and Service Improvement Plan</h2><p className="m3-s17-instruction"><strong>Draft design section.</strong> This is a credible mixed-quality draft. Review its strengths as well as its priority gaps; you are not expected to correct everything.</p><section aria-labelledby="m3-s15-lenses"><h3 id="m3-s15-lenses">Compact review lenses</h3><div className="m3-s17-lens-grid">{reviewLenses.map(([label, question]) => <article key={label}><strong>{label}</strong><span>{question}</span></article>)}</div></section><section aria-labelledby="m3-s15-strengths"><h3 id="m3-s15-strengths">Identify one to three genuine strengths</h3><div className="m3-s17-strength-grid">{strengthOptions.map((strength) => { const selected = selectedStrengths.includes(strength.id); return <button key={strength.id} type="button" aria-pressed={selected} className={selected ? 'is-selected' : ''} onClick={() => toggleStrength(strength.id)}><strong>{selected ? 'Strength selected' : 'Select strength'}</strong><span>{strength.label}</span></button>; })}</div></section><div className="m3-s17-workspace"><section className="m3-s17-draft-list" aria-label="Fictional draft plan under review"><h3>Draft plan under review</h3>{draftSections.map((section) => { const reviewed = reviewedSections.includes(section.id); const active = activeDraftSection === section.id; return <button key={section.id} type="button" data-qa={section.qa} className={`m3-s17-draft-card ${active ? 'is-active' : ''} ${reviewed ? 'is-reviewed' : ''}`} aria-pressed={active} onClick={() => markDraftSection(section.id)}><strong>{section.title}</strong><span>{section.text}</span></button>; })}{activeDraftSection && <article className="m3-s17-feedback" aria-live="polite"><h3>Balanced review feedback</h3><p>{draftSections.find((section) => section.id === activeDraftSection)?.feedback}</p></article>}</section><aside className="m3-s17-note-panel"><h3>Review progress</h3><p>{selectedStrengths.length} genuine strength{selectedStrengths.length === 1 ? '' : 's'} retained.</p><h4>Draft sections reviewed ({reviewedSections.length})</h4><div className="m3-s17-chip-column">{reviewedSections.length ? reviewedSections.map((id) => <span key={id}>{draftSections.find((section) => section.id === id)?.title}</span>) : <span>No sections reviewed yet.</span>}</div><p className="m3-s17-note-tip">Open the sections you need. Priority selection is limited to three or four gaps.</p></aside></div><div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-proposal-submit" disabled={reviewedSections.length < 1 || selectedStrengths.length < 1} onClick={() => setStage(3)}>Continue to identify priority gaps</button></div></section>}
 
-        {stage === 3 && <section className="m3-s17-panel"><h2>Identify priority HRBA gaps</h2><p className="m3-s17-instruction">Select at least three priority HRBA gaps that should be repaired before implementation.</p><div className="m3-s17-workspace"><div className="m3-s17-gap-grid">{gapThemes.map((gap) => { const selected = selectedGaps.includes(gap.id); return <button key={gap.id} type="button" data-qa={gap.qa} className={`m3-s17-gap-card ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => toggleGap(gap.id)}><strong>{gap.label}</strong>{selected && <span className="m3-s17-feedback-text">{gap.feedback}</span>}</button>; })}</div><aside className="m3-s17-note-panel"><h3>Gap themes identified</h3><p data-qa="m3-s17-selected-gap-count">{selectedGaps.length} selected</p><div className="m3-s17-chip-column">{selectedGapObjects.length ? selectedGapObjects.map((gap) => <button key={gap.id} type="button" onClick={() => toggleGap(gap.id)}>{gap.label} ×</button>) : <span>Select at least three gap themes.</span>}</div><h4>Summary so far</h4><ul>{selectedGapObjects.map((gap) => <li key={gap.id}>{gap.summary}</li>)}</ul></aside></div><div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(2)}>Back to review draft</button><button type="button" className="m3-proposal-submit" disabled={selectedGaps.length < 3} onClick={() => { if (!selectedGaps.includes(repairFocus as GapThemeId)) setRepairFocus(selectedGaps[0]); setStage(4); }}>Continue to repair the priority section</button></div></section>}
+        {stage === 3 && <section className="m3-s17-panel"><h2>Identify three or four priority gaps</h2><p className="m3-s17-instruction">Prioritize likely effects on rights-holders, responsibility, inclusion, accountability, feasibility, measurement or risk. Do not select every gap.</p><div className="m3-s17-workspace"><div className="m3-s17-gap-grid">{gapThemes.map((gap) => { const selected = selectedGaps.includes(gap.id); return <button key={gap.id} type="button" data-qa={gap.qa} className={`m3-s17-gap-card ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => toggleGap(gap.id)}><strong>{gap.label}</strong><span>{gap.summary}</span>{selected && <span className="m3-s17-feedback-text">{gap.feedback}</span>}</button>; })}</div><aside className="m3-s17-note-panel"><h3>Priority gaps</h3><p data-qa="m3-s17-selected-gap-count">{selectedGaps.length} of 3–4 selected</p><div className="m3-s17-chip-column">{selectedGapObjects.length ? selectedGapObjects.map((gap) => <button key={gap.id} type="button" onClick={() => toggleGap(gap.id)}>{gap.label} ×</button>) : <span>Select three or four distinct gaps.</span>}</div><p className="m3-s17-note-tip">Each option has one stable ID, so the same issue cannot be counted twice.</p></aside></div><div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(2)}>Back to review draft</button><button type="button" className="m3-proposal-submit" disabled={selectedGaps.length < 3 || selectedGaps.length > 4} onClick={() => { if (!selectedGaps.includes(repairFocus as GapThemeId)) setRepairFocus(selectedGaps[0]); setStage(4); }}>Connect findings and repairs</button></div></section>}
 
-        {stage === 4 && <section className="m3-s17-panel"><h2>Repair the priority section</h2><p className="m3-s17-instruction">Choose one priority gap to repair, then select the revision that best reflects rights, influence, responsibility, response, and safe evidence.</p><div className="m3-s17-workspace"><section><h3>Choose the main repair focus</h3><div className="m3-s17-focus-grid" data-qa="m3-s17-repair-focus">{selectedGapObjects.map((gap) => <button key={gap.id} type="button" className={repairFocus === gap.id ? 'is-selected' : ''} aria-pressed={repairFocus === gap.id} onClick={() => { setRepairFocus(gap.id); setRepairOption(''); setReviewNote(null); }}>{gap.label}</button>)}</div>{selectedRepairFocus && <p className="m3-s17-repair-note">You selected "{selectedRepairFocus.label}" as the main gap. {repairNotes[selectedRepairFocus.id]}</p>}<h3>Select the improved indicator option</h3><p>Choose the version that best reflects rights, influence, and feedback.</p><div className="m3-s17-repair-options">{repairOptions.map((option) => { const selected = repairOption === option.id; return <button key={option.id} type="button" data-qa={option.qa} className={`m3-s17-repair-option ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => { setRepairOption(option.id); setReviewNote(null); }}><strong>{option.title}</strong><span>{option.text}</span><em>{option.tag}</em>{selected && <small data-qa="m3-s17-repair-feedback" className={option.id === 'influenceResponse' ? 'is-strong' : 'is-constructive'}>{option.feedback}</small>}</button>; })}</div></section><aside className="m3-s17-note-panel"><h3>Your HRBA draft plan review note</h3><p>Preview builds after you choose a repair focus and option.</p>{repairOption === 'influenceResponse' && <article className="m3-s17-success"><h4>Why this revision is stronger</h4><ul><li>Focuses on influence and decision-making</li><li>Connects feedback to response or adjustment</li><li>Covers affected groups, not just total numbers</li></ul></article>}<p className="m3-s17-note-tip">Good indicators show change that people can feel, not just events that happened.</p></aside></div><div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Back to gap review</button><button type="button" className="m3-proposal-submit" disabled={!repairFocus || !repairOption} onClick={() => setStage(5)}>Continue to review note</button></div></section>}
+        {stage === 4 && <section className="m3-s17-panel"><h2>Connect each finding to evidence and a repair</h2><p className="m3-s17-instruction">For every selected gap, choose a compact priority reason and an earlier Module 3 source. Review or edit the deterministic repair wording.</p><div className="m3-s17-finding-stack">{selectedGapObjects.map((gap) => { const defaults = repairByGap[gap.id]; const review = gapReviews[gap.id] || { reason: '', source: '', repair: defaults.repair, repairedWording: defaults.wording }; return <fieldset key={gap.id} className="m3-s17-finding-editor"><legend>{gap.label}</legend><p><strong>Draft evidence:</strong> {defaults.evidence}</p><p>{gap.feedback}</p><label>Why this is a priority<select value={review.reason} onChange={(event) => updateGapReview(gap.id, 'reason', event.target.value)}><option value="">Choose one</option>{reasonOptions.map((reason) => <option key={reason}>{reason}</option>)}</select></label><label>Earlier tool or saved finding<select value={review.source} onChange={(event) => updateGapReview(gap.id, 'source', event.target.value)}><option value="">Choose one</option>{sourceOptions.map(([id, label]) => <option key={id} value={id} disabled={id === 'screen14' && !screen14Package}>{label}</option>)}</select></label><label>Recommended repair<select value={review.repair} onChange={(event) => updateGapReview(gap.id, 'repair', event.target.value)}><option value={defaults.repair}>{defaults.repair}</option></select></label><label>Concise repaired wording<textarea value={review.repairedWording} onChange={(event) => updateGapReview(gap.id, 'repairedWording', event.target.value)} rows={4} /></label><p className="m3-s17-note-tip"><strong>Remaining verification:</strong> {defaults.verification}</p></fieldset>; })}</div>{!screen14Package && <p className="m3-risk-empty-note">Screen 14 design repair package is not yet saved. Other valid sources remain available; return to Screen 14 through Previous if needed.</p>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Back to priority gaps</button><button type="button" className="m3-proposal-submit" disabled={!reviewStageReady} onClick={() => setStage(5)}>Continue to generate review note</button></div></section>}
 
-        {stage === 5 && <section className="m3-s17-panel"><h2>Your HRBA draft plan review note</h2><p className="m3-s17-instruction">Preview of your review package.</p>{!reviewNote && <div className="m3-s17-actions m3-s17-generate-row"><button type="button" className="m3-proposal-submit" data-qa="m3-s17-generate-review-note" disabled={!reviewStageReady} onClick={generateReviewNote}>Generate review note</button></div>}{reviewNote && <section className="m3-s17-generated-note" data-qa="m3-s17-generated-review-note" aria-live="polite"><h3 ref={outputHeadingRef} tabIndex={-1}>Your HRBA draft plan review note</h3><article><h4>Priority gap identified</h4><p>{reviewNote.priorityGap}</p></article><article><h4>Why it matters</h4><p>{reviewNote.whyItMatters}</p></article><article><h4>Suggested repair</h4><p>{reviewNote.suggestedRepair}</p></article><article><h4>What to monitor</h4><ul>{reviewNote.whatToMonitor.map((item) => <li key={item}>{item}</li>)}</ul></article><article><h4>Carry-forward question</h4><p>{reviewNote.carryForwardQuestion}</p></article><article><h4>Safe evidence note</h4><p>{reviewNote.safeEvidenceNote}</p></article><div className="m3-s17-chip-row">{['Participation', 'Accessibility', 'Accountability', 'Response', 'Indicator quality', 'Risk'].map((chip) => <span key={chip}>{chip}</span>)}</div></section>}{reviewNote && <section className="m3-s17-package-summary" data-qa="m3-s17-review-package-summary"><h3>Review package summary</h3>{['Objective checked', 'Activities checked', 'Indicator improved', 'Response pathway improved', 'Risk / watch-point added'].map((item) => <p key={item}><span>{item}</span><strong>Done</strong></p>)}<p className="m3-s17-success-line">Great work. Your review note is clear, actionable, and rights-based.</p></section>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Back to repair section</button><button type="button" className="m3-proposal-submit" disabled={!reviewNote} onClick={() => setStage(6)}>Save review note and continue</button></div></section>}
+        {stage === 5 && <section className="m3-s17-panel"><h2>Draft Plan Review Note and repaired section</h2><p className="m3-s17-instruction">Generate a concise professional note from the selected strengths and priority repairs.</p>{!reviewNote && <div className="m3-s17-actions m3-s17-generate-row"><button type="button" className="m3-proposal-submit" data-qa="m3-s17-generate-review-note" disabled={!reviewStageReady} onClick={generateReviewNote}>Generate review note and repaired section</button></div>}{renderReviewLedger()}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Edit findings and repairs</button><button type="button" className="m3-proposal-submit" disabled={!reviewNote} onClick={() => setStage(6)}>Continue to Apply/Download</button></div></section>}
 
-        {stage === 6 && reviewNote && <section className="m3-s17-panel"><h2>Apply and download</h2><p className="m3-s17-instruction">Use your Jiru Amba review note, try a safe version with your own CSO context, or download reusable tools.</p><section className="m3-s17-final-card"><h3>Your draft plan review note is ready.</h3><p>Great work. You checked the draft plan through an HRBA lens and improved it.</p><div className="m3-s17-chip-row">{['Rights-holders', 'Participation', 'Accountability', 'Accessibility', 'Response', 'Risk'].map((chip) => <span key={chip}>{chip}</span>)}</div><article><h4>Priority issues found</h4><ul><li>Limited participation of affected groups in needs analysis</li><li>No clear accountability for actions and feedback</li><li>Response pathway not defined for different risks</li></ul></article><article><h4>Repaired section</h4><p>Section 3.2 Participation and Inclusion + Section 3.6 Response and Accountability</p><p>Added inclusive participation plan, feedback channels, roles and responsibilities, and risk-informed response actions.</p></article><article><h4>Key follow-up point</h4><p>Test the feedback and response pathway with a small group before full roll-out. Ensure accessibility and monitor who is not participating.</p></article><article><h4>Carry forward</h4><p>Keep the HRBA lens across monitoring, learning, and communication. Continue checking rights-holders, participation, accountability, accessibility, response, risk, and safe evidence.</p></article></section><div className="m3-guided-tabs m3-s17-tabs" role="tablist" aria-label="Apply or download" data-qa="m3-s17-apply-tabs"><button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button><button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s17-download-tools">Download tools</button></div>{applyTab === 'own' && <section className="m3-proposal-card m3-proposal-own-cso"><h3>Try with my CSO context <span>Optional</span></h3><p>Apply the same review approach to one of your own draft plan sections. Keep it safe and general.</p><div className="m3-proposal-own-grid">{[['planSection', 'Draft plan section'], ['weakness', 'What appears weak?'], ['missingIssue', 'Which HRBA issue might be missing?'], ['safeRepair', 'What safe repair could be proposed?'], ['monitor', 'What should be monitored?'], ['evidenceNote', 'Safe evidence note']].map(([field, label]) => <label key={field}>{label}<textarea value={ownCsoDraft[field as keyof typeof ownCsoDraft]} onChange={(event) => setOwnCsoDraft((prev) => ({ ...prev, [field]: event.target.value }))} /></label>)}</div>{ownCsoError && <p className="m3-proposal-error" role="alert">{ownCsoError}</p>}<button type="button" className="m3-proposal-submit" onClick={validateOwnCsoPractice}>Start my own practice</button></section>}{applyTab === 'downloads' && <section className="m3-proposal-card m3-proposal-template"><h3>Download tools</h3><div className="m3-proposal-template-actions"><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'docx')}>Download Draft Plan Review Note Template</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'md')}>Download markdown copy</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate('', 'draft-plan-review-blank-worksheet', 'md')}>Download blank worksheet</button></div></section>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(5)}>Back to review note</button><button type="button" className="m3-primary-button" data-qa="m3-s17-final-continue" disabled={!reviewNote} onClick={() => reviewNote && onComplete({ draftPlanReviewNote: reviewNote, screen17: { screenId: 'M3-R17', route: '/module-3/screen-3-17', title: 'Draft Plan Review and Repair', reviewNote, selectedDraftSections: reviewedSections, selectedGaps, ownCsoPractice: ownCsoDraft }, screen18: { hiddenIntegratedInto: 'M3-R17' }, screen19: { hiddenIntegratedInto: 'M3-R17' } })}>Save draft plan review note and continue</button></div><p className="m3-proposal-safe-note" data-qa="m3-s17-safety-note">Use fictional, generalized, or non-sensitive examples. Do not include names, exact locations, complaint details, accusations, incidents, confidential proposal details, or identifiable personal information.</p></section>}
+        {stage === 6 && reviewNote && <section className="m3-s17-panel"><h2>Apply and download</h2><p className="m3-s17-instruction">Use the required Jiru Amba review note, or optionally note one generalized draft-plan section that your organization may wish to review later.</p>{renderReviewLedger()}<div className="m3-guided-tabs m3-s17-tabs" role="tablist" aria-label="Apply or download" data-qa="m3-s17-apply-tabs"><button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button><button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s17-download-tools">Download tools</button></div>{applyTab === 'own' && <section className="m3-proposal-card m3-proposal-own-cso"><h3>Try with my CSO context <span>Optional</span></h3><p><strong>Safe-input reminder:</strong> Note one generalized draft-plan section that your organization may wish to review later. Do not enter names, exact locations, confidential proposal text or identifiable concerns.</p><div className="m3-proposal-own-grid">{[['planSection', 'Generalized draft section'], ['weakness', 'What may require review?'], ['missingIssue', 'Which design issue may be missing?'], ['safeRepair', 'What generalized repair could be proposed?'], ['monitor', 'What should be monitored?'], ['evidenceNote', 'Safe evidence note']].map(([field, label]) => <label key={field}>{label}<textarea value={ownCsoDraft[field as keyof typeof ownCsoDraft]} onChange={(event) => setOwnCsoDraft((prev) => ({ ...prev, [field]: event.target.value }))} /></label>)}</div>{ownCsoError && <p className="m3-proposal-error" role="alert">{ownCsoError}</p>}<button type="button" className="m3-proposal-submit" onClick={validateOwnCsoPractice}>Check optional note</button></section>}{applyTab === 'downloads' && <section className="m3-proposal-card m3-proposal-template"><h3>Download tools</h3><div className="m3-proposal-template-actions"><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'docx')}>Download Draft Plan Review Note Template</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'md')}>Download markdown copy</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate('', 'draft-plan-review-blank-worksheet', 'md')}>Download blank worksheet</button></div></section>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(5)}>Edit review note</button><button type="button" className="m3-primary-button" data-qa="m3-s17-final-continue" disabled={!reviewNote} onClick={() => reviewNote && onComplete({ draftPlanReviewNote: reviewNote, repairedSection: reviewNote.repairedSection, screen17: { screenId: 'M3-R17', route: '/module-3/screen-3-17', title: 'Draft Plan Review and Repair', reviewNote, selectedDraftSections: reviewedSections, selectedGaps, selectedStrengths, gapReviews, repairedSection: reviewNote.repairedSection, ownCsoPractice: ownCsoDraft }, screen18: { hiddenIntegratedInto: 'M3-R17' }, screen19: { hiddenIntegratedInto: 'M3-R17' } })}>Save review note and continue</button></div><p className="m3-proposal-safe-note" data-qa="m3-s17-safety-note">Use fictional, generalized, or non-sensitive examples. Do not include names, exact locations, complaint details, accusations, incidents, confidential proposal details, budgets, donor names or identifiable personal information.</p></section>}
+        {stage === 6 && reviewNote && <section className="m3-s17-panel m3-s17-completed-download" aria-labelledby="m3-s15-completed-download"><h2 id="m3-s15-completed-download">Download the completed review</h2><p>This copy includes the draft reviewed, retained strengths, priority findings, reasons, earlier tools, repairs, repaired section and remaining verification questions.</p><div className="m3-proposal-template-actions"><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(completedReviewMarkdown, 'draft-plan-review-note', 'docx')}>Download completed review (.docx)</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(completedReviewMarkdown, 'draft-plan-review-note', 'md')}>Download completed review (.md)</button></div></section>}
       </article>
     </main>
   );
@@ -15010,6 +16942,8 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
 void ProposalReviewScreen;
 
 void IntegratedDraftPlanReviewScreen;
+
+void AppliedDesignCheckScreen;
 
 function AppliedDesignCheckScreen({ screen, onComplete }: {
   screen: Module3RevisedScreen;
@@ -16148,41 +18082,109 @@ function ProposalSectionRepairScreen({ screen, state, onComplete }: {
   );
 }
 
-function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
+function AppliedKnowledgeCheckScreen({ screen, state, onChangeState, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [checkedQuestions, setCheckedQuestions] = useState<Record<string, boolean>>({});
-  const [summary, setSummary] = useState<Screen20Submission | null>(null);
-  const feedbackRef = useRef<HTMLDivElement>(null);
+  const savedRecord = getPracticeState(state, screen.id);
+  const savedResult = getScreen20SavedOutput(state);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const savedQuestionId = typeof savedRecord.currentQuestionId === 'string' ? savedRecord.currentQuestionId : '';
+    const savedIndex = screen20Questions.findIndex((question) => question.id === savedQuestionId);
+    return savedIndex >= 0 ? savedIndex : 0;
+  });
+  const [answers, setAnswers] = useState<Partial<Record<Screen20QuestionId, Screen20OptionId>>>(() =>
+    normalizeScreen20Answers(savedRecord.answers || savedResult?.answers),
+  );
+  const [summary, setSummary] = useState<Screen20Submission | null>(savedResult);
+  const [statusMessage, setStatusMessage] = useState(savedResult ? 'Results restored.' : '');
+  const [validationMessage, setValidationMessage] = useState('');
   const summaryRef = useRef<HTMLHeadingElement>(null);
+  const questionRef = useRef<HTMLHeadingElement>(null);
   const question = screen20Questions[currentIndex];
   const selectedAnswer = answers[question.id] || '';
-  const isChecked = Boolean(checkedQuestions[question.id]);
-  const isCorrect = selectedAnswer === question.correctAnswer;
-  const answeredCount = screen20Questions.filter((item) => checkedQuestions[item.id]).length;
-  const allAnswered = answeredCount === screen20Questions.length;
-  const canContinue = Boolean(summary && allAnswered);
+  const answeredCount = screen20Questions.filter((item) => Boolean(answers[item.id])).length;
+  const canContinue = Boolean(summary);
+
+  const saveProgress = (patch: Record<string, unknown>) => onChangeState((prev) => ({
+    ...prev,
+    practiceCheckState: {
+      ...prev.practiceCheckState,
+      [practiceKey(screen.id)]: {
+        ...getPracticeState(prev, screen.id),
+        ...patch,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  }));
 
   const selectAnswer = (questionId: Screen20QuestionId, optionId: Screen20OptionId) => {
-    if (checkedQuestions[questionId]) return;
-    setAnswers((current) => ({ ...current, [questionId]: optionId }));
-    setCheckedQuestions((current) => ({ ...current, [questionId]: true }));
-    setSummary(null);
-    window.setTimeout(() => feedbackRef.current?.focus(), 0);
+    const nextAnswers = { ...answers, [questionId]: optionId };
+    setAnswers(nextAnswers);
+    setValidationMessage('');
+    setStatusMessage(`Answer saved. Question ${currentIndex + 1} of ${screen20Questions.length}.`);
+    saveProgress({ answers: nextAnswers, currentQuestionId: questionId, attemptInProgress: true });
   };
 
-  const moveNext = () => {
-    if (currentIndex < screen20Questions.length - 1) {
-      setCurrentIndex((index) => index + 1);
+  const moveToQuestion = (index: number) => {
+    const nextIndex = Math.max(0, Math.min(screen20Questions.length - 1, index));
+    setCurrentIndex(nextIndex);
+    saveProgress({ answers, currentQuestionId: screen20Questions[nextIndex].id, attemptInProgress: true });
+    window.setTimeout(() => questionRef.current?.focus(), 0);
+  };
+
+  const submitAssessment = () => {
+    const firstUnanswered = screen20Questions.findIndex((item) => !answers[item.id]);
+    if (firstUnanswered >= 0) {
+      const message = `Answer question ${firstUnanswered + 1} before submitting the assessment.`;
+      setValidationMessage(message);
+      setStatusMessage(message);
+      setCurrentIndex(firstUnanswered);
+      window.setTimeout(() => questionRef.current?.focus(), 0);
       return;
     }
-    setSummary(buildScreen20Submission(answers, true));
+    const priorAttemptCount = Math.max(0, Number(savedRecord.attemptCount) || savedResult?.attemptCount || 0);
+    const result = buildScreen20Submission(answers, priorAttemptCount + 1);
+    setSummary(result);
+    setValidationMessage('');
+    setStatusMessage('Assessment submitted. Results available.');
+    saveProgress({
+      answers,
+      questionResults: result.questionResults,
+      score: result.score,
+      totalQuestions: result.totalQuestions,
+      percentage: result.percentage,
+      reviewTopics: result.reviewTopics,
+      reviewFlags: result.reviewFlags,
+      attemptCount: result.attemptCount,
+      submittedAt: result.submittedAt,
+      assessmentResult: result,
+      appliedKnowledgeCheck: result,
+      screen20: result,
+      attemptInProgress: false,
+    });
     window.setTimeout(() => summaryRef.current?.focus(), 0);
   };
-  const categorySummary = ['Context and inequality analysis', 'Rights standards and responsibilities', 'Participation and influence', 'Accountability and feedback-response', 'Indicators and safe evidence', 'Draft plan repair'];
+
+  const retryAssessment = () => {
+    if (!window.confirm('Start a new attempt? Your saved result remains available until you confirm this retry.')) return;
+    setAnswers({});
+    setSummary(null);
+    setCurrentIndex(0);
+    setValidationMessage('');
+    setStatusMessage('New attempt started. Question 1 of 10.');
+    saveProgress({
+      answers: {},
+      currentQuestionId: screen20Questions[0].id,
+      attemptInProgress: true,
+      assessmentResult: null,
+      appliedKnowledgeCheck: null,
+      screen20: null,
+    });
+    window.setTimeout(() => questionRef.current?.focus(), 0);
+  };
 
   return (
     <main className="m3-screen m3-closing-screen m3-s20-screen" aria-labelledby={`${screen.id}-title`} data-qa="m3-s20-screen">
@@ -16190,49 +18192,34 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
         <header className="m3-closing-header">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>Module 3 Applied Knowledge Check</h1>
-          <p>Choose the strongest rights-based response. Use what you practiced in Module 3: context analysis, standards, rights-holders, responsibilities, power, indicators, accountability, and draft plan repair.</p>
+          <h1 id={`${screen.id}-title`}>Applied Knowledge Check</h1>
+          <p>This knowledge check asks you to apply the main Module 3 tools to short project-design situations. Select the most appropriate response in each situation.</p>
+          <p>The questions focus on design reasoning rather than memorizing definitions. After submission, you will receive an explanation, the relevant design principle, and the Module 3 tool connected to each question.</p>
         </header>
-
-        <ol className="m3-s20-stage-cues" aria-label="Applied knowledge check stages">
-          {[
-            ['Understand', 'Use the full Module 3 design logic.'],
-            ['Practice', `${answeredCount} of ${screen20Questions.length} questions answered.`],
-            ['Review answers', summary ? 'Summary ready.' : 'Available after all questions.'],
-            ['Save / Continue', canContinue ? 'Ready for snapshot.' : 'Complete the check first.'],
-          ].map(([label, description], index) => {
-            const active = (!summary && index === 1) || (summary && (index === 2 || index === 3));
-            return (
-              <li key={label} className={active ? 'is-active' : ''}>
-                <span>{index + 1}</span>
-                <strong>{label}</strong>
-                <small>{description}</small>
-              </li>
-            );
-          })}
-        </ol>
 
         <section className="m3-s20-check-overview" aria-label="Knowledge check overview">
           <article>
-            <h2>Understand</h2>
-            <p>Each question asks for the strongest HRBA design judgment, not the longest activity list.</p>
+            <h2>Ten situations</h2>
+            <p>Answer every question. Your selections are saved as you work.</p>
           </article>
           <article>
-            <h2>Practice</h2>
-            <p>Choose one answer per scenario. Feedback appears immediately so you can keep the reasoning fresh.</p>
+            <h2>Review before submitting</h2>
+            <p>Use Previous and Next to revisit answers. Explanations appear after submission.</p>
           </article>
           <article>
-            <h2>Carry forward</h2>
-            <p>Your score and review flags move into the final Module 3 snapshot.</p>
+            <h2>Safe participation</h2>
+            <p>No names or personal information are required. Results identify relevant screens to review.</p>
           </article>
         </section>
+
+        <p className="m3-s20-live-status" aria-live="polite">{statusMessage || `${answeredCount} of ${screen20Questions.length} questions answered.`}</p>
 
         {!summary && (
           <section className="m3-closing-quiz-card" aria-labelledby={`${screen.id}-${question.id}`}>
             <div className="m3-closing-quiz-progress" aria-live="polite">
               Question {currentIndex + 1} of {screen20Questions.length} · {answeredCount} answered
             </div>
-            <h2 id={`${screen.id}-${question.id}`}>{question.title}</h2>
+            <h2 id={`${screen.id}-${question.id}`} ref={questionRef} tabIndex={-1}>{question.domain}</h2>
             <div className="m3-closing-scenario">
               <span>Scenario</span>
               <p>{question.scenario}</p>
@@ -16241,96 +18228,78 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
               <legend>{question.prompt}</legend>
               {question.options.map((option) => {
                 const selected = selectedAnswer === option.id;
-                const status = isChecked && selected ? (isCorrect ? 'is-correct' : 'is-not-yet') : '';
                 return (
-                  <label key={option.id} className={`${selected ? 'is-selected' : ''} ${status}`}>
+                  <label key={option.id} className={selected ? 'is-selected' : ''}>
                     <input
                       type="radio"
                       name={`${screen.id}-${question.id}`}
                       value={option.id}
                       checked={selected}
-                      disabled={isChecked}
                       onChange={() => selectAnswer(question.id, option.id)}
                     />
-                    <span>{option.id}. {option.text}</span>
-                    {isChecked && selected && <strong>{isCorrect ? 'Correct!' : 'Not quite!'}</strong>}
+                    <span>{option.id.toUpperCase()}. {option.text}</span>
                   </label>
                 );
               })}
             </fieldset>
-
-            {isChecked && (
-              <div className={`m3-closing-feedback ${isCorrect ? 'is-correct' : 'is-not-yet'}`} tabIndex={-1} ref={feedbackRef}>
-                <h3>{isCorrect ? 'Correct!' : 'Not quite!'}</h3>
-                <p>{isCorrect ? question.feedback : question.incorrectFeedback}</p>
-                <p><strong>Design reminder:</strong> {question.designReminder}</p>
-                <button type="button" className="m3-closing-primary" onClick={moveNext}>
-                  {currentIndex === screen20Questions.length - 1 ? 'Show summary' : 'Next question'}
-                </button>
-              </div>
-            )}
+            {validationMessage && <p className="m3-s20-validation" role="alert">{validationMessage}</p>}
+            <div className="m3-s20-question-actions">
+              <button type="button" className="m3-closing-secondary" disabled={currentIndex === 0} onClick={() => moveToQuestion(currentIndex - 1)}>Previous question</button>
+              {currentIndex < screen20Questions.length - 1 && <button type="button" className="m3-closing-primary" onClick={() => moveToQuestion(currentIndex + 1)}>Next question</button>}
+              <button type="button" className={currentIndex === screen20Questions.length - 1 ? 'm3-closing-primary' : 'm3-closing-secondary'} data-qa="m3-s20-submit" onClick={submitAssessment}>Submit assessment</button>
+            </div>
           </section>
         )}
 
         {summary && (
-          <section className="m3-closing-summary" aria-live="polite" aria-labelledby={`${screen.id}-summary`}>
-            <h2 id={`${screen.id}-summary`} ref={summaryRef} tabIndex={-1}>Your Module 3 applied knowledge check is complete</h2>
-            <p>You practiced applying HRBA thinking to real project design choices: analysis, standards, rights-holders, responsibilities, power, indicators, accountability, and draft plan repair.</p>
-            <p className="m3-closing-score">Score: {summary.score} of {screen20Questions.length}</p>
-            <p>{getScreen20ScoreMessage(summary.score)}</p>
-            <div className="m3-s20-category-chip-row">{categorySummary.map((item) => <span key={item}>{item}</span>)}</div>
+          <section className="m3-closing-summary" aria-labelledby={`${screen.id}-summary`} data-qa="m3-s20-results">
+            <h2 id={`${screen.id}-summary`} ref={summaryRef} tabIndex={-1}>{summary.assessmentResult}</h2>
+            <div className="m3-s20-result-metrics" aria-label="Assessment result">
+              <p className="m3-closing-score">Score: {summary.score}/{summary.totalQuestions}</p>
+              <p><strong>{summary.percentage}%</strong> · {summary.score} answered correctly · {summary.missedQuestions.length} requiring review</p>
+            </div>
+            <p>{summary.resultGuidance}</p>
+            <p>Attempt {summary.attemptCount}</p>
+            <section className="m3-s20-targeted-review" aria-labelledby={`${screen.id}-targeted-review`}>
+              <h3 id={`${screen.id}-targeted-review`}>Targeted review guidance</h3>
+              {summary.reviewFlags.length ? <ul>{summary.reviewFlags.map((tool) => <li key={tool}>{tool}</li>)}</ul> : <p>No priority review topic was identified. Continue to the Final Snapshot and review your saved Module 3 outputs.</p>}
+            </section>
             <section className="m3-s20-answer-review" aria-labelledby={`${screen.id}-answer-review`}>
               <h3 id={`${screen.id}-answer-review`}>Review answers</h3>
-              {screen20Questions.map((item) => {
+              {screen20Questions.map((item, index) => {
                 const learnerAnswer = item.options.find((option) => option.id === answers[item.id]);
                 const correctAnswer = item.options.find((option) => option.id === item.correctAnswer);
                 const answeredCorrectly = answers[item.id] === item.correctAnswer;
                 return (
                   <details key={item.id}>
                     <summary>
-                      <span>{item.id}</span>
-                      <strong>{item.title}</strong>
-                      <em>{answeredCorrectly ? 'Correct' : 'Review'}</em>
+                      <span>{index + 1}</span>
+                      <strong>{item.domain}</strong>
+                      <em>{answeredCorrectly ? 'Correct' : 'Incorrect'}</em>
                     </summary>
                     <div>
-                      <p><strong>Question or design challenge:</strong> {item.prompt}</p>
-                      <p><strong>Learner answer:</strong> {learnerAnswer ? learnerAnswer.text : 'Not answered'}</p>
-                      <p><strong>Feedback:</strong> {answeredCorrectly ? item.feedback : item.incorrectFeedback}</p>
-                      <p><strong>Corrected HRBA reasoning:</strong> {correctAnswer?.text}</p>
-                      <p><strong>Carry forward to final Module 3 snapshot:</strong> {item.designReminder}</p>
+                      <p><strong>{answeredCorrectly ? 'Correct' : 'Incorrect'}.</strong></p>
+                      <p><strong>Your selected answer:</strong> {learnerAnswer ? `${learnerAnswer.id.toUpperCase()}. ${learnerAnswer.text}` : 'Not answered'}</p>
+                      <p><strong>Correct answer:</strong> {correctAnswer ? `${correctAnswer.id.toUpperCase()}. ${correctAnswer.text}` : ''}</p>
+                      <p><strong>Explanation:</strong> {learnerAnswer?.feedback}</p>
+                      <p><strong>Design principle:</strong> {item.designPrinciple}</p>
+                      <p><strong>Module 3 tool:</strong> {item.tools.join('; ')}</p>
                     </div>
                   </details>
                 );
               })}
             </section>
-            <div className="m3-closing-summary-grid">
-              <article>
-                <h3>{summary.score >= 6 ? 'Strong progress' : 'Strong choices'}</h3>
-                {summary.correctAnswers.length > 0 ? (
-                  <ul>{screen20Questions.filter((item) => summary.correctAnswers.includes(item.id)).map((item) => <li key={item.id}>{item.strongArea}</li>)}</ul>
-                ) : (
-                  <p>Use the areas to develop to strengthen these applied design decisions.</p>
-                )}
-              </article>
-              <article>
-                <h3>Areas to develop</h3>
-                {summary.reviewFlags.length > 0 ? (
-                  <ul>{summary.reviewFlags.map((flag) => <li key={flag}>Area to strengthen: {flag}. Review this area before moving on. This is an important design judgement for CSO project work.</li>)}</ul>
-                ) : (
-                  <p>Strong progress. Carry the full HRBA design logic into your snapshot.</p>
-                )}
-              </article>
-            </div>
             <p className="m3-closing-carry">{screen20CarryForward}</p>
+            <button type="button" className="m3-closing-secondary" data-qa="m3-s20-retry" onClick={retryAssessment}>Retry assessment</button>
           </section>
         )}
 
         <div className="m3-closing-actions">
           <PrimaryButton
             disabled={!canContinue}
-            onClick={() => summary && onComplete({ appliedKnowledgeCheck: summary, screen20: summary })}
+            onClick={() => summary && onComplete({ appliedKnowledgeCheck: summary, assessmentResult: summary, screen20: summary, score: summary.score, totalQuestions: summary.totalQuestions, percentage: summary.percentage, reviewTopics: summary.reviewTopics, attemptCount: summary.attemptCount })}
           >
-            {canContinue ? screen.continueLabel : 'Complete the applied check'}
+            {canContinue ? screen.continueLabel : 'Submit the applied check to continue'}
           </PrimaryButton>
         </div>
       </article>
@@ -16341,45 +18310,45 @@ function AppliedKnowledgeCheckScreen({ screen, onComplete }: {
 function PortfolioSnapshotScreen({
   screen,
   state,
+  onChangeState,
   onSaveSnapshot,
   onComplete,
 }: {
   screen: Module3RevisedScreen;
   state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onSaveSnapshot: (snapshot: M3PortfolioSnapshot) => void;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const defaults = getDefaultSnapshotValues(state);
+  const assembledSections = getFinalSnapshotSections(state);
+  const sourceSignature = getFinalSnapshotSourceSignature(state);
   const savedSnapshot = getScreen21SavedSnapshot(state);
-  const knowledgeCheck = getScreen20SavedOutput(state);
-  const [values, setValues] = useState<Record<SnapshotFieldId, string>>(() => {
-    const initialValues = { ...defaults };
-    if (savedSnapshot) {
-      flattenSnapshotFields().forEach((field) => {
-        initialValues[field.id] = savedSnapshot[field.id] || initialValues[field.id];
-      });
-    }
-    return initialValues;
-  });
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => ({ [snapshotSections[0].id]: true }));
-  const [reviewedSections, setReviewedSections] = useState<string[]>(savedSnapshot ? snapshotSections.map((section) => section.id) : [snapshotSections[0].id]);
-  const [implementationWatchPoint, setImplementationWatchPoint] = useState(savedSnapshot?.implementationWatchPoint || '');
-  const [editedFields, setEditedFields] = useState<string[]>(savedSnapshot?.learnerEditedFields || []);
+  const initialSavedCurrent = isFinalSnapshotCurrent(state, savedSnapshot);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => ({ [assembledSections[0].id]: true }));
+  const [reviewedSections, setReviewedSections] = useState<string[]>(initialSavedCurrent ? assembledSections.map((section) => section.id) : []);
+  const [ownCsoNote, setOwnCsoNote] = useState(savedSnapshot?.ownCsoNote || '');
   const [localSavedSnapshot, setLocalSavedSnapshot] = useState<M3PortfolioSnapshot | null>(savedSnapshot);
-  const [lastSavedSignature, setLastSavedSignature] = useState<string | null>(
-    savedSnapshot ? JSON.stringify({ values, implementationWatchPoint: savedSnapshot.implementationWatchPoint }) : null,
-  );
-  const [saveMessage, setSaveMessage] = useState(savedSnapshot ? 'Saved to My Portfolio: Module 3 HRBA Project Design Improvement Snapshot.' : '');
+  const [saveMessage, setSaveMessage] = useState(initialSavedCurrent ? 'Final snapshot saved. Your reviewed HRBA Project Design Improvement Snapshot is saved to the course portfolio.' : savedSnapshot ? 'Update required. Earlier saved snapshot content is preserved but is not the current final version.' : '');
   const saveRef = useRef<HTMLParagraphElement>(null);
-  const currentSignature = JSON.stringify({ values, implementationWatchPoint });
-  const allSectionsReviewed = snapshotSections.every((section) => reviewedSections.includes(section.id));
-  const isSavedCurrent = Boolean(lastSavedSignature && lastSavedSignature === currentSignature);
-  const canContinue = allSectionsReviewed && Boolean(implementationWatchPoint) && isSavedCurrent;
-  const staleAfterSave = Boolean(lastSavedSignature && lastSavedSignature !== currentSignature);
-  const reviewFlags = knowledgeCheck?.reviewFlags || savedSnapshot?.knowledgeCheckReviewFlags || [];
-  const snapshotFieldsList = flattenSnapshotFields();
-  const missingFields = snapshotFieldsList.filter((field) => /not yet saved|Select one implementation watch-point/i.test(values[field.id]));
-  const completedFieldCount = snapshotFieldsList.length - missingFields.length;
+  const readinessRef = useRef<HTMLDivElement>(null);
+  const snapshotHeadingRef = useRef<HTMLHeadingElement>(null);
+  const incompleteSections = assembledSections.filter((section) => !section.complete);
+  const allSectionsReviewed = assembledSections.every((section) => reviewedSections.includes(section.id));
+  const sourceIsCurrent = Boolean(localSavedSnapshot?.snapshotStatus === 'saved' && localSavedSnapshot.sourceSignature === sourceSignature);
+  const noteIsCurrent = Boolean(localSavedSnapshot && (localSavedSnapshot.ownCsoNote || '') === ownCsoNote.trim());
+  const isSavedCurrent = sourceIsCurrent && noteIsCurrent;
+  const updateRequired = Boolean(localSavedSnapshot && !sourceIsCurrent);
+  const noteNeedsSave = Boolean(localSavedSnapshot && sourceIsCurrent && !noteIsCurrent);
+  const canSave = incompleteSections.length === 0 && allSectionsReviewed;
+  const canContinue = canSave && isSavedCurrent;
+  const assessmentSummary = getFinalSnapshotAssessmentSummary(state);
+  const implementationWatchPoints = assembledSections.find((section) => section.id === 'implementation-watch-points')?.content || [];
+  const journeyGroups = [
+    { label: 'Analyze context and responsibility', sections: assembledSections.slice(0, 6) },
+    { label: 'Design inclusion, participation, and safety', sections: assembledSections.slice(6, 9) },
+    { label: 'Repair and review the project design', sections: assembledSections.slice(9, 12) },
+    { label: 'Assess readiness and carry learning forward', sections: assembledSections.slice(12, 14) },
+  ];
 
   const markReviewed = (sectionId: string) => {
     setReviewedSections((current) => current.includes(sectionId) ? current : [...current, sectionId]);
@@ -16390,71 +18359,105 @@ function PortfolioSnapshotScreen({
     markReviewed(sectionId);
   };
 
-  const updateField = (fieldId: SnapshotFieldId, value: string) => {
-    setValues((current) => ({ ...current, [fieldId]: value }));
-    setEditedFields((current) => current.includes(fieldId) ? current : [...current, fieldId]);
-    if (lastSavedSignature) setSaveMessage('Your snapshot changed. Save the updated version before continuing.');
+  const returnToTool = (section: FinalSnapshotSection) => {
+    onChangeState((prev) => ({ ...prev, currentModuleId: MODULE_ID, currentScreenId: section.sourceId }));
+    setRoute(module3RevisedScreenRoutes[section.sourceId]);
   };
 
   const saveSnapshot = () => {
+    if (!canSave) {
+      setSaveMessage(incompleteSections.length ? `Cannot save yet. Complete ${incompleteSections[0].title} first.` : 'Review every snapshot section before saving.');
+      window.setTimeout(() => readinessRef.current?.focus(), 0);
+      return;
+    }
+    const defaults = getDefaultSnapshotValues(state);
+    const watchPoints = assembledSections.find((section) => section.id === 'implementation-watch-points')?.content || [];
     const snapshot: M3PortfolioSnapshot = {
-      ...values,
-      module4ImplementationWatchPoint: implementationWatchPoint || values.module4ImplementationWatchPoint,
-      implementationWatchPoint,
-      knowledgeCheckReviewFlags: reviewFlags,
+      ...defaults,
+      module4ImplementationWatchPoint: watchPoints[0] || defaults.module4ImplementationWatchPoint,
+      implementationWatchPoint: watchPoints[0] || defaults.module4ImplementationWatchPoint,
+      knowledgeCheckReviewFlags: getScreen20SavedOutput(state)?.reviewFlags || [],
       sourceScreensUsed: getSnapshotSourceScreensUsed(state),
-      learnerEditedFields: editedFields,
+      learnerEditedFields: [],
       savedAt: new Date().toISOString(),
+      snapshotStatus: 'saved',
+      sourceSignature,
+      snapshotSections: assembledSections,
+      implementationWatchPoints: watchPoints,
+      assessmentSummary: getFinalSnapshotAssessmentSummary(state),
+      ownCsoNote: ownCsoNote.trim(),
     };
-    const signature = JSON.stringify({ values, implementationWatchPoint });
-    setLastSavedSignature(signature);
-    setSaveMessage('Saved to My Portfolio: Module 3 HRBA Project Design Improvement Snapshot.');
+    setSaveMessage('Final snapshot saved. Your reviewed HRBA Project Design Improvement Snapshot is saved to the course portfolio.');
     setLocalSavedSnapshot(snapshot);
     onSaveSnapshot(snapshot);
     window.setTimeout(() => saveRef.current?.focus(), 0);
   };
 
+  const updateSnapshot = () => {
+    setReviewedSections([]);
+    setOpenSections({ [assembledSections[0].id]: true });
+    setSaveMessage('Snapshot updated from current Module 3 outputs. Review every section and save again.');
+    window.setTimeout(() => snapshotHeadingRef.current?.focus(), 0);
+  };
+
+  const downloadSnapshot = (format: 'docx' | 'md') => {
+    if (!localSavedSnapshot || !isSavedCurrent) return;
+    downloadDesignRepairTemplate(buildFinalSnapshotMarkdown(localSavedSnapshot), 'hrba-project-design-improvement-snapshot', format);
+  };
+
   return (
-    <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
+    <main className="m3-screen m3-closing-screen m3-final-snapshot" aria-labelledby={`${screen.id}-title`} data-qa="m3-final-snapshot">
       <article className="m3-closing-shell m3-closing-portfolio">
         <header className="m3-closing-header">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>My HRBA Project Design Improvement Snapshot</h1>
-          <p>This is your Module 3 portfolio artifact. Earlier outputs have been gathered into one editable snapshot so you can carry the strongest design-improvement points into Module 4.</p>
-          <div className="m3-closing-safe-note">
-            <strong>Safe-use note</strong>
-            <p>{screen21SafetyNote}</p>
-          </div>
+          <h1 id={`${screen.id}-title`}>Final Snapshot</h1>
+          <h2 ref={snapshotHeadingRef} tabIndex={-1}>Review your HRBA Project Design Improvement Snapshot</h2>
+          <p>This snapshot brings together the analysis and project-design decisions you completed throughout Module 3. Review each section before saving the final version. Missing sections are identified rather than filled with assumed information.</p>
+          <ol><li>Review each snapshot section.</li><li>Return to an earlier tool if a required section is missing.</li><li>Save and download the reviewed snapshot before continuing.</li></ol>
         </header>
 
-        <div className="m3-closing-snapshot-layout">
-          <aside className="m3-closing-snapshot-side">
-            <h2>Snapshot progress</h2>
-            <p><strong>{reviewedSections.length} of {snapshotSections.length}</strong> sections reviewed</p>
-            <p><strong>{completedFieldCount} of {snapshotFieldsList.length}</strong> snapshot areas have saved source content or learner edits.</p>
-            <p className={isSavedCurrent ? 'm3-closing-status is-saved' : 'm3-closing-status'}>{isSavedCurrent ? '✓ Saved' : staleAfterSave ? '• Needs save' : '• Needs review'}</p>
-            <section className="m3-closing-completeness" aria-label="Snapshot completeness summary">
-              <h3>Completeness check</h3>
-              {missingFields.length > 0 ? (
-                <>
-                  <p>{missingFields.length} snapshot area{missingFields.length === 1 ? '' : 's'} still show missing source content.</p>
-                  <ul>{missingFields.slice(0, 5).map((field) => <li key={field.id}>{field.label}</li>)}</ul>
-                </>
-              ) : (
-                <p>All snapshot areas have content. Review, choose a Module 4 watch-point, save, and continue.</p>
-              )}
-            </section>
-            {reviewFlags.length > 0 && (
-              <section>
-                <h3>Your knowledge check suggested paying attention to...</h3>
-                <ul>{reviewFlags.map((flag) => <li key={flag}>{flag}</li>)}</ul>
-              </section>
-            )}
-          </aside>
+        <section className="m3-final-readiness" aria-labelledby={`${screen.id}-readiness`} ref={readinessRef} tabIndex={-1}>
+          <h2 id={`${screen.id}-readiness`}>Review readiness</h2>
+          <div className="m3-final-status-grid">
+            <p><strong>{assembledSections.length - incompleteSections.length}/{assembledSections.length}</strong><span> required sections complete</span></p>
+            <p><strong>{reviewedSections.length}/{assembledSections.length}</strong><span> sections reviewed</span></p>
+            <p><strong>{getScreen20SavedOutput(state) ? 'Complete' : 'Not yet complete'}</strong><span> Applied Knowledge Check</span></p>
+            <p><strong>{isSavedCurrent ? 'Saved · Current' : updateRequired ? 'Update required' : noteNeedsSave ? 'Needs save' : 'Not saved'}</strong><span> final snapshot status</span></p>
+          </div>
+          {incompleteSections.length > 0 && <div className="m3-closing-warning"><p><strong>{incompleteSections.length} required section{incompleteSections.length === 1 ? '' : 's'} not yet complete.</strong> Missing content is not filled with assumed information.</p></div>}
+          {updateRequired && <button type="button" className="m3-closing-primary" data-qa="m3-final-update" onClick={updateSnapshot}>Update Snapshot</button>}
+        </section>
 
-          <section className="m3-closing-accordion" aria-label="Portfolio snapshot sections">
-            {snapshotSections.map((section) => {
+        <section className="m3-c21-journey" aria-labelledby={`${screen.id}-journey`}>
+          <header><p>Project-design journey</p><h2 id={`${screen.id}-journey`}>How your Module 3 outputs build toward the final snapshot</h2><span>This comprehension map uses the same completion states as the authoritative review below.</span></header>
+          <ol>{journeyGroups.map((group, index) => {
+            const completed = group.sections.filter((section) => section.complete).length;
+            const complete = completed === group.sections.length;
+            return <li key={group.label} className={complete ? 'is-complete' : 'needs-review'}><span>{index + 1}</span><div><strong>{group.label}</strong><p>{completed}/{group.sections.length} outputs complete</p></div><em>{complete ? 'Complete' : 'Needs review'}</em></li>;
+          })}</ol>
+        </section>
+
+        <section className="m3-c21-synthesis" aria-label="Assessment and implementation synthesis">
+          <article className="m3-c21-assessment">
+            <p>Assessment and targeted review</p>
+            <h2>{assessmentSummary ? `${assessmentSummary.score}/${assessmentSummary.totalQuestions} · ${assessmentSummary.resultLabel}` : 'Applied Knowledge Check not yet complete'}</h2>
+            {assessmentSummary ? <><span>{assessmentSummary.percentage}% · Attempt {assessmentSummary.attemptCount}</span>{assessmentSummary.targetedReview.length ? <ul>{assessmentSummary.targetedReview.map((item) => <li key={item}>{item}</li>)}</ul> : <p>No priority review topic was identified.</p>}</> : <p>Complete the saved assessment before finalizing this snapshot.</p>}
+          </article>
+          <article className="m3-c21-watchpoints">
+            <p>Implementation watch-points</p>
+            <h2>{implementationWatchPoints.length ? `${implementationWatchPoints.length} checks carried forward` : 'No current watch-point available'}</h2>
+            {implementationWatchPoints.length ? <ul>{implementationWatchPoints.map((item) => <li key={item}>{item}</li>)}</ul> : <p>Complete the relevant source output before finalizing this snapshot.</p>}
+          </article>
+        </section>
+
+        <header className="m3-c21-detail-heading">
+          <p>Authoritative detailed review</p>
+          <h2>Review all 14 snapshot sections</h2>
+          <span>The visual journey above does not replace this required review.</span>
+        </header>
+        <section className="m3-closing-accordion" aria-label="HRBA Project Design Improvement Snapshot sections">
+            {assembledSections.map((section) => {
               const expanded = Boolean(openSections[section.id]);
               const reviewed = reviewedSections.includes(section.id);
               const panelId = `${screen.id}-${section.id}`;
@@ -16468,93 +18471,47 @@ function PortfolioSnapshotScreen({
                     onClick={() => toggleSection(section.id)}
                   >
                     <span>{section.title}</span>
-                    <strong>{reviewed ? 'Reviewed' : 'Needs edit'}</strong>
+                    <strong>{!section.complete ? 'Not yet complete' : reviewed ? 'Reviewed' : 'Review required'}</strong>
                   </button>
                   {expanded && (
                     <div id={panelId} className="m3-closing-accordion-panel">
-                      {section.fields.map((field) => {
-                        const textareaId = `${screen.id}-${field.id}`;
-                        const metaId = `${textareaId}-meta`;
-                        return (
-                          <label key={field.id} htmlFor={textareaId} className="m3-closing-field">
-                            <span>{field.label}</span>
-                            <small>{field.prompt}</small>
-                            <textarea
-                              id={textareaId}
-                              value={values[field.id]}
-                              maxLength={field.maxLength}
-                              placeholder={field.placeholder}
-                              aria-describedby={metaId}
-                              onChange={(event) => updateField(field.id, event.target.value)}
-                            />
-                            <span id={metaId} className="m3-closing-field-meta">{values[field.id].length}/{field.maxLength} characters · <strong>{field.source}</strong></span>
-                            <details>
-                              <summary>View source notes</summary>
-                              <p>{field.sourceNotes}</p>
-                            </details>
-                          </label>
-                        );
-                      })}
+                      <p className="m3-final-source"><strong>Source:</strong> {section.sourceLabel}</p>
+                      {section.complete ? <ul>{section.content.map((item) => <li key={item}>{item}</li>)}</ul> : <div className="m3-final-missing"><p><strong>Not yet complete.</strong> {section.missingReason}</p><button type="button" className="m3-closing-secondary" onClick={() => returnToTool(section)}>Return to {section.sourceLabel}</button></div>}
                     </div>
                   )}
                 </article>
               );
             })}
-          </section>
+        </section>
 
-          <aside className="m3-closing-save-panel" aria-live="polite">
-            <h2>Implementation watch-point</h2>
-            <p>Choose one final watch-point for Module 4.</p>
-            <fieldset className="m3-closing-watch-options">
-              <legend>One implementation watch-point for Module 4</legend>
-              {implementationWatchPointOptions.map((option) => (
-                <label key={option} className={implementationWatchPoint === option ? 'is-selected' : ''}>
-                  <input
-                    type="radio"
-                    name={`${screen.id}-watch-point`}
-                    value={option}
-                    checked={implementationWatchPoint === option}
-                    onChange={() => {
-                      setImplementationWatchPoint(option);
-                      setValues((current) => ({ ...current, module4ImplementationWatchPoint: option }));
-                      if (lastSavedSignature) setSaveMessage('Your snapshot changed. Save the updated version before continuing.');
-                    }}
-                  />
-                  <span>{implementationWatchPoint === option ? '✓ ' : ''}{option}</span>
-                </label>
-              ))}
-            </fieldset>
-            <div className="m3-closing-safe-note">
-              <strong>Safe-use note</strong>
-              <p>{screen21SafetyNote}</p>
-            </div>
-            <button type="button" className="m3-closing-primary" disabled={!allSectionsReviewed || !implementationWatchPoint} onClick={saveSnapshot}>
-              Save to My Portfolio
-            </button>
+        <section className="m3-final-own-note" aria-labelledby={`${screen.id}-own-note`}>
+          <h2 id={`${screen.id}-own-note`}>Optional own-CSO note</h2>
+          <p>You may record one generalized design point to review later. Do not enter organization names, proposal titles, donor names, exact locations, identifiable complaints, personal information, confidential project text or sensitive incidents.</p>
+          <label htmlFor={`${screen.id}-own-note-input`}>Generalized design point <span>Optional</span></label>
+          <textarea id={`${screen.id}-own-note-input`} value={ownCsoNote} maxLength={500} onChange={(event) => { setOwnCsoNote(event.target.value); if (isSavedCurrent) setSaveMessage('The optional note changed. Save the snapshot again before continuing.'); }} />
+          <p>{ownCsoNote.length}/500 characters · Kept separate from the required Jiru Amba snapshot.</p>
+        </section>
+
+        <section className="m3-closing-save-panel m3-final-save" aria-labelledby={`${screen.id}-save`}>
+            <h2 id={`${screen.id}-save`}>Save and download</h2>
+            <p className="m3-closing-safe-note">{screen21SafetyNote}</p>
+            <p className="m3-final-next-action"><strong>Next action:</strong> {updateRequired ? 'Update the snapshot, then review and save it again.' : incompleteSections.length ? 'Return to the incomplete source sections.' : !allSectionsReviewed ? 'Open and review the remaining snapshot sections.' : !isSavedCurrent ? 'Save the reviewed final snapshot.' : 'Continue to Module 3 Closure.'}</p>
+            <button type="button" className={!updateRequired && canSave && !isSavedCurrent ? 'm3-closing-primary' : 'm3-closing-secondary'} data-qa="m3-final-save" disabled={!canSave} onClick={saveSnapshot}>Save final snapshot</button>
             <p ref={saveRef} tabIndex={-1} className="m3-closing-save-message" aria-live="polite">
-              {saveMessage || (!allSectionsReviewed ? `Open and review all ${snapshotSections.length} sections before saving.` : !implementationWatchPoint ? 'Select one implementation watch-point before saving.' : 'Ready to save your snapshot.')}
+              {saveMessage || (incompleteSections.length ? 'Complete every required source section before saving.' : !allSectionsReviewed ? `Open and review all ${assembledSections.length} sections before saving.` : 'Ready to save the final snapshot.')}
             </p>
-          </aside>
-        </div>
+            <div className="m3-final-downloads">
+              <button type="button" className="m3-closing-secondary" disabled={!isSavedCurrent} onClick={() => downloadSnapshot('docx')}>Download final snapshot (.docx)</button>
+              <button type="button" className="m3-closing-secondary" disabled={!isSavedCurrent} onClick={() => downloadSnapshot('md')}>Download final snapshot (.md)</button>
+            </div>
+        </section>
 
         <div className="m3-closing-actions">
           <PrimaryButton
             disabled={!canContinue}
-            onClick={() => {
-              onComplete({
-                module3PortfolioSnapshot: localSavedSnapshot || {
-                  ...values,
-                  module4ImplementationWatchPoint: implementationWatchPoint || values.module4ImplementationWatchPoint,
-                  implementationWatchPoint,
-                  knowledgeCheckReviewFlags: reviewFlags,
-                  sourceScreensUsed: getSnapshotSourceScreensUsed(state),
-                  learnerEditedFields: editedFields,
-                  savedAt: new Date().toISOString(),
-                },
-              });
-            }}
+            onClick={() => localSavedSnapshot && onComplete({ module3PortfolioSnapshot: localSavedSnapshot, finalSnapshot: localSavedSnapshot, sourceSignature })}
           >
-            {canContinue ? screen.continueLabel : 'Complete your snapshot'}
+            {canContinue ? 'Continue to Module 3 Closure' : updateRequired ? 'Update and save snapshot to continue' : 'Save current snapshot to continue'}
           </PrimaryButton>
         </div>
       </article>
@@ -16565,125 +18522,122 @@ function PortfolioSnapshotScreen({
 function Module3ClosureScreen({
   screen,
   state,
+  onChangeState,
   onStartModule4,
   onReturnSnapshot,
 }: {
   screen: Module3RevisedScreen;
   state: LearningState;
+  onChangeState: Module3RevisedRendererProps['onChangeState'];
   onStartModule4: () => void;
   onReturnSnapshot: () => void;
 }) {
   const snapshot = getScreen21SavedSnapshot(state);
-  const saved = Boolean(snapshot);
-  const snapshotHighlights = saved && snapshot ? [
-    ['Repaired design decision', snapshot.repairedDesignDecision],
-    ['Activity or draft plan repair', snapshot.activityDraftPlanRepair],
-    ['Intervention logic and indicator focus', snapshot.interventionLogicIndicatorFocus],
-    ['Module 4 implementation watch-point', snapshot.module4ImplementationWatchPoint || snapshot.implementationWatchPoint],
-  ].filter(([, value]) => value && !/not yet saved/i.test(value)) : [];
+  const snapshotCurrent = isFinalSnapshotCurrent(state, snapshot);
+  const closureRecord = getPracticeState(state, screen.id);
+  const [acknowledged, setAcknowledged] = useState(closureRecord.acknowledged === true);
+  const watchPoints = snapshotCurrent ? snapshot?.implementationWatchPoints || [] : [];
+  const canComplete = snapshotCurrent && acknowledged;
+
+  const updateAcknowledgement = (value: boolean) => {
+    setAcknowledged(value);
+    onChangeState((prev) => ({ ...prev, practiceCheckState: { ...prev.practiceCheckState, [practiceKey(screen.id)]: { ...getPracticeState(prev, screen.id), acknowledged: value, acknowledgedAt: value ? new Date().toISOString() : null } } }));
+  };
 
   return (
-    <main className="m3-screen m3-closing-screen" aria-labelledby={`${screen.id}-title`}>
+    <main className="m3-screen m3-closing-screen m3-final-closure" aria-labelledby={`${screen.id}-title`} data-qa="m3-final-closure">
       <article className="m3-closing-shell">
         <header className="m3-closing-header m3-closing-complete-header">
           <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
           <p className="m3-closing-eyebrow">{screen.eyebrow}</p>
-          <h1 id={`${screen.id}-title`}>Module 3 completed</h1>
-          <p>You have completed Module 3. You practiced reviewing a project design before implementation, finding hidden HRBA gaps, and repairing one section using rights-holders, barriers, responsibilities, participation, accountability, inclusion, risk, and evidence.</p>
-          {saved ? (
-            <div className="m3-closing-badges" aria-label="Module completion badges">
-              <span>✓ Module 3 completed</span>
-              <span>✓ HRBA Project Design Improvement Snapshot saved</span>
-            </div>
+          <h1 id={`${screen.id}-title`}>{snapshotCurrent ? 'Module 3 complete' : 'Final snapshot required'}</h1>
+          {snapshotCurrent ? (
+            <><p>You have completed the Module 3 project-design process and saved your HRBA Project Design Improvement Snapshot.</p><p className="m3-closing-status is-saved">Saved · Current final snapshot</p></>
           ) : (
             <div className="m3-closing-warning">
-              <p><strong>Your Module 3 snapshot has not been saved yet.</strong> Return to the snapshot screen and save before starting Module 4.</p>
+              <p><strong>Your final snapshot must be reviewed and saved before Module 3 can be completed.</strong></p>
             </div>
           )}
         </header>
 
-        <section className="m3-closing-achievements" aria-label="Module 3 achievements">
-          <h2>What you can now do</h2>
-          {[
-            ['You analyzed before activities', 'You looked beyond activities and asked who holds rights, who may be excluded, and what barriers shape the issue.'],
-            ['You clarified responsibilities and risks', 'You checked duty-bearers, supporting actors, CSO role, power, capacity gaps, gender, disability, accountability, and do-no-harm.'],
-            ['You repaired design logic', 'You strengthened proposal language, intervention logic, indicators, and one implementation watch-point.'],
-          ].map(([title, text]) => (
-            <article key={title}>
-              <h2>{title}</h2>
-              <p>{text}</p>
-            </article>
-          ))}
-        </section>
-
-        <section className="m3-closing-transition m3-closing-snapshot-confirm" aria-label="Saved Module 3 design snapshot">
-          <h2>Your saved design snapshot</h2>
-          {saved && snapshot ? (
-            <>
-              <p>Your final HRBA Project Design Improvement Snapshot is saved. It can support Module 4 implementation planning and help you keep the repaired design logic visible during delivery.</p>
-              {snapshotHighlights.length > 0 && (
-                <dl className="m3-closing-snapshot-highlights">
-                  {snapshotHighlights.map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-            </>
-          ) : (
-            <p>Your final snapshot is not saved yet. Return to the snapshot screen, save it, and then come back here to complete Module 3.</p>
-          )}
-        </section>
-
         <section className="m3-closing-transition">
-          <h2>What carries forward to Module 4</h2>
-          <p>A rights-based design is only useful if it stays alive during implementation.</p>
-          <p>In Module 4, you will use your design snapshot to check whether participation, accountability, inclusion, risk management, and duty-bearer engagement are actually happening during delivery.</p>
-          <h3>Carry these into Module 4:</h3>
+          <h2>What you completed</h2>
+          <p>In this module, you analyzed context and inequality; connected issues to standards and responsibility; identified rights-holders, barriers, actors, influence, causes and capacity gaps; designed inclusion, participation, accountability and risk measures; repaired the objective, activities, intervention logic and indicators; reviewed a draft plan; completed the Applied Knowledge Check; and finalized the HRBA Project Design Improvement Snapshot.</p>
+        </section>
+
+        <section className="m3-final-dialogue" aria-labelledby={`${screen.id}-dialogue`}>
+          <h2 id={`${screen.id}-dialogue`}>Carry the design forward</h2>
           <ul>
-            <li>rights-holder and barrier analysis;</li>
-            <li>duty-bearer and CSO role logic;</li>
-            <li>gender and disability watch-points;</li>
-            <li>participation and feedback pathway;</li>
-            <li>risk and do-no-harm checks;</li>
-            <li>repaired objective, activity, or proposal section;</li>
-            <li>implementation watch-point.</li>
+            <li>Check whether rights-holders receive timely and accessible information.</li>
+            <li>Monitor whether participation influences real decisions.</li>
+            <li>Confirm that feedback receives a response, explanation and follow-up.</li>
+            <li>Monitor whether responsible actors carry out agreed actions.</li>
+            <li>Check whether accessibility and reasonable-accommodation measures function.</li>
+            <li>Monitor risks, mitigation measures and alternative channels.</li>
+            <li>Review assumptions and adapt the project when evidence changes.</li>
           </ul>
         </section>
 
+        <section className="m3-closing-transition">
+          <h2>Implementation watch-points</h2>
+          {watchPoints.length ? <ul>{watchPoints.map((item) => <li key={item}>{item}</li>)}</ul> : <p>No current saved watch-point is available. Return to the Final Snapshot for review.</p>}
+        </section>
+
+        <section className="m3-closing-transition">
+          <h2>Continue to Module 4</h2>
+          <p>Module 4 focuses on using these design decisions during implementation.</p>
+          <label className="m3-final-acknowledgement"><input type="checkbox" checked={acknowledged} disabled={!snapshotCurrent} onChange={(event) => updateAcknowledgement(event.target.checked)} /><span>I have reviewed the saved snapshot and the implementation watch-points.</span></label>
+        </section>
+
         <div className="m3-closing-actions m3-closing-actions--split">
-          <button type="button" className="m3-closing-primary" onClick={saved ? onStartModule4 : onReturnSnapshot}>
-            {saved ? 'Start Module 4' : 'Return to snapshot'}
-          </button>
-          <button type="button" className="m3-closing-secondary" onClick={onReturnSnapshot}>
-            Review Module 3 snapshot
-          </button>
-          <button type="button" className="m3-closing-secondary" onClick={onReturnSnapshot}>
-            View My Portfolio
-          </button>
+          <button type="button" className="m3-closing-secondary" onClick={onReturnSnapshot}>Return to Final Snapshot</button>
+          <button type="button" className="m3-closing-primary" data-qa="m3-closure-continue" disabled={!canComplete} onClick={onStartModule4}>Continue to Module 4</button>
         </div>
       </article>
     </main>
   );
 }
 
-function RootCauseCapacityGapScreen({ screen, onComplete }: {
+function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
+  state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const [selections, setSelections] = useState<Record<string, ProblemLayerId | undefined>>({});
-  const [selectedBarrierId, setSelectedBarrierId] = useState('');
-  const [causeMapDraft, setCauseMapDraft] = useState<Screen10CauseMapDraft>(getEmptyScreen10CauseMapDraft());
+  const savedOutput = getScreen10SavedOutput(state);
+  const carriedScreen8 = getScreen8SavedOutput(state);
+  const carriedScreen9 = getScreen9SavedOutput(state);
+  const carriedActorLabels = Array.from(new Set([
+    ...(carriedScreen9?.actorRatings || []).map((rating) => rating.actorLabel),
+    ...(carriedScreen8?.exportedActorsForScreen9 || []).map((actor) => actor.label),
+  ])).slice(0, 8);
+  const carriedCapacityGapLabels = Array.from(new Set((carriedScreen8?.barrierActorLinks || [])
+    .flatMap((link) => link.capacityGapHintIds.map(getCapacityGapLabel)))).slice(0, 6);
+  const restoredSelections = Object.fromEntries((savedOutput?.problemLayerSelections || [])
+    .filter((selection) => screen10Statements.some((statement) => statement.id === selection.statementId) && ['visible', 'direct', 'root', 'capacity'].includes(selection.selectedLayer))
+    .map((selection) => [selection.statementId, selection.selectedLayer])) as Record<string, ProblemLayerId | undefined>;
+  const restoredCanvas = savedOutput?.generatedProblemLayersCanvas?.[0];
+  const restoredBarrierId = restoredCanvas && screen10GeneratedPatterns.some((pattern) => pattern.problemPattern === restoredCanvas.problemPattern) ? restoredCanvas.problemPattern : '';
+  const restoredCauseMapDraft: Screen10CauseMapDraft = restoredCanvas ? {
+    directCause: restoredCanvas.directCause,
+    deeperRootCause: restoredCanvas.deeperRootCause,
+    capacityGap: restoredCanvas.capacityGap,
+    rightsHolderCapacityGap: restoredCanvas.rightsHolderCapacityGap || savedOutput?.problemLayers.rightsHolderCapacityGaps?.[0] || '',
+    dutyBearerSystemCapacityGap: restoredCanvas.dutyBearerSystemCapacityGap || savedOutput?.problemLayers.dutyBearerSystemCapacityGaps?.[0] || '',
+    responsibilityGap: restoredCanvas.responsibilityGap || '',
+    designImplication: restoredCanvas.designImplication,
+  } : getEmptyScreen10CauseMapDraft();
+  const restoredSignature = savedOutput ? JSON.stringify({ selectedBarrierId: restoredBarrierId, causeMapDraft: restoredCauseMapDraft, selections: restoredSelections, ownCsoOutput: savedOutput.ownCsoPracticeOutput || null }) : null;
+  const [selections, setSelections] = useState<Record<string, ProblemLayerId | undefined>>(restoredSelections);
+  const [selectedBarrierId, setSelectedBarrierId] = useState(restoredBarrierId);
+  const [causeMapDraft, setCauseMapDraft] = useState<Screen10CauseMapDraft>(restoredCauseMapDraft);
   const [ownCsoDraft, setOwnCsoDraft] = useState<Screen10OwnCsoDraft>(getEmptyScreen10OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen10OwnCsoOutput | null>(null);
+  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen10OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
   const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen10Submission | null>(null);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(null);
+  const [submittedOutput, setSubmittedOutput] = useState<Screen10Submission | null>(savedOutput);
+  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
   const [showHeroImage, setShowHeroImage] = useState(true);
   const [showWorkedFlow, setShowWorkedFlow] = useState(true);
-  const [activeStage, setActiveStage] = useState(1);
+  const [activeStage, setActiveStage] = useState(savedOutput ? 4 : restoredBarrierId ? 3 : 1);
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const outputRef = useRef<HTMLHeadingElement>(null);
   const titleId = `${screen.id}-title`;
@@ -16693,11 +18647,13 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
   const allClassified = classifiedCount === screen10Statements.length;
   const selectedPattern = screen10GeneratedPatterns.find((pattern) => pattern.problemPattern === selectedBarrierId);
   const completedRequiredFields = Object.values(causeMapDraft).filter(Boolean).length;
-  const causeMapComplete = Boolean(selectedPattern && completedRequiredFields === 5);
+  const causeMapComplete = Boolean(selectedPattern && completedRequiredFields === 7);
   const completedCauseMapRowCount = causeMapComplete ? 1 : 0;
   const currentSignature = JSON.stringify({ selectedBarrierId, causeMapDraft, selections, ownCsoOutput });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
-  const canGenerate = causeMapComplete;
+  const layerCounts = getScreen10LayerCounts(selections);
+  const hasRequiredLayers = layerCounts.visibleCount > 0 && layerCounts.directCount > 0 && layerCounts.rootCount > 0 && layerCounts.capacityCount > 0;
+  const canGenerate = causeMapComplete && allClassified && hasRequiredLayers;
   const canContinue = Boolean(submittedOutput && allClassified && !formChanged);
   const submitLabel = submittedOutput && formChanged ? 'Update cause map' : 'Generate cause map';
   const helperText = !selectedPattern
@@ -16726,21 +18682,21 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
 
   const submitCanvas = () => {
     if (!canGenerate || !selectedPattern) return;
-    const generatedSelections = Object.fromEntries(screen10Statements.map((statement) => [statement.id, statement.suggestedLayer])) as Record<string, ProblemLayerId>;
     const learnerCauseMap: Screen10Submission['generatedProblemLayersCanvas'] = [{
       problemPattern: selectedPattern.problemPattern,
       visibleSign: selectedPattern.visibleSign,
       directCause: causeMapDraft.directCause,
       deeperRootCause: causeMapDraft.deeperRootCause,
       capacityGap: causeMapDraft.capacityGap,
+      rightsHolderCapacityGap: causeMapDraft.rightsHolderCapacityGap,
+      dutyBearerSystemCapacityGap: causeMapDraft.dutyBearerSystemCapacityGap,
       responsibilityGap: causeMapDraft.responsibilityGap,
       designImplication: causeMapDraft.designImplication,
       questionForLaterDesignRepair: selectedPattern.questionForLaterDesignRepair,
     }];
-    setSelections(generatedSelections);
-    const submission = buildScreen10Submission(generatedSelections, ownCsoOutput, learnerCauseMap);
+    const submission = buildScreen10Submission(selections, ownCsoOutput, learnerCauseMap, carriedActorLabels, carriedCapacityGapLabels);
     setSubmittedOutput(submission);
-    setSubmittedSignature(JSON.stringify({ selectedBarrierId, causeMapDraft, selections: generatedSelections, ownCsoOutput }));
+    setSubmittedSignature(JSON.stringify({ selectedBarrierId, causeMapDraft, selections, ownCsoOutput }));
     setActiveStage(4);
     if (typeof window !== 'undefined') {
       window.setTimeout(() => outputRef.current?.focus(), 0);
@@ -16749,7 +18705,7 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
 
   const continueWithPayload = () => {
     if (!canContinue) return;
-    const output = (formChanged ? buildScreen10Submission(selections, ownCsoOutput) : submittedOutput) || undefined;
+    const output = (formChanged ? buildScreen10Submission(selections, ownCsoOutput, undefined, carriedActorLabels, carriedCapacityGapLabels) : submittedOutput) || undefined;
     onComplete(output ? {
       ...output,
       rootCauseCapacityGapMap: output.rootCauseCapacityGapMap,
@@ -16827,7 +18783,17 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
   }> = [
     { field: 'directCause', label: 'Immediate cause', options: screen10GeneratedPatterns.map((pattern) => pattern.directCause) },
     { field: 'deeperRootCause', label: 'Deeper/root cause', options: screen10GeneratedPatterns.map((pattern) => pattern.deeperRootCause) },
-    { field: 'capacityGap', label: 'Capacity or support gap', options: screen10GeneratedPatterns.map((pattern) => pattern.capacityGap) },
+    { field: 'capacityGap', label: 'Combined capacity or response gap', options: screen10GeneratedPatterns.map((pattern) => pattern.capacityGap) },
+    { field: 'rightsHolderCapacityGap', label: 'Rights-holder capacity gap', options: [
+      'Timely accessible information and safe collective participation channels are limited.',
+      'Affected groups may need accessible information, reasonable accommodation, and more than one way to influence decisions.',
+      'Rights-holders may need clearer feedback, response, and follow-up arrangements to exercise voice effectively.',
+    ] },
+    { field: 'dutyBearerSystemCapacityGap', label: 'Duty-bearer or system capacity or response gap', options: [
+      'Responsibility, authority, and response arrangements require clarification and verification.',
+      'Resources, coordination, incentives, or accountability mechanisms may be insufficient for the required response.',
+      'A specific skill or method gap may require targeted support linked to the responsible function.',
+    ] },
     { field: 'responsibilityGap', label: 'Responsibility gap', options: screen10ResponsibilityGapOptions },
     { field: 'designImplication', label: 'Design implication', options: screen10GeneratedPatterns.map((pattern) => pattern.designImplication) },
   ];
@@ -16841,6 +18807,24 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
           <h1 id={titleId}>Root-Cause and Capacity-Gap Map</h1>
           <p className="m3-root-cause-map-subtitle">Move below visible problems to understand what directly caused the issue, what deeper pattern keeps it happening, whose capacity needs strengthening, and what the project design should change.</p>
         </header>
+
+        <aside className="m3-root-cause-map-dialogue" aria-labelledby={`${screen.id}-midpoint-guidance`}>
+          <h2 id={`${screen.id}-midpoint-guidance`}>Midpoint guidance: connect responsibility, influence, causes, and capacity</h2>
+          <p><strong>Martha:</strong> “We have identified who holds responsibility and who may provide support. The next question is not only who is named in the plan, but who can influence what happens.”</p>
+          <p><strong>Dawit:</strong> “A formal mandate and practical influence may differ. Information, relationships, resources, social norms, and access to decision-makers can shape project decisions.”</p>
+          <p><strong>Martha:</strong> “We also need to examine why a gap exists. It may relate to authority, skills, resources, coordination, incentives, willingness, or accountability.”</p>
+          <p><strong>Dawit:</strong> “Awra can facilitate dialogue, accessible information, evidence, and follow-up, but it should not replace public responsibility.”</p>
+          <p><strong>Martha:</strong> “Use this analysis to connect responsibility, influence, causes, and capacity before improving the project design.”</p>
+        </aside>
+
+        {(carriedActorLabels.length > 0 || carriedCapacityGapLabels.length > 0) && (
+          <section className="m3-root-cause-map-carry" aria-labelledby={`${screen.id}-carried-findings`}>
+            <h2 id={`${screen.id}-carried-findings`}>Findings carried from responsibility and influence analysis</h2>
+            {carriedActorLabels.length > 0 && <p><strong>Connected actors:</strong> {carriedActorLabels.join(', ')}</p>}
+            {carriedCapacityGapLabels.length > 0 && <p><strong>Capacity or response gaps to examine:</strong> {carriedCapacityGapLabels.join(', ')}</p>}
+            <p>Use these as analytical prompts. They do not establish a mandate, behavior, or capacity finding without appropriate verification.</p>
+          </section>
+        )}
 
         <nav className="m3-root-cause-map-stage-nav" aria-label="Root-cause and capacity-gap stages">
           {rootCauseStages.map((stage) => (
@@ -16963,8 +18947,30 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
             </div>
           </section>
 
+          <section className={`m3-root-cause-map-practice-step ${!selectedPattern ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-classification-step`}>
+            <h3 id={`${screen.id}-classification-step`}>Step 2: Review and correct the problem-layer classifications</h3>
+            <p>The suggested classifications are a starting point. Review each statement and correct it where your analysis supports a different layer.</p>
+            {selectedPattern ? (
+              <div className="m3-root-cause-map-classification-list">
+                {screen10Statements.map((statement) => (
+                  <label key={statement.id}>
+                    <span><strong>{statement.shortLabel}</strong><small>{statement.statement}</small></span>
+                    <select
+                      aria-label={`Classification for ${statement.shortLabel}`}
+                      value={selections[statement.id] || ''}
+                      onChange={(event) => setSelections((current) => ({ ...current, [statement.id]: event.target.value as ProblemLayerId }))}
+                    >
+                      <option value="">Choose layer</option>
+                      {layerOrder.map((layer) => <option key={layer} value={layer}>{problemLayerLabels[layer]}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+            ) : <p className="m3-root-cause-map-empty-note">Select one priority barrier before reviewing classifications.</p>}
+          </section>
+
           <section className={`m3-root-cause-map-practice-step ${!selectedPattern ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-cause-row`}>
-            <h3 id={`${screen.id}-cause-row`}>Step 2: Complete a cause-and-capacity mapping row</h3>
+            <h3 id={`${screen.id}-cause-row`}>Step 3: Complete a cause-and-capacity mapping row</h3>
             {selectedPattern ? (
               <article className="m3-root-cause-map-cause-row" data-testid="m3-s10-cause-map-row">
                 <div>
@@ -17015,7 +19021,7 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
                   <span className="m3-guided-muted">Select one priority barrier.</span>
                 )}
               </div>
-              <p className="m3-guided-helper">Completed fields: {completedRequiredFields} of 5</p>
+              <p className="m3-guided-helper">Completed fields: {completedRequiredFields} of 7</p>
               <p className="m3-guided-helper">Completed cause-map rows: {completedCauseMapRowCount}</p>
               <p className="m3-guided-helper">{helperText}</p>
               <button type="button" className="m3-root-cause-map-submit-button" disabled={!canGenerate} onClick={submitCanvas}>
@@ -17033,18 +19039,45 @@ function RootCauseCapacityGapScreen({ screen, onComplete }: {
             <h3>Problem layers summary</h3>
             <div className="m3-root-cause-map-patterns">
               {submittedOutput.generatedProblemLayersCanvas.map((pattern) => (
-                <article key={pattern.problemPattern} className="m3-root-cause-map-pattern" data-testid="m3-s10-generated-row">
-                  <h4>{pattern.problemPattern}</h4>
-                  {[
-                    ['Priority barrier', pattern.problemPattern],
-                    ['Visible problem', pattern.visibleSign],
-                    ['Immediate cause', pattern.directCause],
-                    ['Deeper/root cause', pattern.deeperRootCause],
-                    ['Capacity or support gap', pattern.capacityGap],
-                    ['Responsibility gap', pattern.responsibilityGap || 'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.'],
-                    ['Design implication', pattern.designImplication],
-                    ['Carry forward to gender, disability, participation, and risk checks', pattern.questionForLaterDesignRepair],
-                  ].map(([label, value]) => <div key={label}><span>{label}</span><p>{value}</p></div>)}
+                <article key={pattern.problemPattern} className="m3-root-cause-map-pattern m3-b10-diagnostic" data-testid="m3-s10-generated-row">
+                  <header className="m3-b10-diagnostic-header">
+                    <p>Complete diagnostic record</p>
+                    <h4>{pattern.problemPattern}</h4>
+                  </header>
+                  <ol className="m3-b10-diagnostic-pathway">
+                    <li className="m3-b10-layer m3-b10-layer--visible">
+                      <span className="m3-b10-step" aria-hidden="true">1</span>
+                      <div><h5>Visible sign</h5><p>{pattern.visibleSign}</p></div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--direct">
+                      <span className="m3-b10-step" aria-hidden="true">2</span>
+                      <div><h5>Direct cause</h5><p>{pattern.directCause}</p></div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--root">
+                      <span className="m3-b10-step" aria-hidden="true">3</span>
+                      <div><h5>Deeper root cause</h5><p>{pattern.deeperRootCause}</p></div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--capacity">
+                      <span className="m3-b10-step" aria-hidden="true">4</span>
+                      <div>
+                        <h5>Capacity gap</h5>
+                        <p className="m3-b10-combined-gap"><strong>Combined capacity or response gap:</strong> {pattern.capacityGap}</p>
+                        <dl className="m3-b10-gap-types">
+                          <div><dt>Rights-holder capacity gap</dt><dd>{pattern.rightsHolderCapacityGap || 'Confirm what accessible information, collective voice, or safe participation channel is needed.'}</dd></div>
+                          <div><dt>Duty-bearer or system capacity gap</dt><dd>{pattern.dutyBearerSystemCapacityGap || 'Confirm whether authority, resources, coordination, incentives, willingness, or accountability affects response.'}</dd></div>
+                          <div><dt>Responsibility gap</dt><dd>{pattern.responsibilityGap || 'Clarify who is responsible for acting on this cause, who can support, and how follow-up will happen.'}</dd></div>
+                        </dl>
+                      </div>
+                    </li>
+                    <li className="m3-b10-layer m3-b10-layer--repair">
+                      <span className="m3-b10-step" aria-hidden="true">5</span>
+                      <div>
+                        <h5>Design implication or repair question</h5>
+                        <p><strong>Design implication:</strong> {pattern.designImplication}</p>
+                        <p><strong>Carry forward to gender, disability, participation, and risk checks:</strong> {pattern.questionForLaterDesignRepair}</p>
+                      </div>
+                    </li>
+                  </ol>
                 </article>
               ))}
             </div>
@@ -17209,7 +19242,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.interactionType === 'video') {
-    return <IntroVideoScaffold screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return <LightIntroVideoScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.interactionType === 'text') {
@@ -17222,18 +19255,18 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
 
   if (screen.interactionType === 'case-reader') {
     if (screen.id === 'M3-R03') {
-      return <CaseIntroductionScreen screen={screen} onComplete={onComplete} />;
+      return <Module3Screen3 screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
     }
 
     return <CaseReaderScaffold screen={screen} onComplete={onComplete} />;
   }
 
   if (screen.interactionType === 'snapshot-preview') {
-    return <SnapshotPreviewScreen screen={screen} onComplete={onComplete} />;
+    return <Module3Screen4 screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R05') {
-    return <ContextInequalityScanScreen screen={screen} onComplete={onComplete} />;
+    return <ContextInequalityScanScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R06') {
@@ -17241,7 +19274,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R07') {
-    return <RightsHolderBarrierMapScreen screen={screen} onComplete={onComplete} />;
+    return <RightsHolderBarrierMapScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R08') {
@@ -17253,19 +19286,19 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R10') {
-    return <RootCauseCapacityGapScreen screen={screen} onComplete={onComplete} />;
+    return <RootCauseCapacityGapScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R11') {
-    return <GenderDisabilityDesignCheckScreen screen={screen} onComplete={onComplete} />;
+    return <GenderDisabilityDesignCheckScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R12') {
-    return <ParticipationAccountabilityPathwayScreen screen={screen} onComplete={onComplete} />;
+    return <ParticipationAccountabilityPathwayScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R13') {
-    return <RiskDoNoHarmBoardScreen screen={screen} onComplete={onComplete} />;
+    return <RiskDoNoHarmBoardScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R14') {
@@ -17273,7 +19306,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R17') {
-    return <AppliedDesignCheckScreen screen={screen} onComplete={onComplete} />;
+    return <IntegratedDraftPlanReviewScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R18') {
@@ -17285,7 +19318,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R20') {
-    return <AppliedKnowledgeCheckScreen screen={screen} onComplete={onComplete} />;
+    return <AppliedKnowledgeCheckScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R21') {
@@ -17293,6 +19326,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
       <PortfolioSnapshotScreen
         screen={screen}
         state={state}
+        onChangeState={onChangeState}
         onSaveSnapshot={(snapshot) => {
           onChangeState((prev) => ({
             ...prev,
@@ -17302,6 +19336,10 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
                 ...(prev.practiceCheckState[practiceKey(screen.id)] || {}),
                 status: 'saved',
                 savedAt: snapshot.savedAt,
+                snapshotStatus: snapshot.snapshotStatus,
+                sourceSignature: snapshot.sourceSignature,
+                ownCsoNote: snapshot.ownCsoNote,
+                finalSnapshot: snapshot,
                 module3PortfolioSnapshot: snapshot,
                 m3ProjectDesignImprovementSnapshot: snapshot,
               },
@@ -17318,7 +19356,8 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
       <Module3ClosureScreen
         screen={screen}
         state={state}
-        onStartModule4={() => completeScreen(screen, onChangeState, { completed, module3PortfolioSnapshot: getScreen21SavedSnapshot(state) })}
+        onChangeState={onChangeState}
+        onStartModule4={() => completeScreen(screen, onChangeState, { completed: true, acknowledged: true, module3PortfolioSnapshot: getScreen21SavedSnapshot(state) })}
         onReturnSnapshot={() => {
           onChangeState((prev) => ({
             ...prev,
