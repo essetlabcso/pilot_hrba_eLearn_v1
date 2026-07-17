@@ -15487,6 +15487,65 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
     { field: 'actorRole', label: 'Responsible actor or role', options: actorRoleOptions, testId: 'm3-s14-actor-role-select' },
     { field: 'watchPoint', label: 'Implementation watch-point', options: watchPointOptions, testId: 'm3-s14-watch-point-select' },
   ];
+  const renderDesignRepairArtifact = () => {
+    if (!submittedOutput || !finalPackage) return null;
+    const logic = submittedOutput.interventionLogicIndicators;
+    const repairedActivities = submittedOutput.repairedActivityPackage?.repairedActivities || [];
+    const logicSteps = [
+      ['Barrier or root cause', logic?.barrierRootCause || submittedOutput.repairedObjective.whatWasMissing],
+      ['Activity', logic?.repairedActivity || 'Not yet generated'],
+      ['Output', logic?.output || 'Not yet generated'],
+      ['Outcome', logic?.outcome || 'Not yet generated'],
+    ];
+
+    return (
+      <section className="m3-c14-artifact" aria-label="HRBA project design repair package">
+        <section className="m3-c14-before-after" aria-labelledby={`${screen.id}-objective-comparison`}>
+          <h3 id={`${screen.id}-objective-comparison`}>Objective repair: before and after</h3>
+          <div>
+            <article className="is-before"><span>Before · weak objective</span><p>{submittedOutput.repairedObjective.originalWeakObjective}</p></article>
+            <article className="is-after"><span>After · repaired HRBA objective</span><p>{submittedOutput.repairedObjective.repairedHrbaObjective}</p></article>
+          </div>
+        </section>
+
+        <section className="m3-c14-activity-package" aria-labelledby={`${screen.id}-activity-repairs`}>
+          <header><p>Activity repair package</p><h3 id={`${screen.id}-activity-repairs`}>{repairedActivities.length} linked design repair{repairedActivities.length === 1 ? '' : 's'}</h3></header>
+          <div>
+            {repairedActivities.map((activity, index) => (
+              <article key={activity.id}>
+                <span className="m3-c14-card-number">Repair {index + 1}</span>
+                <h4>{activity.repairedActivity}</h4>
+                <dl>
+                  <div><dt>Original activity</dt><dd>{activity.originalActivity}</dd></div>
+                  <div><dt>Linked barrier or root cause</dt><dd>{activity.barrier}</dd></div>
+                  <div><dt>Rights-holder group</dt><dd>{activity.rightsHolderGroup}</dd></div>
+                  <div><dt>Responsible role</dt><dd>{activity.responsibleActorCsoRole}</dd></div>
+                  <div><dt>Inclusion or accountability adjustment</dt><dd>{activity.riskAccountabilityAdjustment}</dd></div>
+                  <div><dt>Evidence or verification question</dt><dd>{activity.safeEvidenceQuestion}</dd></div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="m3-c14-logic" aria-labelledby={`${screen.id}-logic-chain`}>
+          <header><p>Intervention logic chain</p><h3 id={`${screen.id}-logic-chain`}>Follow the saved pathway from analysis to outcome</h3></header>
+          <ol>{logicSteps.map(([label, value], index) => <li key={label}><span>{index + 1}</span><div><strong>{label}</strong><p>{value}</p></div></li>)}</ol>
+        </section>
+
+        <section className="m3-c14-assurance" aria-labelledby={`${screen.id}-assurance`}>
+          <header><p>Assurance</p><h3 id={`${screen.id}-assurance`}>Evidence, risk, and implementation checks</h3></header>
+          <dl>
+            <div><dt>Indicator</dt><dd>{logic?.indicator || finalPackage.indicatorSignOfChange}</dd></div>
+            <div><dt>Safe evidence</dt><dd>{logic?.safeEvidenceSource || finalPackage.safeEvidenceSource}</dd></div>
+            <div><dt>Risk or assumption</dt><dd>{logic?.assumptionRisk || finalPackage.riskAssumption}</dd></div>
+            <div><dt>Implementation watch-point</dt><dd>{logic?.implementationWatchPoint || finalPackage.implementationWatchPoint}</dd></div>
+          </dl>
+          <p className="m3-c14-carry"><strong>Carry forward to draft plan review:</strong> {finalPackage.carryForwardNote}</p>
+        </section>
+      </section>
+    );
+  };
 
   return (
     <main className="m3-screen m3-design-repair-screen m3-integrated-repair-screen" aria-labelledby={titleId} data-qa="m3-s14-design-repair">
@@ -15676,24 +15735,14 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
           <section className="m3-integrated-section-card" data-qa="m3-s14-generated-package">
             <h2>Your HRBA Project Design Repair</h2>
             <p>This repair shows how the analysis changes one weak part of the design before implementation.</p>
-            <div className="m3-s14-review-grid">
-              {[
-                ['Design issue repaired', selectedIssue.label],
-                ['Evidence or analysis used', repairDraft.evidenceSource],
-                ['Weak design feature', repairDraft.weakFeature],
-                ['Repaired objective or design statement', repairDraft.repairedStatement],
-                ['Activity package', finalPackage.selectedActivityPackage.join(' ')],
-                ['Responsible actor or role', repairDraft.actorRole],
-                ['Implementation watch-point', repairDraft.watchPoint],
-                ['Carry forward to draft plan review', finalPackage.carryForwardNote],
-              ].map(([label, value]) => <article key={label} data-testid="m3-s14-generated-repair-row"><h3>{label}</h3><p>{value}</p></article>)}
-            </div>
+            {renderDesignRepairArtifact()}
             <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit repair</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(8)}>Go to Apply/Download</button></div>
           </section>
         )}
 
         {stage === 8 && finalPackage && (
           <section className="m3-integrated-section-card">
+            {renderDesignRepairArtifact()}
             <article className="m3-integrated-continue-card">
               <div><h3>Required repair ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
               <button type="button" className="m3-primary-button" data-testid="m3-s14-final-continue" data-qa="m3-s14-final-continue" onClick={() => submittedOutput && onComplete({ designRepairPackage: submittedOutput.designRepairPackage, repairedObjective: submittedOutput.repairedObjective, repairedActivityPackage: submittedOutput.repairedActivityPackage, interventionLogicIndicators: submittedOutput.interventionLogicIndicators, screen14: submittedOutput })}>{screen.continueLabel}</button>
@@ -16801,6 +16850,62 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
     if (item?.available) setStage(target);
   };
   const completedReviewMarkdown = reviewNote ? `# Draft Plan Review Note and repaired section\n\n## Draft reviewed\nJiru Amba Inclusive Local Development and Service Improvement Plan — Draft design section.\n\n## Strengths retained\n${reviewNote.strengths.map((id) => `- ${strengthOptions.find((item) => item.id === id)?.label}`).join('\n')}\n\n## Priority findings and repairs\n${reviewNote.findings.map((finding) => `### ${finding.category}\n- Draft evidence: ${finding.draftEvidence}\n- Priority reason: ${finding.reason}\n- Earlier tool: ${sourceOptions.find(([id]) => id === finding.source)?.[1]}\n- Repair: ${finding.repair}\n- Repaired wording: ${finding.repairedWording}\n- Verification: ${finding.verificationQuestion}`).join('\n\n')}\n\n## Repaired section\n${reviewNote.repairedSection}\n\nThis repair addresses the selected priority findings. Other sections may still require review.` : '';
+  const renderReviewLedger = () => reviewNote ? (
+    <section className="m3-c17-ledger" data-qa="m3-s17-generated-review-note" aria-live="polite">
+      <header className="m3-c17-ledger-header">
+        <p>Professional review ledger</p>
+        <h3 ref={outputHeadingRef} tabIndex={-1}>Draft Plan Review Note</h3>
+        <span>{reviewNote.findings.length} priority finding{reviewNote.findings.length === 1 ? '' : 's'} · {reviewNote.strengths.length} strength{reviewNote.strengths.length === 1 ? '' : 's'} retained</span>
+      </header>
+
+      <section className="m3-c17-status-overview" aria-labelledby={`${screen.id}-section-status`}>
+        <h4 id={`${screen.id}-section-status`}>Section status overview</h4>
+        <div>{draftSections.filter((section) => reviewedSections.includes(section.id)).map((section) => {
+          const needsCheck = selectedGaps.includes(section.gap);
+          return <article key={section.id}><span className={needsCheck ? 'needs-check' : 'ready-now'}>{needsCheck ? 'Needs HRBA check' : 'Ready for now'}</span><strong>{section.title}</strong></article>;
+        })}</div>
+      </section>
+
+      <section className="m3-c17-strengths" aria-labelledby={`${screen.id}-strengths-retained`}>
+        <h4 id={`${screen.id}-strengths-retained`}>Strengths retained</h4>
+        <ul>{reviewNote.strengths.map((id) => <li key={id}>{strengthOptions.find((item) => item.id === id)?.label}</li>)}</ul>
+      </section>
+
+      <section className="m3-c17-findings" aria-labelledby={`${screen.id}-priority-findings`}>
+        <header><p>Priority findings</p><h4 id={`${screen.id}-priority-findings`}>Evidence-led repairs</h4></header>
+        <div>{reviewNote.findings.map((finding, index) => (
+          <article key={finding.gapId}>
+            <header><span>Finding {index + 1}</span><h5>{finding.category}</h5></header>
+            <dl>
+              <div><dt>Plan section or evidence</dt><dd>{finding.draftEvidence}</dd></div>
+              <div><dt>Issue or gap</dt><dd>{finding.whyItMatters}</dd></div>
+              <div><dt>Priority reason</dt><dd>{finding.reason}</dd></div>
+              <div><dt>Evidence source</dt><dd>{sourceOptions.find(([id]) => id === finding.source)?.[1]}</dd></div>
+              <div><dt>Proposed repair</dt><dd>{finding.repair}</dd></div>
+            </dl>
+            <div className="m3-c17-before-after">
+              <section className="is-before"><span>Before · draft evidence</span><p>{finding.draftEvidence}</p></section>
+              <section className="is-after"><span>After · repaired wording</span><p>{finding.repairedWording}</p></section>
+            </div>
+            <p className="m3-c17-verification"><strong>Remaining verification:</strong> {finding.verificationQuestion}</p>
+          </article>
+        ))}</div>
+      </section>
+
+      <section className="m3-c17-repaired-section" aria-labelledby={`${screen.id}-repaired-section`}>
+        <h4 id={`${screen.id}-repaired-section`}>Repaired section</h4>
+        {reviewNote.repairedSection.split('\n\n').map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        <p><em>This repair addresses the selected priority findings. Other sections may still require review.</em></p>
+      </section>
+
+      <section className="m3-c17-watch" aria-labelledby={`${screen.id}-remaining-review`}>
+        <h4 id={`${screen.id}-remaining-review`}>Remaining verification and watch-points</h4>
+        <ul>{reviewNote.remainingVerificationQuestions.map((item) => <li key={item}>{item}</li>)}</ul>
+        {reviewNote.whatToMonitor.length > 0 && <><h5>Implementation watch-points</h5><ul>{reviewNote.whatToMonitor.map((item) => <li key={item}>{item}</li>)}</ul></>}
+        <p><strong>Carry forward:</strong> Use these findings in the applied knowledge check and final Module 3 snapshot.</p>
+      </section>
+    </section>
+  ) : null;
 
   return (
     <main className="m3-screen m3-proposal-screen m3-s17-screen" aria-labelledby={titleId} data-qa="m3-s17-screen">
@@ -16825,9 +16930,9 @@ function IntegratedDraftPlanReviewScreen({ screen, state, onComplete }: {
 
         {stage === 4 && <section className="m3-s17-panel"><h2>Connect each finding to evidence and a repair</h2><p className="m3-s17-instruction">For every selected gap, choose a compact priority reason and an earlier Module 3 source. Review or edit the deterministic repair wording.</p><div className="m3-s17-finding-stack">{selectedGapObjects.map((gap) => { const defaults = repairByGap[gap.id]; const review = gapReviews[gap.id] || { reason: '', source: '', repair: defaults.repair, repairedWording: defaults.wording }; return <fieldset key={gap.id} className="m3-s17-finding-editor"><legend>{gap.label}</legend><p><strong>Draft evidence:</strong> {defaults.evidence}</p><p>{gap.feedback}</p><label>Why this is a priority<select value={review.reason} onChange={(event) => updateGapReview(gap.id, 'reason', event.target.value)}><option value="">Choose one</option>{reasonOptions.map((reason) => <option key={reason}>{reason}</option>)}</select></label><label>Earlier tool or saved finding<select value={review.source} onChange={(event) => updateGapReview(gap.id, 'source', event.target.value)}><option value="">Choose one</option>{sourceOptions.map(([id, label]) => <option key={id} value={id} disabled={id === 'screen14' && !screen14Package}>{label}</option>)}</select></label><label>Recommended repair<select value={review.repair} onChange={(event) => updateGapReview(gap.id, 'repair', event.target.value)}><option value={defaults.repair}>{defaults.repair}</option></select></label><label>Concise repaired wording<textarea value={review.repairedWording} onChange={(event) => updateGapReview(gap.id, 'repairedWording', event.target.value)} rows={4} /></label><p className="m3-s17-note-tip"><strong>Remaining verification:</strong> {defaults.verification}</p></fieldset>; })}</div>{!screen14Package && <p className="m3-risk-empty-note">Screen 14 design repair package is not yet saved. Other valid sources remain available; return to Screen 14 through Previous if needed.</p>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Back to priority gaps</button><button type="button" className="m3-proposal-submit" disabled={!reviewStageReady} onClick={() => setStage(5)}>Continue to generate review note</button></div></section>}
 
-        {stage === 5 && <section className="m3-s17-panel"><h2>Draft Plan Review Note and repaired section</h2><p className="m3-s17-instruction">Generate a concise professional note from the selected strengths and priority repairs.</p>{!reviewNote && <div className="m3-s17-actions m3-s17-generate-row"><button type="button" className="m3-proposal-submit" data-qa="m3-s17-generate-review-note" disabled={!reviewStageReady} onClick={generateReviewNote}>Generate review note and repaired section</button></div>}{reviewNote && <section className="m3-s17-generated-note" data-qa="m3-s17-generated-review-note" aria-live="polite"><h3 ref={outputHeadingRef} tabIndex={-1}>Draft Plan Review Note</h3><article><h4>1. Draft reviewed</h4><p>Jiru Amba Inclusive Local Development and Service Improvement Plan — Draft design section.</p></article><article><h4>2. Strengths retained</h4><ul>{reviewNote.strengths.map((id) => <li key={id}>{strengthOptions.find((item) => item.id === id)?.label}</li>)}</ul></article><h4>3–6. Priority findings, reasons, earlier tools and repairs</h4><div className="m3-s17-finding-stack">{reviewNote.findings.map((finding) => <article key={finding.gapId}><h5>{finding.category}</h5><p><strong>Draft evidence:</strong> {finding.draftEvidence}</p><p><strong>Finding:</strong> {finding.whyItMatters}</p><p><strong>Priority reason:</strong> {finding.reason}</p><p><strong>Earlier tool:</strong> {sourceOptions.find(([id]) => id === finding.source)?.[1]}</p><p><strong>Recommended repair:</strong> {finding.repair}</p><p><strong>Repaired wording:</strong> {finding.repairedWording}</p><p><strong>Remaining verification:</strong> {finding.verificationQuestion}</p></article>)}</div><article><h4>7. Repaired section</h4>{reviewNote.repairedSection.split('\n\n').map((paragraph) => <p key={paragraph}>{paragraph}</p>)}<p><em>This repair addresses the selected priority findings. Other sections may still require review.</em></p></article><article><h4>8–10. Responsibility, inclusion, accountability, risk, indicator and evidence implications</h4><p>Public and service responsibilities remain visible; Awra facilitates rather than replaces them. Selected repairs operationalize participation, accessibility, response, mitigation and safe evidence where relevant.</p></article><article><h4>11. Remaining verification questions</h4><ul>{reviewNote.remainingVerificationQuestions.map((item) => <li key={item}>{item}</li>)}</ul></article><article><h4>12. Carry-forward</h4><p>Use these findings in the applied knowledge check and final Module 3 snapshot.</p></article></section>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Edit findings and repairs</button><button type="button" className="m3-proposal-submit" disabled={!reviewNote} onClick={() => setStage(6)}>Continue to Apply/Download</button></div></section>}
+        {stage === 5 && <section className="m3-s17-panel"><h2>Draft Plan Review Note and repaired section</h2><p className="m3-s17-instruction">Generate a concise professional note from the selected strengths and priority repairs.</p>{!reviewNote && <div className="m3-s17-actions m3-s17-generate-row"><button type="button" className="m3-proposal-submit" data-qa="m3-s17-generate-review-note" disabled={!reviewStageReady} onClick={generateReviewNote}>Generate review note and repaired section</button></div>}{renderReviewLedger()}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Edit findings and repairs</button><button type="button" className="m3-proposal-submit" disabled={!reviewNote} onClick={() => setStage(6)}>Continue to Apply/Download</button></div></section>}
 
-        {stage === 6 && reviewNote && <section className="m3-s17-panel"><h2>Apply and download</h2><p className="m3-s17-instruction">Use the required Jiru Amba review note, or optionally note one generalized draft-plan section that your organization may wish to review later.</p><section className="m3-s17-final-card"><h3>Your Draft Plan Review Note and repaired section are ready.</h3><article><h4>Strengths retained</h4><ul>{reviewNote.strengths.map((id) => <li key={id}>{strengthOptions.find((item) => item.id === id)?.label}</li>)}</ul></article><article><h4>Priority findings</h4><ul>{reviewNote.findings.map((finding) => <li key={finding.gapId}>{finding.category}: {finding.reason}</li>)}</ul></article><article><h4>Repaired section</h4>{reviewNote.repairedSection.split('\n\n').map((item) => <p key={item}>{item}</p>)}</article><article><h4>Carry forward</h4><p>Screen 16 can assess the same reasoning, and the final snapshot can include these review findings.</p></article></section><div className="m3-guided-tabs m3-s17-tabs" role="tablist" aria-label="Apply or download" data-qa="m3-s17-apply-tabs"><button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button><button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s17-download-tools">Download tools</button></div>{applyTab === 'own' && <section className="m3-proposal-card m3-proposal-own-cso"><h3>Try with my CSO context <span>Optional</span></h3><p><strong>Safe-input reminder:</strong> Note one generalized draft-plan section that your organization may wish to review later. Do not enter names, exact locations, confidential proposal text or identifiable concerns.</p><div className="m3-proposal-own-grid">{[['planSection', 'Generalized draft section'], ['weakness', 'What may require review?'], ['missingIssue', 'Which design issue may be missing?'], ['safeRepair', 'What generalized repair could be proposed?'], ['monitor', 'What should be monitored?'], ['evidenceNote', 'Safe evidence note']].map(([field, label]) => <label key={field}>{label}<textarea value={ownCsoDraft[field as keyof typeof ownCsoDraft]} onChange={(event) => setOwnCsoDraft((prev) => ({ ...prev, [field]: event.target.value }))} /></label>)}</div>{ownCsoError && <p className="m3-proposal-error" role="alert">{ownCsoError}</p>}<button type="button" className="m3-proposal-submit" onClick={validateOwnCsoPractice}>Check optional note</button></section>}{applyTab === 'downloads' && <section className="m3-proposal-card m3-proposal-template"><h3>Download tools</h3><div className="m3-proposal-template-actions"><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'docx')}>Download Draft Plan Review Note Template</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'md')}>Download markdown copy</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate('', 'draft-plan-review-blank-worksheet', 'md')}>Download blank worksheet</button></div></section>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(5)}>Edit review note</button><button type="button" className="m3-primary-button" data-qa="m3-s17-final-continue" disabled={!reviewNote} onClick={() => reviewNote && onComplete({ draftPlanReviewNote: reviewNote, repairedSection: reviewNote.repairedSection, screen17: { screenId: 'M3-R17', route: '/module-3/screen-3-17', title: 'Draft Plan Review and Repair', reviewNote, selectedDraftSections: reviewedSections, selectedGaps, selectedStrengths, gapReviews, repairedSection: reviewNote.repairedSection, ownCsoPractice: ownCsoDraft }, screen18: { hiddenIntegratedInto: 'M3-R17' }, screen19: { hiddenIntegratedInto: 'M3-R17' } })}>Save review note and continue</button></div><p className="m3-proposal-safe-note" data-qa="m3-s17-safety-note">Use fictional, generalized, or non-sensitive examples. Do not include names, exact locations, complaint details, accusations, incidents, confidential proposal details, budgets, donor names or identifiable personal information.</p></section>}
+        {stage === 6 && reviewNote && <section className="m3-s17-panel"><h2>Apply and download</h2><p className="m3-s17-instruction">Use the required Jiru Amba review note, or optionally note one generalized draft-plan section that your organization may wish to review later.</p>{renderReviewLedger()}<div className="m3-guided-tabs m3-s17-tabs" role="tablist" aria-label="Apply or download" data-qa="m3-s17-apply-tabs"><button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button><button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s17-download-tools">Download tools</button></div>{applyTab === 'own' && <section className="m3-proposal-card m3-proposal-own-cso"><h3>Try with my CSO context <span>Optional</span></h3><p><strong>Safe-input reminder:</strong> Note one generalized draft-plan section that your organization may wish to review later. Do not enter names, exact locations, confidential proposal text or identifiable concerns.</p><div className="m3-proposal-own-grid">{[['planSection', 'Generalized draft section'], ['weakness', 'What may require review?'], ['missingIssue', 'Which design issue may be missing?'], ['safeRepair', 'What generalized repair could be proposed?'], ['monitor', 'What should be monitored?'], ['evidenceNote', 'Safe evidence note']].map(([field, label]) => <label key={field}>{label}<textarea value={ownCsoDraft[field as keyof typeof ownCsoDraft]} onChange={(event) => setOwnCsoDraft((prev) => ({ ...prev, [field]: event.target.value }))} /></label>)}</div>{ownCsoError && <p className="m3-proposal-error" role="alert">{ownCsoError}</p>}<button type="button" className="m3-proposal-submit" onClick={validateOwnCsoPractice}>Check optional note</button></section>}{applyTab === 'downloads' && <section className="m3-proposal-card m3-proposal-template"><h3>Download tools</h3><div className="m3-proposal-template-actions"><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'docx')}>Download Draft Plan Review Note Template</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(draftPlanReviewTemplateMarkdown, 'draft-plan-review-note-template', 'md')}>Download markdown copy</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate('', 'draft-plan-review-blank-worksheet', 'md')}>Download blank worksheet</button></div></section>}<div className="m3-s17-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(5)}>Edit review note</button><button type="button" className="m3-primary-button" data-qa="m3-s17-final-continue" disabled={!reviewNote} onClick={() => reviewNote && onComplete({ draftPlanReviewNote: reviewNote, repairedSection: reviewNote.repairedSection, screen17: { screenId: 'M3-R17', route: '/module-3/screen-3-17', title: 'Draft Plan Review and Repair', reviewNote, selectedDraftSections: reviewedSections, selectedGaps, selectedStrengths, gapReviews, repairedSection: reviewNote.repairedSection, ownCsoPractice: ownCsoDraft }, screen18: { hiddenIntegratedInto: 'M3-R17' }, screen19: { hiddenIntegratedInto: 'M3-R17' } })}>Save review note and continue</button></div><p className="m3-proposal-safe-note" data-qa="m3-s17-safety-note">Use fictional, generalized, or non-sensitive examples. Do not include names, exact locations, complaint details, accusations, incidents, confidential proposal details, budgets, donor names or identifiable personal information.</p></section>}
         {stage === 6 && reviewNote && <section className="m3-s17-panel m3-s17-completed-download" aria-labelledby="m3-s15-completed-download"><h2 id="m3-s15-completed-download">Download the completed review</h2><p>This copy includes the draft reviewed, retained strengths, priority findings, reasons, earlier tools, repairs, repaired section and remaining verification questions.</p><div className="m3-proposal-template-actions"><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(completedReviewMarkdown, 'draft-plan-review-note', 'docx')}>Download completed review (.docx)</button><button type="button" className="m3-proposal-submit" onClick={() => downloadDesignRepairTemplate(completedReviewMarkdown, 'draft-plan-review-note', 'md')}>Download completed review (.md)</button></div></section>}
       </article>
     </main>
@@ -18236,6 +18341,14 @@ function PortfolioSnapshotScreen({
   const noteNeedsSave = Boolean(localSavedSnapshot && sourceIsCurrent && !noteIsCurrent);
   const canSave = incompleteSections.length === 0 && allSectionsReviewed;
   const canContinue = canSave && isSavedCurrent;
+  const assessmentSummary = getFinalSnapshotAssessmentSummary(state);
+  const implementationWatchPoints = assembledSections.find((section) => section.id === 'implementation-watch-points')?.content || [];
+  const journeyGroups = [
+    { label: 'Analyze context and responsibility', sections: assembledSections.slice(0, 6) },
+    { label: 'Design inclusion, participation, and safety', sections: assembledSections.slice(6, 9) },
+    { label: 'Repair and review the project design', sections: assembledSections.slice(9, 12) },
+    { label: 'Assess readiness and carry learning forward', sections: assembledSections.slice(12, 14) },
+  ];
 
   const markReviewed = (sectionId: string) => {
     setReviewedSections((current) => current.includes(sectionId) ? current : [...current, sectionId]);
@@ -18316,6 +18429,33 @@ function PortfolioSnapshotScreen({
           {updateRequired && <button type="button" className="m3-closing-primary" data-qa="m3-final-update" onClick={updateSnapshot}>Update Snapshot</button>}
         </section>
 
+        <section className="m3-c21-journey" aria-labelledby={`${screen.id}-journey`}>
+          <header><p>Project-design journey</p><h2 id={`${screen.id}-journey`}>How your Module 3 outputs build toward the final snapshot</h2><span>This comprehension map uses the same completion states as the authoritative review below.</span></header>
+          <ol>{journeyGroups.map((group, index) => {
+            const completed = group.sections.filter((section) => section.complete).length;
+            const complete = completed === group.sections.length;
+            return <li key={group.label} className={complete ? 'is-complete' : 'needs-review'}><span>{index + 1}</span><div><strong>{group.label}</strong><p>{completed}/{group.sections.length} outputs complete</p></div><em>{complete ? 'Complete' : 'Needs review'}</em></li>;
+          })}</ol>
+        </section>
+
+        <section className="m3-c21-synthesis" aria-label="Assessment and implementation synthesis">
+          <article className="m3-c21-assessment">
+            <p>Assessment and targeted review</p>
+            <h2>{assessmentSummary ? `${assessmentSummary.score}/${assessmentSummary.totalQuestions} · ${assessmentSummary.resultLabel}` : 'Applied Knowledge Check not yet complete'}</h2>
+            {assessmentSummary ? <><span>{assessmentSummary.percentage}% · Attempt {assessmentSummary.attemptCount}</span>{assessmentSummary.targetedReview.length ? <ul>{assessmentSummary.targetedReview.map((item) => <li key={item}>{item}</li>)}</ul> : <p>No priority review topic was identified.</p>}</> : <p>Complete the saved assessment before finalizing this snapshot.</p>}
+          </article>
+          <article className="m3-c21-watchpoints">
+            <p>Implementation watch-points</p>
+            <h2>{implementationWatchPoints.length ? `${implementationWatchPoints.length} checks carried forward` : 'No current watch-point available'}</h2>
+            {implementationWatchPoints.length ? <ul>{implementationWatchPoints.map((item) => <li key={item}>{item}</li>)}</ul> : <p>Complete the relevant source output before finalizing this snapshot.</p>}
+          </article>
+        </section>
+
+        <header className="m3-c21-detail-heading">
+          <p>Authoritative detailed review</p>
+          <h2>Review all 14 snapshot sections</h2>
+          <span>The visual journey above does not replace this required review.</span>
+        </header>
         <section className="m3-closing-accordion" aria-label="HRBA Project Design Improvement Snapshot sections">
             {assembledSections.map((section) => {
               const expanded = Boolean(openSections[section.id]);
