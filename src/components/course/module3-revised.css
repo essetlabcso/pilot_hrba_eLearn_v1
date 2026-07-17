@@ -23964,6 +23964,17 @@
 }
 
 @media (max-width: 700px) {
+  .m3-s17-screen .m3-progress-chip,
+  .m3-final-snapshot .m3-progress-chip {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
+    text-align: center;
+  }
+
   .m3-c14-before-after > div,
   .m3-c14-activity-package > div,
   .m3-c14-assurance dl,
