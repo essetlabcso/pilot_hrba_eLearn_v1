@@ -201,3 +201,113 @@ Keep the preview running at `http://127.0.0.1:5196/`.
 ## Review boundary
 
 The feature worktree contains only the reviewed implementation, tests, QA report, and curated evidence. The 15 stable PNGs are committed explicitly for reviewer access even though the repository's broad QA-image ignore rule would otherwise exclude them. The protected original dirty worktree was not edited. The review commit and draft PR are authorised; do not merge or deploy until the two required human checks and content/design review are complete.
+
+## Phase 3 pre-merge verification — 2026-07-22
+
+### Draft PR and branch integrity
+
+- Draft PR: `essetlabcso/pilot_hrba_eLearn_v1#2` — `https://github.com/essetlabcso/pilot_hrba_eLearn_v1/pull/2`.
+- PR state: open and Draft; mergeability reported `MERGEABLE` / `CLEAN`.
+- Base: `release/hrba-pilot-final` at `4644156d0313014cb24a7cbde4f8451f1c0c4f83`.
+- Head at the start of Phase 3: `feature/module5-hrba-meal-enhancement-20260722` at `b9cf1cbae867d570dda5ac3928bfe2e8825c6d26`.
+- All four GitHub/Vercel checks passed before this report update.
+- No merge, ready-for-review transition, production deployment, alias change, or Hub repository change was performed.
+
+### Vercel project-lineage audit
+
+The Vercel GitHub integration attached the PR to three projects in the `girumteenexus-8292s-projects` team. The signed Vercel PR-comment payload and successful commit statuses provide the following project and preview identities:
+
+| Project | Project ID | PR deployment dashboard identifier | PR preview URL | Phase 3 classification |
+| --- | --- | --- | --- | --- |
+| `pilot-hrba-e-learn-v1-wajj` | `prj_3oplMczqzKCHhyQMvZeTckJYvdFe` | `9m6jjTPwzNmmpPMqMpCSKUpusC8g` | `https://pilot-hrba-e-learn-v1-w-git-7294a9-girumteenexus-8292s-projects.vercel.app` | Authoritative production project, based on the official alias, deployed-asset lineage and Hub configuration |
+| `pilot-hrba-e-learn-v1` | `prj_IvFaWALHqTED54eItJLYkR2i4Esd` | `5jP8BXmjQ5Qccf2fBpNJ7RYzVFKN` | `https://pilot-hrba-e-learn-v1-git-f-0832c9-girumteenexus-8292s-projects.vercel.app` | Historical duplicate; leave unchanged for now and plan to disconnect/archive after owner review |
+| `pilot-hrba-e-learn-v1-ik7g` | `prj_MpwWqBvCA12JKpDpNsHZt3bxt13q` | `DCsqcfGTSed7wSbWtWgZg3463ipr` | `https://pilot-hrba-e-learn-v1-i-git-afe441-girumteenexus-8292s-projects.vercel.app` | Duplicate/test project with no working root production alias; leave unchanged pending owner review |
+
+The current Vercel CLI identity is `essetlab-5136` in team `esset-lab`, not the team that owns these three projects. Project-settings inspection under `girumteenexus-8292s-projects` therefore failed with `The specified scope does not exist`. The configured production branch and formal `dpl_...` identifiers for the three PR previews could not be read from the current account and are **NOT VERIFIED**. Whether merging `release/hrba-pilot-final` triggers a production deployment is also **NOT VERIFIED** and must be confirmed by a team owner before merge.
+
+Production-origin evidence distinguishes the projects:
+
+- `https://pilot-hrba-e-learn-v1-wajj.vercel.app` returns HTTP 200 and serves `index-Y6mcjyQx.js` plus `index-BPTLMz6V.css`. These exactly match the documented accepted Module 3 production deployment at merge commit `22f9448736f126a5eb7cbed111606daae4b25a71`, deployment `dpl_4UTTSsAsyn2dAct8qJsTxQ71oTvG`.
+- `https://pilot-hrba-e-learn-v1.vercel.app` returns HTTP 200 but serves stale assets `index-D1T-29i7.js` and `index-D2ekPZxw.css`.
+- `https://pilot-hrba-e-learn-v1-ik7g.vercel.app` returns HTTP 404.
+- The Hub configuration continues to use only `https://pilot-hrba-e-learn-v1-wajj.vercel.app`.
+
+No production alias was modified. The evidence supports `pilot-hrba-e-learn-v1-wajj` as the single authoritative production project, but owner-level verification of its production-branch setting remains required.
+
+### Authoritative preview access and assets
+
+- Selected review target: `https://pilot-hrba-e-learn-v1-w-git-7294a9-girumteenexus-8292s-projects.vercel.app`.
+- GitHub status associates it with head commit `b9cf1cbae867d570dda5ac3928bfe2e8825c6d26` and reports the deployment successful.
+- An unauthenticated HTTP request returns 302 to Vercel SSO.
+- The in-app browser reaches Vercel's `You Need Access` page for account `essetlab-5136`; no access request was submitted.
+- Preview HTTP 200, deployed JavaScript/CSS filenames, required-asset loading, formal `dpl_...` ID and byte-level comparison with the other two previews are **NOT TESTED** because deployment protection blocks the current reviewer identity.
+
+### Human keyboard-only acceptance
+
+| Check | Desktop | 390 px | Evidence/limitation |
+| --- | --- | --- | --- |
+| Complete native keyboard traversal | NOT TESTED | NOT TESTED | Authoritative preview is access-protected. The available in-app browser rendered the local build but did not advance focus when native Tab was injected, so no PASS is claimed. |
+| Visible focus indicators | NOT TESTED | NOT TESTED | Source, semantic-tree and prior screenshot evidence remain positive, but Phase 3 requires actual keyboard observation. |
+| Radio/checkbox activation | NOT TESTED | NOT TESTED | Must be repeated by a reviewer in Chrome or Edge. |
+| Screen 15 edit/save/copy/download | NOT TESTED | NOT TESTED | Prior automated browser checks pass; native keyboard-only acceptance remains pending. |
+| Screen 16 completion and reverse traversal | NOT TESTED | NOT TESTED | Prior automated browser checks pass; native keyboard-only acceptance remains pending. |
+
+No keyboard failure is asserted from the browser-control limitation, but the draft PR checklist must remain unchecked.
+
+### Native 200% browser zoom
+
+| Screen | Result | Evidence/limitation |
+| --- | --- | --- |
+| Screen 2 | NOT TESTED | Chrome/Edge native zoom was unavailable in the connected browser surface. |
+| Screen 8 | NOT TESTED | Same limitation. |
+| Screen 15 | NOT TESTED | Same limitation. |
+| Screen 16 | NOT TESTED | Same limitation. |
+
+Responsive emulation and source checks are not substituted for native browser zoom. No P1 zoom defect is claimed, but native 200% acceptance remains a merge blocker.
+
+### Focused content and visual review
+
+The local build at the PR head, the full learner-facing authority and the indexed Screen 2, 8, 15 and 16 captures were reviewed. The reviewed evidence preserves Jiru Amba continuity, practical HRBA/MEAL terminology, worked-example-to-practice progression, data-minimization and do-no-harm guidance, honest missing-answer handling, carried-forward Canvas content, dashboard decisions, explicit completion and accurate low-bandwidth wording. Visual hierarchy, readable cards, native controls and calm notice treatment remain consistent with the pilot shell.
+
+The authoritative Vercel preview itself could not be reviewed because of deployment protection. Phase 3 therefore records the local/content review as complete but does not check the PR's authoritative human content-and-visual-review item.
+
+Findings:
+
+- P0: none observed.
+- P1: none observed in accessible local/source evidence; required accessibility and Hub tests remain unverified rather than passed.
+- P2: none added during Phase 3.
+- P3: consider removing or disconnecting the two duplicate Vercel Git connections after the production owner confirms retention requirements.
+
+### Portal-contract comparison
+
+`src/integration/portalContext.ts` and `src/integration/hubProgress.ts` are byte-identical between approved base `4644156d...` and implementation commit `b9cf1c...`:
+
+- `portalContext.ts` blob: `9fb6479ac5ba5e990e95d90c9eaa1220a05c1357` on both commits.
+- `hubProgress.ts` blob: `4aee1c2f7d08de45a5797ec417b0c42c1f313ecf` on both commits.
+
+A local contract harness passed for valid launch-token parsing, exact parent-origin targeting, fail-closed invalid origin/missing token, stable message type/version, course slug, launch token, rounded progress, module/screen identifiers and omission of raw `userId` and `enrollmentId`. Module 5 does not modify or bypass the bridge. Final-assessment attempt replay suppression remains in the unchanged `App.tsx` integration flow, and server-side duplicate validation remains a Hub responsibility.
+
+### Controlled Hub integration results
+
+The protected authoritative preview could not be loaded by the current Vercel identity, so it could not be substituted into an authenticated non-production Hub iframe. No Hub production URL was changed.
+
+| Required integration check | Result |
+| --- | --- |
+| Authenticated learner launch through Hub | NOT TESTED |
+| Preview iframe load | NOT TESTED — blocked by Vercel deployment protection |
+| Valid launch token accepted end-to-end | NOT TESTED; standalone contract harness PASS only |
+| No unnecessary learner identity exposure | PASS at message/source-contract level; end-to-end NOT TESTED |
+| Module/screen callbacks received by Hub | NOT TESTED |
+| Refresh and account resume | NOT TESTED |
+| Module 5 completion callback and duplicate handling | NOT TESTED end-to-end |
+| Final Assessment availability and handoff | NOT TESTED |
+| Assessment score persisted | NOT TESTED |
+| Hub course completion | NOT TESTED |
+| Certificate eligibility | NOT TESTED |
+| Certificate generation/download | NOT TESTED |
+| Learner isolation | NOT TESTED |
+| Detailed browser-local state confined to HRBA origin | PASS by architecture/source inspection; end-to-end NOT TESTED |
+
+### Phase 3 recommendation
+
+The PR remains Draft. Automated implementation evidence and the standalone contract comparison pass, but native keyboard-only testing, native 200% zoom, owner-level Vercel production-branch verification and authenticated Hub callback/assessment/certificate testing remain incomplete. Do not merge or deploy.
