@@ -2,11 +2,11 @@
 
 ## Acceptance status
 
-**READY FOR REVIEW COMMIT — human keyboard and native 200% zoom checks pending before merge.** The implementation, production build, automated tests, cross-course smoke tests, full Module 5 journey, route guards, hydration, legacy-state migration, portfolio carry-forward, downloads, copy fallback, semantic accessibility, reduced-motion, forced-colour, and 1440/390/320 px browser checks pass.
+**LATEST HUB INTEGRATION CHECK PENDING — do not merge.** The implementation, production build, automated tests, cross-course smoke tests, full Module 5 journey, route guards, hydration, legacy-state migration, portfolio carry-forward, downloads, copy fallback, semantic accessibility, reduced-motion, forced-colour, 1440/390/320 px browser checks, native Chrome keyboard operation, and native 200% zoom checks have passed as recorded below. Authenticated integration with the latest Hub candidate remains unverified because no usable staging database, Supabase, and session configuration was available.
 
-The implementation and automated acceptance evidence passed. Native keyboard-only traversal and actual browser-native 200% zoom remain pending human checks. These items do not block creation of the feature review commit or draft PR, but they block merge and deployment.
+The implementation, automated acceptance evidence, and the completed native-browser checks passed. The requested “Screen 2 radio interaction” is recorded as NOT TESTED because Screen 2 contains a required three-checkbox activity rather than a radio group; native arrow-key radio operation passed on Screen 3. Authenticated Hub callback, assessment, certificate, cross-account, and retained-completion checks remain merge blockers.
 
-No commit, push, merge, pull request, or deployment was performed. The production preview remains available at `http://127.0.0.1:5196/` for review.
+The Phase 2 implementation commit and Draft PR already exist. Phase 3B performed no merge, deployment, production modification, or push; its new results are recorded in a separate local evidence-only follow-up commit.
 
 ## Provenance and isolation
 
@@ -311,3 +311,127 @@ The protected authoritative preview could not be loaded by the current Vercel id
 ### Phase 3 recommendation
 
 The PR remains Draft. Automated implementation evidence and the standalone contract comparison pass, but native keyboard-only testing, native 200% zoom, owner-level Vercel production-branch verification and authenticated Hub callback/assessment/certificate testing remain incomplete. Do not merge or deploy.
+
+## Phase 3B controlled acceptance against latest Hub candidate — 2026-07-22
+
+### Release tracks and test baselines
+
+- Standalone feature worktree: `D:\eLearn_CDP_Lg_module5_clean_20260722` at `b8efb4b7589a0fdb1a374d8983d999eee4803478`.
+- Module 5 implementation commit: `b9cf1cbae867d570dda5ac3928bfe2e8825c6d26`.
+- Isolated Hub worktree: `D:\eLearn_CDP_Lg_hub_candidate_875c26e`, detached exactly at `875c26e90c4a7d50aee0d6cac57c6787d6ef622e`.
+- Hub production remains `4ba0233b5c8e391e37629e982240d44e21961c8d`; Deployment A is `64cdb569c9d1ed14c892e8461f4afd89863d47ef`; Git ancestry is `4ba0233` → `64cdb56` → `875c26e`.
+- The Hub and standalone HRBA course remain separate release tracks. No transfer, deployment, promotion, alias change, production environment change, merge, or production modification was performed.
+
+All three Hub commits use the identical `src/lib/external-course-config.ts` blob `3f653ee0c7a7ea1c3de488b0d67aecd9e66745ea` and therefore continue to use the standalone `https://pilot-hrba-e-learn-v1-wajj.vercel.app` default when no environment override is present. No standalone HRBA project exists under `esset-lab`.
+
+### Human keyboard-only results in Chrome
+
+Testing used the local standalone feature server at `http://127.0.0.1:5173` in Google Chrome through the enabled ChatGPT Chrome Extension. The real application DOM, native controls, focus order, clipboard, download, route changes and saved state were observed.
+
+| Required check | Result | Actual observation |
+| --- | --- | --- |
+| Tab | PASS | Focus advanced from the shell controls to the first Screen 2 checkbox. |
+| Shift+Tab | PASS | Focus moved from the first checkbox back to `Return to LMS`; Tab returned to the checkbox. |
+| Space | PASS | Space checked the Screen 2 checkbox and selected the Screen 3 radio. |
+| Enter | PASS | Enter activated Check response, Continue, Previous, the Screen 15 source link, details/summary, and final completion. |
+| Native arrow-key radio navigation | PASS on Screen 3 | Arrow Down moved selection from `Jiru Amba fictional case` to `My generalized CSO activity`; Arrow Up returned it. |
+| Screen 2 radio interaction | NOT TESTED — control not present | Screen 2 implements a required three-checkbox evidence-gap activity, not a radio group. No radio PASS is claimed for Screen 2. |
+| One checkbox interaction | PASS | Space checked the first Screen 2 checkbox; checked state changed from false to true. |
+| Previous and Continue | PASS | Continue moved from `/module-5/screen-5-1` to `/module-5/screen-5-2`; Previous returned from Screen 4 to Screen 3. |
+| Details/summary | PASS | Enter opened the native Screen 16 details element; its `open` state became true. |
+| One source link | PASS | Enter on the first Screen 15 `Review source activity` link navigated to `/module-5/screen-5-2`. |
+| Screen 15 editing | PASS | A generalized learning note was entered by keyboard, persisted after source navigation, and carried into Screen 16. |
+| Copy output | PASS | Clipboard content began with `HRBA MEAL, ACCOUNTABILITY AND ADAPTATION CANVAS` and contained 3,470 characters. |
+| Download text | PASS with fallback message verified | Chrome created `module-5-hrba-meal-portfolio.txt` in Downloads at 3,482 bytes. The browser download-event observer timed out, while filesystem evidence and the calm fallback alert confirmed the action. |
+| Screen 16 fields | PASS | The responsible-role and near-term fields were edited by keyboard; all four final fields persisted after reload. |
+| Screen 16 confirmations | PASS | Dashboard, carry-forward, and privacy confirmations all changed to checked; completion then enabled. |
+| Final completion | PASS | Enter recorded completion; the module announced completion, reload preserved the plan, and the course page exposed `Start Final Assessment`. |
+| Reverse focus order | PASS | Shift+Tab and forward Tab returned to the expected adjacent controls without a trap. |
+
+The observed focus indicator on native inputs was a solid 3.2 px outline. Screen changes moved focus to the new main content/heading. No keyboard trap or unexpected activation was observed.
+
+### Native Chrome 200% zoom
+
+Chrome was set manually to exactly 200%, not through viewport or device emulation. Browser metrics changed from the 100% baseline of 1,536 CSS px / device-pixel ratio 1.25 to 768 CSS px / device-pixel ratio 2.5, confirming the native zoom level. Zoom remained unchanged across all four required screens.
+
+| Screen | Result | Evidence |
+| --- | --- | --- |
+| Screen 2 | PASS | `scrollWidth = clientWidth = 768`; no horizontal document overflow. Header navigation remained visible. The complete safety notice was reachable and readable in one viewport after vertical scrolling. |
+| Screen 8 | PASS | `scrollWidth = clientWidth = 768`; no horizontal document overflow. The disaggregation and sensitive-incident safety notice was fully reachable and readable. |
+| Screen 15 | PASS | `scrollWidth = clientWidth = 768`; no horizontal document overflow. Canvas cards, source links, editor, readable preview, checks and navigation remained reachable. |
+| Screen 16 | PASS | `scrollWidth = clientWidth = 768`; no horizontal document overflow. Dashboard cards, four fields, privacy note, Copy, Download, details, confirmations and completion control remained reachable. |
+
+At Screen 16 the dashboard rendered within a 527 px content width, and the enabled completion button remained visible at approximately 161 px wide. Labels wrapped without overlap, focus remained visible, and use did not depend on colour. The fixed partner-logo footer reduced vertical space but did not hide or trap content; ordinary vertical scrolling reached every tested control.
+
+### Local standalone state result
+
+- Local standalone learning state: PASS. Screen activities, Canvas edits, final plan, completion and refresh/resume persisted in the Chrome origin.
+- Standalone Final Assessment availability: PASS. After Module 5 completion, the course page announced `Module 5 is complete. Final Assessment is ready.` and exposed `Start Final Assessment`.
+- Detailed Module 5 answers remained in standalone browser-local state during this test. No learner name, account id, enrollment id, exact location, complaint, medical/disability detail, survivor information, political accusation, contact detail, or confidential record was entered.
+
+These results do not constitute authenticated Hub progress, assessment, or certificate evidence.
+
+### Latest Hub candidate preparation and source checks
+
+The Hub candidate was prepared in a detached isolated worktree. `npm ci` completed without modifying tracked source. The following checks passed:
+
+| Hub check | Result |
+| --- | --- |
+| Exact commit `875c26e90c4a7d50aee0d6cac57c6787d6ef622e` | PASS |
+| `npm run verify:hrba-assignment-boundary` | PASS |
+| `npm run verify:stage-a-session` after Prisma generation | PASS |
+| `npm run typecheck` | PASS |
+| Production-mode `npm run build` with local HRBA/app URL overrides | PASS; existing fallback-course-data warning only |
+| `/api/external-course-progress` route present in build | PASS |
+| Learner assessment route present in build | PASS |
+| Certificate list/detail and PDF download routes present in build | PASS |
+| External-course launch workflow and certificate workflow present | PASS |
+
+The first Stage A session-verifier invocation occurred before the generated Prisma client existed and failed to resolve the generated enum module. `npm run typecheck` generated Prisma; the verifier was rerun and passed. Generated `next-env.d.ts` churn and Vercel-link `.gitignore` churn were restored, leaving the detached Hub source clean.
+
+### Local-to-local integration blocker
+
+Actual authenticated Hub integration could not proceed:
+
+1. The existing local Hub `.env` points to an unavailable localhost PostgreSQL instance and lacks `DIRECT_URL` and Supabase configuration.
+2. `npm run verify:s8-env-readiness` reported three blocking configuration issues and Prisma migration status could not connect.
+3. A read-only Vercel pull of the branch-scoped Preview environment was attempted. The database, Supabase and session entries resolved to short placeholder values rather than usable configuration.
+4. No connected verifier or browser journey was started with those values, and no staging or production record was created, changed or deleted.
+
+Accordingly, the planned local Hub could not authenticate a learner, mint a valid launch token, load the standalone app in its authenticated iframe, or receive callbacks. This is a configuration/access blocker, not an observed application defect.
+
+### End-to-end Hub acceptance results
+
+| Required integration check | Result |
+| --- | --- |
+| Authenticated learner launches HRBA course | NOT TESTED — usable staging authentication unavailable |
+| Launch token accepted | NOT TESTED end-to-end; unchanged standalone parsing contract verified |
+| Hub iframe loads local standalone course | NOT TESTED |
+| No unnecessary learner identifiers delivered | PASS at unchanged source/message-contract level; end-to-end NOT TESTED |
+| Module 5 screen progress received by Hub | NOT TESTED |
+| Authenticated Hub refresh and resume | NOT TESTED |
+| Module 5 completion recorded once | NOT TESTED in Hub; local standalone completion PASS |
+| Final Assessment becomes available | PASS locally; authenticated Hub handoff NOT TESTED |
+| Assessment result persists | NOT TESTED |
+| Hub course becomes complete | NOT TESTED |
+| Certificate eligibility calculated | NOT TESTED |
+| Certificate generated and downloadable | NOT TESTED |
+| Second learner does not inherit progress | NOT TESTED |
+| Detailed Module 5 answers confined to standalone origin | PASS by architecture/source contract; end-to-end NOT TESTED |
+| Existing completed Hub learners retain completion | NOT TESTED in Hub; standalone completed-state migration remains covered by automated tests |
+
+The evidence distinguishes four stores: standalone browser-local learning state passed; authenticated Hub account progress was not tested; Hub assessment records were not tested; Hub certificate records were not tested.
+
+### Contract and current-production compatibility
+
+`src/integration/portalContext.ts` and `src/integration/hubProgress.ts` remain byte-identical between approved standalone base `4644156d...` and current PR head `b8efb4b...`. Their respective blobs remain `9fb6479a...` and `4aee1c2f...`. Module 5 does not add learner identifiers to the bridge or transmit the Canvas/plan fields.
+
+Source comparison therefore finds the updated standalone course contract-compatible with Hub production `4ba0233...`, Deployment A `64cdb56...`, and Deployment B `875c26e...`. Runtime compatibility is not marked PASS because authenticated launch/callback/assessment/certificate testing could not run.
+
+All three Hub versions launch the same `wajj` alias. Deploying the updated standalone build to that production alias would immediately affect learners launched from current Hub production, Deployment A, and Deployment B. Any such deployment must therefore wait for authenticated integration acceptance and an explicit production decision.
+
+### Phase 3B outcome
+
+Human keyboard and native 200% zoom testing now provide positive real-browser evidence. The Screen 2 radio item remains explicitly NOT TESTED because no radio exists on that screen, while native radio navigation passed on Screen 3. Authenticated latest-Hub progress, assessment, certificate, cross-account and retained-completion acceptance remain incomplete because usable staging configuration was unavailable.
+
+**LATEST HUB INTEGRATION CHECK PENDING — do not merge**
