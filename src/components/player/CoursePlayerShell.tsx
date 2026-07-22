@@ -361,8 +361,8 @@ export default function CoursePlayerShell({
         );
         const targetScreenId = targetScreen['Screen/State ID'];
         const targetModuleId = prev.currentModuleId || 'module_01_hrba_foundations';
-        const isModule5CompletionTarget =
-          prev.currentModuleId === 'module_05_hrba_meal' && targetScreenId === 'M5-PLAYER-COMPLETE';
+        // Module 5 completion is recorded only by the explicit confirmation on Screen 16.
+        const isModule5CompletionTarget = false;
         const updatedProgressBase = !shouldRecordScreenProgress || currentProgress.includes(screenId)
           ? currentProgress
           : [...currentProgress, screenId];

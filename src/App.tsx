@@ -21,6 +21,11 @@ import {
   finalAssessmentRouteTargets,
   finalAssessmentSequence,
 } from './data/finalAssessment';
+import {
+  MODULE5_SCREEN_ROUTES,
+  canonicalizeModule5ScreenId,
+  getAllowedModule5ScreenId,
+} from './data/module5/module5EnhancedModel';
 
 const TRACKABLE_PORTAL_MODULE_IDS = [
   'module_01_hrba_foundations',
@@ -85,18 +90,6 @@ function getAllowedModule3ScreenId(requestedScreenId: string, screenIds: string[
 }
 
 function getAllowedModule4ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
-  const requestedIndex = screenIds.indexOf(requestedScreenId);
-  if (requestedIndex <= 0) return requestedScreenId;
-
-  const completed = new Set(completedScreenIds);
-  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
-  if (previousScreensComplete) return requestedScreenId;
-
-  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
-  return screenIds[Math.max(0, firstIncompleteIndex)];
-}
-
-function getAllowedModule5ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
   const requestedIndex = screenIds.indexOf(requestedScreenId);
   if (requestedIndex <= 0) return requestedScreenId;
 
@@ -283,23 +276,6 @@ export default function App() {
             'M4-S1-13',
             'M4-S1-14',
           ];
-          const module5ScreenIds = [
-            'M5-R01',
-            'M5-R02',
-            'M5-R03',
-            'M5-R04',
-            'M5-R05',
-            'M5-R06',
-            'M5-R07',
-            'M5-R08',
-            'M5-R09',
-            'M5-R10',
-            'M5-R11',
-            'M5-R12',
-            'M5-R13',
-            'M5-R14',
-            'M5-PLAYER-COMPLETE',
-          ];
           const targetScreenId =
             targetModuleId === 'module_01_hrba_foundations' && requestedScreenId
               ? getAllowedModule1ScreenId(requestedScreenId, module1ScreenIds, nextState.screenProgress[targetModuleId] || [])
@@ -310,7 +286,11 @@ export default function App() {
               : targetModuleId === 'module_04_implementation' && requestedScreenId
                 ? getAllowedModule4ScreenId(requestedScreenId, module4ScreenIds, nextState.screenProgress[targetModuleId] || [])
               : targetModuleId === 'module_05_hrba_meal' && requestedScreenId
-                ? getAllowedModule5ScreenId(requestedScreenId, module5ScreenIds, nextState.screenProgress[targetModuleId] || [])
+                ? getAllowedModule5ScreenId(
+                    requestedScreenId,
+                    nextState.screenProgress[targetModuleId] || [],
+                    nextState.completedModules.includes(targetModuleId),
+                  )
               : requestedScreenId;
 
           nextState.currentLayer = 'player';
@@ -334,6 +314,27 @@ export default function App() {
             canonicalParams.delete('completed');
             const canonicalQuery = canonicalParams.toString();
             const canonicalUrl = `${canonicalModule3Route}${canonicalQuery ? `?${canonicalQuery}` : ''}${window.location.hash}`;
+            window.history.replaceState(window.history.state, '', canonicalUrl);
+          }
+
+          const canonicalRequestedModule5Screen = targetModuleId === 'module_05_hrba_meal' && requestedScreenId
+            ? canonicalizeModule5ScreenId(requestedScreenId)
+            : null;
+          const module5RouteNeedsRepair =
+            targetModuleId === 'module_05_hrba_meal' &&
+            typeof targetScreenId === 'string' &&
+            (canonicalRequestedModule5Screen !== requestedScreenId || targetScreenId !== canonicalRequestedModule5Screen);
+          const canonicalModule5Route = module5RouteNeedsRepair
+            ? MODULE5_SCREEN_ROUTES[targetScreenId]
+            : undefined;
+
+          if (canonicalModule5Route && typeof window !== 'undefined') {
+            const canonicalParams = new URLSearchParams(window.location.search);
+            canonicalParams.delete('screenId');
+            canonicalParams.delete('moduleId');
+            canonicalParams.delete('completed');
+            const canonicalQuery = canonicalParams.toString();
+            const canonicalUrl = `${canonicalModule5Route}${canonicalQuery ? `?${canonicalQuery}` : ''}${window.location.hash}`;
             window.history.replaceState(window.history.state, '', canonicalUrl);
           }
         } else {
