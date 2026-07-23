@@ -2,9 +2,9 @@
 
 ## Acceptance status
 
-**LATEST HUB INTEGRATION CHECK PENDING — do not merge.** The implementation, production build, automated tests, cross-course smoke tests, full Module 5 journey, route guards, hydration, legacy-state migration, portfolio carry-forward, downloads, copy fallback, semantic accessibility, reduced-motion, forced-colour, 1440/390/320 px browser checks, native Chrome keyboard operation, and native 200% zoom checks have passed as recorded below. Authenticated integration with the latest Hub candidate remains unverified because no usable staging database, Supabase, and session configuration was available.
+**LATEST HUB INTEGRATION CHECK PENDING — production deployment gate.** The implementation, production build, automated tests, cross-course smoke tests, full Module 5 journey, route guards, hydration, legacy-state migration, portfolio carry-forward, downloads, copy fallback, semantic accessibility, reduced-motion, forced-colour, 1440/390/320 px browser checks, native Chrome desktop keyboard operation, and native 200% zoom checks have passed as recorded below. Keyboard-only traversal at approximately 390 px remains the standalone pre-merge check. Authenticated integration with the latest Hub candidate remains unverified because no usable staging database, Supabase, and session configuration was available; because the Hub bridge contract is unchanged, this is a pre-production deployment gate rather than a Module 5 merge gate.
 
-The implementation, automated acceptance evidence, and the completed native-browser checks passed. The requested “Screen 2 radio interaction” is recorded as NOT TESTED because Screen 2 contains a required three-checkbox activity rather than a radio group; native arrow-key radio operation passed on Screen 3. Authenticated Hub callback, assessment, certificate, cross-account, and retained-completion checks remain merge blockers.
+The implementation, automated acceptance evidence, and the completed native-browser checks passed. The requested “Screen 2 radio interaction” is recorded as NOT TESTED because Screen 2 contains a required three-checkbox activity rather than a radio group; native arrow-key radio operation passed on Screen 3. Authenticated Hub callback, assessment, certificate, cross-account, and retained-completion checks remain production-deployment blockers. They become merge blockers only if the Vercel owner confirms that merging the HRBA release branch automatically deploys production.
 
 The Phase 2 implementation commit and Draft PR already exist. Phase 3B performed no merge, deployment, production modification, or push; its new results are recorded in a separate local evidence-only follow-up commit.
 
@@ -434,4 +434,14 @@ All three Hub versions launch the same `wajj` alias. Deploying the updated stand
 
 Human keyboard and native 200% zoom testing now provide positive real-browser evidence. The Screen 2 radio item remains explicitly NOT TESTED because no radio exists on that screen, while native radio navigation passed on Screen 3. Authenticated latest-Hub progress, assessment, certificate, cross-account and retained-completion acceptance remain incomplete because usable staging configuration was unavailable.
 
-**LATEST HUB INTEGRATION CHECK PENDING — do not merge**
+### Release-gate classification — 2026-07-23
+
+The release-governance review reclassified the remaining evidence without changing any test result:
+
+- **Before review and merge:** complete keyboard-only traversal at approximately 390 px, confirm no open P0/P1 standalone defect, confirm the Hub bridge remains unchanged, obtain reviewer approval, and obtain Vercel-owner confirmation of whether merging `release/hrba-pilot-final` automatically deploys production.
+- **Before production deployment:** restore authorized access to approved staging project `fgyxbzwdvngqlksyxuwa`, configure the non-production Hub candidate Preview, complete the 14 authenticated integration checks against the reviewed HRBA Preview, and obtain the HRBA Vercel owner's source/branch/alias/rollback confirmation and explicit production approval. If merge automatically deploys production, these items become pre-merge gates; otherwise they may follow merge but must finish before deployment.
+- **After production deployment:** verify production assets and routes, then run a bounded authenticated Hub smoke path under an approved production test-data plan.
+
+Supabase access is therefore not required to review or merge this standalone Module 5 change. It remains required before production deployment for authenticated Hub acceptance. No merge, deployment, promotion, alias, environment, Supabase or production-data change was performed by this reclassification.
+
+**LATEST HUB INTEGRATION CHECK PENDING — do not deploy to production**
