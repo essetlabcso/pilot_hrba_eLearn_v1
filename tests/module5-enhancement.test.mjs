@@ -22,6 +22,185 @@ import {
   moveModule5Order,
   refreshModule5PlanFromCanvas,
 } from '../src/data/module5/module5EnhancedModel.ts';
+import {
+  REQUIRED_HRBA_MODULE_IDS,
+  canAccessCourseModule,
+  enforceFinalAssessmentPrerequisites,
+  hasFinalAssessmentPrerequisites,
+  shouldRenderPlayerScreenImmediately,
+} from '../src/state/coursePrerequisites.ts';
+import {
+  buildPortalContextRoute,
+  buildPortalHistoryState,
+  isPortalLaunchEnvironmentValid,
+  parsePortalLaunchContext,
+} from '../src/integration/portalContext.ts';
+import {
+  EXTERNAL_COURSE_EVENT_MESSAGE,
+  HRBA_COURSE_SLUG,
+  PORTAL_STORAGE_PREFIX,
+  createAssessmentEvidenceId,
+  derivePortalStorageKey,
+  isCanonicalOpaque32ByteBase64Url,
+  isExternalCourseLaunchContextMessage,
+  isValidAssessmentEvidenceId,
+} from '../src/integration/portalLearnerState.ts';
+
+test('Final Assessment uses one fail-closed prerequisite source', () => {
+  const incomplete = REQUIRED_HRBA_MODULE_IDS.slice(0, 4);
+  assert.equal(hasFinalAssessmentPrerequisites(incomplete), false);
+  assert.equal(canAccessCourseModule('final_assessment', incomplete), false);
+  assert.equal(hasFinalAssessmentPrerequisites(REQUIRED_HRBA_MODULE_IDS), true);
+  assert.equal(canAccessCourseModule('final_assessment', REQUIRED_HRBA_MODULE_IDS), true);
+
+  const app = readFileSync('src/App.tsx', 'utf8');
+  const roadmap = readFileSync('src/components/platform/CourseRoadmap.tsx', 'utf8');
+  assert.match(app, /canAccessCourseModule\(moduleId, prev\.completedModules\)/);
+  assert.match(roadmap, /const moduleAccessible = canAccessCourseModule\(module\.moduleId, completedModules\)/);
+  assert.doesNotMatch(app, /isPortalFinalAssessment|isPortalLaunch && moduleId === 'final_assessment'/);
+  assert.doesNotMatch(roadmap, /portalFinalAssessmentUnlocked/);
+});
+
+test('stale assessment state is cleared without erasing valid module history', () => {
+  const staleState = {
+    completedModules: [...REQUIRED_HRBA_MODULE_IDS.slice(0, 4), 'final_assessment'],
+    currentLayer: 'player',
+    currentModuleId: 'final_assessment',
+    currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+    finalAssessmentAnswers: { q1: 'a' },
+    finalAssessmentResult: { passed: true },
+    screenProgress: {
+      module_01_hrba_foundations: ['M1-PLAYER-COMPLETE'],
+      final_assessment: ['FINAL-ASSESSMENT-COMPLETE'],
+    },
+  };
+  const corrected = enforceFinalAssessmentPrerequisites(staleState);
+  assert.deepEqual(corrected.completedModules, REQUIRED_HRBA_MODULE_IDS.slice(0, 4));
+  assert.equal(corrected.currentLayer, 'platform');
+  assert.equal(corrected.currentModuleId, null);
+  assert.equal(corrected.currentScreenId, null);
+  assert.deepEqual(corrected.finalAssessmentAnswers, {});
+  assert.equal(corrected.finalAssessmentResult, null);
+  assert.deepEqual(corrected.screenProgress.module_01_hrba_foundations, ['M1-PLAYER-COMPLETE']);
+  assert.deepEqual(corrected.screenProgress.final_assessment, []);
+});
+
+test('assessment submission and rendering retain defense in depth', () => {
+  const renderer = readFileSync('src/components/course/FinalAssessmentRenderer.tsx', 'utf8');
+  assert.match(renderer, /if \(!allAnswered \|\| !prerequisitesMet\) return/);
+  assert.match(renderer, /if \(!hasFinalAssessmentPrerequisites\(prev\.completedModules\)\) return prev/);
+  assert.match(renderer, /Complete Modules 1–5 first/);
+  const shell = readFileSync('src/components/player/CoursePlayerShell.tsx', 'utf8');
+  assert.match(shell, /state\.currentModuleId === 'final_assessment'[\s\S]*!hasFinalAssessmentPrerequisites\(state\.completedModules\)/);
+});
+
+test('Final Assessment screens bypass the hiding stabilization overlay', () => {
+  assert.equal(shouldRenderPlayerScreenImmediately('final_assessment'), true);
+  assert.equal(shouldRenderPlayerScreenImmediately('module_05_hrba_meal'), false);
+
+  const shell = readFileSync('src/components/player/CoursePlayerShell.tsx', 'utf8');
+  assert.match(shell, /const screenStabilized = renderScreenImmediately \|\|/);
+  assert.match(shell, /state\.currentModuleId !== 'final_assessment'/);
+});
+
+test('Hub postMessage contract and validated target origin remain unchanged', () => {
+  const bridge = readFileSync('src/integration/hubProgress.ts', 'utf8');
+  assert.match(bridge, /window\.parent\.postMessage\(message, portalContext\.portalOrigin\)/);
+  assert.match(bridge, /EXTERNAL_COURSE_EVENT_MESSAGE/);
+  assert.match(bridge, /learnerStateKey/);
+  assert.doesNotMatch(bridge, /launchToken/);
+  assert.doesNotMatch(bridge, /postMessage\([^)]*, ['"]\*['"]\)/);
+});
+
+test('portal routes retain only validated integration context', () => {
+  const context = parsePortalLaunchContext(
+    '?embed=portal'
+      + '&portalOrigin=https%3A%2F%2Fhub.example.org'
+      + `&courseSlug=${HRBA_COURSE_SLUG}`
+      + '&launchToken=opaque-launch'
+      + '&learnerId=raw-learner'
+      + '&organizationId=raw-organization',
+  );
+  assert.ok(context);
+  assert.equal(isPortalLaunchEnvironmentValid(context, {
+    isEmbedded: true,
+    referrer: 'https://hub.example.org/course/launch',
+  }), true);
+  assert.equal(isPortalLaunchEnvironmentValid(context, {
+    isEmbedded: false,
+    referrer: 'https://hub.example.org/course/launch',
+  }), false);
+  assert.equal(isPortalLaunchEnvironmentValid(context, {
+    isEmbedded: true,
+    referrer: 'https://unapproved.example.org/course/launch',
+  }), false);
+
+  const route = buildPortalContextRoute('/final-assessment/questions', context);
+  const routedUrl = new URL(route, 'https://course.example.org');
+  assert.deepEqual([...routedUrl.searchParams.keys()].sort(), [
+    'courseSlug',
+    'embed',
+    'launchToken',
+    'portalOrigin',
+  ]);
+  assert.equal(routedUrl.searchParams.get('portalOrigin'), 'https://hub.example.org');
+  assert.equal(routedUrl.searchParams.has('learnerId'), false);
+  assert.equal(routedUrl.searchParams.has('organizationId'), false);
+  assert.deepEqual(buildPortalHistoryState(context), {
+    hrbaPortalContextV1: {
+      embed: 'portal',
+      portalOrigin: 'https://hub.example.org',
+      courseSlug: HRBA_COURSE_SLUG,
+      launchToken: 'opaque-launch',
+    },
+  });
+});
+
+test('learner-state keys and namespaces enforce canonical 32-byte base64url isolation', async () => {
+  const keyA = Buffer.alloc(32, 0x11).toString('base64url');
+  const keyB = Buffer.alloc(32, 0x22).toString('base64url');
+  assert.equal(keyA.length, 43);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(keyA), true);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(`${keyA}=`), false);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(keyA.slice(0, 42)), false);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(`${keyA.slice(0, 42)}B`), false);
+
+  const namespaceA1 = await derivePortalStorageKey(keyA);
+  const namespaceA2 = await derivePortalStorageKey(keyA);
+  const namespaceB = await derivePortalStorageKey(keyB);
+  assert.equal(namespaceA1, namespaceA2);
+  assert.notEqual(namespaceA1, namespaceB);
+  assert.match(namespaceA1, new RegExp(`^${PORTAL_STORAGE_PREFIX}[0-9a-f]{64}$`));
+  assert.equal(namespaceA1.includes(keyA), false);
+});
+
+test('launch context and assessment evidence conform to the approved Hub contract', () => {
+  const learnerStateKey = Buffer.alloc(32, 0x33).toString('base64url');
+  const portalContext = parsePortalLaunchContext(
+    `?embed=portal&portalOrigin=https%3A%2F%2Fhub.example.org&courseSlug=${HRBA_COURSE_SLUG}&launchToken=opaque`,
+  );
+  assert.ok(portalContext);
+  assert.equal(isExternalCourseLaunchContextMessage({
+    type: 'cso-learning-hub:external-course-launch-context',
+    version: 1,
+    courseSlug: HRBA_COURSE_SLUG,
+    learnerStateKey,
+  }, portalContext), true);
+  assert.equal(isExternalCourseLaunchContextMessage({
+    type: 'cso-learning-hub:external-course-launch-context',
+    version: 1,
+    courseSlug: HRBA_COURSE_SLUG,
+    learnerStateKey: `${learnerStateKey}=`,
+  }, portalContext), false);
+
+  const evidenceId = createAssessmentEvidenceId();
+  assert.equal(isValidAssessmentEvidenceId(evidenceId), true);
+  assert.equal(isValidAssessmentEvidenceId('550e8400-e29b-41d4-a716-446655440000'), true);
+  assert.equal(isValidAssessmentEvidenceId(Buffer.alloc(32, 0x44).toString('base64url')), true);
+  assert.equal(isValidAssessmentEvidenceId('short-arbitrary-evidence'), false);
+  assert.equal(isValidAssessmentEvidenceId(`${Buffer.alloc(32, 0x44).toString('base64url')}=`), false);
+  assert.equal(EXTERNAL_COURSE_EVENT_MESSAGE, 'cso-learning-hub:external-course-event');
+});
 
 test('all canonical Module 5 screen IDs remain canonical', () => {
   for (const id of MODULE5_CANONICAL_SCREEN_IDS) assert.equal(canonicalizeModule5ScreenId(id), id);

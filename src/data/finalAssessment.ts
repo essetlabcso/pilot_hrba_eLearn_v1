@@ -1,3 +1,5 @@
+import { createAssessmentEvidenceId } from '../integration/portalLearnerState';
+
 export const FINAL_ASSESSMENT_MODULE_ID = 'final_assessment';
 export const FINAL_ASSESSMENT_PASS_THRESHOLD = 80;
 export const finalAssessmentScreenRoutes: Record<string, string> = {
@@ -49,6 +51,7 @@ export type FinalAssessmentQuestion = {
 };
 
 export type FinalAssessmentResult = {
+  evidenceId: string;
   score: number;
   maxScore: number;
   percentage: number;
@@ -198,6 +201,7 @@ export function scoreFinalAssessment(answers: Record<string, string>, attemptNum
   const percentage = Math.round((score / maxScore) * 100);
 
   return {
+    evidenceId: createAssessmentEvidenceId(),
     score,
     maxScore,
     percentage,

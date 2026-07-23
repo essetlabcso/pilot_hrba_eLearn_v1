@@ -1,11 +1,35 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { loadLearningState, resetLearningState, saveLearningState } from './state/learningState';
+import {
+  STANDALONE_STORAGE_KEY,
+  loadLearningState,
+  resetLearningState,
+  saveLearningState,
+} from './state/learningState';
 import type { LearningState } from './state/learningState';
 import PlatformShell from './components/platform/PlatformShell';
 import CoursePlayerShell from './components/player/CoursePlayerShell';
 import { HRBA_COURSE_MODULES, getHRBAModuleById } from './data/hrbaCourseModules';
-import { getPortalLaunchContextFromWindow } from './integration/portalContext';
-import { sendHubProgressMessage } from './integration/hubProgress';
+import {
+  buildPortalContextRoute,
+  buildPortalHistoryState,
+  getPortalLaunchContextFromWindow,
+  isPortalLaunchRequested,
+} from './integration/portalContext';
+import type { PortalLaunchContext } from './integration/portalContext';
+import {
+  sendCourseReadyMessage,
+  sendHubProgressEvent,
+  sendPortalIntegrationError,
+} from './integration/hubProgress';
+import {
+  derivePortalStorageKey,
+  isExternalCourseLaunchContextMessage,
+  type PortalLearnerStateContext,
+} from './integration/portalLearnerState';
+import {
+  canAccessCourseModule,
+  hasFinalAssessmentPrerequisites,
+} from './state/coursePrerequisites';
 
 import m1Sequence from './data/module1/module_1_screen_sequence.json';
 import {
@@ -102,16 +126,24 @@ function getAllowedModule4ScreenId(requestedScreenId: string, screenIds: string[
   return screenIds[Math.max(0, firstIncompleteIndex)];
 }
 
-export default function App() {
+function CourseApplication({
+  learnerStateKey,
+  portalContext,
+  storageKey,
+}: {
+  learnerStateKey: string | null;
+  portalContext: PortalLaunchContext | null;
+  storageKey: string;
+}) {
   const reportedFinalAssessmentAttemptsRef = useRef<Set<string>>(new Set());
   const [state, setState] = useState<LearningState>(() => {
-    const defaultState = loadLearningState();
+    const defaultState = loadLearningState(storageKey, Boolean(portalContext));
+    const routePortalContext = portalContext;
     const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const screenIdParam = params.get('screenId');
     const moduleIdParam = params.get('moduleId');
-    const isPortalLaunch = params.get('embed') === 'portal' && Boolean(params.get('launchToken'));
-    const allowQaProgressOverride = typeof window !== 'undefined' && (
+    const allowQaProgressOverride = !portalContext && typeof window !== 'undefined' && (
       window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
       window.location.hostname === ''
@@ -213,12 +245,7 @@ export default function App() {
       : routeTargets[pathname] || null;
 
     const canOpenModule = (moduleId: string, completedModules: string[]) => {
-      const moduleDefinition = getHRBAModuleById(moduleId);
-      if (!moduleDefinition) return false;
-      if (moduleDefinition.moduleSeq === 1) return true;
-      if (isPortalLaunch && moduleId === 'final_assessment') return true;
-      const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
-      return previousModules.every((module) => completedModules.includes(module.moduleId));
+      return canAccessCourseModule(moduleId, completedModules);
     };
     
     if (routeTarget || screenIdParam || completedParam) {
@@ -344,6 +371,13 @@ export default function App() {
           nextState.currentScreenId = null;
           nextState.currentSubState = null;
           nextState.activeModal = null;
+          if (typeof window !== 'undefined' && pathname.startsWith('/final-assessment')) {
+            window.history.replaceState(
+              buildPortalHistoryState(routePortalContext),
+              '',
+              buildPortalContextRoute('/', routePortalContext),
+            );
+          }
           return nextState;
         }
       }
@@ -415,7 +449,10 @@ export default function App() {
     window.addEventListener('popstate', restoreRouteFromHistory);
     return () => window.removeEventListener('popstate', restoreRouteFromHistory);
   }, []);
-  const portalContext = useMemo(() => getPortalLaunchContextFromWindow(), []);
+  const finalAssessmentPrerequisitesMet = useMemo(
+    () => hasFinalAssessmentPrerequisites(state.completedModules),
+    [state.completedModules],
+  );
   const portalCompletedModuleIds = useMemo(
     () => getPortalCompletedModuleIds(state.completedModules),
     [state.completedModules],
@@ -430,16 +467,15 @@ export default function App() {
   );
 
   useEffect(() => {
-    saveLearningState(state);
-  }, [state]);
+    saveLearningState(state, storageKey, Boolean(portalContext));
+  }, [portalContext, state, storageKey]);
 
   useEffect(() => {
     if (state.finalAssessmentResult) {
       return;
     }
 
-    sendHubProgressMessage(portalContext, {
-      completed: false,
+    sendHubProgressEvent(portalContext, learnerStateKey, 'progress_updated', {
       completedModuleIds: portalCompletedModuleIds,
       currentModuleId: state.currentModuleId,
       currentScreenId: state.currentScreenId,
@@ -447,6 +483,7 @@ export default function App() {
     });
   }, [
     portalContext,
+    learnerStateKey,
     portalCompletedModuleIds,
     portalProgressPercent,
     state.currentModuleId,
@@ -458,11 +495,11 @@ export default function App() {
   useEffect(() => {
     const result = state.finalAssessmentResult;
 
-    if (!portalContext || !result) {
+    if (!portalContext || !result || !finalAssessmentPrerequisitesMet) {
       return;
     }
 
-    const attemptSignature = `${result.attemptNumber}:${result.submittedAt}`;
+    const attemptSignature = `${result.attemptNumber}:${result.evidenceId}:${result.submittedAt}`;
     if (reportedFinalAssessmentAttemptsRef.current.has(attemptSignature)) {
       return;
     }
@@ -473,33 +510,57 @@ export default function App() {
         )
       : portalCompletedModuleIds;
 
-    const sent = sendHubProgressMessage(portalContext, {
-      assessment: {
-        attemptNumber: result.attemptNumber,
-        maxScore: result.maxScore,
-        passed: result.passed,
-        percentage: result.percentage,
-        score: result.score,
-        submittedAt: result.submittedAt,
+    const assessment = {
+      attemptNumber: result.attemptNumber,
+      evidenceId: result.evidenceId,
+      maxScore: result.maxScore,
+      passed: result.passed,
+      percentage: result.percentage,
+      score: result.score,
+      submittedAt: result.submittedAt,
+    };
+    const assessmentSent = sendHubProgressEvent(
+      portalContext,
+      learnerStateKey,
+      'assessment_completed',
+      {
+        assessment,
+        completedModuleIds,
+        currentModuleId: 'final_assessment',
+        currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+        progressPercent: result.passed ? 100 : portalProgressPercent,
       },
-      completed: result.passed,
-      completedModuleIds,
-      currentModuleId: 'final_assessment',
-      currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
-      progressPercent: result.passed ? 100 : portalProgressPercent,
-    });
+    );
+    const completionSent = !result.passed || sendHubProgressEvent(
+      portalContext,
+      learnerStateKey,
+      'course_completed',
+      {
+        assessment,
+        completedModuleIds,
+        currentModuleId: 'final_assessment',
+        currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+        progressPercent: 100,
+      },
+    );
 
-    if (sent) {
+    if (assessmentSent && completionSent) {
       reportedFinalAssessmentAttemptsRef.current.add(attemptSignature);
     }
-  }, [portalContext, portalCompletedModuleIds, portalProgressPercent, state.completedModules, state.finalAssessmentResult]);
+  }, [
+    finalAssessmentPrerequisitesMet,
+    learnerStateKey,
+    portalContext,
+    portalCompletedModuleIds,
+    portalProgressPercent,
+    state.completedModules,
+    state.finalAssessmentResult,
+  ]);
 
   const launchModule = (moduleId: string, reviewMode: boolean) => {
     setState((prev) => {
       const moduleDefinition = getHRBAModuleById(moduleId) || HRBA_COURSE_MODULES[0];
-      const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
-      const isPortalFinalAssessment = Boolean(portalContext) && moduleId === 'final_assessment';
-      const isUnlocked = isPortalFinalAssessment || previousModules.every((module) => prev.completedModules.includes(module.moduleId));
+      const isUnlocked = canAccessCourseModule(moduleId, prev.completedModules);
 
       if (!isUnlocked) {
         return prev;
@@ -652,8 +713,14 @@ export default function App() {
   };
 
   const resetCourseProgress = () => {
-    setState(resetLearningState());
-    if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+    setState(resetLearningState(storageKey));
+    if (typeof window !== 'undefined') {
+      window.history.pushState(
+        buildPortalHistoryState(portalContext),
+        '',
+        buildPortalContextRoute('/', portalContext),
+      );
+    }
   };
 
   const exitPlayer = () => {
@@ -675,6 +742,13 @@ export default function App() {
         completedModules,
       };
     });
+    if (typeof window !== 'undefined') {
+      window.history.pushState(
+        buildPortalHistoryState(portalContext),
+        '',
+        buildPortalContextRoute('/', portalContext),
+      );
+    }
   };
 
   const currentModule = getHRBAModuleById(state.currentModuleId) || HRBA_COURSE_MODULES[0];
@@ -846,7 +920,173 @@ export default function App() {
       onChangeState={setState}
       onExit={exitPlayer}
       sequenceData={currentSequence}
+      portalContext={portalContext}
       portalModeActive={Boolean(portalContext)}
+    />
+  );
+}
+
+function PortalUnavailableState({ sanitizeInvalidRoute = false }: { sanitizeInvalidRoute?: boolean }) {
+  useEffect(() => {
+    if (sanitizeInvalidRoute) {
+      window.history.replaceState(null, '', `${window.location.pathname}?embed=portal`);
+    }
+  }, [sanitizeInvalidRoute]);
+
+  return (
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '2rem',
+        background: '#f8fafc',
+        color: '#0f2742',
+      }}
+    >
+      <section
+        role="alert"
+        style={{
+          width: 'min(100%, 42rem)',
+          border: '1px solid #d7e0ea',
+          borderRadius: '1rem',
+          padding: '2rem',
+          background: '#fff',
+          boxShadow: '0 12px 30px rgba(15, 39, 66, 0.08)',
+        }}
+      >
+        <p style={{ margin: 0, fontWeight: 800, color: '#2d6a4f' }}>Secure course connection</p>
+        <h1 style={{ margin: '0.75rem 0', fontSize: 'clamp(1.75rem, 5vw, 2.5rem)' }}>
+          Return to the Learning Hub
+        </h1>
+        <p style={{ margin: 0, lineHeight: 1.7 }}>
+          We could not confirm the learner context for this course. No course progress was loaded or shared.
+          Return using the Learning Hub controls and launch the course again.
+        </p>
+      </section>
+    </main>
+  );
+}
+
+function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContext }) {
+  const [learnerContext, setLearnerContext] = useState<PortalLearnerStateContext | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    let accepted = false;
+    let readyAttempts = 0;
+
+    const stopWaiting = () => {
+      window.clearInterval(readyInterval);
+    };
+
+    const failClosed = () => {
+      if (!active || accepted) return;
+      stopWaiting();
+      setFailed(true);
+      sendPortalIntegrationError(portalContext, 'launch_context_unavailable');
+    };
+
+    const sendReady = () => {
+      if (!active || accepted) return;
+      readyAttempts += 1;
+      sendCourseReadyMessage(portalContext);
+      if (readyAttempts >= 8) {
+        failClosed();
+      }
+    };
+
+    const handleLaunchContext = (event: MessageEvent) => {
+      if (
+        accepted
+        || event.source !== window.parent
+        || event.origin !== portalContext.portalOrigin
+        || !isExternalCourseLaunchContextMessage(event.data, portalContext)
+      ) {
+        return;
+      }
+
+      accepted = true;
+      stopWaiting();
+      const learnerStateKey = event.data.learnerStateKey;
+      void derivePortalStorageKey(learnerStateKey)
+        .then((storageKey) => {
+          if (active) {
+            setLearnerContext({ learnerStateKey, storageKey });
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setFailed(true);
+            sendPortalIntegrationError(portalContext, 'launch_context_invalid');
+          }
+        });
+    };
+
+    window.addEventListener('message', handleLaunchContext);
+    const readyInterval = window.setInterval(sendReady, 1_000);
+    sendReady();
+
+    return () => {
+      active = false;
+      stopWaiting();
+      window.removeEventListener('message', handleLaunchContext);
+    };
+  }, [portalContext]);
+
+  if (failed) {
+    return <PortalUnavailableState />;
+  }
+
+  if (!learnerContext) {
+    return (
+      <main
+        aria-busy="true"
+        style={{
+          minHeight: '100vh',
+          display: 'grid',
+          placeItems: 'center',
+          padding: '2rem',
+          background: '#f8fafc',
+          color: '#0f2742',
+          textAlign: 'center',
+        }}
+      >
+        <section>
+          <p style={{ fontWeight: 800, color: '#2d6a4f' }}>Secure course connection</p>
+          <h1>Preparing your HRBA course</h1>
+          <p>Waiting for the Learning Hub to confirm your learner context. No progress has been loaded yet.</p>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <CourseApplication
+      learnerStateKey={learnerContext.learnerStateKey}
+      portalContext={portalContext}
+      storageKey={learnerContext.storageKey}
+    />
+  );
+}
+
+export default function App() {
+  const portalRequested = typeof window !== 'undefined'
+    && isPortalLaunchRequested(window.location.search);
+  const portalContext = useMemo(() => getPortalLaunchContextFromWindow(), []);
+
+  if (portalRequested) {
+    return portalContext
+      ? <PortalLaunchGate portalContext={portalContext} />
+      : <PortalUnavailableState sanitizeInvalidRoute />;
+  }
+
+  return (
+    <CourseApplication
+      learnerStateKey={null}
+      portalContext={null}
+      storageKey={STANDALONE_STORAGE_KEY}
     />
   );
 }

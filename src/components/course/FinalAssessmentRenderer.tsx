@@ -6,6 +6,7 @@ import {
   finalAssessmentQuestions,
   scoreFinalAssessment,
 } from '../../data/finalAssessment';
+import { hasFinalAssessmentPrerequisites } from '../../state/coursePrerequisites';
 import './finalAssessment.css';
 
 interface FinalAssessmentRendererProps {
@@ -13,15 +14,6 @@ interface FinalAssessmentRendererProps {
   state: LearningState;
   onChangeState: (updater: (prev: LearningState) => LearningState) => void;
   onNext: () => void;
-}
-
-const finalAssessmentResultRoute = '/final-assessment/result';
-const finalAssessmentQuestionsRoute = '/final-assessment/questions';
-
-function pushRoute(route: string) {
-  if (typeof window !== 'undefined' && window.location.pathname !== route) {
-    window.history.pushState(null, '', route);
-  }
 }
 
 export default function FinalAssessmentRenderer({
@@ -33,6 +25,7 @@ export default function FinalAssessmentRenderer({
   const answeredCount = finalAssessmentQuestions.filter((question) => state.finalAssessmentAnswers[question.id]).length;
   const allAnswered = answeredCount === finalAssessmentQuestions.length;
   const result = state.finalAssessmentResult;
+  const prerequisitesMet = hasFinalAssessmentPrerequisites(state.completedModules);
   const missedQuestions = useMemo(() => {
     if (!result) return [];
 
@@ -42,6 +35,7 @@ export default function FinalAssessmentRenderer({
   }, [result, state.finalAssessmentAnswers]);
 
   const updateAnswer = (questionId: string, optionId: string) => {
+    if (!prerequisitesMet) return;
     onChangeState((prev) => ({
       ...prev,
       finalAssessmentAnswers: {
@@ -52,9 +46,10 @@ export default function FinalAssessmentRenderer({
   };
 
   const submitAssessment = () => {
-    if (!allAnswered) return;
+    if (!allAnswered || !prerequisitesMet) return;
 
     onChangeState((prev) => {
+      if (!hasFinalAssessmentPrerequisites(prev.completedModules)) return prev;
       const attemptNumber = prev.finalAssessmentAttemptNumber + 1;
       const nextResult = scoreFinalAssessment(prev.finalAssessmentAnswers, attemptNumber);
       const currentProgress = prev.screenProgress[FINAL_ASSESSMENT_MODULE_ID] || [];
@@ -78,25 +73,42 @@ export default function FinalAssessmentRenderer({
         },
       };
     });
-    pushRoute(finalAssessmentResultRoute);
   };
 
   const retakeAssessment = () => {
-    onChangeState((prev) => ({
-      ...prev,
-      currentScreenId: 'FINAL-ASSESSMENT-QUESTIONS',
-      finalAssessmentAnswers: {},
-      finalAssessmentResult: null,
-      completedModules: prev.completedModules.filter((moduleId) => moduleId !== FINAL_ASSESSMENT_MODULE_ID),
-      screenProgress: {
-        ...prev.screenProgress,
-        [FINAL_ASSESSMENT_MODULE_ID]: (prev.screenProgress[FINAL_ASSESSMENT_MODULE_ID] || []).filter(
-          (screenProgressId) => screenProgressId !== 'FINAL-ASSESSMENT-COMPLETE',
-        ),
-      },
-    }));
-    pushRoute(finalAssessmentQuestionsRoute);
+    if (!prerequisitesMet) return;
+    onChangeState((prev) => {
+      if (!hasFinalAssessmentPrerequisites(prev.completedModules)) return prev;
+      return {
+        ...prev,
+        currentScreenId: 'FINAL-ASSESSMENT-QUESTIONS',
+        finalAssessmentAnswers: {},
+        finalAssessmentResult: null,
+        completedModules: prev.completedModules.filter((moduleId) => moduleId !== FINAL_ASSESSMENT_MODULE_ID),
+        screenProgress: {
+          ...prev.screenProgress,
+          [FINAL_ASSESSMENT_MODULE_ID]: (prev.screenProgress[FINAL_ASSESSMENT_MODULE_ID] || []).filter(
+            (screenProgressId) => screenProgressId !== 'FINAL-ASSESSMENT-COMPLETE',
+          ),
+        },
+      };
+    });
   };
+
+  if (!prerequisitesMet) {
+    return (
+      <section className="final-assessment-cover" role="alert" aria-labelledby="final-assessment-locked-title">
+        <div className="final-assessment-cover__copy">
+          <p className="final-assessment-eyebrow">Assessment locked</p>
+          <h1 id="final-assessment-locked-title">Complete Modules 1–5 first</h1>
+          <p>
+            Your saved module progress is preserved. Return to the course page and complete the required
+            learning pathway before opening the Final Assessment.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   if (screenId === 'FINAL-ASSESSMENT-PLAYER-00') {
     return (

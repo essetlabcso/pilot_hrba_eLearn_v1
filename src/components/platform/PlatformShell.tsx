@@ -177,7 +177,6 @@ export default function PlatformShell({
           currentModuleId={currentModuleId}
           currentScreenId={currentScreenId}
           onLaunchModule={onLaunchModule}
-          portalModeActive={portalModeActive}
         />
       </main>
 

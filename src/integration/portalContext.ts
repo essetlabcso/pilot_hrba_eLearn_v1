@@ -5,6 +5,15 @@ export type PortalLaunchContext = {
   launchToken: string;
 };
 
+const HRBA_COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
+
+export type PortalLaunchEnvironment = {
+  isEmbedded: boolean;
+  referrer: string;
+};
+
+const PORTAL_HISTORY_STATE_KEY = 'hrbaPortalContextV1';
+
 function getRequiredParam(params: URLSearchParams, key: string) {
   const value = params.get(key)?.trim() || '';
   return value.length > 0 ? value : null;
@@ -34,7 +43,7 @@ export function parsePortalLaunchContext(search: string): PortalLaunchContext | 
   const courseSlug = getRequiredParam(params, 'courseSlug');
   const launchToken = getRequiredParam(params, 'launchToken');
 
-  if (!portalOrigin || !courseSlug || !launchToken) {
+  if (!portalOrigin || courseSlug !== HRBA_COURSE_SLUG || !launchToken) {
     return null;
   }
 
@@ -46,10 +55,132 @@ export function parsePortalLaunchContext(search: string): PortalLaunchContext | 
   };
 }
 
+export function isPortalLaunchRequested(search: string) {
+  return new URLSearchParams(search).get('embed')?.trim() === 'portal';
+}
+
+export function isPortalLaunchEnvironmentValid(
+  portalContext: PortalLaunchContext,
+  environment: PortalLaunchEnvironment,
+) {
+  if (!environment.isEmbedded || !environment.referrer) {
+    return false;
+  }
+
+  try {
+    return new URL(environment.referrer).origin === portalContext.portalOrigin;
+  } catch {
+    return false;
+  }
+}
+
+export function buildPortalContextRoute(route: string, portalContext: PortalLaunchContext | null) {
+  if (!portalContext) {
+    return route;
+  }
+
+  const params = new URLSearchParams({
+    embed: portalContext.embed,
+    portalOrigin: portalContext.portalOrigin,
+    courseSlug: portalContext.courseSlug,
+    launchToken: portalContext.launchToken,
+  });
+
+  return `${route}?${params.toString()}`;
+}
+
+export function buildPortalHistoryState(portalContext: PortalLaunchContext | null) {
+  return portalContext
+    ? { [PORTAL_HISTORY_STATE_KEY]: portalContext }
+    : null;
+}
+
+function getPortalContextFromHistoryState(historyState: unknown) {
+  if (!historyState || typeof historyState !== 'object') {
+    return null;
+  }
+
+  const candidate = (historyState as Record<string, unknown>)[PORTAL_HISTORY_STATE_KEY];
+  if (!candidate || typeof candidate !== 'object') {
+    return null;
+  }
+
+  const values = candidate as Record<string, unknown>;
+  if (
+    values.embed !== 'portal'
+    || typeof values.portalOrigin !== 'string'
+    || typeof values.courseSlug !== 'string'
+    || typeof values.launchToken !== 'string'
+  ) {
+    return null;
+  }
+
+  return parsePortalLaunchContext(new URLSearchParams({
+    embed: values.embed,
+    portalOrigin: values.portalOrigin,
+    courseSlug: values.courseSlug,
+    launchToken: values.launchToken,
+  }).toString());
+}
+
+function portalContextsMatch(
+  first: PortalLaunchContext | null,
+  second: PortalLaunchContext | null,
+) {
+  return Boolean(
+    first
+    && second
+    && first.embed === second.embed
+    && first.portalOrigin === second.portalOrigin
+    && first.courseSlug === second.courseSlug
+    && first.launchToken === second.launchToken,
+  );
+}
+
 export function getPortalLaunchContextFromWindow() {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  return parsePortalLaunchContext(window.location.search);
+  const portalContext = parsePortalLaunchContext(window.location.search);
+  if (!portalContext) {
+    return null;
+  }
+
+  const environment = {
+    isEmbedded: window.parent !== window,
+    referrer: document.referrer,
+  };
+  const preserveApprovedPortalRoute = () => {
+    window.history.replaceState(
+      buildPortalHistoryState(portalContext),
+      '',
+      `${buildPortalContextRoute(window.location.pathname, portalContext)}${window.location.hash}`,
+    );
+  };
+
+  if (isPortalLaunchEnvironmentValid(portalContext, environment)) {
+    preserveApprovedPortalRoute();
+    return portalContext;
+  }
+
+  const restoredPortalContext = getPortalContextFromHistoryState(window.history.state);
+  const isSameOriginRefresh = (() => {
+    try {
+      return new URL(environment.referrer).origin === window.location.origin;
+    } catch {
+      return false;
+    }
+  })();
+
+  const restored = environment.isEmbedded
+    && isSameOriginRefresh
+    && portalContextsMatch(portalContext, restoredPortalContext);
+
+  if (restored) {
+    preserveApprovedPortalRoute();
+    return portalContext;
+  }
+
+  return null;
 }
