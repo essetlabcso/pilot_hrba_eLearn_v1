@@ -332,9 +332,46 @@
   align-items: start;
 }
 
-.m5e-plan .m5e-field-error {
+.m5e-plan .m5e-field-error,
+.m5e-builder .m5e-field-error {
   color: #701c1c;
   font-weight: 700;
+}
+
+.m5e-ordering ol {
+  display: grid;
+  gap: .75rem;
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.m5e-ordering li {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--m5e-line);
+  border-radius: .75rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: .75rem;
+}
+
+.m5e-ordering li > span:first-child,
+.m5e-builder label > span {
+  display: grid;
+  gap: .25rem;
+}
+
+.m5e-order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.m5e-builder label {
+  display: grid;
+  gap: .5rem;
+  margin: 1rem 0;
 }
 
 .m5e-readable pre {
@@ -367,6 +404,11 @@
   .m5e-download button {
     width: 100%;
   }
+
+  .m5e-ordering li {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
 
 @media (forced-colors: active) {
@@ -376,7 +418,9 @@
   .m5e-saved,
   .m5e-alert,
   .m5e-status,
-  .m5e-canvas-card {
+  .m5e-canvas-card,
+  .m5e-ordering li,
+  .m5e-builder {
     border: 2px solid CanvasText;
   }
 }

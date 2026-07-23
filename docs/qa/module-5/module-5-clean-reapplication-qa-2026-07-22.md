@@ -489,24 +489,24 @@ The two technical pre-merge questions are resolved. PR #2 is ready to leave Draf
 
 ### Scope and correction plan
 
-PR #2 was returned to Draft at reviewed head `2c75710bf777970075bbd1f442febef5bcb7498a`. The correction used the complete implementation package, with `02_Learner_Facing_Content/Module_5_Screen_by_Screen_Content.md` as learner-facing authority and `10_AI_Agent_Build_Instructions` as deterministic implementation authority. The plan was to: (1) restore the authoritative Screens 9–11 evidence, interactions, feedback, saved outputs and carry-forward; (2) close dependent Screen 12–16 carry-forward gaps found by the complete Screen 2–16 comparison; (3) separate historical completion from current output safety/readiness; and (4) add targeted regressions before repeating build, browser, migration and scope-integrity checks.
+PR #2 was returned to Draft first at reviewed head `2c75710bf777970075bbd1f442febef5bcb7498a` and again at re-reviewed head `46a5951fbcb2a3521c46dc9c3ed6dea07dd57e46`. The correction used the complete implementation package, with `02_Learner_Facing_Content/Module_5_Screen_by_Screen_Content.md` as learner-facing authority and `10_AI_Agent_Build_Instructions` as deterministic implementation authority. The completed correction restores the affected learner interactions, closes current-output safety bypasses, and adds explicit Screen 13 → 15 → 16 dependency invalidation and refresh behavior.
 
 ### Full Screen 2–16 authority comparison
 
 | Screen | Comparison outcome and correction |
 | --- | --- |
 | 2 | Restored the complete fictional early-progress evidence and six-option evidence-gap choice set. |
-| 3 | Restored the six-stage roadmap and two approved portfolio outputs. |
-| 4 | Restored the full Monitoring, Evaluation, Accountability and Learning classification practice. |
+| 3 | Restored the six-stage roadmap, all six learning objectives, two portfolio outputs, route selection and explicit safe-route confirmation. |
+| 4 | Restored the four HRBA-lens reviews with the complete practical question sets, followed by the four-item MEAL classification practice. |
 | 5 | Restored rights-holder success-sign selection alongside result and learning-question decisions. |
-| 6 | Restored output, process and outcome indicator classification, decision trigger and safety rule. |
-| 7 | Restored the Community Scorecard method match alongside mixed-method access decisions. |
-| 8 | Restored safe scenarios for quotes/photographs, protected complaints, unnecessary contact lists and anonymous pulse questions. |
+| 6 | Restored the complete Decision → Rights question → Indicator → Safe source → Trigger evidence line, three-layer evidence selection, indicator classification and safety rule. |
+| 7 | Restored all six core method descriptions, all three primary/complementary method scenarios, and the optional advanced-method panel. |
+| 8 | Restored all six scenarios using the same five explicit decisions: Collect, Aggregate/anonymize, Suppress, Refer and Do not collect. |
 | 9 | Replaced the abbreviated substitute with transparent cleaning decisions for duplicates, category standardization, missing values, identifiers and small cells; added ownership, access, storage, retention and limitations. |
 | 10 | Replaced the substitute with six fictional comment-tag decisions, a bounded mixed-evidence statement, contradiction/limitation handling and participatory sensemaking. |
 | 11 | Replaced the substitute with change, equity, HRBA process, alternative influence and credible contribution decisions plus optional AAAQ, Community Scorecard, Most Significant Change and Outcome Harvesting method guidance. |
-| 12 | Restored the eight-step feedback loop, response tracker, Community Scorecard issue, joint action, owner, review date and accessible account-back decisions. |
-| 13 | Restored all six evidence signals, role-appropriate actions and four-part account-back construction. |
+| 12 | Restored an operable eight-step ordering activity with keyboard-accessible Move up/Move down controls and sequence feedback, plus the response tracker and five Community Scorecard decisions. |
+| 13 | Restored all six evidence signals and role-appropriate actions plus four required editable account-back fields with safety validation and saved output. |
 | 14 | Retained the developmental eight-question knowledge check and aligned it to the restored method and evidence-to-action sequence. |
 | 15 | Restored the approved 20-field HRBA MEAL, Accountability and Adaptation Canvas, readable preview, optional peer question, source links and current safety confirmation. |
 | 16 | Restored the Evidence-to-Action Dashboard and ten-field 90-day plan; kept copy/download fallback and required explicit current dashboard, carry-forward and privacy confirmation. The pre-confirmation shell title is `Portfolio Review and Module Closure`. |
@@ -517,24 +517,26 @@ Screen 1 was not edited. Routes, canonical IDs, prerequisite locking, persistenc
 
 1. **Screens 9–11 authority divergence:** resolved by purpose-built data-management, mixed-analysis and evaluation activities using the approved Jiru Amba evidence. Each screen now follows explanation → worked example/evidence workspace → learner decisions → deterministic feedback → saved output → portfolio carry-forward. Screen 12–13 dependencies and Screen 15–16 output fields were aligned so the restored decisions are used rather than stranded.
 2. **Legacy completion bypass:** resolved by calculating Screen 15 and Screen 16 readiness solely from the current required fields, sensitive-text check and current confirmations. Historical completion remains recorded and is described as history, but it cannot enable `Review portfolio and plan` or `Save reviewed Module 5 output`. Editing any final field clears current safety confirmation; possible sensitive content adds an accessible alert, `aria-invalid`, linked field guidance and disables completion.
+3. **Remaining interaction fidelity:** resolved by implementing the omitted Screens 3, 4 and 6–8 content/decisions, native Screen 12 ordering controls and the Screen 13 four-field account-back builder. The ordering and builder are required activities for non-legacy learners and persist through the existing `m5_s12`/`m5_s13` state keys.
+4. **Stale downstream output:** resolved with source-aware dependency metadata. A Screen 13 edit marks existing `m5_s15` and `m5_s16` records `needs_review`, clears every affected confirmation, refreshes the Canvas adaptation/follow-up fields from current Screen 13 work, highlights them, and displays a calm Needs review notice. Re-reviewing Screen 15 refreshes the affected final-plan values and keeps Screen 16 gated until all current checks are repeated.
 
 ### Regression coverage and validation
 
-The automated suite now explicitly covers: historical-completion safety, sensitive-data detection, no `alreadyCompleted || ready` bypass, authoritative Screens 9–11 task sets, restored Screen 12–13 decisions, the 20-field Canvas, ten-field plan, and no premature completion title. Existing coverage continues for direct-route locking, hydration/migration idempotence, malformed and legacy state, portfolio download output, Screen 1/protected-module integrity, canonical rendering and no shell auto-completion.
+The automated suite now explicitly exercises the Screen 12 order transitions and validation, Screen 13 four-field completeness and sensitive-data rejection, Screen 13 upstream mutation, Screen 15/16 `needs_review` status, confirmation clearing, dependent Canvas refresh and final-plan refresh. Existing coverage continues for historical-completion safety, migration/hydration, malformed and legacy state, direct-route locking, download output, Screen 1/protected-module integrity, canonical rendering and no shell auto-completion.
 
 | Check | Result |
 | --- | --- |
-| Automated Module 5 tests | PASS — 18/18 after correction. |
+| Automated Module 5 tests | PASS — 23/23 after the remaining authority/state correction. |
 | TypeScript/Vite production build | PASS; existing large-chunk advisory only. |
 | ESLint | PASS — 0 errors; 5 pre-existing warnings in Module 1/player shell, outside this correction. |
-| Diff integrity | PASS for the five intended implementation/test files plus this QA record; two pre-existing unrelated local documentation edits remain unstaged and untouched. |
+| Diff integrity | PASS for the intended Module 5 implementation, model, CSS, test and QA files; two pre-existing unrelated local documentation edits remain unstaged and untouched. |
 | Protected course and bridge scope | PASS — no correction diff from starting head in Screen 1, Modules 1–4, player shell, Hub bridge or deployment configuration. |
-| 390 px corrected journey | PASS — corrected Screens 9–11 and the revised Screen 15–16 readiness path were fully operated with visible native focus and no horizontal overflow. The added Screen 12–13 native controls use the same verified fieldset/radio/button pattern; their focus and semantic grouping were additionally checked at the 320 px stress width. |
-| 320 px responsive regression | PASS — Screens 9–13, 15 and 16 each reported `clientWidth = scrollWidth = 320`; one H1 per screen; every activity fieldset retained a legend. Screen 15 exposed 20 editor/source cards and Screen 16 exposed ten plan fields without horizontal document overflow. |
-| Sensitive-data and legacy-completion browser regression | PASS — synthetic identifying text produced a calm alert and linked invalid state, cleared current safety confirmation and kept the historical learner's save control disabled. Safe replacement plus all current checks enabled explicit save/confirmation. |
+| 390 px corrected journey | PASS — Screens 12, 13, 15 and 16 each reported `clientWidth = scrollWidth = 390`, one H1 and no broken `aria-describedby` reference. The ordered pathway, four builder fields and Needs review gates remained reachable. |
+| 320 px responsive regression | PASS — Screens 12 and 13 reported `clientWidth = scrollWidth = 320`; ordering controls were at least 49.6 px high, all four textareas fit the content width, and no horizontal document overflow occurred. |
+| Sensitive-data and dependency browser regression | PASS — synthetic identifying text in the Screen 13 builder produced a calm alert and `aria-invalid`; a later Screen 13 edit refreshed Screen 15 adaptation/follow-up, highlighted both fields, cleared Screen 15/16 confirmations, displayed Needs review notices and left Screen 16 save disabled without premature completion text. |
 | Copy/download/offline fallback | PASS by unchanged interaction plus updated text-output unit coverage; download remains optional and never gates completion. |
 | Accessibility semantics | PASS — headings, fieldset/legend groups, notes/status/alerts, linked errors, readable text summaries and colour-independent labels verified in corrected DOM. |
 | Reduced motion/high contrast/200% zoom | PASS by regression scope: the existing responsive/accessibility CSS and shell are unchanged except a text error style using the established error token; prior native 200% and display-mode evidence remains valid. |
 | Cross-course regression | PASS through protected-file byte comparison and build; no unrelated route, module, bridge or configuration correction diff. |
 
-No P0 or P1 finding remains in the corrected candidate. Human re-review of the new head is still required before merge consideration. Production and authenticated Hub gates remain exactly as governed; no merge, deploy, promotion, alias, Supabase or production change was made.
+No P0 or P1 finding remains in the locally validated correction candidate. This is an implementation/QA result, not an independent approval; the pushed head must receive another independent human review before merge consideration. Production and authenticated Hub gates remain exactly as governed; no merge, production deployment, promotion, alias, Supabase or production change was made.

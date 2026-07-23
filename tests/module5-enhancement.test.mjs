@@ -10,8 +10,14 @@ import {
   canonicalizeModule5ScreenId,
   containsPotentiallySensitiveModule5Text,
   getAllowedModule5ScreenId,
+  invalidateModule5Screen13Dependents,
+  isModule5BuilderReady,
+  isModule5OrderCorrect,
   isModule5OutputReady,
+  mergeModule5CanvasFields,
   migrateModule5PracticeState,
+  moveModule5Order,
+  refreshModule5PlanFromCanvas,
 } from '../src/data/module5/module5EnhancedModel.ts';
 
 test('all canonical Module 5 screen IDs remain canonical', () => {
@@ -129,7 +135,7 @@ test('current output safety readiness cannot be bypassed by historical completio
   const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
   assert.doesNotMatch(journey, /const ready = alreadyCompleted \|\|/);
   assert.match(journey, /Save reviewed Module 5 output/);
-  assert.match(journey, /role="alert"/);
+  assert.match(journey, /role={messageIsAlert \? 'alert' : 'status'}/);
   assert.match(journey, /Remove possible identifying or sensitive detail from the highlighted field/);
 });
 
@@ -143,6 +149,30 @@ test('Screens 9–11 use the authoritative data-management, analysis and evaluat
   }
 });
 
+test('Screens 3, 4 and 6–8 retain the required authority structures', () => {
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  for (const requiredText of [
+    'Learning objective 6',
+    "id: 'safeRoute'",
+    "id: 'lensMonitoring'",
+    "id: 'lensEvaluation'",
+    "id: 'lensAccountability'",
+    "id: 'lensLearning'",
+    "id: 'priorityDecision'",
+    "id: 'decision'",
+    "id: 'rightsQuestion'",
+    "id: 'source'",
+    "id: 'layers'",
+    'Project record or monitoring log',
+    'Change story or qualitative interview',
+    "dataDecisionChoices('collect'",
+    "dataDecisionChoices('suppress'",
+    "dataDecisionChoices('aggregate'",
+    "dataDecisionChoices('refer'",
+    "dataDecisionChoices('doNotCollect'",
+  ]) assert.match(journey, new RegExp(requiredText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+});
+
 test('Screens 12–13 restore the accountability loop, scorecard and six evidence-to-action signals', () => {
   const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
   for (const taskId of ['scorecardIssue', 'jointAction', 'responsibleActor', 'reviewDate', 'accountBack', 'underrepresented', 'timing', 'overdueSignal', 'sensitiveRecord', 'publicActor', 'mixedClaim', 'heard', 'change', 'limit', 'nextUpdate']) {
@@ -150,6 +180,69 @@ test('Screens 12–13 restore the accountability loop, scorecard and six evidenc
   }
   assert.match(journey, /Eight-step feedback loop/);
   assert.match(journey, /Reach and access/);
+  assert.match(journey, /Move up/);
+  assert.match(journey, /Check order/);
+  assert.match(journey, /Review account-back message/);
+  assert.match(journey, /textarea/);
+});
+
+test('Screen 12 ordering interaction reaches and validates the authoritative sequence', () => {
+  const correct = ['inform', 'receive', 'minimum', 'assign', 'respond', 'adapt', 'account', 'track'];
+  let order = ['receive', 'inform', 'assign', 'minimum', 'adapt', 'respond', 'track', 'account'];
+  assert.equal(isModule5OrderCorrect(order, correct), false);
+  order = moveModule5Order(order, 1, -1);
+  order = moveModule5Order(order, 3, -1);
+  order = moveModule5Order(order, 5, -1);
+  order = moveModule5Order(order, 7, -1);
+  assert.deepEqual(order, correct);
+  assert.equal(isModule5OrderCorrect(order, correct), true);
+  assert.deepEqual(moveModule5Order(order, 0, -1), correct);
+});
+
+test('Screen 13 four-field account-back builder requires complete safe wording', () => {
+  const keys = ['heard', 'change', 'limit', 'nextUpdate'];
+  const safe = {
+    heard: 'Access improved for some participants while timing remains difficult.',
+    change: 'The activity lead will adjust timing and follow up with the service role.',
+    limit: 'The evidence cannot represent people who did not participate.',
+    nextUpdate: 'A generalized written and audio update will follow the next review.',
+  };
+  assert.equal(isModule5BuilderReady(safe, keys), true);
+  assert.equal(isModule5BuilderReady({ ...safe, limit: '' }, keys), false);
+  assert.equal(isModule5BuilderReady({ ...safe, heard: 'complainant name Alice' }, keys), false);
+});
+
+test('Screen 13 edits clear downstream confirmations and mark both outputs Needs review', () => {
+  const invalidated = invalidateModule5Screen13Dependents({
+    m5_s13: { status: 'completed' },
+    m5_s15: { status: 'completed', fields: { adaptation: 'Old action', followup: 'Old review' }, previewReviewed: true, confirmedSafe: true },
+    m5_s16: { status: 'completed', plan: { days90: 'Old action' }, dashboardReviewed: true, carryReviewed: true, confirmedSafe: true },
+    module3_unrelated: { keep: true },
+  });
+  assert.equal(invalidated.m5_s15.status, 'needs_review');
+  assert.equal(invalidated.m5_s15.previewReviewed, false);
+  assert.equal(invalidated.m5_s15.confirmedSafe, false);
+  assert.deepEqual(invalidated.m5_s15.dependencyReview.fields, ['adaptation', 'followup']);
+  assert.equal(invalidated.m5_s16.status, 'needs_review');
+  assert.equal(invalidated.m5_s16.dashboardReviewed, false);
+  assert.equal(invalidated.m5_s16.carryReviewed, false);
+  assert.equal(invalidated.m5_s16.confirmedSafe, false);
+  assert.deepEqual(invalidated.module3_unrelated, { keep: true });
+});
+
+test('dependent Canvas fields refresh and final-plan values require re-review', () => {
+  const projected = { adaptation: 'Adjust the meeting schedule', followup: 'Review access after two cycles', learning: 'Keep this learning note' };
+  const stored = { adaptation: 'Old action', followup: 'Old review', learning: 'Learner-edited note' };
+  const refreshedCanvas = mergeModule5CanvasFields(projected, stored, ['adaptation', 'followup']);
+  assert.deepEqual(refreshedCanvas, {
+    adaptation: 'Adjust the meeting schedule',
+    followup: 'Review access after two cycles',
+    learning: 'Learner-edited note',
+  });
+  const refreshedPlan = refreshModule5PlanFromCanvas({ days90: 'Old action', trigger: 'Old trigger', participation: 'Accessible review' }, refreshedCanvas);
+  assert.equal(refreshedPlan.days90, 'Adjust the meeting schedule');
+  assert.equal(refreshedPlan.trigger, 'Adjust the meeting schedule');
+  assert.equal(refreshedPlan.participation, 'Accessible review');
 });
 
 test('Screen 15 canvas and Screen 16 plan retain the approved carry-forward structure', () => {

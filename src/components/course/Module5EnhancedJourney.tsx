@@ -5,7 +5,13 @@ import {
   MODULE5_SCREEN_ROUTES,
   buildModule5DownloadText,
   containsPotentiallySensitiveModule5Text,
+  invalidateModule5Screen13Dependents,
+  isModule5BuilderReady,
+  isModule5OrderCorrect,
   isModule5OutputReady,
+  mergeModule5CanvasFields,
+  moveModule5Order,
+  refreshModule5PlanFromCanvas,
 } from '../../data/module5/module5EnhancedModel';
 import './module5-enhanced.css';
 
@@ -13,6 +19,8 @@ type ChangeState = (updater: (previous: LearningState) => LearningState) => void
 type Props = { screenId: string; state: LearningState; onChangeState: ChangeState };
 type Choice = { id: string; label: string; feedback: string; strong?: boolean };
 type Task = { id: string; prompt: string; choices: Choice[]; multiple?: boolean; required?: number };
+type OrderingSpec = { id: string; prompt: string; items: Array<[string, string]>; correctOrder: string[] };
+type BuilderSpec = { id: string; title: string; fields: Array<{ id: string; label: string; prompt: string }> };
 type ScreenSpec = {
   number: number;
   id: string;
@@ -25,12 +33,21 @@ type ScreenSpec = {
   learn: Array<[string, string]>;
   evidence?: Array<[string, string]>;
   tasks: Task[];
+  ordering?: OrderingSpec;
+  builder?: BuilderSpec;
   output: string;
   safety: string;
 };
 
 const safeEntry = 'Use only fictional Jiru Amba information or generalized CSO practice. Do not enter real names, exact locations, medical or disability details, survivor information, identifiable complaints, political accusations, contact details, or confidential records.';
 const choice = (id: string, label: string, feedback: string, strong = false): Choice => ({ id, label, feedback, strong });
+const dataDecisionChoices = (strongId: string, strongFeedback: string): Choice[] => [
+  choice('collect', 'Collect', strongId === 'collect' ? strongFeedback : 'Collect only when the information is necessary, voluntary, protectable and linked to action.', strongId === 'collect'),
+  choice('aggregate', 'Aggregate or anonymize', strongId === 'aggregate' ? strongFeedback : 'Aggregation may reduce exposure, but it must match the decision and cannot guarantee anonymity.', strongId === 'aggregate'),
+  choice('suppress', 'Suppress', strongId === 'suppress' ? strongFeedback : 'Suppression is appropriate when a result is too small or contextual details could identify someone.', strongId === 'suppress'),
+  choice('refer', 'Refer through an approved pathway', strongId === 'refer' ? strongFeedback : 'Referral is for protected complaints, safeguarding or specialist concerns—not ordinary monitoring evidence.', strongId === 'refer'),
+  choice('doNotCollect', 'Do not collect', strongId === 'doNotCollect' ? strongFeedback : 'Do not collect when the detail is unnecessary, unsafe or cannot lead to a responsible action.', strongId === 'doNotCollect'),
+];
 
 const specs: Record<string, ScreenSpec> = {
   'M5-R01': {
@@ -56,11 +73,26 @@ const specs: Record<string, ScreenSpec> = {
     explanation: 'The journey moves through planning, monitoring, safe evidence, interpretation, accountability, learning and adaptation. At every stage, use four moves: see, protect, act and account.',
     example: 'You may stay with the fictional Jiru Amba case or apply the same questions to a generalized CSO activity. Both routes avoid personal or confidential information.',
     learn: [['See', 'Notice who is reached, excluded or influential.'], ['Protect', 'Minimize data and prevent exposure, retaliation and harm.'], ['Act', 'Match evidence to realistic responsibility.'], ['Account', 'Explain what was heard, decided and done.']],
-    evidence: [['Six-stage MEAL roadmap', 'Plan the MEAL approach → monitor progress and participation → collect and manage evidence safely → analyse and evaluate change → respond and remain accountable → learn, adapt and report.'], ['What you will build', 'An HRBA MEAL Framework and Safe Data Plan; and an Evidence-to-Action Dashboard with a 90-Day Learning and Account-Back Plan.']],
-    tasks: [{ id: 'route', prompt: 'Choose your practice route.', choices: [
-      choice('jiru', 'Jiru Amba fictional case', 'Recommended: all examples are fictional and safe for practice.', true),
-      choice('general', 'My generalized CSO activity', 'Suitable when you use no names, precise locations or sensitive details.', true),
-    ] }],
+    evidence: [
+      ['Six-stage MEAL roadmap', 'Plan the MEAL approach → monitor progress and participation → collect and manage evidence safely → analyse and evaluate change → respond and remain accountable → learn, adapt and report.'],
+      ['Learning objective 1', 'Define rights-based results, success signs and MEAL questions with rights-holders.'],
+      ['Learning objective 2', 'Develop indicators that examine access, participation, influence, accountability and change.'],
+      ['Learning objective 3', 'Select practical quantitative, qualitative and participatory evidence methods.'],
+      ['Learning objective 4', 'Collect, disaggregate, manage and protect evidence safely and ethically.'],
+      ['Learning objective 5', 'Analyse numbers, feedback and stories to understand change, equity and evidence limitations.'],
+      ['Learning objective 6', 'Use findings to adapt practice, engage responsible actors, report honestly and account back.'],
+      ['What you will build', 'An HRBA MEAL Framework and Safe Data Plan; and an Evidence-to-Action Dashboard with a 90-Day Learning and Account-Back Plan.'],
+    ],
+    tasks: [
+      { id: 'route', prompt: 'Choose your practice route.', choices: [
+        choice('jiru', 'Jiru Amba fictional case', 'Recommended: later examples use fictional participation records, observations, community scores and feedback comments.', true),
+        choice('general', 'My generalized CSO activity', 'Suitable: later prompts use your generalized project label while keeping all sensitive information out.', true),
+      ] },
+      { id: 'safeRoute', prompt: 'Confirm the safe-data boundary for your selected route.', choices: [
+        choice('generalized', 'I will use only fictional or generalized information and no names, exact locations, detailed complaints, beneficiary lists or confidential records.', 'Strong: this boundary applies even when you change routes later.', true),
+        choice('realCases', 'I will use identifiable real cases so the practice is more accurate.', 'Do not use identifiable real cases in this learning activity.'),
+      ] },
+    ],
     output: 'Safe practice route', safety: safeEntry,
   },
   'M5-R03': {
@@ -68,8 +100,18 @@ const specs: Record<string, ScreenSpec> = {
     title: 'The MEAL Cycle Through an HRBA Lens',
     explanation: 'HRBA strengthens familiar MEAL practice: monitoring sees access and barriers; evaluation examines change and difference; accountability makes response visible; learning turns evidence into adaptation.',
     example: 'A participation barrier is monitored, interpreted with affected people, addressed through a timing change, and explained back through an accessible route.',
-    learn: [['Monitoring', 'Track progress, participation, barriers and emerging risk.'], ['Evaluation', 'Examine what changed, for whom and why.'], ['Accountability', 'Receive, respond, refer and account back.'], ['Learning', 'Continue, adapt, consult, refer or pause.']],
+    learn: [
+      ['Monitoring', 'Track progress, participation, barriers and emerging risk. Ask who is missing, what affects access, whether participation is safe and whether inequality is changing.'],
+      ['Evaluation', 'Examine what changed, for whom and why. Ask whether rights improved, HRBA principles were respected, other influences mattered and negative change occurred.'],
+      ['Accountability', 'Receive, respond, refer and account back. Ask whether routes are safe, who responds, what needs specialist referral and how the organisation will explain back.'],
+      ['Learning', 'Continue, adapt, consult, refer or pause. Ask what should continue, change, involve a responsible actor or stop because of risk.'],
+    ],
     tasks: [
+      { id: 'lensMonitoring', prompt: 'Review Monitoring, then apply the HRBA lens.', choices: [choice('apply', 'Reveal who is participating, missing or facing barriers, and whether participation is safe and meaningful.', 'Reviewed: HRBA adds access, participation, safety and inequality questions.', true), choice('counts', 'Keep only activity totals.', 'Totals are useful but do not reveal access, safety or exclusion.')] },
+      { id: 'lensEvaluation', prompt: 'Review Evaluation, then apply the HRBA lens.', choices: [choice('apply', 'Reveal what changed for whom, whether HRBA principles were respected and what else influenced the result.', 'Reviewed: evaluation includes equity, process and alternative influences.', true), choice('schedule', 'Check only whether activities occurred on time.', 'That is insufficient to understand change and equity.')] },
+      { id: 'lensAccountability', prompt: 'Review Accountability, then apply the HRBA lens.', choices: [choice('apply', 'Reveal safe routes, response responsibility, specialist referral and account-back.', 'Reviewed: accountability requires response and closure, not receipt alone.', true), choice('box', 'Count items placed in the feedback box.', 'A channel without response is not an accountability mechanism.')] },
+      { id: 'lensLearning', prompt: 'Review Learning, then apply the HRBA lens.', choices: [choice('apply', 'Reveal what to continue, change, engage, refer or pause because of evidence and risk.', 'Reviewed: learning turns evidence into a responsible decision.', true), choice('report', 'Write the same report again.', 'Learning requires a decision or adaptation, not repetition.')] },
+      { id: 'priorityDecision', prompt: 'Choose the priority decision this MEAL cycle should inform.', choices: [choice('accessibleInfluence', 'Decide how to make consultation access and influence more equal and how to account back.', 'Strong: the decision connects monitoring, evaluation, accountability and learning.', true), choice('moreRecords', 'Decide how to create more records regardless of use.', 'Evidence volume is not a decision or accountability outcome.')] },
       { id: 'track', prompt: 'Track who could not reach a consultation.', choices: [choice('monitoring', 'Monitoring', 'Correct: this tracks access during implementation.', true), choice('evaluation', 'Evaluation', 'Evaluation may use it later, but routine tracking comes first.')] },
       { id: 'sustain', prompt: 'Examine whether improved water access lasted.', choices: [choice('evaluation', 'Evaluation', 'Correct: this examines sustained change.', true), choice('accountability', 'Accountability', 'Accountability concerns response and explanation.')] },
       { id: 'respond', prompt: 'Record whether feedback received a response.', choices: [choice('accountability', 'Accountability', 'Correct: this tracks responsibility, response and account-back.', true), choice('evaluation', 'Evaluation only', 'Evaluation may review the pattern, but closing the response loop is accountability.')] },
@@ -97,8 +139,12 @@ const specs: Record<string, ScreenSpec> = {
     example: 'Instead of attendance alone: number and percentage of participants using broad voluntary access categories who say their views influenced a decision, using an anonymous pulse question and decision record.',
     learn: [['Output', 'What was delivered.'], ['Process', 'How access, participation and accountability were supported.'], ['Outcome', 'What changed for people, practices or institutions.']],
     tasks: [
+      { id: 'decision', prompt: 'Build the evidence line: choose the decision first.', choices: [choice('access', 'Make consultations more accessible and influential.', 'Strong: the evidence line starts with a decision the team can use.', true), choice('collect', 'Collect as much data as possible.', 'Data collection is not the decision.')] },
+      { id: 'rightsQuestion', prompt: 'Choose the rights question connected to that decision.', choices: [choice('groups', 'Which groups facing barriers participated, and did their views influence a decision?', 'Strong: it connects unequal access and influence.', true), choice('total', 'How many records can the team create?', 'This does not examine rights, access or influence.')] },
       { id: 'indicator', prompt: 'Choose the safer, stronger indicator.', choices: [choice('influence', 'Percentage in broad voluntary access categories reporting influence on a follow-up decision.', 'Strong: it combines reach, difference and influence.', true), choice('names', 'Named list with diagnoses and complaint histories.', 'Unsafe and unnecessary: do not collect this.'), choice('total', 'Total attendance only.', 'Useful output evidence, but insufficient alone.')] },
+      { id: 'source', prompt: 'Choose the safe evidence source.', choices: [choice('anonymous', 'Anonymous short exit question plus a meeting decision record.', 'Strong: this compares experience with an actual decision without requiring names.', true), choice('identifiers', 'Named profiles linked to diagnoses and complaints.', 'This is unnecessarily identifying and unsafe.')] },
       { id: 'trigger', prompt: 'Choose an action trigger.', choices: [choice('adapt', 'If access or influence is lower, adapt timing, communication, support or facilitation.', 'Strong: the evidence leads to a realistic action.', true), choice('hide', 'Remove low results from the dashboard.', 'Hiding results undermines learning and accountability.')] },
+      { id: 'layers', prompt: 'Choose at least two evidence layers for a balanced monitoring set.', multiple: true, required: 2, choices: [choice('reach', 'Reach and delivery', 'Strong: shows what was delivered and who was reached.', true), choice('agency', 'Experience, agency and influence', 'Strong: shows how people experienced and influenced the process.', true), choice('responsibility', 'Responsibility and systemic change', 'Strong: shows whether responsible actors and institutions changed.', true)] },
       { id: 'typeOutput', prompt: '“Number of consultation meetings held” is which indicator type?', choices: [choice('output', 'Activity or output', 'Correct: it shows what was delivered.', true), choice('outcome', 'Outcome or change', 'It does not yet show what changed.')] },
       { id: 'typeProcess', prompt: '“Percentage of consultations using accessible information and more than one participation route” is which type?', choices: [choice('process', 'Process', 'Correct: it shows how the work was carried out.', true), choice('output', 'Activity or output only', 'It goes beyond delivery to process quality.')] },
       { id: 'typeOutcome', prompt: '“Percentage reporting that their views influenced a decision” is which type?', choices: [choice('outcome', 'Outcome or change', 'Correct: it examines influence and change.', true), choice('process', 'Process only', 'The measure concerns a reported result of participation.')] },
@@ -111,6 +157,15 @@ const specs: Record<string, ScreenSpec> = {
     explanation: 'Choose methods for the question, people, context and decision. Balance access, burden, literacy, language, confidentiality, facilitation capacity and analysis.',
     example: 'A monitoring log can compare information routes; a short anonymous pulse question adds participant experience. Neither requires names.',
     learn: [['Fit', 'Match method to question and decision.'], ['Access', 'Offer realistic language, format and participation adaptations.'], ['Burden', 'Collect only what will be used and can be protected.']],
+    evidence: [
+      ['Project record or monitoring log', 'Best for activities, dates, attendance, referrals and follow-up status.'],
+      ['Short survey or pulse question', 'Best for comparable responses from a larger group.'],
+      ['Observation checklist', 'Best for access conditions, service availability and implementation quality.'],
+      ['Facilitated discussion or reflection circle', 'Best for experience, reasons, differences and possible solutions.'],
+      ['Community Scorecard', 'Best for comparing community and service-provider views and agreeing corrective action.'],
+      ['Change story or qualitative interview', 'Best for how change happened, why it mattered and what was unexpected.'],
+      ['Explore later', 'Most Significant Change, Outcome Harvesting, Outcome Mapping, locally defined indicators and Participatory Learning and Action fit particular questions; they are not compulsory core methods.'],
+    ],
     tasks: [
       { id: 'routes', prompt: 'How should Awra check information routes and timeliness?', multiple: true, required: 2, choices: [choice('log', 'General monitoring log', 'Strong for comparable route and timing records.', true), choice('pulse', 'Anonymous short pulse question', 'Strong for participant experience.', true), choice('story', 'One positive story only', 'A story cannot provide comparable reach evidence.')] },
       { id: 'access', prompt: 'How should Awra understand why service access remained difficult?', multiple: true, required: 2, choices: [choice('observe', 'Accessibility observation checklist', 'Strong for physical and practical conditions.', true), choice('discussion', 'Accessible facilitated discussion', 'Strong for reasons and experience when safely facilitated.', true), choice('attendance', 'Attendance record only', 'Attendance cannot explain why access was difficult.')] },
@@ -123,14 +178,18 @@ const specs: Record<string, ScreenSpec> = {
     title: 'Safe Disaggregation and Ethical Data Collection',
     explanation: 'Disaggregate only when the category is necessary, voluntary, understood, broad enough to protect people and linked to action. Small groups and combined categories can make people identifiable.',
     example: 'Awra uses optional broad age, gender and access-requirement categories, suppresses very small cells, limits access and deletes raw data on schedule.',
-    learn: [['Data minimization', 'Collect the least detail needed for the decision.'], ['Informed participation', 'Explain purpose, choice, use, access and limits.'], ['Protection', 'Use aggregation, restricted access, retention limits and safe referral.']],
+    learn: [
+      ['Necessity and action', 'Ask whether the information is necessary for a clear decision and what the team will do with the answer.'],
+      ['Informed participation', 'People must choose freely and understand purpose, use, access and limits.'],
+      ['Protection', 'Check whether the team can protect the information; use broad categories, suppression, restricted access, retention limits and safe referral.'],
+    ],
     tasks: [
-      { id: 'category', prompt: 'Choose the safest useful disaggregation decision.', choices: [choice('broad', 'Optional broad categories, only where an action is possible.', 'Strong: proportionate and decision-linked.', true), choice('diagnosis', 'Exact diagnoses linked to names.', 'Unsafe and unnecessary for this task.')] },
-      { id: 'small', prompt: 'A table has a cell with one person. What should Awra do?', choices: [choice('suppress', 'Suppress or combine the cell and explain the limitation.', 'Strong: reduces re-identification risk.', true), choice('publish', 'Publish it because no name appears.', 'A person may still be identifiable from context.')] },
-      { id: 'quote', prompt: 'A donor asks for a named quote and photograph.', choices: [choice('protect', 'Use a generalized theme unless freely informed publication consent and safety checks exist.', 'Strong: participation consent is not automatic publication consent.', true), choice('publish', 'Publish because the person already participated.', 'Participation does not remove exposure risk.')] },
-      { id: 'complaint', prompt: 'Detailed complaint information appears in a monitoring spreadsheet.', choices: [choice('refer', 'Remove it from ordinary MEAL data and use the approved protected pathway.', 'Strong: complaint and safeguarding records require restricted handling.', true), choice('dashboard', 'Keep it for the learning dashboard.', 'This could expose the person and the concern.')] },
-      { id: 'contact', prompt: 'A contact list identifies people who did not attend.', choices: [choice('doNotCollect', 'Do not collect it for this learning purpose; use a generalized barrier question instead.', 'Strong: non-attendance does not justify an identifying list.', true), choice('collect', 'Collect names and contact details for follow-up.', 'This is unnecessary and may create risk.')] },
-      { id: 'pulse', prompt: 'An anonymous accessibility pulse question is proposed.', choices: [choice('collect', 'Collect only the necessary voluntary response and explain its use.', 'Strong: this is proportionate when linked to an access decision.', true), choice('identify', 'Add names so each answer can be verified.', 'Verification does not justify unnecessary identification.')] },
+      { id: 'category', prompt: 'Broad voluntary access categories are proposed for a large consultation. Choose one data decision.', choices: dataDecisionChoices('collect', 'Collect only the broad categories needed for an agreed access decision, make them voluntary and explain their use.') },
+      { id: 'small', prompt: 'Two respondents come from a small rural location. Choose one data decision.', choices: dataDecisionChoices('suppress', 'Suppress or combine the very small result and explain the evidence limitation.') },
+      { id: 'quote', prompt: 'A donor asks for a named quote and photograph. Choose one data decision.', choices: dataDecisionChoices('aggregate', 'Use a generalized, non-identifying theme unless separate freely informed publication consent and safety checks support another approach.') },
+      { id: 'complaint', prompt: 'Detailed complaint information appears in a monitoring spreadsheet. Choose one data decision.', choices: dataDecisionChoices('refer', 'Remove it from ordinary MEAL data and use the approved protected complaint or safeguarding pathway.') },
+      { id: 'contact', prompt: 'A contact list identifies people who did not attend. Choose one data decision.', choices: dataDecisionChoices('doNotCollect', 'Do not collect the list for this learning purpose; use a generalized barrier question instead.') },
+      { id: 'pulse', prompt: 'An anonymous accessibility pulse question is proposed. Choose one data decision.', choices: dataDecisionChoices('collect', 'Collect only the necessary voluntary response, explain its use and do not add identifiers.') },
     ],
     output: 'Safe disaggregation and data-minimization rules', safety: 'Do not record sensitive incidents, identifiable complaints or safeguarding disclosures in this learning activity. Follow the approved confidential pathway and need-to-know access rules.',
   },
@@ -217,6 +276,21 @@ const specs: Record<string, ScreenSpec> = {
       ['Response tracker', 'Feedback theme, assigned role, status, response or referral, action taken and account-back completion make responsibility visible.'],
       ['Light Community Scorecard', 'Community and service-actor views on reliability, physical accessibility, waiting time, respectful treatment and repair information are compared for dialogue—not averaged into a leaderboard.'],
     ],
+    ordering: {
+      id: 'feedbackOrder',
+      prompt: 'Put the feedback-response-account-back steps in a responsible order.',
+      items: [
+        ['receive', 'Receive feedback through accessible options.'],
+        ['inform', 'Inform people what the channel can and cannot do.'],
+        ['assign', 'Review and assign responsibility.'],
+        ['minimum', 'Record only the minimum necessary information.'],
+        ['adapt', 'Adapt the activity when evidence supports a change.'],
+        ['respond', 'Respond, refer or explain why action is not possible.'],
+        ['track', 'Track whether the agreed action was completed.'],
+        ['account', 'Account back in an accessible form.'],
+      ],
+      correctOrder: ['inform', 'receive', 'minimum', 'assign', 'respond', 'adapt', 'account', 'track'],
+    },
     tasks: [
       { id: 'pathway', prompt: 'Choose the complete feedback loop.', choices: [choice('loop', 'Receive → acknowledge → assess risk → assign or refer → respond → account back → learn.', 'Strong: the loop includes safety, responsibility and closure.', true), choice('box', 'Install a box and count submissions.', 'A box alone has no visible response or closure.')] },
       { id: 'overdue', prompt: 'A response is overdue. What should happen?', choices: [choice('escalate', 'Notify the responsible role, use the escalation rule and update the person safely.', 'Strong: delay becomes an accountable action.', true), choice('delete', 'Delete the record to protect privacy.', 'Retention must follow policy; deletion cannot hide an unresolved obligation.')] },
@@ -246,11 +320,17 @@ const specs: Record<string, ScreenSpec> = {
       { id: 'sensitiveRecord', prompt: 'A sensitive concern appears in an ordinary monitoring record. Choose the strongest first action and role.', choices: [choice('refer', 'Restrict access, remove it from ordinary MEAL data and use the approved safeguarding or confidential referral role.', 'Strong: the sensitive record moves to the protected pathway.', true), choice('dashboard', 'Add it to the dashboard so leaders can monitor the case.', 'The dashboard must not expose sensitive incidents or identifiable complaints.')] },
       { id: 'publicActor', prompt: 'A service-quality issue belongs to a public actor. Choose the strongest first action and role.', choices: [choice('engage', 'Engage the responsible public or service actor with bounded evidence; Awra facilitates follow-up and account-back.', 'Strong: duty-bearer responsibility and Awra contribution remain distinct.', true), choice('promise', 'Promise that Awra will fix the public service directly.', 'This overstates Awra’s authority and obscures the responsible actor.')] },
       { id: 'mixedClaim', prompt: 'Evidence is mixed and cannot support a universal success claim. Choose the strongest first action and role.', choices: [choice('narrow', 'Narrow the claim, state the limitation and ask the MEAL lead to plan the next safe review.', 'Strong: the report remains honest and decision-useful.', true), choice('positive', 'Publish only the positive evidence.', 'Selective reporting undermines learning and accountability.')] },
-      { id: 'heard', prompt: 'Choose the strongest opening for the account-back message.', choices: [choice('finding', 'We heard that access improved for some people, while timing, path access and response delays remain unresolved.', 'Strong: it states the mixed finding without identifying anyone.', true), choice('solved', 'We solved access for the whole community.', 'The evidence cannot support this claim.')] },
-      { id: 'change', prompt: 'Choose the strongest action statement.', choices: [choice('actions', 'We will change the meeting schedule, escalate overdue responses and engage the service team about the path.', 'Strong: it distinguishes CSO action, escalation and duty-bearer engagement.', true), choice('collect', 'We will collect more personal details from everyone.', 'The proposed collection is not necessary for these actions.')] },
-      { id: 'limit', prompt: 'Choose the strongest limitation statement.', choices: [choice('cannot', 'We cannot yet conclude that everyone can participate equally or that every concern has been resolved.', 'Strong: uncertainty remains visible.', true), choice('omit', 'Do not mention unresolved evidence.', 'Account-back must include relevant limits.')] },
-      { id: 'nextUpdate', prompt: 'Choose the strongest next-update commitment.', choices: [choice('routes', 'We will provide the next generalized update after the dated review through accessible written and audio routes.', 'Strong: timing, route and confidentiality are clear.', true), choice('names', 'We will publish names and individual cases at the next meeting.', 'This creates exposure and may increase retaliation risk.')] },
     ],
+    builder: {
+      id: 'accountBackBuilder',
+      title: 'Compose a safe account-back message',
+      fields: [
+        { id: 'heard', label: 'What we heard or found', prompt: 'Summarize the generalized finding, including relevant differences.' },
+        { id: 'change', label: 'What we will change or follow up', prompt: 'Name the CSO action, responsible-actor engagement or safe referral.' },
+        { id: 'limit', label: 'What we cannot yet conclude or change', prompt: 'State the limitation or uncertainty honestly.' },
+        { id: 'nextUpdate', label: 'When and how we will provide the next update', prompt: 'Use a general review point and accessible route; do not include personal details.' },
+      ],
+    },
     output: 'Adaptation and follow-up record', safety: safeEntry,
   },
   'M5-R13': {
@@ -290,24 +370,39 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
   };
   const [answers, setAnswers] = useState<Record<string, string[]>>(stored.answers || {});
   const [reviewed, setReviewed] = useState<string[]>(stored.reviewed || []);
+  const initialOrder = spec.ordering?.items.map(([id]) => id) || [];
+  const storedOrder = spec.ordering ? stored.answers?.[spec.ordering.id] : undefined;
+  const [order, setOrder] = useState<string[]>(storedOrder?.length === initialOrder.length ? storedOrder : initialOrder);
   const [message, setMessage] = useState('');
   const titleRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => { titleRef.current?.focus(); }, [spec.id]);
+  const routeChoice = ((state.practiceCheckState.m5_s03 || {}) as { answers?: Record<string, string[]> }).answers?.route?.[0];
+  const routeLabel = routeChoice === 'general' ? 'My generalized CSO activity' : routeChoice === 'jiru' ? 'Jiru Amba fictional case' : '';
 
-  const taskComplete = spec.tasks.every((task) => (answers[task.id] || []).length === (task.required || 1));
-  const allReviewed = spec.tasks.every((task) => reviewed.includes(task.id));
+  const builderKeys = spec.builder?.fields.map((field) => field.id) || [];
+  const builderValues = Object.fromEntries(builderKeys.map((id) => [id, answers[id]?.[0] || '']));
+  const taskComplete = spec.tasks.every((task) => (answers[task.id] || []).length === (task.required || 1)) &&
+    (!spec.ordering || isModule5OrderCorrect(order, spec.ordering.correctOrder)) &&
+    (!spec.builder || isModule5BuilderReady(builderValues, builderKeys));
+  const allReviewed = spec.tasks.every((task) => reviewed.includes(task.id)) &&
+    (!spec.ordering || reviewed.includes(spec.ordering.id)) &&
+    (!spec.builder || reviewed.includes(spec.builder.id));
   const previouslyCompleted = stored.schemaVersion === 2 && stored.status === 'completed';
   const moduleCompleted = state.completedModules.includes(MODULE5_ID);
   const canContinue = taskComplete && allReviewed || previouslyCompleted || moduleCompleted;
+  const messageIsAlert = /^(Choose|Complete|Remove|Review the sequence)/.test(message);
 
   const persist = (nextAnswers: Record<string, string[]>, nextReviewed: string[], status = 'in_progress') => {
-    onChangeState((previous) => ({
-      ...previous,
-      practiceCheckState: {
+    onChangeState((previous) => {
+      const practiceCheckState = {
         ...previous.practiceCheckState,
         [spec.key]: { ...previous.practiceCheckState[spec.key], schemaVersion: 2, answers: nextAnswers, reviewed: nextReviewed, status, updatedAt: new Date().toISOString() },
-      },
-    }));
+      };
+      return {
+        ...previous,
+        practiceCheckState: spec.id === 'M5-R12' ? invalidateModule5Screen13Dependents(practiceCheckState) : practiceCheckState,
+      };
+    });
   };
 
   const select = (task: Task, id: string) => {
@@ -332,6 +427,55 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
     persist(answers, nextReviewed);
   };
 
+  const moveOrder = (index: number, direction: -1 | 1) => {
+    if (!spec.ordering) return;
+    const nextOrder = moveModule5Order(order, index, direction);
+    const nextAnswers = { ...answers, [spec.ordering.id]: nextOrder };
+    const nextReviewed = reviewed.filter((id) => id !== spec.ordering?.id);
+    setOrder(nextOrder); setAnswers(nextAnswers); setReviewed(nextReviewed); setMessage('Order changed and saved. Check the sequence again.');
+    persist(nextAnswers, nextReviewed);
+  };
+
+  const checkOrder = () => {
+    if (!spec.ordering) return;
+    const nextAnswers = { ...answers, [spec.ordering.id]: order };
+    setAnswers(nextAnswers);
+    if (!isModule5OrderCorrect(order, spec.ordering.correctOrder)) {
+      const nextReviewed = reviewed.filter((id) => id !== spec.ordering?.id);
+      setReviewed(nextReviewed); setMessage('Review the sequence: inform people before receiving feedback, minimize data before assigning, and account back before tracking closure.');
+      persist(nextAnswers, nextReviewed);
+      return;
+    }
+    const nextReviewed = reviewed.includes(spec.ordering.id) ? reviewed : [...reviewed, spec.ordering.id];
+    setReviewed(nextReviewed); setMessage('Feedback-response-account-back order reviewed.');
+    persist(nextAnswers, nextReviewed);
+  };
+
+  const updateBuilder = (id: string, value: string) => {
+    if (!spec.builder) return;
+    const nextAnswers = { ...answers, [id]: [value] };
+    const nextReviewed = reviewed.filter((reviewedId) => reviewedId !== spec.builder?.id);
+    setAnswers(nextAnswers); setReviewed(nextReviewed);
+    setMessage(containsPotentiallySensitiveModule5Text(value) ? 'Remove possible identifying or sensitive detail from the account-back field. Use generalized wording.' : 'Account-back draft saved. Review all four fields again.');
+    persist(nextAnswers, nextReviewed);
+  };
+
+  const checkBuilder = () => {
+    if (!spec.builder) return;
+    const currentValues = Object.fromEntries(spec.builder.fields.map((field) => [field.id, answers[field.id]?.[0] || '']));
+    if (!spec.builder.fields.every((field) => String(currentValues[field.id] || '').trim())) {
+      setMessage('Complete all four account-back fields before reviewing the message.');
+      return;
+    }
+    if (!isModule5BuilderReady(currentValues, spec.builder.fields.map((field) => field.id))) {
+      setMessage('Remove possible identifying or sensitive detail before reviewing the account-back message.');
+      return;
+    }
+    const nextReviewed = reviewed.includes(spec.builder.id) ? reviewed : [...reviewed, spec.builder.id];
+    setReviewed(nextReviewed); setMessage('Account-back message reviewed. It states the finding, action, limitation and next update.');
+    persist(answers, nextReviewed);
+  };
+
   const continueJourney = () => {
     if (!canContinue) { setMessage('Complete and check each required activity before continuing. Your current work remains saved on this device.'); return; }
     onChangeState((previous) => ({
@@ -351,6 +495,7 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
           <span className="m5e-stage">{spec.stage}</span>
           <h1 id={'m5e-title-' + spec.number} ref={titleRef} tabIndex={-1}>{spec.title}</h1>
           <p>{spec.explanation}</p>
+          {routeLabel && spec.number >= 3 && <p><strong>Practice route:</strong> {routeLabel}. You can revise the conceptual choices without entering sensitive information.</p>}
         </header>
         {stored.migration && (
           <aside className="m5e-notice m5e-notice--info" role="note">
@@ -359,7 +504,7 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
           </aside>
         )}
         <section className="m5e-example" aria-labelledby={'m5e-example-' + spec.number}>
-          <p className="m5e-kicker">Worked example</p><h2 id={'m5e-example-' + spec.number}>Jiru Amba practice</h2><p>{spec.example}</p>
+          <p className="m5e-kicker">Worked example</p><h2 id={'m5e-example-' + spec.number}>{routeChoice === 'general' ? 'Model example — adapt safely to your generalized activity' : 'Jiru Amba practice'}</h2><p>{spec.example}</p>
         </section>
         <section aria-labelledby={'m5e-learn-' + spec.number}>
           <h2 id={'m5e-learn-' + spec.number}>What to notice</h2>
@@ -369,6 +514,7 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
         <aside className="m5e-notice m5e-notice--safety" role="note"><strong>Safe practice reminder</strong><span>{spec.safety}</span></aside>
         <section className="m5e-practice" aria-labelledby={'m5e-practice-' + spec.number}>
           <h2 id={'m5e-practice-' + spec.number}>Practice and check</h2>
+          {spec.ordering && <fieldset className="m5e-ordering"><legend>{spec.ordering.prompt}</legend><ol>{order.map((id, index) => { const label = spec.ordering?.items.find(([itemId]) => itemId === id)?.[1] || id; return <li key={id}><span><strong>Step {index + 1}</strong>{label}</span><span className="m5e-order-actions"><button type="button" className="m5e-secondary" disabled={index === 0} onClick={() => moveOrder(index, -1)}>Move up</button><button type="button" className="m5e-secondary" disabled={index === order.length - 1} onClick={() => moveOrder(index, 1)}>Move down</button></span></li>; })}</ol><button type="button" className="m5e-secondary" onClick={checkOrder}>Check order</button>{reviewed.includes(spec.ordering.id) && <p className="m5e-feedback" role="status">Good evidence decision: the pathway now begins with informed access, minimizes data, assigns responsibility, responds, adapts, accounts back and tracks closure.</p>}</fieldset>}
           {spec.tasks.map((task) => {
             const selected = answers[task.id] || [];
             const checked = reviewed.includes(task.id);
@@ -386,8 +532,9 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
               </fieldset>
             );
           })}
+          {spec.builder && <fieldset className="m5e-builder"><legend>{spec.builder.title}</legend><p>Use fictional or generalized wording. Do not include names, case details, exact locations or confidential information.</p>{spec.builder.fields.map((field) => { const value = answers[field.id]?.[0] || ''; const risky = containsPotentiallySensitiveModule5Text(value); const helpId = `${spec.id}-${field.id}-help`; return <label key={field.id}><span><strong>{field.label}</strong><small id={helpId}>{field.prompt}</small></span><textarea rows={3} maxLength={320} value={value} aria-describedby={helpId} aria-invalid={risky || undefined} onChange={(event) => updateBuilder(field.id, event.target.value)} />{risky && <small className="m5e-field-error">Remove possible identifying or sensitive detail.</small>}</label>; })}<button type="button" className="m5e-secondary" onClick={checkBuilder}>Review account-back message</button>{reviewed.includes(spec.builder.id) && <p className="m5e-feedback" role="status">Saved output: a generalized four-part account-back message ready to carry forward.</p>}</fieldset>}
         </section>
-        {message && <p className="m5e-alert" role="alert">{message}</p>}
+        {message && <p className={messageIsAlert ? 'm5e-alert' : 'm5e-status'} role={messageIsAlert ? 'alert' : 'status'} aria-live="polite">{message}</p>}
         <section className="m5e-saved" role="status" aria-live="polite"><strong>Saved output</strong><span>{spec.output}: {canContinue ? 'ready to carry forward' : 'in progress'}. Work is saved locally in this browser.</span></section>
         <footer className="m5e-actions"><div><h2>Continue the evidence-to-action journey</h2><p>Complete and check each activity to unlock the next screen.</p></div><button type="button" className="m5e-primary" disabled={!canContinue} onClick={continueJourney}>Continue</button></footer>
       </article>
@@ -397,21 +544,21 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
 
 const canvasFields = [
   ['project', 'Project or activity', 'M5-R02', 'route', true, 'Name the project or activity in general terms.'],
-  ['decision', 'Decision to inform', 'M5-R04', 'result', true, 'What real decision should this evidence help your organisation make?'],
+  ['decision', 'Decision to inform', 'M5-R03', 'priorityDecision', true, 'What real decision should this evidence help your organisation make?'],
   ['question', 'Rights-sensitive learning question', 'M5-R04', 'question', true, 'What do you need to understand about unequal experience, agency, influence or responsibility?'],
   ['groups', 'Rights-holder groups', 'M5-R01', 'gap', true, 'Which groups’ different experiences must be visible? Use broad, safe group descriptions.'],
   ['dutyBearer', 'Duty-bearer responsibility', 'M5-R10', 'contribution', true, 'Which role or institution has a responsibility to act?'],
   ['existingEvidence', 'Evidence already available', 'M5-R06', 'routes', true, 'Select what you already have: routine records, observation, interviews, group discussion, survey, feedback or documents.'],
-  ['evidenceLayers', 'Evidence layers', 'M5-R05', 'indicator', true, 'Use at least two: reach and delivery; experience, agency and influence; responsibility and systemic change.'],
+  ['evidenceLayers', 'Evidence layers', 'M5-R05', 'layers', true, 'Use at least two: reach and delivery; experience, agency and influence; responsibility and systemic change.'],
   ['methodMix', 'Selected method mix', 'M5-R06', 'access', true, 'Choose the smallest credible mix that fits the decision, resources and risk.'],
   ['disaggregation', 'Relevant disaggregation', 'M5-R07', 'category', true, 'Record only characteristics that are necessary, safe, actionable and possible to protect.'],
   ['participatoryRole', 'Participatory role', 'M5-R09', 'sensemaking', true, 'How will affected people help define, contribute, interpret, decide or receive a response?'],
   ['safetyEthics', 'Safety and ethics', 'M5-R08', 'storage', true, 'What will you not collect, who may access the evidence, where will it be kept and when will it be deleted?'],
   ['synthesis', 'Synthesis and triangulation approach', 'M5-R09', 'mixed', true, 'How will you group qualitative findings and compare sources, perspectives, agreement and contradiction?'],
   ['finding', 'What the evidence shows', 'M5-R10', 'change', true, 'Write one bounded finding supported by the combined evidence.'],
-  ['uncertainty', 'What remains uncertain', 'M5-R10', 'equity', true, 'State what the evidence cannot show or what still needs verification.'],
+  ['uncertainty', 'What remains uncertain', 'M5-R08', 'limitation', true, 'State what the evidence cannot show or what still needs verification.'],
   ['responsibleActor', 'Responsible actor', 'M5-R10', 'contribution', true, 'Name a role or institution responsible for the response.'],
-  ['closure', 'Feedback-loop closure', 'M5-R11', 'pathway', true, 'How will you assign, respond, communicate back and track resolution?'],
+  ['closure', 'Feedback-loop closure', 'M5-R11', 'accountBack', true, 'How will you assign, respond, communicate back and track resolution?'],
   ['adaptation', 'Adaptation action', 'M5-R12', 'timing', true, 'What will change, continue or stop because of the finding?'],
   ['followup', 'Follow-up evidence', 'M5-R12', 'nextUpdate', true, 'What will show whether the adaptation worked, and when will it be reviewed?'],
   ['learning', 'Organisational learning note', 'M5-R14', 'learning', true, 'What method was used, why, what worked, what did not and what changed?'],
@@ -424,6 +571,7 @@ function selectedLabels(state: LearningState, screenId: string, taskId: string) 
   const entry = state.practiceCheckState[spec.key] as { answers?: Record<string, string[]> } | undefined;
   const selected = entry?.answers?.[taskId] || [];
   const task = spec.tasks.find((candidate) => candidate.id === taskId);
+  if (!task) return selected.map((value) => String(value).trim()).filter(Boolean).join('; ');
   return selected.map((id) => task?.choices.find((item) => item.id === id)?.label || '').filter(Boolean).join('; ');
 }
 
@@ -433,9 +581,10 @@ function deriveModule5Canvas(state: LearningState) {
 
 function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   const key = 'm5_s15';
-  const stored = (state.practiceCheckState[key] || {}) as { fields?: Record<string, string>; confirmedSafe?: boolean; previewReviewed?: boolean; status?: string };
+  const stored = (state.practiceCheckState[key] || {}) as { fields?: Record<string, string>; confirmedSafe?: boolean; previewReviewed?: boolean; status?: string; dependencyReview?: { sourceScreenId?: string; fields?: string[] } };
   const projected = useMemo(() => deriveModule5Canvas(state), [state]);
-  const [fields, setFields] = useState<Record<string, string>>({ ...projected, ...(stored.fields || {}) });
+  const dependencyFields = stored.dependencyReview?.fields || [];
+  const [fields, setFields] = useState<Record<string, string>>(mergeModule5CanvasFields(projected, stored.fields || {}, dependencyFields));
   const [editing, setEditing] = useState<string | null>('learning');
   const [confirmedSafe, setConfirmedSafe] = useState(Boolean(stored.confirmedSafe));
   const [previewReviewed, setPreviewReviewed] = useState(Boolean(stored.previewReviewed));
@@ -448,10 +597,17 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   const risky = canvasFields.filter(([id]) => containsPotentiallySensitiveModule5Text(String(fields[id] || '')));
   const alreadyCompleted = state.completedModules.includes(MODULE5_ID) || stored.status === 'completed';
   const ready = isModule5OutputReady(fields, requiredCanvasKeys, [confirmedSafe, previewReviewed]);
-  const persist = (nextFields = fields, safe = confirmedSafe, reviewed = previewReviewed) => onChangeState((previous) => ({
-    ...previous,
-    practiceCheckState: { ...previous.practiceCheckState, [key]: { ...previous.practiceCheckState[key], schemaVersion: 2, fields: nextFields, confirmedSafe: safe, previewReviewed: reviewed, status: 'in_progress', updatedAt: new Date().toISOString() } },
-  }));
+  const persist = (nextFields = fields, safe = confirmedSafe, reviewed = previewReviewed) => onChangeState((previous) => {
+    const finalPlan = previous.practiceCheckState.m5_s16 as Record<string, unknown> | undefined;
+    return {
+      ...previous,
+      practiceCheckState: {
+        ...previous.practiceCheckState,
+        [key]: { ...previous.practiceCheckState[key], schemaVersion: 2, fields: nextFields, confirmedSafe: safe, previewReviewed: reviewed, status: 'in_progress', updatedAt: new Date().toISOString() },
+        ...(finalPlan ? { m5_s16: { ...finalPlan, status: 'needs_review', dashboardReviewed: false, carryReviewed: false, confirmedSafe: false, dependencyReview: { sourceScreenId: 'M5-R14', reason: 'canvas_changed' } } } : {}),
+      },
+    };
+  });
   const update = (id: string, value: string) => {
     const next = { ...fields, [id]: value };
     setFields(next); setConfirmedSafe(false); setPreviewReviewed(false); setMessage('Changes saved locally. Review the preview and safety confirmation again.');
@@ -462,12 +618,20 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
       setMessage(risky.length ? 'Remove possible identifying or sensitive detail from the highlighted field. This prompt is a precaution and cannot guarantee confidentiality.' : gaps.length ? 'Complete the fields marked “Not yet completed”. Use the source link to review earlier work or add a short generalized entry.' : 'Review the readable preview and confirm the final safety check.');
       return;
     }
-    onChangeState((previous) => ({
-      ...previous,
-      currentScreenId: 'M5-PLAYER-COMPLETE',
-      screenProgress: { ...previous.screenProgress, [MODULE5_ID]: addProgress(previous, 'M5-R14') },
-      practiceCheckState: { ...previous.practiceCheckState, [key]: { ...previous.practiceCheckState[key], schemaVersion: 2, fields, confirmedSafe: true, previewReviewed: true, status: 'completed', updatedAt: new Date().toISOString() } },
-    }));
+    onChangeState((previous) => {
+      const finalPlan = previous.practiceCheckState.m5_s16 as { plan?: Record<string, string> } | undefined;
+      const refreshedPlan = refreshModule5PlanFromCanvas(finalPlan?.plan || {}, fields);
+      return {
+        ...previous,
+        currentScreenId: 'M5-PLAYER-COMPLETE',
+        screenProgress: { ...previous.screenProgress, [MODULE5_ID]: addProgress(previous, 'M5-R14') },
+        practiceCheckState: {
+          ...previous.practiceCheckState,
+          [key]: { ...previous.practiceCheckState[key], schemaVersion: 2, fields, confirmedSafe: true, previewReviewed: true, dependencyReview: undefined, status: 'completed', updatedAt: new Date().toISOString() },
+          ...(finalPlan ? { m5_s16: { ...previous.practiceCheckState.m5_s16, plan: refreshedPlan, status: 'needs_review', dashboardReviewed: false, carryReviewed: false, confirmedSafe: false, dependencyReview: { sourceScreenId: 'M5-R14', reason: 'canvas_reviewed' } } } : {}),
+        },
+      };
+    });
     navigate('M5-PLAYER-COMPLETE');
   };
 
@@ -475,12 +639,13 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
     <main className="m5e-screen" aria-labelledby="m5e-canvas-title">
       <article className="m5e-shell">
         <header className="m5e-hero"><p className="m5e-kicker">MODULE 5 · SCREEN 15 OF 16</p><span className="m5e-stage">Apply and save</span><h1 id="m5e-canvas-title" ref={titleRef} tabIndex={-1}>Build your HRBA MEAL, Accountability and Adaptation Canvas</h1><p>Your work is already here. Review the evidence and decisions you saved, correct anything that no longer fits, and complete only the gaps. Use short, generalized wording.</p></header>
+        {stored.dependencyReview && <aside className="m5e-notice m5e-notice--info" role="status"><strong>Needs review after an earlier-screen change</strong><span>Your Screen 13 adaptation or account-back work changed. The affected Canvas fields were refreshed where possible, and the preview and safety confirmations were cleared. Review the highlighted fields before continuing.</span></aside>}
         <aside className="m5e-notice m5e-notice--safety" role="note"><strong>Before editing</strong><span>{safeEntry} The automatic check is only a prompt; you remain responsible for safe wording.</span></aside>
         <section aria-labelledby="m5e-canvas-fields"><h2 id="m5e-canvas-fields">Connected portfolio fields</h2><p>Missing work is shown honestly and never replaced by a sample answer.</p>
           <div className="m5e-canvas-list">{canvasFields.map(([id, label, screenId, , , prompt], index) => {
             const value = fields[id] || '';
               const isRisky = containsPotentiallySensitiveModule5Text(value);
-            return <article key={id} className={!value || isRisky ? 'm5e-canvas-card m5e-canvas-card--attention' : 'm5e-canvas-card'}>
+            return <article key={id} className={!value || isRisky || dependencyFields.includes(id) ? 'm5e-canvas-card m5e-canvas-card--attention' : 'm5e-canvas-card'}>
               <div><p className="m5e-kicker">{index + 1} · Source: Screen {specs[screenId]?.number || 15}</p><h3>{label}</h3><p>{prompt}</p><p><strong>Saved value:</strong> {value || 'Not yet completed'}</p><a href={MODULE5_SCREEN_ROUTES[screenId]} onClick={(event) => { event.preventDefault(); onChangeState((previous) => ({ ...previous, currentScreenId: screenId })); navigate(screenId); }}>Review source activity</a></div>
               <button type="button" className="m5e-secondary" aria-expanded={editing === id} onClick={() => setEditing(editing === id ? null : id)}>{editing === id ? 'Close editor' : 'Edit this field'}</button>
               {editing === id && <label><span className="sr-only">Edit {label}</span><textarea rows={3} maxLength={320} value={value} onChange={(event) => update(id, event.target.value)} /><small>{isRisky ? 'Remove possible identifying or sensitive detail.' : 'Use short, generalized, non-identifying wording.'}</small></label>}
@@ -500,7 +665,7 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
 
 function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   const key = 'm5_s16';
-  const stored = (state.practiceCheckState[key] || {}) as { plan?: Record<string, string>; confirmedSafe?: boolean; dashboardReviewed?: boolean; carryReviewed?: boolean; status?: string };
+  const stored = (state.practiceCheckState[key] || {}) as { plan?: Record<string, string>; confirmedSafe?: boolean; dashboardReviewed?: boolean; carryReviewed?: boolean; status?: string; dependencyReview?: { sourceScreenId?: string; reason?: string } };
   const canvas = ((state.practiceCheckState.m5_s15 || {}) as { fields?: Record<string, string> }).fields || deriveModule5Canvas(state);
   const initialPlan = {
     days30: canvas.decision || '',
@@ -564,7 +729,7 @@ function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
       ...previous,
       completedModules: previous.completedModules.includes(MODULE5_ID) ? previous.completedModules : [...previous.completedModules, MODULE5_ID],
       screenProgress: { ...previous.screenProgress, [MODULE5_ID]: addProgress(previous, 'M5-PLAYER-COMPLETE') },
-      practiceCheckState: { ...previous.practiceCheckState, [key]: { ...previous.practiceCheckState[key], schemaVersion: 2, plan, dashboardReviewed: true, carryReviewed: true, confirmedSafe: true, status: 'completed', completedAt: new Date().toISOString() } },
+      practiceCheckState: { ...previous.practiceCheckState, [key]: { ...previous.practiceCheckState[key], schemaVersion: 2, plan, dashboardReviewed: true, carryReviewed: true, confirmedSafe: true, dependencyReview: undefined, status: 'completed', completedAt: new Date().toISOString() } },
     }));
     setMessage('Module 5 complete. Your canvas shows how evidence will support a real decision, make unequal experience and responsibility visible, close the accountability loop and test an adaptation.');
   };
@@ -586,6 +751,7 @@ function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
       <article className="m5e-shell">
         <header className="m5e-hero"><p className="m5e-kicker">MODULE 5 · SCREEN 16 OF 16</p><span className="m5e-stage">Review, plan and confirm</span><h1 id="m5e-complete-title" ref={titleRef} tabIndex={-1}>Portfolio Review and Module Closure</h1><p>Review how the evidence will be displayed and used, complete a realistic 90-day learning and account-back plan, and explicitly confirm completion.</p></header>
         {alreadyCompleted && <aside className="m5e-notice m5e-notice--info" role="status"><strong>Earlier completion preserved</strong><span>This module remains complete. You may review or improve the revised portfolio without losing completion.</span></aside>}
+        {stored.dependencyReview && <aside className="m5e-notice m5e-notice--info" role="status"><strong>Needs review after an upstream change</strong><span>An earlier decision or Canvas field changed. The dashboard, carry-forward and safety confirmations were cleared. Review the refreshed output and 90-day plan before saving or confirming completion again.</span></aside>}
         <section aria-labelledby="m5e-dashboard-title"><h2 id="m5e-dashboard-title">Evidence-to-Action Dashboard</h2><p>This is a readable generalized summary, not a data upload.</p><div className="m5e-grid">{dashboard.map(([title, body]) => <article key={title}><h3>{title}</h3><p>{body}</p></article>)}</div></section>
         <label className="m5e-confirm"><input type="checkbox" checked={dashboardReviewed} onChange={(event) => { setDashboardReviewed(event.target.checked); persist(plan, event.target.checked, carryReviewed, confirmedSafe); }} /><span>I reviewed the dashboard, including limitations and responsibility.</span></label>
         <section className="m5e-plan" aria-labelledby="m5e-plan-title"><h2 id="m5e-plan-title">90-Day Learning and Account-Back Plan</h2>{planFields.map(([id, label, help]) => { const fieldRisky = containsPotentiallySensitiveModule5Text(plan[id] || ''); const errorId = 'm5e-plan-error-' + id; return <label key={id}><span><strong>{label}</strong><small>{help}</small></span><textarea rows={3} maxLength={320} value={plan[id] || ''} aria-invalid={fieldRisky || undefined} aria-describedby={fieldRisky ? errorId : undefined} onChange={(event) => { const next = { ...plan, [id]: event.target.value }; setPlan(next); setConfirmedSafe(false); setMessage(containsPotentiallySensitiveModule5Text(event.target.value) ? 'Remove possible identifying or sensitive detail from the highlighted field. This prompt is a precaution and cannot guarantee confidentiality.' : 'Changes saved locally. Review the safety confirmation again.'); persist(next, dashboardReviewed, carryReviewed, false); }} />{fieldRisky && <small id={errorId} className="m5e-field-error">Remove possible identifying or sensitive detail.</small>}</label>; })}</section>

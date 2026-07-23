@@ -188,6 +188,78 @@ export function isModule5OutputReady(
     confirmations.every(Boolean);
 }
 
+export const MODULE5_SCREEN13_DEPENDENT_CANVAS_FIELDS = ['adaptation', 'followup'] as const;
+
+export function moveModule5Order(items: readonly string[], index: number, direction: -1 | 1) {
+  const target = index + direction;
+  if (index < 0 || index >= items.length || target < 0 || target >= items.length) return [...items];
+  const next = [...items];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+}
+
+export function isModule5OrderCorrect(items: readonly string[], correctOrder: readonly string[]) {
+  return items.length === correctOrder.length && items.every((item, index) => item === correctOrder[index]);
+}
+
+export function isModule5BuilderReady(values: Record<string, string>, requiredKeys: readonly string[]) {
+  return requiredKeys.every((key) => String(values[key] || '').trim()) &&
+    !requiredKeys.some((key) => containsPotentiallySensitiveModule5Text(String(values[key] || '')));
+}
+
+export function invalidateModule5Screen13Dependents(practiceCheckState: Record<string, unknown>) {
+  const next = { ...practiceCheckState };
+  const canvas = isRecord(next.m5_s15) ? next.m5_s15 : null;
+  const finalPlan = isRecord(next.m5_s16) ? next.m5_s16 : null;
+  if (canvas) {
+    next.m5_s15 = {
+      ...canvas,
+      status: 'needs_review',
+      previewReviewed: false,
+      confirmedSafe: false,
+      dependencyReview: {
+        sourceScreenId: 'M5-R12',
+        fields: [...MODULE5_SCREEN13_DEPENDENT_CANVAS_FIELDS],
+        reason: 'upstream_changed',
+      },
+    };
+  }
+  if (finalPlan) {
+    next.m5_s16 = {
+      ...finalPlan,
+      status: 'needs_review',
+      dashboardReviewed: false,
+      carryReviewed: false,
+      confirmedSafe: false,
+      dependencyReview: {
+        sourceScreenId: 'M5-R12',
+        reason: 'upstream_changed',
+      },
+    };
+  }
+  return next;
+}
+
+export function mergeModule5CanvasFields(
+  projected: Record<string, string>,
+  stored: Record<string, string>,
+  dependencyFields: readonly string[] = [],
+) {
+  const next = { ...projected, ...stored };
+  dependencyFields.forEach((field) => {
+    if (String(projected[field] || '').trim()) next[field] = projected[field];
+  });
+  return next;
+}
+
+export function refreshModule5PlanFromCanvas(plan: Record<string, string>, canvas: Record<string, string>) {
+  return {
+    ...plan,
+    ...(canvas.adaptation ? { days90: canvas.adaptation, trigger: canvas.adaptation } : {}),
+    ...(canvas.followup ? { learningNote: plan.learningNote || canvas.followup } : {}),
+  };
+}
+
 export function buildModule5DownloadText(
   fields: DownloadCanvasField[],
   plan: Record<string, string>,
