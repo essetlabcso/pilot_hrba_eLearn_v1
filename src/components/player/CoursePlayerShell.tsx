@@ -19,6 +19,10 @@ import {
   module2FinalScreenRoutes,
 } from '../../data/module2-final/module2FinalScreens';
 import { finalAssessmentScreenRoutes } from '../../data/finalAssessment';
+import {
+  hasFinalAssessmentPrerequisites,
+  shouldRenderPlayerScreenImmediately,
+} from '../../state/coursePrerequisites';
 
 interface CoursePlayerShellProps {
   state: LearningState;
@@ -210,7 +214,8 @@ export default function CoursePlayerShell({
     : totalScreens;
   const isWaterPointSequenceScreen = screenId === 'M1-S1-04' || screenId === 'M1-S1-05' || screenId === 'M1-S1-06' || screenId === 'M1-S1-06A' || screenId === 'M1-S1-06B' || screenId === 'M1-PLAYER-COMPLETE';
   const screenStabilizationKey = `${state.currentModuleId || 'course'}:${screenId || 'screen'}`;
-  const screenStabilized = stabilizedScreenKey === screenStabilizationKey;
+  const renderScreenImmediately = shouldRenderPlayerScreenImmediately(state.currentModuleId);
+  const screenStabilized = renderScreenImmediately || stabilizedScreenKey === screenStabilizationKey;
 
   useLayoutEffect(() => {
     function resetScreenViewport() {
@@ -233,6 +238,10 @@ export default function CoursePlayerShell({
     }
 
     resetScreenViewport();
+
+    if (renderScreenImmediately) {
+      return;
+    }
 
     const firstFrame = window.requestAnimationFrame(() => {
       resetScreenViewport();
@@ -266,7 +275,7 @@ export default function CoursePlayerShell({
       }
       screenStabilizationHandlesRef.current = {};
     };
-  }, [screenStabilizationKey]);
+  }, [renderScreenImmediately, screenStabilizationKey]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_01_hrba_foundations' || !state.currentScreenId) {
@@ -331,6 +340,14 @@ export default function CoursePlayerShell({
     syncRouteToScreen(state.currentModuleId, state.currentScreenId);
   }, [state.currentModuleId, state.currentScreenId]);
 
+  useEffect(() => {
+    if (state.currentModuleId !== 'final_assessment' || !state.currentScreenId) {
+      return;
+    }
+
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
+  }, [state.currentModuleId, state.currentScreenId]);
+
   // Handle Navigation — operates entirely on playerScreens array bounds
   const handlePrev = () => {
     if (playerIndex > 0) {
@@ -345,6 +362,12 @@ export default function CoursePlayerShell({
   };
 
   const handleNext = () => {
+    if (
+      state.currentModuleId === 'final_assessment' &&
+      !hasFinalAssessmentPrerequisites(state.completedModules)
+    ) {
+      return;
+    }
     if (state.currentModuleId === 'module_03_project_design' && screenId === 'M3-R01') {
       const screen1 = state.practiceCheckState.module3_revised_m3_r01 as Record<string, unknown> | undefined;
       if (screen1?.screen1Complete !== true) return;

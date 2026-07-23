@@ -1,4 +1,5 @@
 import { HRBA_COURSE_MODULES } from '../../data/hrbaCourseModules';
+import { canAccessCourseModule } from '../../state/coursePrerequisites';
 import ModuleLaunchCard, { type ModuleLaunchStatus } from './ModuleLaunchCard';
 
 interface CourseRoadmapProps {
@@ -7,7 +8,6 @@ interface CourseRoadmapProps {
   currentModuleId: string | null;
   currentScreenId: string | null;
   onLaunchModule: (moduleId: string, reviewMode: boolean) => void;
-  portalModeActive?: boolean;
 }
 
 export default function CourseRoadmap({
@@ -15,21 +15,17 @@ export default function CourseRoadmap({
   screenProgress,
   currentModuleId,
   onLaunchModule,
-  portalModeActive = false,
 }: CourseRoadmapProps) {
   const statusByModuleId = new Map<string, ModuleLaunchStatus>();
 
   HRBA_COURSE_MODULES.forEach((module) => {
-    const isCompleted = completedModules.includes(module.moduleId);
+    const moduleAccessible = canAccessCourseModule(module.moduleId, completedModules);
+    const isCompleted = moduleAccessible && completedModules.includes(module.moduleId);
     const hasProgress = (screenProgress[module.moduleId] || []).length > 0 || currentModuleId === module.moduleId;
-    const previousModules = HRBA_COURSE_MODULES.filter((candidate) => candidate.moduleSeq < module.moduleSeq);
-    const previousModule = previousModules.at(-1);
-    const portalFinalAssessmentUnlocked = portalModeActive && module.moduleId === 'final_assessment';
-    const previousCompleted = portalFinalAssessmentUnlocked || !previousModule || completedModules.includes(previousModule.moduleId);
 
     if (isCompleted) {
       statusByModuleId.set(module.moduleId, 'completed');
-    } else if (previousCompleted) {
+    } else if (moduleAccessible) {
       statusByModuleId.set(module.moduleId, hasProgress ? 'in-progress' : 'not-started');
     } else {
       statusByModuleId.set(module.moduleId, 'locked');

@@ -6,6 +6,10 @@ import CoursePlayerShell from './components/player/CoursePlayerShell';
 import { HRBA_COURSE_MODULES, getHRBAModuleById } from './data/hrbaCourseModules';
 import { getPortalLaunchContextFromWindow } from './integration/portalContext';
 import { sendHubProgressMessage } from './integration/hubProgress';
+import {
+  canAccessCourseModule,
+  hasFinalAssessmentPrerequisites,
+} from './state/coursePrerequisites';
 
 import m1Sequence from './data/module1/module_1_screen_sequence.json';
 import {
@@ -110,7 +114,6 @@ export default function App() {
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const screenIdParam = params.get('screenId');
     const moduleIdParam = params.get('moduleId');
-    const isPortalLaunch = params.get('embed') === 'portal' && Boolean(params.get('launchToken'));
     const allowQaProgressOverride = typeof window !== 'undefined' && (
       window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
@@ -213,12 +216,7 @@ export default function App() {
       : routeTargets[pathname] || null;
 
     const canOpenModule = (moduleId: string, completedModules: string[]) => {
-      const moduleDefinition = getHRBAModuleById(moduleId);
-      if (!moduleDefinition) return false;
-      if (moduleDefinition.moduleSeq === 1) return true;
-      if (isPortalLaunch && moduleId === 'final_assessment') return true;
-      const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
-      return previousModules.every((module) => completedModules.includes(module.moduleId));
+      return canAccessCourseModule(moduleId, completedModules);
     };
     
     if (routeTarget || screenIdParam || completedParam) {
@@ -344,6 +342,9 @@ export default function App() {
           nextState.currentScreenId = null;
           nextState.currentSubState = null;
           nextState.activeModal = null;
+          if (typeof window !== 'undefined' && pathname.startsWith('/final-assessment')) {
+            window.history.replaceState(window.history.state, '', `/${window.location.search}${window.location.hash}`);
+          }
           return nextState;
         }
       }
@@ -416,6 +417,10 @@ export default function App() {
     return () => window.removeEventListener('popstate', restoreRouteFromHistory);
   }, []);
   const portalContext = useMemo(() => getPortalLaunchContextFromWindow(), []);
+  const finalAssessmentPrerequisitesMet = useMemo(
+    () => hasFinalAssessmentPrerequisites(state.completedModules),
+    [state.completedModules],
+  );
   const portalCompletedModuleIds = useMemo(
     () => getPortalCompletedModuleIds(state.completedModules),
     [state.completedModules],
@@ -458,7 +463,7 @@ export default function App() {
   useEffect(() => {
     const result = state.finalAssessmentResult;
 
-    if (!portalContext || !result) {
+    if (!portalContext || !result || !finalAssessmentPrerequisitesMet) {
       return;
     }
 
@@ -492,14 +497,12 @@ export default function App() {
     if (sent) {
       reportedFinalAssessmentAttemptsRef.current.add(attemptSignature);
     }
-  }, [portalContext, portalCompletedModuleIds, portalProgressPercent, state.completedModules, state.finalAssessmentResult]);
+  }, [finalAssessmentPrerequisitesMet, portalContext, portalCompletedModuleIds, portalProgressPercent, state.completedModules, state.finalAssessmentResult]);
 
   const launchModule = (moduleId: string, reviewMode: boolean) => {
     setState((prev) => {
       const moduleDefinition = getHRBAModuleById(moduleId) || HRBA_COURSE_MODULES[0];
-      const previousModules = HRBA_COURSE_MODULES.filter((module) => module.moduleSeq < moduleDefinition.moduleSeq);
-      const isPortalFinalAssessment = Boolean(portalContext) && moduleId === 'final_assessment';
-      const isUnlocked = isPortalFinalAssessment || previousModules.every((module) => prev.completedModules.includes(module.moduleId));
+      const isUnlocked = canAccessCourseModule(moduleId, prev.completedModules);
 
       if (!isUnlocked) {
         return prev;

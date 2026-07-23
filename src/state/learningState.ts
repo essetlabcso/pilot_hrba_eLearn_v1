@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { migrateModule5PracticeState } from '../data/module5/module5EnhancedModel';
+import { enforceFinalAssessmentPrerequisites } from './coursePrerequisites';
 export interface LearningState {
   storageVersion: 'hrba-course-progress-v1';
   currentLayer: 'platform' | 'player';
@@ -324,16 +325,9 @@ function validateLearningState(candidate: unknown): LearningState | null {
   if (!isValidProgressMap(candidate.screenProgress)) return null;
   if (hasCompletionDependencyIssue(candidate.completedModules)) return null;
 
-  if (
-    candidate.completedModules.includes('final_assessment') &&
-    !candidate.completedModules.includes('module_05_hrba_meal')
-  ) {
-    return null;
-  }
-
   const initialState = cloneInitialLearningState();
 
-  return {
+  return enforceFinalAssessmentPrerequisites({
     ...initialState,
     ...candidate,
     m2FinalPortfolio: {
@@ -346,7 +340,7 @@ function validateLearningState(candidate: unknown): LearningState | null {
       completedModules: candidate.completedModules,
     }),
     storageVersion: STORAGE_KEY,
-  };
+  } as LearningState);
 }
 
 export function loadLearningState(): LearningState {

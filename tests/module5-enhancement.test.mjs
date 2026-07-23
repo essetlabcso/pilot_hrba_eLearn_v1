@@ -22,6 +22,77 @@ import {
   moveModule5Order,
   refreshModule5PlanFromCanvas,
 } from '../src/data/module5/module5EnhancedModel.ts';
+import {
+  REQUIRED_HRBA_MODULE_IDS,
+  canAccessCourseModule,
+  enforceFinalAssessmentPrerequisites,
+  hasFinalAssessmentPrerequisites,
+  shouldRenderPlayerScreenImmediately,
+} from '../src/state/coursePrerequisites.ts';
+
+test('Final Assessment uses one fail-closed prerequisite source', () => {
+  const incomplete = REQUIRED_HRBA_MODULE_IDS.slice(0, 4);
+  assert.equal(hasFinalAssessmentPrerequisites(incomplete), false);
+  assert.equal(canAccessCourseModule('final_assessment', incomplete), false);
+  assert.equal(hasFinalAssessmentPrerequisites(REQUIRED_HRBA_MODULE_IDS), true);
+  assert.equal(canAccessCourseModule('final_assessment', REQUIRED_HRBA_MODULE_IDS), true);
+
+  const app = readFileSync('src/App.tsx', 'utf8');
+  const roadmap = readFileSync('src/components/platform/CourseRoadmap.tsx', 'utf8');
+  assert.match(app, /canAccessCourseModule\(moduleId, prev\.completedModules\)/);
+  assert.match(roadmap, /const moduleAccessible = canAccessCourseModule\(module\.moduleId, completedModules\)/);
+  assert.doesNotMatch(app, /isPortalFinalAssessment|isPortalLaunch && moduleId === 'final_assessment'/);
+  assert.doesNotMatch(roadmap, /portalFinalAssessmentUnlocked/);
+});
+
+test('stale assessment state is cleared without erasing valid module history', () => {
+  const staleState = {
+    completedModules: [...REQUIRED_HRBA_MODULE_IDS.slice(0, 4), 'final_assessment'],
+    currentLayer: 'player',
+    currentModuleId: 'final_assessment',
+    currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+    finalAssessmentAnswers: { q1: 'a' },
+    finalAssessmentResult: { passed: true },
+    screenProgress: {
+      module_01_hrba_foundations: ['M1-PLAYER-COMPLETE'],
+      final_assessment: ['FINAL-ASSESSMENT-COMPLETE'],
+    },
+  };
+  const corrected = enforceFinalAssessmentPrerequisites(staleState);
+  assert.deepEqual(corrected.completedModules, REQUIRED_HRBA_MODULE_IDS.slice(0, 4));
+  assert.equal(corrected.currentLayer, 'platform');
+  assert.equal(corrected.currentModuleId, null);
+  assert.equal(corrected.currentScreenId, null);
+  assert.deepEqual(corrected.finalAssessmentAnswers, {});
+  assert.equal(corrected.finalAssessmentResult, null);
+  assert.deepEqual(corrected.screenProgress.module_01_hrba_foundations, ['M1-PLAYER-COMPLETE']);
+  assert.deepEqual(corrected.screenProgress.final_assessment, []);
+});
+
+test('assessment submission and rendering retain defense in depth', () => {
+  const renderer = readFileSync('src/components/course/FinalAssessmentRenderer.tsx', 'utf8');
+  assert.match(renderer, /if \(!allAnswered \|\| !prerequisitesMet\) return/);
+  assert.match(renderer, /if \(!hasFinalAssessmentPrerequisites\(prev\.completedModules\)\) return prev/);
+  assert.match(renderer, /Complete Modules 1–5 first/);
+  const shell = readFileSync('src/components/player/CoursePlayerShell.tsx', 'utf8');
+  assert.match(shell, /state\.currentModuleId === 'final_assessment'[\s\S]*!hasFinalAssessmentPrerequisites\(state\.completedModules\)/);
+});
+
+test('Final Assessment screens bypass the hiding stabilization overlay', () => {
+  assert.equal(shouldRenderPlayerScreenImmediately('final_assessment'), true);
+  assert.equal(shouldRenderPlayerScreenImmediately('module_05_hrba_meal'), false);
+
+  const shell = readFileSync('src/components/player/CoursePlayerShell.tsx', 'utf8');
+  assert.match(shell, /const screenStabilized = renderScreenImmediately \|\|/);
+  assert.match(shell, /state\.currentModuleId !== 'final_assessment'/);
+});
+
+test('Hub postMessage contract and validated target origin remain unchanged', () => {
+  const bridge = readFileSync('src/integration/hubProgress.ts', 'utf8');
+  assert.match(bridge, /window\.parent\.postMessage\(message, portalContext\.portalOrigin\)/);
+  assert.match(bridge, /cso-learning-hub:external-course-progress/);
+  assert.doesNotMatch(bridge, /postMessage\(message, ['\"]\*['\"]\)/);
+});
 
 test('all canonical Module 5 screen IDs remain canonical', () => {
   for (const id of MODULE5_CANONICAL_SCREEN_IDS) assert.equal(canonicalizeModule5ScreenId(id), id);
