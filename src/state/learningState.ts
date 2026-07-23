@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { migrateModule5PracticeState } from '../data/module5/module5EnhancedModel';
+import { isValidAssessmentEvidenceId } from '../integration/portalLearnerState';
 import { enforceFinalAssessmentPrerequisites } from './coursePrerequisites';
 export interface LearningState {
   storageVersion: 'hrba-course-progress-v1';
@@ -130,6 +131,7 @@ export interface LearningState {
   // Final Assessment State
   finalAssessmentAnswers: Record<string, string>;
   finalAssessmentResult: {
+    evidenceId: string;
     score: number;
     maxScore: number;
     percentage: number;
@@ -269,7 +271,7 @@ export const initialLearningState: LearningState = {
   finalAssessmentAttemptNumber: 0,
 };
 
-const STORAGE_KEY = 'hrba-course-progress-v1';
+export const STANDALONE_STORAGE_KEY = 'hrba-course-progress-v1';
 const LEGACY_STORAGE_KEYS = ['hrba_course_learning_state'];
 const VALID_MODULE_IDS = new Set([
   'module_01_hrba_foundations',
@@ -318,16 +320,43 @@ function hasCompletionDependencyIssue(completedModules: string[]) {
   });
 }
 
-function validateLearningState(candidate: unknown): LearningState | null {
+function clearInvalidAssessmentEvidence(state: LearningState) {
+  if (
+    !state.finalAssessmentResult
+    || isValidAssessmentEvidenceId(state.finalAssessmentResult.evidenceId)
+  ) {
+    return state;
+  }
+
+  const assessmentIsActive = state.currentModuleId === 'final_assessment';
+  return {
+    ...state,
+    completedModules: state.completedModules.filter((moduleId) => moduleId !== 'final_assessment'),
+    currentLayer: assessmentIsActive ? 'platform' as const : state.currentLayer,
+    currentModuleId: assessmentIsActive ? null : state.currentModuleId,
+    currentScreenId: assessmentIsActive ? null : state.currentScreenId,
+    finalAssessmentAnswers: {},
+    finalAssessmentResult: null,
+    screenProgress: {
+      ...state.screenProgress,
+      final_assessment: [],
+    },
+  };
+}
+
+function validateLearningState(
+  candidate: unknown,
+  requireValidAssessmentEvidence = false,
+): LearningState | null {
   if (!isObject(candidate)) return null;
-  if (candidate.storageVersion !== STORAGE_KEY) return null;
+  if (candidate.storageVersion !== STANDALONE_STORAGE_KEY) return null;
   if (!isValidModuleList(candidate.completedModules)) return null;
   if (!isValidProgressMap(candidate.screenProgress)) return null;
   if (hasCompletionDependencyIssue(candidate.completedModules)) return null;
 
   const initialState = cloneInitialLearningState();
 
-  return enforceFinalAssessmentPrerequisites({
+  const validated = enforceFinalAssessmentPrerequisites({
     ...initialState,
     ...candidate,
     m2FinalPortfolio: {
@@ -339,40 +368,60 @@ function validateLearningState(candidate: unknown): LearningState | null {
       screenProgress: candidate.screenProgress,
       completedModules: candidate.completedModules,
     }),
-    storageVersion: STORAGE_KEY,
+    storageVersion: STANDALONE_STORAGE_KEY,
   } as LearningState);
+
+  return requireValidAssessmentEvidence
+    ? clearInvalidAssessmentEvidence(validated)
+    : validated;
 }
 
-export function loadLearningState(): LearningState {
+export function loadLearningState(
+  storageKey = STANDALONE_STORAGE_KEY,
+  requireValidAssessmentEvidence = false,
+): LearningState {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       const parsed = JSON.parse(saved);
-      const validated = validateLearningState(parsed);
+      const validated = validateLearningState(parsed, requireValidAssessmentEvidence);
       if (validated) return validated;
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(storageKey);
     }
-    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    if (storageKey === STANDALONE_STORAGE_KEY) {
+      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    }
   } catch (e) {
     console.error('Failed to load learning state from localStorage:', e);
   }
   return cloneInitialLearningState();
 }
 
-export function saveLearningState(state: LearningState): void {
+export function saveLearningState(
+  state: LearningState,
+  storageKey = STANDALONE_STORAGE_KEY,
+  requireValidAssessmentEvidence = false,
+): void {
   try {
-    const validated = validateLearningState({ ...state, storageVersion: STORAGE_KEY });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(validated || cloneInitialLearningState()));
-    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    const validated = validateLearningState(
+      { ...state, storageVersion: STANDALONE_STORAGE_KEY },
+      requireValidAssessmentEvidence,
+    );
+    localStorage.setItem(storageKey, JSON.stringify(validated || cloneInitialLearningState()));
+    if (storageKey === STANDALONE_STORAGE_KEY) {
+      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    }
   } catch (e) {
     console.error('Failed to save learning state to localStorage:', e);
   }
 }
 
-export function resetLearningState(): LearningState {
+export function resetLearningState(storageKey = STANDALONE_STORAGE_KEY): LearningState {
   try {
-    localStorage.removeItem(STORAGE_KEY);
-    LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    localStorage.removeItem(storageKey);
+    if (storageKey === STANDALONE_STORAGE_KEY) {
+      LEGACY_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    }
   } catch (e) {
     console.error('Failed to reset learning state in localStorage:', e);
   }

@@ -5,6 +5,8 @@ export type PortalLaunchContext = {
   launchToken: string;
 };
 
+const HRBA_COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
+
 export type PortalLaunchEnvironment = {
   isEmbedded: boolean;
   referrer: string;
@@ -41,7 +43,7 @@ export function parsePortalLaunchContext(search: string): PortalLaunchContext | 
   const courseSlug = getRequiredParam(params, 'courseSlug');
   const launchToken = getRequiredParam(params, 'launchToken');
 
-  if (!portalOrigin || !courseSlug || !launchToken) {
+  if (!portalOrigin || courseSlug !== HRBA_COURSE_SLUG || !launchToken) {
     return null;
   }
 
@@ -51,6 +53,10 @@ export function parsePortalLaunchContext(search: string): PortalLaunchContext | 
     courseSlug,
     launchToken,
   };
+}
+
+export function isPortalLaunchRequested(search: string) {
+  return new URLSearchParams(search).get('embed')?.trim() === 'portal';
 }
 
 export function isPortalLaunchEnvironmentValid(
@@ -145,9 +151,16 @@ export function getPortalLaunchContextFromWindow() {
     isEmbedded: window.parent !== window,
     referrer: document.referrer,
   };
+  const preserveApprovedPortalRoute = () => {
+    window.history.replaceState(
+      buildPortalHistoryState(portalContext),
+      '',
+      `${buildPortalContextRoute(window.location.pathname, portalContext)}${window.location.hash}`,
+    );
+  };
 
   if (isPortalLaunchEnvironmentValid(portalContext, environment)) {
-    window.history.replaceState(buildPortalHistoryState(portalContext), '');
+    preserveApprovedPortalRoute();
     return portalContext;
   }
 
@@ -160,9 +173,14 @@ export function getPortalLaunchContextFromWindow() {
     }
   })();
 
-  return environment.isEmbedded
+  const restored = environment.isEmbedded
     && isSameOriginRefresh
-    && portalContextsMatch(portalContext, restoredPortalContext)
-    ? portalContext
-    : null;
+    && portalContextsMatch(portalContext, restoredPortalContext);
+
+  if (restored) {
+    preserveApprovedPortalRoute();
+    return portalContext;
+  }
+
+  return null;
 }

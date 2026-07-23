@@ -35,6 +35,16 @@ import {
   isPortalLaunchEnvironmentValid,
   parsePortalLaunchContext,
 } from '../src/integration/portalContext.ts';
+import {
+  EXTERNAL_COURSE_EVENT_MESSAGE,
+  HRBA_COURSE_SLUG,
+  PORTAL_STORAGE_PREFIX,
+  createAssessmentEvidenceId,
+  derivePortalStorageKey,
+  isCanonicalOpaque32ByteBase64Url,
+  isExternalCourseLaunchContextMessage,
+  isValidAssessmentEvidenceId,
+} from '../src/integration/portalLearnerState.ts';
 
 test('Final Assessment uses one fail-closed prerequisite source', () => {
   const incomplete = REQUIRED_HRBA_MODULE_IDS.slice(0, 4);
@@ -96,15 +106,17 @@ test('Final Assessment screens bypass the hiding stabilization overlay', () => {
 test('Hub postMessage contract and validated target origin remain unchanged', () => {
   const bridge = readFileSync('src/integration/hubProgress.ts', 'utf8');
   assert.match(bridge, /window\.parent\.postMessage\(message, portalContext\.portalOrigin\)/);
-  assert.match(bridge, /cso-learning-hub:external-course-progress/);
-  assert.doesNotMatch(bridge, /postMessage\(message, ['\"]\*['\"]\)/);
+  assert.match(bridge, /EXTERNAL_COURSE_EVENT_MESSAGE/);
+  assert.match(bridge, /learnerStateKey/);
+  assert.doesNotMatch(bridge, /launchToken/);
+  assert.doesNotMatch(bridge, /postMessage\([^)]*, ['"]\*['"]\)/);
 });
 
 test('portal routes retain only validated integration context', () => {
   const context = parsePortalLaunchContext(
     '?embed=portal'
       + '&portalOrigin=https%3A%2F%2Fhub.example.org'
-      + '&courseSlug=hrba-course'
+      + `&courseSlug=${HRBA_COURSE_SLUG}`
       + '&launchToken=opaque-launch'
       + '&learnerId=raw-learner'
       + '&organizationId=raw-organization',
@@ -138,10 +150,56 @@ test('portal routes retain only validated integration context', () => {
     hrbaPortalContextV1: {
       embed: 'portal',
       portalOrigin: 'https://hub.example.org',
-      courseSlug: 'hrba-course',
+      courseSlug: HRBA_COURSE_SLUG,
       launchToken: 'opaque-launch',
     },
   });
+});
+
+test('learner-state keys and namespaces enforce canonical 32-byte base64url isolation', async () => {
+  const keyA = Buffer.alloc(32, 0x11).toString('base64url');
+  const keyB = Buffer.alloc(32, 0x22).toString('base64url');
+  assert.equal(keyA.length, 43);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(keyA), true);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(`${keyA}=`), false);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(keyA.slice(0, 42)), false);
+  assert.equal(isCanonicalOpaque32ByteBase64Url(`${keyA.slice(0, 42)}B`), false);
+
+  const namespaceA1 = await derivePortalStorageKey(keyA);
+  const namespaceA2 = await derivePortalStorageKey(keyA);
+  const namespaceB = await derivePortalStorageKey(keyB);
+  assert.equal(namespaceA1, namespaceA2);
+  assert.notEqual(namespaceA1, namespaceB);
+  assert.match(namespaceA1, new RegExp(`^${PORTAL_STORAGE_PREFIX}[0-9a-f]{64}$`));
+  assert.equal(namespaceA1.includes(keyA), false);
+});
+
+test('launch context and assessment evidence conform to the approved Hub contract', () => {
+  const learnerStateKey = Buffer.alloc(32, 0x33).toString('base64url');
+  const portalContext = parsePortalLaunchContext(
+    `?embed=portal&portalOrigin=https%3A%2F%2Fhub.example.org&courseSlug=${HRBA_COURSE_SLUG}&launchToken=opaque`,
+  );
+  assert.ok(portalContext);
+  assert.equal(isExternalCourseLaunchContextMessage({
+    type: 'cso-learning-hub:external-course-launch-context',
+    version: 1,
+    courseSlug: HRBA_COURSE_SLUG,
+    learnerStateKey,
+  }, portalContext), true);
+  assert.equal(isExternalCourseLaunchContextMessage({
+    type: 'cso-learning-hub:external-course-launch-context',
+    version: 1,
+    courseSlug: HRBA_COURSE_SLUG,
+    learnerStateKey: `${learnerStateKey}=`,
+  }, portalContext), false);
+
+  const evidenceId = createAssessmentEvidenceId();
+  assert.equal(isValidAssessmentEvidenceId(evidenceId), true);
+  assert.equal(isValidAssessmentEvidenceId('550e8400-e29b-41d4-a716-446655440000'), true);
+  assert.equal(isValidAssessmentEvidenceId(Buffer.alloc(32, 0x44).toString('base64url')), true);
+  assert.equal(isValidAssessmentEvidenceId('short-arbitrary-evidence'), false);
+  assert.equal(isValidAssessmentEvidenceId(`${Buffer.alloc(32, 0x44).toString('base64url')}=`), false);
+  assert.equal(EXTERNAL_COURSE_EVENT_MESSAGE, 'cso-learning-hub:external-course-event');
 });
 
 test('all canonical Module 5 screen IDs remain canonical', () => {

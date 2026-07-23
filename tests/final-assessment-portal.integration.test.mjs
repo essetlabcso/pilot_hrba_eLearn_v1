@@ -1,12 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright';
 
 const APP_PORT = 43173;
 const APP_ORIGIN = `http://127.0.0.1:${APP_PORT}`;
+const COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
+const EVENT_TYPE = 'cso-learning-hub:external-course-event';
+const CONTEXT_TYPE = 'cso-learning-hub:external-course-launch-context';
+const STANDALONE_STORAGE_KEY = 'hrba-course-progress-v1';
+const PORTAL_STORAGE_PREFIX = 'hrba-course-progress-v1:portal:sha256:';
 const REQUIRED_MODULES = [
   'module_01_hrba_foundations',
   'module_02_everyday_cso_work',
@@ -26,18 +32,76 @@ const CORRECT_RADIO_IDS = [
   'q9_adaptation-c',
   'q10_meal_reporting-b',
 ];
-const APPROVED_ROUTE_KEYS = [
-  'courseSlug',
-  'embed',
-  'launchToken',
-  'portalOrigin',
-];
-const RAW_HUB_KEYS = [
+const STATE_KEYS = {
+  a: Buffer.alloc(32, 0x11).toString('base64url'),
+  b: Buffer.alloc(32, 0x22).toString('base64url'),
+  c: Buffer.alloc(32, 0x33).toString('base64url'),
+  d: Buffer.alloc(32, 0x44).toString('base64url'),
+};
+const APPROVED_ROUTE_KEYS = ['courseSlug', 'embed', 'launchToken', 'portalOrigin'];
+const PROHIBITED_KEYS = [
+  'userId',
   'learnerId',
+  'participantId',
   'enrollmentId',
   'organizationId',
+  'orgId',
   'courseVersionId',
 ];
+const EVIDENCE_PATTERN =
+  /^(?:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048])$/i;
+
+function portalStorageKey(learnerStateKey) {
+  return `${PORTAL_STORAGE_PREFIX}${createHash('sha256').update(learnerStateKey).digest('hex')}`;
+}
+
+function minimalState({
+  completedModules = [],
+  finalAssessmentResult = null,
+  currentLayer = 'platform',
+  currentModuleId = null,
+  currentScreenId = null,
+} = {}) {
+  return {
+    storageVersion: STANDALONE_STORAGE_KEY,
+    completedModules,
+    currentLayer,
+    currentModuleId,
+    currentScreenId,
+    finalAssessmentAnswers: {},
+    finalAssessmentAttemptNumber: finalAssessmentResult?.attemptNumber || 0,
+    finalAssessmentResult,
+    screenProgress: finalAssessmentResult
+      ? { final_assessment: ['FINAL-ASSESSMENT-COMPLETE'] }
+      : {},
+  };
+}
+
+function assertNoProhibitedIdentifiers(value) {
+  const serialized = JSON.stringify(value);
+  const normalized = serialized.toLowerCase();
+  for (const key of PROHIBITED_KEYS) {
+    assert.equal(
+      normalized.includes(key.toLowerCase()),
+      false,
+      `Unexpected prohibited Hub key: ${key}`,
+    );
+  }
+  assert.equal(serialized.includes('raw-learner-must-not-propagate'), false);
+  assert.equal(serialized.includes('raw-enrollment-must-not-propagate'), false);
+  assert.equal(serialized.includes('raw-organization-must-not-propagate'), false);
+  assert.equal(serialized.includes('raw-version-must-not-propagate'), false);
+  for (const detailedField of [
+    'canvas',
+    'complaint',
+    'finalassessmentanswers',
+    'portfolio',
+    'practicecheckstate',
+    'reflection',
+  ]) {
+    assert.equal(normalized.includes(detailedField), false);
+  }
+}
 
 function listen(server) {
   return new Promise((resolve, reject) => {
@@ -58,7 +122,6 @@ function closeServer(server) {
 async function waitForApp() {
   const deadline = Date.now() + 30_000;
   let lastError;
-
   while (Date.now() < deadline) {
     try {
       const response = await fetch(APP_ORIGIN);
@@ -68,23 +131,18 @@ async function waitForApp() {
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-
   throw lastError || new Error('Timed out waiting for the HRBA test server.');
 }
 
-function buildCourseUrl(parentOrigin, {
-  completed = true,
-  claimedPortalOrigin = parentOrigin,
-  path = '/final-assessment',
-} = {}) {
-  const url = new URL(path, APP_ORIGIN);
-  if (completed) {
-    url.searchParams.set('completed', REQUIRED_MODULES.join(','));
-  }
+function buildCourseUrl(parentOrigin, mode) {
+  const url = new URL('/', APP_ORIGIN);
   url.searchParams.set('embed', 'portal');
-  url.searchParams.set('portalOrigin', claimedPortalOrigin);
-  url.searchParams.set('courseSlug', 'hrba-approved-opaque');
-  url.searchParams.set('launchToken', 'launch-approved-opaque');
+  url.searchParams.set(
+    'portalOrigin',
+    mode === 'wrong-origin' ? 'https://unapproved.example.org' : parentOrigin,
+  );
+  url.searchParams.set('courseSlug', COURSE_SLUG);
+  url.searchParams.set('launchToken', `launch-${mode}-opaque`);
   url.searchParams.set('learnerId', 'raw-learner-must-not-propagate');
   url.searchParams.set('enrollmentId', 'raw-enrollment-must-not-propagate');
   url.searchParams.set('organizationId', 'raw-organization-must-not-propagate');
@@ -92,14 +150,24 @@ function buildCourseUrl(parentOrigin, {
   return url.toString();
 }
 
-function createParentServer(getIframeUrl) {
+function keyForMode(mode) {
+  if (mode === 'learner-b') return STATE_KEYS.b;
+  if (mode === 'replacement') return STATE_KEYS.c;
+  if (mode === 'malformed-evidence') return STATE_KEYS.d;
+  return STATE_KEYS.a;
+}
+
+function createParentServer(getOrigin) {
   return createServer((request, response) => {
-    if (request.url !== '/') {
-      response.writeHead(404).end();
+    const mode = new URL(request.url || '/', 'http://parent.invalid').pathname.slice(1) || 'learner-a';
+    if (mode === 'signed-out') {
+      response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      response.end('<!doctype html><title>Signed out</title><h1>Signed out of the Learning Hub</h1>');
       return;
     }
 
-    const iframeUrl = getIframeUrl();
+    const parentOrigin = getOrigin();
+    const iframeUrl = buildCourseUrl(parentOrigin, mode);
     response.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -108,7 +176,7 @@ function createParentServer(getIframeUrl) {
       <html lang="en">
         <head>
           <meta charset="utf-8">
-          <title>HRBA portal integration parent</title>
+          <title>HRBA learner-isolation parent</title>
           <style>
             html, body { height: 100%; margin: 0; }
             body { display: grid; grid-template-rows: auto 1fr; }
@@ -116,12 +184,51 @@ function createParentServer(getIframeUrl) {
           </style>
         </head>
         <body>
-          <strong id="parent-marker">Approved parent remains mounted</strong>
+          <strong id="parent-marker">Learning Hub parent: ${mode}</strong>
           <iframe id="course-frame" title="Embedded HRBA course" src="${iframeUrl.replaceAll('&', '&amp;')}"></iframe>
           <script>
+            const mode = ${JSON.stringify(mode)};
+            const appOrigin = ${JSON.stringify(APP_ORIGIN)};
+            const courseSlug = ${JSON.stringify(COURSE_SLUG)};
+            const stateKeys = ${JSON.stringify(STATE_KEYS)};
             window.receivedMessages = [];
             window.addEventListener('message', (event) => {
               window.receivedMessages.push({ origin: event.origin, data: event.data });
+              if (
+                event.origin !== appOrigin ||
+                event.data?.type !== ${JSON.stringify(EVENT_TYPE)} ||
+                event.data?.event !== 'course_ready' ||
+                mode === 'missing' ||
+                mode === 'wrong-origin'
+              ) {
+                return;
+              }
+
+              const learnerStateKey = mode === 'learner-b'
+                ? stateKeys.b
+                : mode === 'replacement'
+                  ? stateKeys.c
+                  : mode === 'malformed-evidence'
+                    ? stateKeys.d
+                    : mode === 'malformed-context'
+                      ? stateKeys.a + '='
+                      : stateKeys.a;
+              const frame = document.getElementById('course-frame');
+              frame.contentWindow.postMessage({
+                type: ${JSON.stringify(CONTEXT_TYPE)},
+                version: 1,
+                courseSlug,
+                learnerStateKey,
+              }, appOrigin);
+
+              if (mode === 'mismatch') {
+                setTimeout(() => frame.contentWindow.postMessage({
+                  type: ${JSON.stringify(CONTEXT_TYPE)},
+                  version: 1,
+                  courseSlug,
+                  learnerStateKey: stateKeys.b,
+                }, appOrigin), 50);
+              }
             });
           </script>
         </body>
@@ -132,27 +239,44 @@ function createParentServer(getIframeUrl) {
 async function getCourseFrame(page) {
   await page.locator('#course-frame').waitFor({ state: 'attached' });
   const existingFrame = page.frames().find((candidate) => candidate.url().startsWith(APP_ORIGIN));
-  const frame = existingFrame || await page.waitForEvent('framenavigated', {
+  return existingFrame || page.waitForEvent('framenavigated', {
     predicate: (candidate) => candidate.url().startsWith(APP_ORIGIN),
     timeout: 10_000,
   });
-  assert.ok(frame, 'Expected the cross-origin HRBA iframe to be attached.');
-  return frame;
 }
 
-function assertNoRawHubIdentifiers(value) {
-  const serialized = JSON.stringify(value);
-  for (const key of RAW_HUB_KEYS) {
-    assert.equal(serialized.includes(key), false, `Unexpected raw Hub key: ${key}`);
-  }
-  assert.equal(serialized.includes('raw-learner-must-not-propagate'), false);
-  assert.equal(serialized.includes('raw-enrollment-must-not-propagate'), false);
-  assert.equal(serialized.includes('raw-organization-must-not-propagate'), false);
-  assert.equal(serialized.includes('raw-version-must-not-propagate'), false);
+async function reloadFrame(frame) {
+  await Promise.all([
+    frame.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+    frame.evaluate(() => window.location.reload()),
+  ]);
 }
 
-test('Final Assessment preserves validated portal context through iframe refresh and completion', {
-  timeout: 90_000,
+async function clearParentMessages(page) {
+  await page.evaluate(() => {
+    window.receivedMessages = [];
+  });
+}
+
+async function getParentMessages(page) {
+  return page.evaluate(() => window.receivedMessages);
+}
+
+async function waitForEvent(page, eventName, learnerStateKey) {
+  await page.waitForFunction(
+    ({ eventName: expectedEvent, learnerStateKey: expectedKey }) => (
+      window.receivedMessages.some(({ data }) => (
+        data?.type === 'cso-learning-hub:external-course-event'
+        && data.event === expectedEvent
+        && data.learnerStateKey === expectedKey
+      ))
+    ),
+    { eventName, learnerStateKey },
+  );
+}
+
+test('HRBA isolates portal state and evidence across learners in one browser profile', {
+  timeout: 120_000,
 }, async (t) => {
   const vite = spawn(
     process.execPath,
@@ -169,34 +293,69 @@ test('Final Assessment preserves validated portal context through iframe refresh
   t.after(() => vite.kill());
   await waitForApp();
 
-  let approvedOrigin = '';
-  let unapprovedOrigin = '';
-  const approvedParent = createParentServer(() => buildCourseUrl(approvedOrigin, { path: '/' }));
-  approvedOrigin = await listen(approvedParent);
-  t.after(() => closeServer(approvedParent));
-
-  const unapprovedParent = createParentServer(() => buildCourseUrl(
-    unapprovedOrigin,
-    { claimedPortalOrigin: approvedOrigin },
-  ));
-  unapprovedOrigin = await listen(unapprovedParent);
-  t.after(() => closeServer(unapprovedParent));
+  let parentOrigin = '';
+  const parentServer = createParentServer(() => parentOrigin);
+  parentOrigin = await listen(parentServer);
+  t.after(() => closeServer(parentServer));
 
   const browser = await chromium.launch({ headless: true });
   t.after(() => browser.close());
 
-  await t.test('cross-origin assessment refresh keeps exact-origin Hub reporting', async () => {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    const page = await context.newPage();
-    const browserErrors = [];
-    page.on('console', (message) => {
-      if (message.type() === 'error' || message.type() === 'warning') {
-        browserErrors.push(`${message.type()}: ${message.text()}`);
-      }
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  t.after(() => context.close());
+  await context.route('https://fonts.googleapis.com/**', (route) => route.fulfill({
+    contentType: 'text/css',
+    body: '',
+  }));
+  await context.addInitScript(({ appOrigin, standaloneKey, standaloneState }) => {
+    if (window.location.origin === appOrigin) {
+      localStorage.setItem(standaloneKey, JSON.stringify(standaloneState));
+      localStorage.setItem('hrba_course_learning_state', JSON.stringify(standaloneState));
+    }
+  }, {
+    appOrigin: APP_ORIGIN,
+    standaloneKey: STANDALONE_STORAGE_KEY,
+    standaloneState: minimalState({
+      completedModules: [...REQUIRED_MODULES, 'final_assessment'],
+      finalAssessmentResult: {
+        attemptNumber: 99,
+        evidenceId: '550e8400-e29b-41d4-a716-446655440000',
+        maxScore: 10,
+        passed: true,
+        percentage: 100,
+        score: 10,
+        submittedAt: '2026-07-23T10:00:00.000Z',
+      },
+    }),
+  });
+
+  const page = await context.newPage();
+  const browserErrors = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error' || message.type() === 'warning') {
+      browserErrors.push(`${message.type()}: ${message.text()}`);
+    }
+  });
+  page.on('pageerror', (error) => browserErrors.push(`pageerror: ${error.message}`));
+
+  await t.test('Learner A completes and retains one immutable assessment evidence record', async () => {
+    await page.goto(`${parentOrigin}/learner-a`);
+    let frame = await getCourseFrame(page);
+    await waitForEvent(page, 'progress_updated', STATE_KEYS.a);
+    let messages = await getParentMessages(page);
+    const firstProgress = messages.find(({ data }) => data?.event === 'progress_updated');
+    assert.equal(firstProgress.data.progressPercent, 0);
+    assert.deepEqual(firstProgress.data.completedModuleIds, []);
+    assert.equal(new URL(frame.url()).searchParams.has('learnerId'), false);
+
+    const storageKeyA = portalStorageKey(STATE_KEYS.a);
+    await frame.evaluate(({ storageKey, state }) => {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }, {
+      storageKey: storageKeyA,
+      state: minimalState({ completedModules: REQUIRED_MODULES }),
     });
-    page.on('pageerror', (error) => browserErrors.push(`pageerror: ${error.message}`));
-    await page.goto(approvedOrigin);
-    const frame = await getCourseFrame(page);
+    await reloadFrame(frame);
 
     const launchAssessment = frame.getByRole('button', {
       name: 'Start Final Assessment: Final Assessment',
@@ -205,140 +364,241 @@ test('Final Assessment preserves validated portal context through iframe refresh
     await launchAssessment.waitFor({ state: 'visible' });
     await launchAssessment.click();
     await frame.waitForURL(`${APP_ORIGIN}/final-assessment/cover?**`);
-
-    const startButton = frame.getByRole('button', { name: 'Start assessment', exact: true });
-    await startButton.waitFor({ state: 'visible' });
     assert.equal(await frame.locator('.course-screen-loading').count(), 0);
-    await startButton.click();
+
+    await frame.getByRole('button', { name: 'Start assessment', exact: true }).click();
     await frame.waitForURL(`${APP_ORIGIN}/final-assessment/questions?**`);
-
     const questionsUrl = new URL(frame.url());
-    assert.equal(questionsUrl.pathname, '/final-assessment/questions');
     assert.deepEqual([...questionsUrl.searchParams.keys()].sort(), APPROVED_ROUTE_KEYS);
-    assert.equal(questionsUrl.searchParams.get('portalOrigin'), approvedOrigin);
-    assertNoRawHubIdentifiers(questionsUrl.toString());
-    assert.equal(await frame.locator('.course-screen-loading').count(), 0);
+    assert.equal(questionsUrl.toString().includes(STATE_KEYS.a), false);
+    assertNoProhibitedIdentifiers(questionsUrl.toString());
 
-    await Promise.all([
-      frame.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-      frame.evaluate(() => window.location.reload()),
-    ]);
+    await reloadFrame(frame);
     await frame.locator('.final-assessment-status').waitFor({ state: 'visible' });
-    const refreshedReferrer = await frame.evaluate(() => document.referrer);
-    assert.equal(new URL(refreshedReferrer).origin, APP_ORIGIN);
-    assert.equal(
-      await frame.getByText(
-        'Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.',
-        { exact: true },
-      ).count(),
-      1,
-    );
+    await waitForEvent(page, 'progress_updated', STATE_KEYS.a);
 
-    await page.waitForFunction(() => window.receivedMessages.some(
-      ({ data }) => data?.type === 'cso-learning-hub:external-course-progress'
-        && data.currentScreenId === 'FINAL-ASSESSMENT-QUESTIONS',
-    ));
-
+    await clearParentMessages(page);
     for (const radioId of CORRECT_RADIO_IDS) {
       await frame.locator(`#${radioId}`).check();
     }
     await frame.getByRole('button', { name: 'Submit final assessment', exact: true }).click();
     await frame.locator('.final-assessment-score').waitFor({ state: 'visible' });
+    await waitForEvent(page, 'assessment_completed', STATE_KEYS.a);
+    await waitForEvent(page, 'course_completed', STATE_KEYS.a);
 
-    await page.waitForFunction(() => window.receivedMessages.some(
-      ({ data }) => data?.type === 'cso-learning-hub:external-course-progress'
-        && data.completed === true
-        && data.assessment?.passed === true,
-    ));
-    const messages = await page.evaluate(() => window.receivedMessages);
-    const completionMessage = messages.find(
-      ({ data }) => data?.completed === true && data.assessment?.passed === true,
-    );
-
+    messages = await getParentMessages(page);
+    const assessmentMessage = messages.find(({ data }) => data?.event === 'assessment_completed');
+    const completionMessage = messages.find(({ data }) => data?.event === 'course_completed');
+    assert.ok(assessmentMessage);
     assert.ok(completionMessage);
+    assert.equal(assessmentMessage.origin, APP_ORIGIN);
     assert.equal(completionMessage.origin, APP_ORIGIN);
+    assert.equal(assessmentMessage.data.courseSlug, COURSE_SLUG);
+    assert.equal(assessmentMessage.data.progressPercent, 100);
     assert.equal(completionMessage.data.progressPercent, 100);
-    assert.equal(completionMessage.data.currentModuleId, 'final_assessment');
-    assert.equal(completionMessage.data.currentScreenId, 'FINAL-ASSESSMENT-COMPLETE');
-    assert.equal(completionMessage.data.courseSlug, 'hrba-approved-opaque');
-    assert.equal(completionMessage.data.launchToken, 'launch-approved-opaque');
-    assertNoRawHubIdentifiers(completionMessage);
-    assert.equal(new URL(frame.url()).searchParams.get('portalOrigin'), approvedOrigin);
-
-    await Promise.all([
-      frame.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-      frame.evaluate(() => window.location.reload()),
-    ]);
-    await frame.locator('.final-assessment-score').waitFor({ state: 'visible' });
-    assert.equal(await frame.locator('.final-assessment-score').innerText(), '100%\n10 of 10');
+    assert.equal(assessmentMessage.data.learnerStateKey, STATE_KEYS.a);
+    assert.equal(completionMessage.data.learnerStateKey, STATE_KEYS.a);
+    assert.match(assessmentMessage.data.assessment.evidenceId, EVIDENCE_PATTERN);
     assert.equal(
-      await frame.getByText(
-        'Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.',
-        { exact: true },
-      ).count(),
+      assessmentMessage.data.assessment.evidenceId,
+      completionMessage.data.assessment.evidenceId,
+    );
+    assert.equal(
+      assessmentMessage.data.assessment.submittedAt,
+      completionMessage.data.assessment.submittedAt,
+    );
+    assert.equal('launchToken' in assessmentMessage.data, false);
+    assertNoProhibitedIdentifiers(assessmentMessage);
+    assertNoProhibitedIdentifiers(completionMessage);
+
+    const immutableEvidence = structuredClone(assessmentMessage.data.assessment);
+    await clearParentMessages(page);
+    await reloadFrame(frame);
+    await frame.locator('.final-assessment-score').waitFor({ state: 'visible' });
+    await waitForEvent(page, 'assessment_completed', STATE_KEYS.a);
+    const resend = (await getParentMessages(page))
+      .find(({ data }) => data?.event === 'assessment_completed');
+    assert.deepEqual(resend.data.assessment, immutableEvidence);
+
+    const storageKeys = await frame.evaluate(() => Object.keys(localStorage).sort());
+    assert.equal(storageKeys.includes(storageKeyA), true);
+    assert.equal(storageKeys.includes(STANDALONE_STORAGE_KEY), true);
+    assert.equal(storageKeys.some((key) => key.includes(STATE_KEYS.a)), false);
+    assert.equal(storageKeys.filter((key) => key.startsWith(PORTAL_STORAGE_PREFIX)).length, 1);
+
+    await page.goto(`${parentOrigin}/signed-out`);
+    await page.getByRole('heading', { name: 'Signed out of the Learning Hub' }).waitFor();
+    frame = null;
+
+    await page.goto(`${parentOrigin}/learner-b`);
+    const frameB = await getCourseFrame(page);
+    await waitForEvent(page, 'progress_updated', STATE_KEYS.b);
+    const learnerBMessages = await getParentMessages(page);
+    const learnerBProgress = learnerBMessages.find(
+      ({ data }) => data?.event === 'progress_updated' && data.learnerStateKey === STATE_KEYS.b,
+    );
+    assert.equal(learnerBProgress.data.progressPercent, 0);
+    assert.deepEqual(learnerBProgress.data.completedModuleIds, []);
+    assert.equal(
+      await frameB.getByRole('button', {
+        name: 'Complete Module 5 to unlock: Final Assessment',
+        exact: true,
+      }).count(),
       1,
     );
+    assert.equal(await frameB.locator('.final-assessment-score').count(), 0);
+    assert.equal(
+      JSON.stringify(learnerBMessages).includes(immutableEvidence.evidenceId),
+      false,
+    );
+    assert.equal(
+      learnerBMessages.some(({ data }) => (
+        data?.learnerStateKey === STATE_KEYS.b
+        && data?.assessment?.evidenceId === immutableEvidence.evidenceId
+      )),
+      false,
+    );
 
-    await frame.getByRole('button', { name: 'Return to course page', exact: true }).click();
-    await frame.getByRole('heading', {
-      name: 'Applying the Human Rights-Based Approach in CSO Practice',
-      exact: true,
-    }).waitFor({ state: 'visible' });
-    const returnUrl = new URL(frame.url());
-    assert.equal(returnUrl.pathname, '/');
-    assert.deepEqual([...returnUrl.searchParams.keys()].sort(), APPROVED_ROUTE_KEYS);
-    assert.equal(returnUrl.searchParams.get('portalOrigin'), approvedOrigin);
-    assertNoRawHubIdentifiers(returnUrl.toString());
-    assert.deepEqual(browserErrors, []);
+    const storageKeysB = await frameB.evaluate(() => Object.keys(localStorage).sort());
+    assert.equal(storageKeysB.includes(storageKeyA), true);
+    assert.equal(storageKeysB.includes(portalStorageKey(STATE_KEYS.b)), true);
+    assert.equal(
+      storageKeysB.filter((key) => key.startsWith(PORTAL_STORAGE_PREFIX)).length,
+      2,
+    );
 
-    await context.close();
+    await page.goto(`${parentOrigin}/learner-a`);
+    const restoredA = await getCourseFrame(page);
+    await restoredA.locator('.final-assessment-score').waitFor({ state: 'visible' });
+    assert.equal(await restoredA.locator('.final-assessment-score').innerText(), '100%\n10 of 10');
+    await waitForEvent(page, 'assessment_completed', STATE_KEYS.a);
+    const laterLaunchEvidence = (await getParentMessages(page))
+      .find(({ data }) => data?.event === 'assessment_completed' && data.learnerStateKey === STATE_KEYS.a)
+      .data.assessment;
+    assert.deepEqual(laterLaunchEvidence, immutableEvidence);
+
+    await page.goto(`${parentOrigin}/replacement`);
+    const replacementFrame = await getCourseFrame(page);
+    await waitForEvent(page, 'progress_updated', STATE_KEYS.c);
+    const replacementProgress = (await getParentMessages(page)).find(
+      ({ data }) => data?.event === 'progress_updated' && data.learnerStateKey === STATE_KEYS.c,
+    );
+    assert.equal(replacementProgress.data.progressPercent, 0);
+    assert.deepEqual(replacementProgress.data.completedModuleIds, []);
+    assert.equal(await replacementFrame.locator('.final-assessment-score').count(), 0);
+    assert.equal(
+      JSON.stringify(await getParentMessages(page)).includes(immutableEvidence.evidenceId),
+      false,
+    );
   });
 
-  await t.test('origin-mismatched iframe launch fails closed and sends no parent message', async () => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto(unapprovedOrigin);
+  await t.test('missing, malformed, mismatched and wrong-origin contexts fail closed', async () => {
+    await page.goto(`${parentOrigin}/missing`);
+    const missingFrame = await getCourseFrame(page);
+    await missingFrame.getByRole('heading', { name: 'Return to the Learning Hub' }).waitFor({
+      state: 'visible',
+      timeout: 10_000,
+    });
+    let messages = await getParentMessages(page);
+    assert.equal(messages.some(({ data }) => data?.event === 'progress_updated'), false);
+
+    await page.goto(`${parentOrigin}/malformed-context`);
+    const malformedFrame = await getCourseFrame(page);
+    await malformedFrame.getByRole('heading', { name: 'Return to the Learning Hub' }).waitFor({
+      state: 'visible',
+      timeout: 10_000,
+    });
+    messages = await getParentMessages(page);
+    assert.equal(messages.some(({ data }) => data?.event === 'progress_updated'), false);
+
+    await page.goto(`${parentOrigin}/mismatch`);
+    await getCourseFrame(page);
+    await waitForEvent(page, 'assessment_completed', STATE_KEYS.a);
+    messages = await getParentMessages(page);
+    const progressBearing = messages.filter(({ data }) => (
+      ['progress_updated', 'assessment_completed', 'course_completed'].includes(data?.event)
+    ));
+    assert.ok(progressBearing.length > 0);
+    assert.equal(progressBearing.every(({ data }) => data.learnerStateKey === STATE_KEYS.a), true);
+    assert.equal(progressBearing.some(({ data }) => data.learnerStateKey === STATE_KEYS.b), false);
+
+    await page.goto(`${parentOrigin}/wrong-origin`);
+    const wrongOriginFrame = await getCourseFrame(page);
+    await wrongOriginFrame.getByRole('heading', { name: 'Return to the Learning Hub' }).waitFor();
+    messages = await getParentMessages(page);
+    assert.deepEqual(messages, []);
+    assert.equal(new URL(wrongOriginFrame.url()).search, '?embed=portal');
+  });
+
+  await t.test('malformed evidence is cleared and never emitted', async () => {
+    await page.goto(`${parentOrigin}/malformed-evidence`);
     const frame = await getCourseFrame(page);
-    await frame.getByRole('button', { name: 'Start assessment', exact: true }).waitFor({ state: 'visible' });
-    assert.equal(await frame.getByText(
-      'Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.',
-      { exact: true },
-    ).count(), 0);
-    await page.waitForTimeout(300);
-    assert.deepEqual(await page.evaluate(() => window.receivedMessages), []);
-    await context.close();
+    const storageKey = portalStorageKey(STATE_KEYS.d);
+    await frame.evaluate(({ storageKey: key, state }) => {
+      localStorage.setItem(key, JSON.stringify(state));
+    }, {
+      storageKey,
+      state: minimalState({
+        completedModules: [...REQUIRED_MODULES, 'final_assessment'],
+        currentLayer: 'player',
+        currentModuleId: 'final_assessment',
+        currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+        finalAssessmentResult: {
+          attemptNumber: 1,
+          evidenceId: `${STATE_KEYS.d}=`,
+          maxScore: 10,
+          passed: true,
+          percentage: 100,
+          score: 10,
+          submittedAt: '2026-07-23T12:00:00.000Z',
+        },
+      }),
+    });
+    await clearParentMessages(page);
+    await reloadFrame(frame);
+    await waitForEvent(page, 'progress_updated', STATE_KEYS.d);
+    const messages = await getParentMessages(page);
+    assert.equal(messages.some(({ data }) => data?.assessment), false);
+    assert.equal(messages.some(({ data }) => data?.event === 'course_completed'), false);
+    assert.equal(JSON.stringify(messages).includes(`${STATE_KEYS.d}=`), false);
+    assert.equal(await frame.locator('.final-assessment-score').count(), 0);
   });
 
-  await t.test('top-level and incomplete direct routes remain fail-closed', async () => {
-    const completedContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
-    const completedPage = await completedContext.newPage();
-    await completedPage.goto(buildCourseUrl(approvedOrigin));
-    const topLevelStart = completedPage.getByRole('button', { name: 'Start assessment', exact: true });
-    await topLevelStart.waitFor({ state: 'visible' });
-    assert.equal(await completedPage.getByText(
-      'Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.',
-      { exact: true },
-    ).count(), 0);
-    assert.equal(await completedPage.locator('.course-screen-loading').count(), 0);
-    await topLevelStart.click();
-    await completedPage.waitForURL(`${APP_ORIGIN}/final-assessment/questions`);
-    await completedPage.reload();
-    await completedPage.locator('.final-assessment-status').waitFor({ state: 'visible' });
-    assert.equal(await completedPage.locator('.course-screen-loading').count(), 0);
-    await completedContext.close();
-
-    const incompleteContext = await browser.newContext();
-    const incompletePage = await incompleteContext.newPage();
-    await incompletePage.goto(buildCourseUrl(approvedOrigin, {
-      completed: false,
-      path: '/final-assessment/questions',
+  await t.test('standalone mode remains separate and mobile-safe', async () => {
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    await mobile.route('https://fonts.googleapis.com/**', (route) => route.fulfill({
+      contentType: 'text/css',
+      body: '',
     }));
-    await incompletePage.getByRole('button', {
-      name: 'Complete Module 5 to unlock: Final Assessment',
-      exact: true,
-    }).waitFor({ state: 'visible' });
-    assert.equal(new URL(incompletePage.url()).pathname, '/');
-    assert.equal(new URL(incompletePage.url()).search, '');
-    await incompleteContext.close();
+    const standalonePage = await mobile.newPage();
+    const standaloneErrors = [];
+    standalonePage.on('console', (message) => {
+      if (message.type() === 'error' || message.type() === 'warning') {
+        standaloneErrors.push(`${message.type()}: ${message.text()}`);
+      }
+    });
+    standalonePage.on('pageerror', (error) => standaloneErrors.push(`pageerror: ${error.message}`));
+    const completedQuery = encodeURIComponent(REQUIRED_MODULES.join(','));
+    await standalonePage.goto(`${APP_ORIGIN}/final-assessment?completed=${completedQuery}`);
+    const start = standalonePage.getByRole('button', { name: 'Start assessment', exact: true });
+    await start.waitFor({ state: 'visible' });
+    assert.equal(await standalonePage.getByText(
+      'Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.',
+      { exact: true },
+    ).count(), 0);
+    await start.click();
+    await standalonePage.waitForURL(`${APP_ORIGIN}/final-assessment/questions`);
+    await standalonePage.reload();
+    await standalonePage.locator('.final-assessment-status').waitFor({ state: 'visible' });
+    const dimensions = await standalonePage.evaluate(() => ({
+      clientWidth: document.documentElement.clientWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+    }));
+    assert.equal(dimensions.clientWidth, 390);
+    assert.equal(dimensions.scrollWidth, 390);
+    assert.deepEqual(standaloneErrors, []);
+    await mobile.close();
   });
+
+  assert.deepEqual(browserErrors, []);
 });
