@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { migrateModule5PracticeState } from '../data/module5/module5EnhancedModel';
 export interface LearningState {
   storageVersion: 'hrba-course-progress-v1';
   currentLayer: 'platform' | 'player';
@@ -339,6 +340,11 @@ function validateLearningState(candidate: unknown): LearningState | null {
       ...initialState.m2FinalPortfolio,
       ...(isObject(candidate.m2FinalPortfolio) ? candidate.m2FinalPortfolio : {}),
     },
+    practiceCheckState: migrateModule5PracticeState({
+      practiceCheckState: isObject(candidate.practiceCheckState) ? candidate.practiceCheckState : {},
+      screenProgress: candidate.screenProgress,
+      completedModules: candidate.completedModules,
+    }),
     storageVersion: STORAGE_KEY,
   };
 }

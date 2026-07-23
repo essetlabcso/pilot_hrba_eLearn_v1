@@ -21,6 +21,12 @@ import {
   finalAssessmentRouteTargets,
   finalAssessmentSequence,
 } from './data/finalAssessment';
+import {
+  MODULE5_COMPLETION_SCREEN_TITLE,
+  MODULE5_SCREEN_ROUTES,
+  canonicalizeModule5ScreenId,
+  getAllowedModule5ScreenId,
+} from './data/module5/module5EnhancedModel';
 
 const TRACKABLE_PORTAL_MODULE_IDS = [
   'module_01_hrba_foundations',
@@ -85,18 +91,6 @@ function getAllowedModule3ScreenId(requestedScreenId: string, screenIds: string[
 }
 
 function getAllowedModule4ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
-  const requestedIndex = screenIds.indexOf(requestedScreenId);
-  if (requestedIndex <= 0) return requestedScreenId;
-
-  const completed = new Set(completedScreenIds);
-  const previousScreensComplete = screenIds.slice(0, requestedIndex).every((screenId) => completed.has(screenId));
-  if (previousScreensComplete) return requestedScreenId;
-
-  const firstIncompleteIndex = screenIds.findIndex((screenId) => !completed.has(screenId));
-  return screenIds[Math.max(0, firstIncompleteIndex)];
-}
-
-function getAllowedModule5ScreenId(requestedScreenId: string, screenIds: string[], completedScreenIds: string[]) {
   const requestedIndex = screenIds.indexOf(requestedScreenId);
   if (requestedIndex <= 0) return requestedScreenId;
 
@@ -283,23 +277,6 @@ export default function App() {
             'M4-S1-13',
             'M4-S1-14',
           ];
-          const module5ScreenIds = [
-            'M5-R01',
-            'M5-R02',
-            'M5-R03',
-            'M5-R04',
-            'M5-R05',
-            'M5-R06',
-            'M5-R07',
-            'M5-R08',
-            'M5-R09',
-            'M5-R10',
-            'M5-R11',
-            'M5-R12',
-            'M5-R13',
-            'M5-R14',
-            'M5-PLAYER-COMPLETE',
-          ];
           const targetScreenId =
             targetModuleId === 'module_01_hrba_foundations' && requestedScreenId
               ? getAllowedModule1ScreenId(requestedScreenId, module1ScreenIds, nextState.screenProgress[targetModuleId] || [])
@@ -310,7 +287,11 @@ export default function App() {
               : targetModuleId === 'module_04_implementation' && requestedScreenId
                 ? getAllowedModule4ScreenId(requestedScreenId, module4ScreenIds, nextState.screenProgress[targetModuleId] || [])
               : targetModuleId === 'module_05_hrba_meal' && requestedScreenId
-                ? getAllowedModule5ScreenId(requestedScreenId, module5ScreenIds, nextState.screenProgress[targetModuleId] || [])
+                ? getAllowedModule5ScreenId(
+                    requestedScreenId,
+                    nextState.screenProgress[targetModuleId] || [],
+                    nextState.completedModules.includes(targetModuleId),
+                  )
               : requestedScreenId;
 
           nextState.currentLayer = 'player';
@@ -334,6 +315,27 @@ export default function App() {
             canonicalParams.delete('completed');
             const canonicalQuery = canonicalParams.toString();
             const canonicalUrl = `${canonicalModule3Route}${canonicalQuery ? `?${canonicalQuery}` : ''}${window.location.hash}`;
+            window.history.replaceState(window.history.state, '', canonicalUrl);
+          }
+
+          const canonicalRequestedModule5Screen = targetModuleId === 'module_05_hrba_meal' && requestedScreenId
+            ? canonicalizeModule5ScreenId(requestedScreenId)
+            : null;
+          const module5RouteNeedsRepair =
+            targetModuleId === 'module_05_hrba_meal' &&
+            typeof targetScreenId === 'string' &&
+            (canonicalRequestedModule5Screen !== requestedScreenId || targetScreenId !== canonicalRequestedModule5Screen);
+          const canonicalModule5Route = module5RouteNeedsRepair
+            ? MODULE5_SCREEN_ROUTES[targetScreenId]
+            : undefined;
+
+          if (canonicalModule5Route && typeof window !== 'undefined') {
+            const canonicalParams = new URLSearchParams(window.location.search);
+            canonicalParams.delete('screenId');
+            canonicalParams.delete('moduleId');
+            canonicalParams.delete('completed');
+            const canonicalQuery = canonicalParams.toString();
+            const canonicalUrl = `${canonicalModule5Route}${canonicalQuery ? `?${canonicalQuery}` : ''}${window.location.hash}`;
             window.history.replaceState(window.history.state, '', canonicalUrl);
           }
         } else {
@@ -684,21 +686,21 @@ export default function App() {
       'Learning/Purpose': 'Launch Module 5: HRBA in MEAL.',
     },
     ...[
-      ['M5-R01', 'The Numbers Look Good, But Who Is Missing?', 'Introduce the shift from activity counting to rights-based evidence, feedback, learning, and reporting.'],
+      ['M5-R01', 'Why HRBA Matters in MEAL', 'Introduce the shift from activity counting to rights-based evidence, feedback, learning, and reporting.'],
       ['M5-R02', 'Learning Objectives and MEAL Roadmap', 'Orient learners to the Module 5 MEAL pathway, HRBA lens, learning objectives, safe practice rules, and final repair-note output.'],
-      ['M5-R03', 'Diagnosing Evidence Gaps in a MEAL Report', 'Review the fictional Jiru Amba monthly MEAL report and diagnose evidence gaps before applying the HRBA lens.'],
-      ['M5-R04', 'Applying the HRBA Lens to the MEAL Cycle', 'Introduce the reusable eight-question HRBA MEAL lens for reports, indicators, feedback, evidence use, adaptation, and account-back.'],
-      ['M5-R05', 'Indicator Repair Lab', 'Repair weak output indicators into safer HRBA-informed indicators.'],
-      ['M5-R06', 'Strengthening Indicators and Logframe Evidence', 'Improve weak activity indicators into stronger HRBA MEAL indicators connected to logframe evidence, safe disaggregation, and decisions.'],
-      ['M5-R07', 'Designing Safe Data Collection and Disaggregation', 'Choose safe data decisions that reveal exclusion without exposing people.'],
-      ['M5-R08', 'Planning Feedback and Response Mechanisms', 'Strengthen a weak feedback channel into a safe response, referral, adaptation, and account-back pathway.'],
-      ['M5-R09', 'Using Qualitative Evidence Ethically', 'Choose safer responses to requests for names, photos, quotes, stories, complaint examples, and raw feedback logs.'],
-      ['M5-R10', 'Interpreting MEAL Evidence and Deciding Adaptations', 'Match Awra evidence signals to responsible next actions: continue, adapt, consult, refer, engage, narrow claims, or account back.'],
-      ['M5-R11', 'Reporting Results, Limits, and Accountability', 'Improve risky report claims into truthful, safe, evidence-based statements that name limits, show adaptation, and include account-back.'],
-      ['M5-R12', 'Module Knowledge Check: Evidence-to-Action Decisions', 'Check applied HRBA MEAL decisions across indicators, safe evidence, feedback, qualitative evidence, adaptation, reporting, and account-back.'],
-      ['M5-R13', 'Portfolio: My HRBA MEAL, Accountability, and Learning Note', 'Create a safe structured portfolio note connecting evidence, protection, action, and account-back.'],
-      ['M5-R14', '90-Day MEAL Learning and Account-Back Plan', 'Choose a realistic 30/60/90-day practice bridge and account-back plan.'],
-      ['M5-PLAYER-COMPLETE', 'Module 5 Complete', 'Record Module 5 completion and return to the course page.'],
+      ['M5-R03', 'The MEAL Cycle Through an HRBA Lens', 'Connect monitoring, evaluation, accountability and learning to the practical HRBA questions each stage adds.'],
+      ['M5-R04', 'Planning MEAL: Define Results, Success and Learning Questions', 'Build a coherent result, success-sign and rights-sensitive learning-question chain.'],
+      ['M5-R05', 'Monitoring: Build Rights-Based Indicators', 'Connect the decision, rights question, indicator, safe source and action trigger.'],
+      ['M5-R06', 'Data Collection: Choose the Right Methods', 'Choose a proportionate quantitative, qualitative and participatory method mix.'],
+      ['M5-R07', 'Safe Disaggregation and Ethical Data Collection', 'Choose necessary and safe disaggregation without exposing people.'],
+      ['M5-R08', 'Data Management: Organize, Clean and Protect Evidence', 'Clean a fictional evidence table transparently and set access, storage and retention rules.'],
+      ['M5-R09', 'Analysis: Combine Numbers, Feedback and Stories', 'Tag comments, compare sources, preserve contradiction and build a bounded mixed-evidence statement.'],
+      ['M5-R10', 'Evaluation: Understand Change, Equity and Contribution', 'Assess change for whom, HRBA process, alternative influences and credible contribution.'],
+      ['M5-R11', 'Accountability: Feedback, Response and Community Scorecards', 'Close the feedback-response-account-back loop and agree responsible action.'],
+      ['M5-R12', 'Learning and Adaptation: Dashboard, Decisions and Account-Back', 'Turn evidence signals into role-appropriate decisions, adaptation and account-back.'],
+      ['M5-R13', 'Knowledge Check: From Evidence to Action', 'Review applied judgement across the complete HRBA MEAL evidence journey.'],
+      ['M5-R14', 'Portfolio: Build Your HRBA MEAL Framework and Safe Data Plan', 'Assemble the carried-forward HRBA MEAL, Accountability and Adaptation Canvas.'],
+      ['M5-PLAYER-COMPLETE', MODULE5_COMPLETION_SCREEN_TITLE, 'Review the dashboard and 90-day plan, then explicitly confirm Module 5 completion.'],
     ].map(([id, title, purpose]) => ({
       Layer: 'Layer 2 Player',
       'Screen/State ID': id,
