@@ -6,14 +6,17 @@ import {
   MODULE5_CANONICAL_SCREEN_IDS,
   MODULE5_COMPLETION_SCREEN_TITLE,
   MODULE5_LEGACY_ID_MAP,
+  areModule5Screen13DependenciesReady,
   buildModule5DownloadText,
   canonicalizeModule5ScreenId,
   containsPotentiallySensitiveModule5Text,
   getAllowedModule5ScreenId,
   invalidateModule5Screen13Dependents,
   isModule5BuilderReady,
+  isModule5CurrentScreenReady,
   isModule5OrderCorrect,
   isModule5OutputReady,
+  isModule5Screen13CarryForwardReady,
   mergeModule5CanvasFields,
   migrateModule5PracticeState,
   moveModule5Order,
@@ -139,6 +142,20 @@ test('current output safety readiness cannot be bypassed by historical completio
   assert.match(journey, /Remove possible identifying or sensitive detail from the highlighted field/);
 });
 
+test('historical completion preserves access but cannot satisfy current Screen 13 readiness', () => {
+  const historicalCompletion = true;
+  const incompleteBuilder = { heard: '', change: '', limit: '', nextUpdate: '' };
+  assert.equal(historicalCompletion, true);
+  assert.equal(isModule5BuilderReady(incompleteBuilder, Object.keys(incompleteBuilder)), false);
+  assert.equal(isModule5CurrentScreenReady(false, false), false);
+  assert.equal(isModule5CurrentScreenReady(true, false), false);
+  assert.equal(isModule5CurrentScreenReady(true, true), true);
+
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  assert.match(journey, /const canContinue = isModule5CurrentScreenReady\(taskComplete, allReviewed\)/);
+  assert.doesNotMatch(journey, /const canContinue =[^;]*(previouslyCompleted|moduleCompleted)/);
+});
+
 test('Screens 9–11 use the authoritative data-management, analysis and evaluation sequence', () => {
   const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
   assert.match(journey, /Data Management: Organize, Clean and Protect Evidence/);
@@ -222,12 +239,36 @@ test('Screen 13 edits clear downstream confirmations and mark both outputs Needs
   assert.equal(invalidated.m5_s15.status, 'needs_review');
   assert.equal(invalidated.m5_s15.previewReviewed, false);
   assert.equal(invalidated.m5_s15.confirmedSafe, false);
+  assert.equal(invalidated.m5_s15.fields.adaptation, '');
+  assert.equal(invalidated.m5_s15.fields.followup, '');
   assert.deepEqual(invalidated.m5_s15.dependencyReview.fields, ['adaptation', 'followup']);
   assert.equal(invalidated.m5_s16.status, 'needs_review');
   assert.equal(invalidated.m5_s16.dashboardReviewed, false);
   assert.equal(invalidated.m5_s16.carryReviewed, false);
   assert.equal(invalidated.m5_s16.confirmedSafe, false);
+  assert.equal(invalidated.m5_s16.plan.days90, '');
+  assert.equal(invalidated.m5_s16.plan.trigger, '');
   assert.deepEqual(invalidated.module3_unrelated, { keep: true });
+});
+
+test('cleared Screen 13 values clear dependent outputs and block reconfirmation', () => {
+  const projected = { adaptation: 'Current action', followup: '' };
+  const stored = { adaptation: 'Old action', followup: 'Old follow-up' };
+  const refreshed = mergeModule5CanvasFields(projected, stored, ['adaptation', 'followup']);
+  assert.deepEqual(refreshed, { adaptation: 'Current action', followup: '' });
+  assert.equal(areModule5Screen13DependenciesReady(refreshed), false);
+  assert.equal(areModule5Screen13DependenciesReady({ adaptation: 'Current action', followup: 'Review after two cycles' }), true);
+  assert.equal(areModule5Screen13DependenciesReady({ adaptation: 'complainant name Alice', followup: 'Review later' }), false);
+  assert.equal(isModule5Screen13CarryForwardReady({ adaptation: 'Current action', followup: 'Review after two cycles' }, 'in_progress'), false);
+  assert.equal(isModule5Screen13CarryForwardReady({ adaptation: 'Current action', followup: 'Review after two cycles' }, 'completed'), true);
+
+  const refreshedPlan = refreshModule5PlanFromCanvas({ days90: 'Old action', trigger: 'Old trigger' }, { adaptation: '', followup: '' });
+  assert.equal(refreshedPlan.days90, '');
+  assert.equal(refreshedPlan.trigger, '');
+
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  assert.match(journey, /const ready = dependenciesReady && isModule5OutputReady/);
+  assert.match(journey, /disabled={!dependenciesReady}/);
 });
 
 test('dependent Canvas fields refresh and final-plan values require re-review', () => {

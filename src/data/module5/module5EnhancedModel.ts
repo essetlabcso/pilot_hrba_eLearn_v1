@@ -189,6 +189,22 @@ export function isModule5OutputReady(
 }
 
 export const MODULE5_SCREEN13_DEPENDENT_CANVAS_FIELDS = ['adaptation', 'followup'] as const;
+export const MODULE5_SCREEN13_DEPENDENT_PLAN_FIELDS = ['days90', 'trigger'] as const;
+
+export function isModule5CurrentScreenReady(taskComplete: boolean, allReviewed: boolean) {
+  return taskComplete && allReviewed;
+}
+
+export function areModule5Screen13DependenciesReady(values: Record<string, string>) {
+  return MODULE5_SCREEN13_DEPENDENT_CANVAS_FIELDS.every((field) => {
+    const value = String(values[field] || '').trim();
+    return Boolean(value) && !containsPotentiallySensitiveModule5Text(value);
+  });
+}
+
+export function isModule5Screen13CarryForwardReady(values: Record<string, string>, status: unknown) {
+  return status === 'completed' && areModule5Screen13DependenciesReady(values);
+}
 
 export function moveModule5Order(items: readonly string[], index: number, direction: -1 | 1) {
   const target = index + direction;
@@ -212,8 +228,13 @@ export function invalidateModule5Screen13Dependents(practiceCheckState: Record<s
   const canvas = isRecord(next.m5_s15) ? next.m5_s15 : null;
   const finalPlan = isRecord(next.m5_s16) ? next.m5_s16 : null;
   if (canvas) {
+    const fields = isRecord(canvas.fields) ? canvas.fields : {};
     next.m5_s15 = {
       ...canvas,
+      fields: {
+        ...fields,
+        ...Object.fromEntries(MODULE5_SCREEN13_DEPENDENT_CANVAS_FIELDS.map((field) => [field, ''])),
+      },
       status: 'needs_review',
       previewReviewed: false,
       confirmedSafe: false,
@@ -225,8 +246,13 @@ export function invalidateModule5Screen13Dependents(practiceCheckState: Record<s
     };
   }
   if (finalPlan) {
+    const plan = isRecord(finalPlan.plan) ? finalPlan.plan : {};
     next.m5_s16 = {
       ...finalPlan,
+      plan: {
+        ...plan,
+        ...Object.fromEntries(MODULE5_SCREEN13_DEPENDENT_PLAN_FIELDS.map((field) => [field, ''])),
+      },
       status: 'needs_review',
       dashboardReviewed: false,
       carryReviewed: false,
@@ -247,7 +273,7 @@ export function mergeModule5CanvasFields(
 ) {
   const next = { ...projected, ...stored };
   dependencyFields.forEach((field) => {
-    if (String(projected[field] || '').trim()) next[field] = projected[field];
+    next[field] = projected[field] || '';
   });
   return next;
 }
@@ -255,7 +281,8 @@ export function mergeModule5CanvasFields(
 export function refreshModule5PlanFromCanvas(plan: Record<string, string>, canvas: Record<string, string>) {
   return {
     ...plan,
-    ...(canvas.adaptation ? { days90: canvas.adaptation, trigger: canvas.adaptation } : {}),
+    days90: canvas.adaptation || '',
+    trigger: canvas.adaptation || '',
     ...(canvas.followup ? { learningNote: plan.learningNote || canvas.followup } : {}),
   };
 }

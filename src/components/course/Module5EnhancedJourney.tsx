@@ -3,12 +3,15 @@ import type { LearningState } from '../../state/learningState';
 import {
   MODULE5_ID,
   MODULE5_SCREEN_ROUTES,
+  areModule5Screen13DependenciesReady,
   buildModule5DownloadText,
   containsPotentiallySensitiveModule5Text,
   invalidateModule5Screen13Dependents,
   isModule5BuilderReady,
+  isModule5CurrentScreenReady,
   isModule5OrderCorrect,
   isModule5OutputReady,
+  isModule5Screen13CarryForwardReady,
   mergeModule5CanvasFields,
   moveModule5Order,
   refreshModule5PlanFromCanvas,
@@ -387,9 +390,7 @@ function GeneralScreen({ spec, state, onChangeState }: { spec: ScreenSpec; state
   const allReviewed = spec.tasks.every((task) => reviewed.includes(task.id)) &&
     (!spec.ordering || reviewed.includes(spec.ordering.id)) &&
     (!spec.builder || reviewed.includes(spec.builder.id));
-  const previouslyCompleted = stored.schemaVersion === 2 && stored.status === 'completed';
-  const moduleCompleted = state.completedModules.includes(MODULE5_ID);
-  const canContinue = taskComplete && allReviewed || previouslyCompleted || moduleCompleted;
+  const canContinue = isModule5CurrentScreenReady(taskComplete, allReviewed);
   const messageIsAlert = /^(Choose|Complete|Remove|Review the sequence)/.test(message);
 
   const persist = (nextAnswers: Record<string, string[]>, nextReviewed: string[], status = 'in_progress') => {
@@ -595,8 +596,11 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   const requiredCanvasKeys = canvasFields.filter(([, , , , required]) => required !== false).map(([id]) => id);
   const gaps = canvasFields.filter(([id, , , , required]) => required !== false && !String(fields[id] || '').trim());
   const risky = canvasFields.filter(([id]) => containsPotentiallySensitiveModule5Text(String(fields[id] || '')));
+  const sourceEntry = (state.practiceCheckState.m5_s13 || {}) as { status?: string };
+  const sourceDependenciesReady = isModule5Screen13CarryForwardReady(projected, sourceEntry.status);
+  const canvasContentReady = gaps.length === 0 && risky.length === 0 && sourceDependenciesReady;
   const alreadyCompleted = state.completedModules.includes(MODULE5_ID) || stored.status === 'completed';
-  const ready = isModule5OutputReady(fields, requiredCanvasKeys, [confirmedSafe, previewReviewed]);
+  const ready = canvasContentReady && isModule5OutputReady(fields, requiredCanvasKeys, [confirmedSafe, previewReviewed]);
   const persist = (nextFields = fields, safe = confirmedSafe, reviewed = previewReviewed) => onChangeState((previous) => {
     const finalPlan = previous.practiceCheckState.m5_s16 as Record<string, unknown> | undefined;
     return {
@@ -615,7 +619,7 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   };
   const continueJourney = () => {
     if (!ready) {
-      setMessage(risky.length ? 'Remove possible identifying or sensitive detail from the highlighted field. This prompt is a precaution and cannot guarantee confidentiality.' : gaps.length ? 'Complete the fields marked “Not yet completed”. Use the source link to review earlier work or add a short generalized entry.' : 'Review the readable preview and confirm the final safety check.');
+      setMessage(!sourceDependenciesReady ? 'Return to Screen 13 and complete the current adaptation and account-back work before reviewing this Canvas.' : risky.length ? 'Remove possible identifying or sensitive detail from the highlighted field. This prompt is a precaution and cannot guarantee confidentiality.' : gaps.length ? 'Complete the fields marked “Not yet completed”. Use the source link to review earlier work or add a short generalized entry.' : 'Review the readable preview and confirm the final safety check.');
       return;
     }
     onChangeState((previous) => {
@@ -653,10 +657,10 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
           })}</div>
         </section>
         <section className="m5e-preview" aria-labelledby="m5e-preview-title"><h2 id="m5e-preview-title">Readable canvas preview</h2><dl>{canvasFields.map(([id, label]) => <div key={id}><dt>{label}</dt><dd>{fields[id] || 'Not yet completed'}</dd></div>)}</dl></section>
-        <label className="m5e-confirm"><input type="checkbox" checked={previewReviewed} onChange={(event) => { setPreviewReviewed(event.target.checked); persist(fields, confirmedSafe, event.target.checked); }} /><span>I reviewed the canvas, including missing fields and evidence limitations.</span></label>
-        <label className="m5e-confirm"><input type="checkbox" checked={confirmedSafe} onChange={(event) => { setConfirmedSafe(event.target.checked); persist(fields, event.target.checked, previewReviewed); }} /><span>I confirm this contains only fictional or generalized information and no identifying or confidential details.</span></label>
+        <label className="m5e-confirm"><input type="checkbox" checked={previewReviewed} disabled={!canvasContentReady} onChange={(event) => { setPreviewReviewed(event.target.checked); persist(fields, confirmedSafe, event.target.checked); }} /><span>I reviewed the canvas, including missing fields and evidence limitations.</span></label>
+        <label className="m5e-confirm"><input type="checkbox" checked={confirmedSafe} disabled={!canvasContentReady} onChange={(event) => { setConfirmedSafe(event.target.checked); persist(fields, event.target.checked, previewReviewed); }} /><span>I confirm this contains only fictional or generalized information and no identifying or confidential details.</span></label>
         {message && <p className={ready ? 'm5e-status' : 'm5e-alert'} role={ready ? 'status' : 'alert'}>{message}</p>}
-        <section className="m5e-saved" role="status"><strong>Portfolio status</strong><span>{ready ? 'Canvas ready for final review.' : gaps.length + ' required field(s) not yet completed; ' + risky.length + ' field(s) need a safety review.'}{alreadyCompleted && !ready ? ' Your earlier module completion remains preserved while this revised output needs review.' : ''}</span></section>
+        <section className="m5e-saved" role="status"><strong>Portfolio status</strong><span>{ready ? 'Canvas ready for final review.' : !sourceDependenciesReady ? 'Current Screen 13 adaptation and account-back work is required before this Canvas can be reconfirmed.' : gaps.length + ' required field(s) not yet completed; ' + risky.length + ' field(s) need a safety review.'}{alreadyCompleted && !ready ? ' Your earlier module completion remains preserved while this revised output needs review.' : ''}</span></section>
         <footer className="m5e-actions"><div><h2>Review and complete</h2><p>The final screen converts this canvas into a practical 90-day learning and account-back plan.</p></div><button type="button" className="m5e-primary" disabled={!ready} onClick={continueJourney}>Review portfolio and plan</button></footer>
       </article>
     </main>
@@ -666,7 +670,9 @@ function CanvasScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
 function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   const key = 'm5_s16';
   const stored = (state.practiceCheckState[key] || {}) as { plan?: Record<string, string>; confirmedSafe?: boolean; dashboardReviewed?: boolean; carryReviewed?: boolean; status?: string; dependencyReview?: { sourceScreenId?: string; reason?: string } };
-  const canvas = ((state.practiceCheckState.m5_s15 || {}) as { fields?: Record<string, string> }).fields || deriveModule5Canvas(state);
+  const canvasEntry = (state.practiceCheckState.m5_s15 || {}) as { fields?: Record<string, string>; status?: string; dependencyReview?: unknown };
+  const projectedCanvas = deriveModule5Canvas(state);
+  const canvas = canvasEntry.fields || projectedCanvas;
   const initialPlan = {
     days30: canvas.decision || '',
     days60: canvas.synthesis || '',
@@ -689,7 +695,12 @@ function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   const alreadyCompleted = state.completedModules.includes(MODULE5_ID);
   const risky = Object.values(plan).some(containsPotentiallySensitiveModule5Text);
   const requiredPlanKeys = ['days30', 'days60', 'days90', 'participation', 'trigger', 'communication', 'referral', 'stopCondition', 'reviewDate', 'learningNote'];
-  const ready = isModule5OutputReady(plan, requiredPlanKeys, [dashboardReviewed, carryReviewed, confirmedSafe]);
+  const screen13Entry = (state.practiceCheckState.m5_s13 || {}) as { status?: string };
+  const dependenciesReady = isModule5Screen13CarryForwardReady(projectedCanvas, screen13Entry.status) &&
+    areModule5Screen13DependenciesReady(canvas) &&
+    canvasEntry.status === 'completed' &&
+    !canvasEntry.dependencyReview;
+  const ready = dependenciesReady && isModule5OutputReady(plan, requiredPlanKeys, [dashboardReviewed, carryReviewed, confirmedSafe]);
   const planFields: Array<[string, string, string]> = [
     ['days30', 'Days 1–30 — Prepare', 'Confirm the decision and learning question; agree roles and safe-evidence rules; prepare the minimum tools.'],
     ['days60', 'Days 31–60 — Test and interpret', 'Collect only necessary evidence; synthesize numbers and qualitative findings; involve affected people safely.'],
@@ -724,7 +735,7 @@ function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
     }
   };
   const complete = () => {
-    if (!ready) { setMessage(risky ? 'Remove possible identifying or sensitive detail before completion.' : 'Complete the 90-day plan, review both summaries and confirm the current safety check.'); return; }
+    if (!ready) { setMessage(!dependenciesReady ? 'Return to Screen 13 and Screen 15 to complete and review the affected adaptation and account-back outputs.' : risky ? 'Remove possible identifying or sensitive detail before completion.' : 'Complete the 90-day plan, review both summaries and confirm the current safety check.'); return; }
     onChangeState((previous) => ({
       ...previous,
       completedModules: previous.completedModules.includes(MODULE5_ID) ? previous.completedModules : [...previous.completedModules, MODULE5_ID],
@@ -753,11 +764,11 @@ function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
         {alreadyCompleted && <aside className="m5e-notice m5e-notice--info" role="status"><strong>Earlier completion preserved</strong><span>This module remains complete. You may review or improve the revised portfolio without losing completion.</span></aside>}
         {stored.dependencyReview && <aside className="m5e-notice m5e-notice--info" role="status"><strong>Needs review after an upstream change</strong><span>An earlier decision or Canvas field changed. The dashboard, carry-forward and safety confirmations were cleared. Review the refreshed output and 90-day plan before saving or confirming completion again.</span></aside>}
         <section aria-labelledby="m5e-dashboard-title"><h2 id="m5e-dashboard-title">Evidence-to-Action Dashboard</h2><p>This is a readable generalized summary, not a data upload.</p><div className="m5e-grid">{dashboard.map(([title, body]) => <article key={title}><h3>{title}</h3><p>{body}</p></article>)}</div></section>
-        <label className="m5e-confirm"><input type="checkbox" checked={dashboardReviewed} onChange={(event) => { setDashboardReviewed(event.target.checked); persist(plan, event.target.checked, carryReviewed, confirmedSafe); }} /><span>I reviewed the dashboard, including limitations and responsibility.</span></label>
+        <label className="m5e-confirm"><input type="checkbox" checked={dashboardReviewed} disabled={!dependenciesReady} onChange={(event) => { setDashboardReviewed(event.target.checked); persist(plan, event.target.checked, carryReviewed, confirmedSafe); }} /><span>I reviewed the dashboard, including limitations and responsibility.</span></label>
         <section className="m5e-plan" aria-labelledby="m5e-plan-title"><h2 id="m5e-plan-title">90-Day Learning and Account-Back Plan</h2>{planFields.map(([id, label, help]) => { const fieldRisky = containsPotentiallySensitiveModule5Text(plan[id] || ''); const errorId = 'm5e-plan-error-' + id; return <label key={id}><span><strong>{label}</strong><small>{help}</small></span><textarea rows={3} maxLength={320} value={plan[id] || ''} aria-invalid={fieldRisky || undefined} aria-describedby={fieldRisky ? errorId : undefined} onChange={(event) => { const next = { ...plan, [id]: event.target.value }; setPlan(next); setConfirmedSafe(false); setMessage(containsPotentiallySensitiveModule5Text(event.target.value) ? 'Remove possible identifying or sensitive detail from the highlighted field. This prompt is a precaution and cannot guarantee confidentiality.' : 'Changes saved locally. Review the safety confirmation again.'); persist(next, dashboardReviewed, carryReviewed, false); }} />{fieldRisky && <small id={errorId} className="m5e-field-error">Remove possible identifying or sensitive detail.</small>}</label>; })}</section>
         <aside className="m5e-notice m5e-notice--safety" role="note"><strong>Final privacy and do-no-harm check</strong><span>Carry forward only generalized results, questions, evidence decisions, limitations, responsibilities and account-back commitments. Do not include identifiable complaints, sensitive incidents or personal information.</span></aside>
-        <label className="m5e-confirm"><input type="checkbox" checked={carryReviewed} onChange={(event) => { setCarryReviewed(event.target.checked); persist(plan, dashboardReviewed, event.target.checked, confirmedSafe); }} /><span>I reviewed what will carry forward to the portfolio.</span></label>
-        <label className="m5e-confirm"><input type="checkbox" checked={confirmedSafe} onChange={(event) => { setConfirmedSafe(event.target.checked); persist(plan, dashboardReviewed, carryReviewed, event.target.checked); }} /><span>I removed identifying and confidential information and understand the automatic check is not a guarantee.</span></label>
+        <label className="m5e-confirm"><input type="checkbox" checked={carryReviewed} disabled={!dependenciesReady} onChange={(event) => { setCarryReviewed(event.target.checked); persist(plan, dashboardReviewed, event.target.checked, confirmedSafe); }} /><span>I reviewed what will carry forward to the portfolio.</span></label>
+        <label className="m5e-confirm"><input type="checkbox" checked={confirmedSafe} disabled={!dependenciesReady} onChange={(event) => { setConfirmedSafe(event.target.checked); persist(plan, dashboardReviewed, carryReviewed, event.target.checked); }} /><span>I removed identifying and confidential information and understand the automatic check is not a guarantee.</span></label>
         {message && <p className={ready ? 'm5e-status' : 'm5e-alert'} role={ready ? 'status' : 'alert'} aria-live="polite">{message}</p>}
         <section className="m5e-download" aria-labelledby="m5e-download-title"><div><h2 id="m5e-download-title">Portable, low-bandwidth output</h2><p>Copy or download a plain-text version, or print this page. The file can be completed away from the course and entered later; the course itself must already be loaded and is not an offline application. Downloads never gate completion.</p></div><div><button type="button" className="m5e-secondary" onClick={copy}>Copy output</button><a className="m5e-secondary" href={downloadHref} download="module-5-hrba-meal-portfolio.txt" onClick={() => setMessage('Text download started. If it does not appear, use Copy output or print this page.')}>Download text</a></div></section>
         <details className="m5e-readable"><summary>Read the complete downloadable text</summary><pre>{outputText}</pre></details>
