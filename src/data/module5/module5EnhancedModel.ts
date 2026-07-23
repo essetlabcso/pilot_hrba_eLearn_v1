@@ -1,4 +1,5 @@
 export const MODULE5_ID = 'module_05_hrba_meal';
+export const MODULE5_COMPLETION_SCREEN_TITLE = 'Portfolio Review and Module Closure';
 
 export const MODULE5_CANONICAL_SCREEN_IDS = [
   'M5-R01', 'M5-R02', 'M5-R03', 'M5-R04', 'M5-R05', 'M5-R06', 'M5-R07',
@@ -170,9 +171,26 @@ export function migrateModule5PracticeState(input: Module5MigrationInput) {
 
 export type DownloadCanvasField = { label: string; value: string; sourceLabel: string };
 
+export function containsPotentiallySensitiveModule5Text(value: string) {
+  const text = value.toLowerCase();
+  return /\b(name|phone|email|diagnos|survivor|child|complainant|accus|village|kebele|address)\b/.test(text) ||
+    /\b\d{3}[- .]?\d{3}[- .]?\d{3,4}\b/.test(text) ||
+    /@[a-z0-9.-]+\.[a-z]{2,}/.test(text);
+}
+
+export function isModule5OutputReady(
+  values: Record<string, string>,
+  requiredKeys: readonly string[],
+  confirmations: readonly boolean[],
+) {
+  return requiredKeys.every((key) => String(values[key] || '').trim()) &&
+    !Object.values(values).some(containsPotentiallySensitiveModule5Text) &&
+    confirmations.every(Boolean);
+}
+
 export function buildModule5DownloadText(
   fields: DownloadCanvasField[],
-  plan: { adaptation: string; responsibility: string; nearTermAction: string; followUp: string },
+  plan: Record<string, string>,
 ) {
   return [
     'HRBA MEAL, ACCOUNTABILITY AND ADAPTATION CANVAS',
@@ -181,9 +199,15 @@ export function buildModule5DownloadText(
     ...fields.map((field) => `${field.label}: ${field.value || 'Not yet completed'}\nSource: ${field.sourceLabel}`),
     '',
     '90-DAY LEARNING AND ACCOUNT-BACK PLAN',
-    `Final adaptation decision: ${plan.adaptation || 'Not yet completed'}`,
-    `Responsible role or institution: ${plan.responsibility || 'Not yet completed'}`,
-    `Near-term action: ${plan.nearTermAction || 'Not yet completed'}`,
-    `Follow-up evidence and review: ${plan.followUp || 'Not yet completed'}`,
+    `Days 1–30 — Prepare: ${plan.days30 || plan.nearTermAction || 'Not yet completed'}`,
+    `Days 31–60 — Test and interpret: ${plan.days60 || plan.adaptation || 'Not yet completed'}`,
+    `Days 61–90 — Act and account back: ${plan.days90 || plan.followUp || 'Not yet completed'}`,
+    `Rights-holder participation method: ${plan.participation || 'Not yet completed'}`,
+    `Decision trigger: ${plan.trigger || 'Not yet completed'}`,
+    `Accessible or low-bandwidth communication route: ${plan.communication || 'Not yet completed'}`,
+    `Responsible role or institution: ${plan.referral || plan.responsibility || 'Not yet completed'}`,
+    `Risk or stop condition: ${plan.stopCondition || 'Not yet completed'}`,
+    `General review date: ${plan.reviewDate || 'Not yet completed'}`,
+    `Learning note: ${plan.learningNote || 'Not yet completed'}`,
   ].join('\n');
 }

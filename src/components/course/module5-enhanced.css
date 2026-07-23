@@ -332,6 +332,11 @@
   align-items: start;
 }
 
+.m5e-plan .m5e-field-error {
+  color: #701c1c;
+  font-weight: 700;
+}
+
 .m5e-readable pre {
   max-height: 26rem;
   padding: 1rem;

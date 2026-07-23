@@ -4,10 +4,13 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import {
   MODULE5_CANONICAL_SCREEN_IDS,
+  MODULE5_COMPLETION_SCREEN_TITLE,
   MODULE5_LEGACY_ID_MAP,
   buildModule5DownloadText,
   canonicalizeModule5ScreenId,
+  containsPotentiallySensitiveModule5Text,
   getAllowedModule5ScreenId,
+  isModule5OutputReady,
   migrateModule5PracticeState,
 } from '../src/data/module5/module5EnhancedModel.ts';
 
@@ -113,6 +116,57 @@ test('download output labels missing work honestly and contains no offline-app c
   assert.match(text, /Priority result: Not yet completed/);
   assert.match(text, /Responsible role or institution: MEAL role/);
   assert.doesNotMatch(text, /works offline|offline application/i);
+});
+
+test('current output safety readiness cannot be bypassed by historical completion', () => {
+  const safePlan = { days30: 'Prepare tools', days60: 'Test evidence', days90: 'Account back' };
+  const required = ['days30', 'days60', 'days90'];
+  assert.equal(isModule5OutputReady(safePlan, required, [true, true, true]), true);
+  assert.equal(isModule5OutputReady(safePlan, required, [true, true, false]), false);
+  assert.equal(isModule5OutputReady({ ...safePlan, days60: 'complainant name Alice' }, required, [true, true, true]), false);
+  assert.equal(containsPotentiallySensitiveModule5Text('complainant name Alice'), true);
+
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  assert.doesNotMatch(journey, /const ready = alreadyCompleted \|\|/);
+  assert.match(journey, /Save reviewed Module 5 output/);
+  assert.match(journey, /role="alert"/);
+  assert.match(journey, /Remove possible identifying or sensitive detail from the highlighted field/);
+});
+
+test('Screens 9–11 use the authoritative data-management, analysis and evaluation sequence', () => {
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  assert.match(journey, /Data Management: Organize, Clean and Protect Evidence/);
+  assert.match(journey, /Analysis: Combine Numbers, Feedback and Stories/);
+  assert.match(journey, /Evaluation: Understand Change, Equity and Contribution/);
+  for (const taskId of ['duplicate', 'category', 'missing', 'identifier', 'smallCell', 'comment1', 'comment6', 'mixed', 'sensemaking', 'change', 'equity', 'process', 'influence', 'contribution']) {
+    assert.match(journey, new RegExp(`id: '${taskId}'`));
+  }
+});
+
+test('Screens 12–13 restore the accountability loop, scorecard and six evidence-to-action signals', () => {
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  for (const taskId of ['scorecardIssue', 'jointAction', 'responsibleActor', 'reviewDate', 'accountBack', 'underrepresented', 'timing', 'overdueSignal', 'sensitiveRecord', 'publicActor', 'mixedClaim', 'heard', 'change', 'limit', 'nextUpdate']) {
+    assert.match(journey, new RegExp(`id: '${taskId}'`));
+  }
+  assert.match(journey, /Eight-step feedback loop/);
+  assert.match(journey, /Reach and access/);
+});
+
+test('Screen 15 canvas and Screen 16 plan retain the approved carry-forward structure', () => {
+  const journey = readFileSync('src/components/course/Module5EnhancedJourney.tsx', 'utf8');
+  for (const fieldId of ['project', 'decision', 'question', 'groups', 'dutyBearer', 'existingEvidence', 'evidenceLayers', 'methodMix', 'disaggregation', 'participatoryRole', 'safetyEthics', 'synthesis', 'finding', 'uncertainty', 'responsibleActor', 'closure', 'adaptation', 'followup', 'learning', 'peerQuestion']) {
+    assert.match(journey, new RegExp(`\\['${fieldId}'`));
+  }
+  for (const planId of ['days30', 'days60', 'days90', 'participation', 'trigger', 'communication', 'referral', 'stopCondition', 'reviewDate', 'learningNote']) {
+    assert.match(journey, new RegExp(`\\['${planId}'`));
+  }
+});
+
+test('Screen 16 shell language does not announce completion before confirmation', () => {
+  assert.equal(MODULE5_COMPLETION_SCREEN_TITLE, 'Portfolio Review and Module Closure');
+  const app = readFileSync('src/App.tsx', 'utf8');
+  assert.match(app, /\['M5-PLAYER-COMPLETE', MODULE5_COMPLETION_SCREEN_TITLE/);
+  assert.doesNotMatch(app, /\['M5-PLAYER-COMPLETE', 'Module 5 Complete'/);
 });
 
 test('Screen 1 renderer and Module 3/4 sources are byte-identical to approved release', () => {
