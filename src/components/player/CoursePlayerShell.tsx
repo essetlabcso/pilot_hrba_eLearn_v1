@@ -23,6 +23,11 @@ import {
   hasFinalAssessmentPrerequisites,
   shouldRenderPlayerScreenImmediately,
 } from '../../state/coursePrerequisites';
+import {
+  buildPortalContextRoute,
+  buildPortalHistoryState,
+  type PortalLaunchContext,
+} from '../../integration/portalContext';
 
 interface CoursePlayerShellProps {
   state: LearningState;
@@ -30,6 +35,7 @@ interface CoursePlayerShellProps {
   onExit: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sequenceData: any[];
+  portalContext?: PortalLaunchContext | null;
   portalModeActive?: boolean;
 }
 
@@ -90,7 +96,11 @@ function focusHTMLElement(element: Element | null | undefined) {
   return document.activeElement === element;
 }
 
-function syncRouteToScreen(moduleId: string | null | undefined, screenId: string) {
+function syncRouteToScreen(
+  moduleId: string | null | undefined,
+  screenId: string,
+  portalContext: PortalLaunchContext | null,
+) {
   if (typeof window === 'undefined') {
     return;
   }
@@ -122,8 +132,15 @@ function syncRouteToScreen(moduleId: string | null | undefined, screenId: string
           ? finalAssessmentRoutes[screenId]
         : undefined;
 
-  if (route && window.location.pathname !== route) {
-    window.history.pushState(null, '', route);
+  if (route) {
+    const targetRoute = moduleId === 'final_assessment'
+      ? buildPortalContextRoute(route, portalContext)
+      : route;
+    const currentRoute = `${window.location.pathname}${window.location.search}`;
+
+    if (currentRoute !== targetRoute) {
+      window.history.pushState(buildPortalHistoryState(portalContext), '', targetRoute);
+    }
   }
 }
 
@@ -132,6 +149,7 @@ export default function CoursePlayerShell({
   onChangeState,
   onExit,
   sequenceData,
+  portalContext = null,
   portalModeActive = false
 }: CoursePlayerShellProps) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -282,16 +300,16 @@ export default function CoursePlayerShell({
       return;
     }
 
-    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
-  }, [state.currentModuleId, state.currentScreenId]);
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId, portalContext);
+  }, [portalContext, state.currentModuleId, state.currentScreenId]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_02_everyday_cso_work' || !state.currentScreenId) {
       return;
     }
 
-    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
-  }, [state.currentModuleId, state.currentScreenId]);
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId, portalContext);
+  }, [portalContext, state.currentModuleId, state.currentScreenId]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_03_project_design') {
@@ -316,44 +334,44 @@ export default function CoursePlayerShell({
       : screen17Complete ? 'M3-R20' : 'M3-R17';
     const redirectQa = `m3-s${state.currentScreenId.slice(-2)}-hidden-redirect`;
     const markerTimeout = window.setTimeout(() => setHiddenModule3RedirectQa(redirectQa), 0);
-    syncRouteToScreen(state.currentModuleId, targetScreenId);
+    syncRouteToScreen(state.currentModuleId, targetScreenId, portalContext);
     onChangeState((prev) => ({
       ...prev,
       currentScreenId: targetScreenId,
     }));
     return () => window.clearTimeout(markerTimeout);
-  }, [onChangeState, state.currentModuleId, state.currentScreenId, state.screenProgress.module_03_project_design]);
+  }, [onChangeState, portalContext, state.currentModuleId, state.currentScreenId, state.screenProgress.module_03_project_design]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_04_implementation' || !state.currentScreenId) {
       return;
     }
 
-    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
-  }, [state.currentModuleId, state.currentScreenId]);
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId, portalContext);
+  }, [portalContext, state.currentModuleId, state.currentScreenId]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'module_05_hrba_meal' || !state.currentScreenId) {
       return;
     }
 
-    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
-  }, [state.currentModuleId, state.currentScreenId]);
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId, portalContext);
+  }, [portalContext, state.currentModuleId, state.currentScreenId]);
 
   useEffect(() => {
     if (state.currentModuleId !== 'final_assessment' || !state.currentScreenId) {
       return;
     }
 
-    syncRouteToScreen(state.currentModuleId, state.currentScreenId);
-  }, [state.currentModuleId, state.currentScreenId]);
+    syncRouteToScreen(state.currentModuleId, state.currentScreenId, portalContext);
+  }, [portalContext, state.currentModuleId, state.currentScreenId]);
 
   // Handle Navigation — operates entirely on playerScreens array bounds
   const handlePrev = () => {
     if (playerIndex > 0) {
       const nextIdx = playerIndex - 1;
       const targetScreen = playerScreens[nextIdx];
-      syncRouteToScreen(state.currentModuleId, targetScreen['Screen/State ID']);
+      syncRouteToScreen(state.currentModuleId, targetScreen['Screen/State ID'], portalContext);
       onChangeState((prev) => ({
         ...prev,
         currentScreenId: targetScreen['Screen/State ID']
@@ -375,7 +393,7 @@ export default function CoursePlayerShell({
     if (playerIndex < totalScreens - 1) {
       const nextIdx = playerIndex + 1;
       const targetScreen = playerScreens[nextIdx];
-      syncRouteToScreen(state.currentModuleId, targetScreen['Screen/State ID']);
+      syncRouteToScreen(state.currentModuleId, targetScreen['Screen/State ID'], portalContext);
       onChangeState((prev) => {
         // Record screen progress
         const currentProgress = prev.screenProgress[prev.currentModuleId || 'module_01_hrba_foundations'] || [];
@@ -1178,7 +1196,7 @@ export default function CoursePlayerShell({
                     aria-disabled={menuTargetDisabled}
                     onClick={() => {
                       if (menuTargetDisabled) return;
-                      syncRouteToScreen(state.currentModuleId, menuScreenId);
+                      syncRouteToScreen(state.currentModuleId, menuScreenId, portalContext);
                       focusMainContentAfterMenuSelectionRef.current = true;
                       onChangeState(prev => ({ ...prev, currentScreenId: screen['Screen/State ID'] }));
                       handleToggleModal(null);

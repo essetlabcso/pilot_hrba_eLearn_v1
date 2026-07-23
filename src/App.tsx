@@ -4,7 +4,11 @@ import type { LearningState } from './state/learningState';
 import PlatformShell from './components/platform/PlatformShell';
 import CoursePlayerShell from './components/player/CoursePlayerShell';
 import { HRBA_COURSE_MODULES, getHRBAModuleById } from './data/hrbaCourseModules';
-import { getPortalLaunchContextFromWindow } from './integration/portalContext';
+import {
+  buildPortalContextRoute,
+  buildPortalHistoryState,
+  getPortalLaunchContextFromWindow,
+} from './integration/portalContext';
 import { sendHubProgressMessage } from './integration/hubProgress';
 import {
   canAccessCourseModule,
@@ -110,6 +114,7 @@ export default function App() {
   const reportedFinalAssessmentAttemptsRef = useRef<Set<string>>(new Set());
   const [state, setState] = useState<LearningState>(() => {
     const defaultState = loadLearningState();
+    const routePortalContext = getPortalLaunchContextFromWindow();
     const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
     const screenIdParam = params.get('screenId');
@@ -343,7 +348,11 @@ export default function App() {
           nextState.currentSubState = null;
           nextState.activeModal = null;
           if (typeof window !== 'undefined' && pathname.startsWith('/final-assessment')) {
-            window.history.replaceState(window.history.state, '', `/${window.location.search}${window.location.hash}`);
+            window.history.replaceState(
+              buildPortalHistoryState(routePortalContext),
+              '',
+              buildPortalContextRoute('/', routePortalContext),
+            );
           }
           return nextState;
         }
@@ -656,7 +665,13 @@ export default function App() {
 
   const resetCourseProgress = () => {
     setState(resetLearningState());
-    if (typeof window !== 'undefined') window.history.pushState(null, '', '/');
+    if (typeof window !== 'undefined') {
+      window.history.pushState(
+        buildPortalHistoryState(portalContext),
+        '',
+        buildPortalContextRoute('/', portalContext),
+      );
+    }
   };
 
   const exitPlayer = () => {
@@ -678,6 +693,13 @@ export default function App() {
         completedModules,
       };
     });
+    if (typeof window !== 'undefined') {
+      window.history.pushState(
+        buildPortalHistoryState(portalContext),
+        '',
+        buildPortalContextRoute('/', portalContext),
+      );
+    }
   };
 
   const currentModule = getHRBAModuleById(state.currentModuleId) || HRBA_COURSE_MODULES[0];
@@ -849,6 +871,7 @@ export default function App() {
       onChangeState={setState}
       onExit={exitPlayer}
       sequenceData={currentSequence}
+      portalContext={portalContext}
       portalModeActive={Boolean(portalContext)}
     />
   );

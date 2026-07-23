@@ -29,6 +29,12 @@ import {
   hasFinalAssessmentPrerequisites,
   shouldRenderPlayerScreenImmediately,
 } from '../src/state/coursePrerequisites.ts';
+import {
+  buildPortalContextRoute,
+  buildPortalHistoryState,
+  isPortalLaunchEnvironmentValid,
+  parsePortalLaunchContext,
+} from '../src/integration/portalContext.ts';
 
 test('Final Assessment uses one fail-closed prerequisite source', () => {
   const incomplete = REQUIRED_HRBA_MODULE_IDS.slice(0, 4);
@@ -92,6 +98,50 @@ test('Hub postMessage contract and validated target origin remain unchanged', ()
   assert.match(bridge, /window\.parent\.postMessage\(message, portalContext\.portalOrigin\)/);
   assert.match(bridge, /cso-learning-hub:external-course-progress/);
   assert.doesNotMatch(bridge, /postMessage\(message, ['\"]\*['\"]\)/);
+});
+
+test('portal routes retain only validated integration context', () => {
+  const context = parsePortalLaunchContext(
+    '?embed=portal'
+      + '&portalOrigin=https%3A%2F%2Fhub.example.org'
+      + '&courseSlug=hrba-course'
+      + '&launchToken=opaque-launch'
+      + '&learnerId=raw-learner'
+      + '&organizationId=raw-organization',
+  );
+  assert.ok(context);
+  assert.equal(isPortalLaunchEnvironmentValid(context, {
+    isEmbedded: true,
+    referrer: 'https://hub.example.org/course/launch',
+  }), true);
+  assert.equal(isPortalLaunchEnvironmentValid(context, {
+    isEmbedded: false,
+    referrer: 'https://hub.example.org/course/launch',
+  }), false);
+  assert.equal(isPortalLaunchEnvironmentValid(context, {
+    isEmbedded: true,
+    referrer: 'https://unapproved.example.org/course/launch',
+  }), false);
+
+  const route = buildPortalContextRoute('/final-assessment/questions', context);
+  const routedUrl = new URL(route, 'https://course.example.org');
+  assert.deepEqual([...routedUrl.searchParams.keys()].sort(), [
+    'courseSlug',
+    'embed',
+    'launchToken',
+    'portalOrigin',
+  ]);
+  assert.equal(routedUrl.searchParams.get('portalOrigin'), 'https://hub.example.org');
+  assert.equal(routedUrl.searchParams.has('learnerId'), false);
+  assert.equal(routedUrl.searchParams.has('organizationId'), false);
+  assert.deepEqual(buildPortalHistoryState(context), {
+    hrbaPortalContextV1: {
+      embed: 'portal',
+      portalOrigin: 'https://hub.example.org',
+      courseSlug: 'hrba-course',
+      launchToken: 'opaque-launch',
+    },
+  });
 });
 
 test('all canonical Module 5 screen IDs remain canonical', () => {
