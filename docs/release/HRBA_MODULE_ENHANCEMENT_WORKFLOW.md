@@ -24,43 +24,60 @@ Start from a verified remote commit in the release manifest. Never treat a folde
    - Target `release/hrba-pilot-final`, not `main`.
    - Keep the PR Draft until automated and required human checks are recorded.
    - Record untested checks as untested; responsive emulation is not a substitute for native keyboard or zoom evidence.
-5. **Preview and Hub integration**
+5. **Preview and pre-production Hub integration**
    - Deploy a preview only from a clean, reviewed commit in the existing HRBA Vercel project.
    - Use the Hub final candidate and approved staging backend for authenticated launch, callback, assessment, completion, certificate, isolation and retained-completion testing.
    - Do not copy production credentials or use production learner accounts.
    - Do not send detailed HRBA Canvas or learner-answer data to the Hub.
 6. **Merge decision**
-   - Require no open P0/P1 defect, complete required human acceptance, complete authenticated integration acceptance, clean diff, current evidence, and explicit reviewer approval.
+   - Require no open P0/P1 defect, complete standalone automated and human acceptance, a clean diff, current evidence, explicit reviewer approval, and either an unchanged Hub bridge or separate review of any bridge change.
+   - Authenticated Hub/Supabase runtime acceptance is not a merge prerequisite when the bridge contract is unchanged; it remains a production-deployment gate.
+   - Before merging, the Vercel project owner must confirm whether merging `release/hrba-pilot-final` automatically deploys production. If it does, treat every pre-production deployment gate as a pre-merge gate.
    - Merge only the reviewed PR into the manifest release branch.
    - Record the resulting merge commit before deployment.
 7. **Owner-controlled production deployment**
    - The owner of `girumteenexus-8292s-projects/pilot-hrba-e-learn-v1-wajj` confirms project access, production-branch behavior and the exact deployment source.
    - Build from a clean worktree at the reviewed merge commit.
    - Deploy to a preview first and compare generated assets with the local deterministic build.
+   - Complete authenticated Hub acceptance against the reviewed HRBA Preview, Hub candidate and approved staging backend before changing the production alias.
    - After explicit production approval, deploy/promote only that commit to the existing project; never create or substitute a project or alias.
 8. **Post-deployment closure**
    - Verify `/`, every module entry, representative direct routes and Final Assessment on the pilot alias.
    - Confirm production JS/CSS asset hashes match the reviewed build.
    - Confirm the Hub bridge markers remain present and raw Hub IDs remain absent.
-   - Run the authenticated Hub smoke path, record the immutable deployment ID and update the manifest.
+   - Run a bounded authenticated Hub smoke path: launch the production HRBA alias from the Hub, confirm iframe/origin handling and one progress callback, and stop without creating completion or certificate records unless that production-data action was separately approved.
    - Preserve the previous immutable deployment as rollback evidence.
 
 ## Required Module 5 release gates
+
+### Before review and merge
 
 - [x] Correct HRBA base and isolated feature branch
 - [x] Implementation and evidence commits pushed to Draft PR #2
 - [x] Automated, responsive, desktop keyboard and native 200% zoom evidence
 - [ ] Native keyboard-only traversal at approximately 390 px
+- [x] Hub bridge files and message contract unchanged from the approved base
+- [ ] Reviewer confirms the evidence and changes PR #2 from Draft
+- [ ] Vercel project owner confirms whether merging `release/hrba-pilot-final` automatically deploys production
+
+### Before production deployment
+
+- [ ] Reviewed source commit recorded and deterministic build/Preview verified
+- [ ] Vercel project owner confirms the exact production project, source commit, production-branch behavior, alias-retention plan and rollback deployment
 - [ ] Authorized access to approved staging project `fgyxbzwdvngqlksyxuwa`
 - [ ] Candidate Preview configured with usable non-production Hub settings
-- [ ] Complete authenticated 14-step Hub acceptance
-- [ ] Reviewer changes PR #2 from Draft only after all required evidence passes
-- [ ] Vercel project owner confirms preview and production deployment source
-- [ ] Merge commit recorded, preview verified and explicit production approval granted
+- [ ] Complete authenticated 14-step Hub acceptance against the reviewed HRBA Preview
+- [ ] Explicit production approval granted
+
+### After production deployment
+
+- [ ] Production asset identity, routes and Final Assessment verified
+- [ ] Bounded authenticated Hub smoke path completed under an approved test account/data plan
+- [ ] Manifest updated with the merge commit, immutable deployment ID and rollback identity
 
 ## Owner confirmation gates
 
-The Vercel project owner must confirm before any HRBA production action:
+The Vercel project owner must confirm before any HRBA production deployment or promotion:
 
 - the current project is `girumteenexus-8292s-projects/pilot-hrba-e-learn-v1-wajj`;
 - whether Git integration can auto-deploy the release branch;
@@ -68,7 +85,7 @@ The Vercel project owner must confirm before any HRBA production action:
 - that promotion/deployment will retain `https://pilot-hrba-e-learn-v1-wajj.vercel.app`;
 - that rollback to the previous immutable deployment is available.
 
-Supabase owner or project-member access is required only for authenticated Hub testing. It is not a prerequisite for standalone HRBA development, build, keyboard/zoom checks or browser-local completion.
+Supabase owner or project-member access is required for authenticated pre-production Hub acceptance and any authorized post-deployment Hub smoke test. It is not a prerequisite for standalone HRBA development, build, keyboard/zoom checks, browser-local completion, code review or merge when the Hub bridge contract is unchanged.
 
 ## Prohibited shortcuts
 

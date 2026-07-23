@@ -30,11 +30,12 @@ The release-branch tip is newer than the deployed application commit because the
 | Draft PR | `essetlabcso/pilot_hrba_eLearn_v1#2` |
 | Base | `release/hrba-pilot-final` at `4644156d0313014cb24a7cbde4f8451f1c0c4f83` |
 | Feature branch | `feature/module5-hrba-meal-enhancement-20260722` |
-| Candidate tip | `867969261b833e4e9cefed5c8a6a81ee184ad30d` |
+| Candidate tip | `2a0f09ed1b102ad7b09d6aac78d86b15162789c0` |
 | Merge/deployment state | Unmerged; not deployed |
 | Standalone acceptance | Automated, desktop keyboard and native 200% zoom evidence passed |
 | Remaining standalone check | Keyboard-only traversal at approximately 390 px |
-| Remaining release check | Authenticated Hub 14-step acceptance against the approved staging backend |
+| Remaining pre-merge checks | Keyboard-only traversal at approximately 390 px, reviewer approval, and Vercel-owner confirmation of whether release-branch merge auto-deploys production |
+| Remaining pre-production check | Authenticated Hub 14-step acceptance against the approved staging backend |
 
 ## CSO Learning Hub
 
@@ -60,9 +61,9 @@ The Hub and HRBA course are separate release tracks. An HRBA module change must 
 | --- | --- |
 | Supabase project reference | `fgyxbzwdvngqlksyxuwa` |
 | Project URL | `https://fgyxbzwdvngqlksyxuwa.supabase.co` |
-| Operational role | Approved Hub staging project with fictional test fixtures |
+| Operational role | Approved Hub staging project; the current fixtures have not been independently reverified because access is unavailable |
 | Current access | Unavailable to the authenticated CLI (HTTP 403); available browser sessions were signed out at last verification |
-| Module 5 dependency | None for standalone implementation or acceptance; required only for authenticated Hub account/progress/assessment/completion/certificate testing |
+| Module 5 dependency | None for standalone implementation or review; not required for merge if deployment is separately controlled, but required before merge if release-branch merge automatically deploys production; always required before production deployment |
 
 Do not create a replacement project merely for a standalone module enhancement. Restore authorized access to this staging project when authenticated Hub acceptance is required.
 
