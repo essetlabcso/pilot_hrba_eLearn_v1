@@ -2,7 +2,7 @@
 
 ## Acceptance status
 
-**LATEST HUB INTEGRATION CHECK PENDING — production deployment gate.** The implementation, production build, automated tests, cross-course smoke tests, full Module 5 journey, route guards, hydration, legacy-state migration, portfolio carry-forward, downloads, copy fallback, semantic accessibility, reduced-motion, forced-colour, 1440/390/320 px browser checks, native Chrome desktop keyboard operation, and native 200% zoom checks have passed as recorded below. Keyboard-only traversal at approximately 390 px remains the standalone pre-merge check. Authenticated integration with the latest Hub candidate remains unverified because no usable staging database, Supabase, and session configuration was available; because the Hub bridge contract is unchanged, this is a pre-production deployment gate rather than a Module 5 merge gate.
+**READY FOR HUMAN REVIEW — production deployment remains blocked.** The implementation, production build, automated tests, cross-course smoke tests, full Module 5 journey, route guards, hydration, legacy-state migration, portfolio carry-forward, downloads, copy fallback, semantic accessibility, reduced-motion, forced-colour, 1440/390/320 px browser checks, native Chrome keyboard operation at desktop and an effective 390 px viewport, and native 200% zoom checks have passed as recorded below. The live Vercel project confirms that Production tracks `main` while `release/hrba-pilot-final` is an unassigned Preview branch, so merging PR #2 into the release branch does not automatically deploy production. Authenticated integration with the latest Hub candidate remains a pre-production deployment gate because the Hub bridge contract is unchanged.
 
 The implementation, automated acceptance evidence, and the completed native-browser checks passed. The requested “Screen 2 radio interaction” is recorded as NOT TESTED because Screen 2 contains a required three-checkbox activity rather than a radio group; native arrow-key radio operation passed on Screen 3. Authenticated Hub callback, assessment, certificate, cross-account, and retained-completion checks remain production-deployment blockers. They become merge blockers only if the Vercel owner confirms that merging the HRBA release branch automatically deploys production.
 
@@ -444,4 +444,43 @@ The release-governance review reclassified the remaining evidence without changi
 
 Supabase access is therefore not required to review or merge this standalone Module 5 change. It remains required before production deployment for authenticated Hub acceptance. No merge, deployment, promotion, alias, environment, Supabase or production-data change was performed by this reclassification.
 
-**LATEST HUB INTEGRATION CHECK PENDING — do not deploy to production**
+### Final pre-merge verification — 2026-07-23
+
+Tested source: PR #2 head `2a0f09ed1b102ad7b09d6aac78d86b15162789c0` before this evidence-only update. The local Vite server was confirmed to run from `D:\eLearn_CDP_Lg_module5_clean_20260722`. Chrome reported an effective CSS viewport of `390 × 844`, `document.documentElement.scrollWidth = 390`, and device-pixel ratio approximately `2.0`; the existing native 200% zoom therefore made this a combined narrow-layout and zoom stress check rather than weakening the 390 px breakpoint check.
+
+#### 390 px keyboard-only result
+
+PASS. Application interaction used Tab, Shift+Tab, Space, Enter and native arrow keys. Direct navigation and browser Back were used only as test-harness setup or to return from the deliberately opened Screen 15 source link.
+
+| Check | Result |
+| --- | --- |
+| Course page and cover | PASS — Review Module 5 was reached in logical order and activated with Enter; cover navigation, tools, Back and Start controls were reachable with visible focus. |
+| Focus visibility | PASS — tested controls showed solid focus outlines of approximately 2 px or 3.2 px; focus remained in view as the page scrolled. |
+| Screens 2–14 | PASS — every activity control, Check response control and Continue control was keyboard-reachable; Screen 2 checkbox toggled with Space; Screen 3 radio selection moved with Arrow Down/Arrow Up; reverse focus returned to the expected shell control; no trap occurred. |
+| Screen 15 source navigation | PASS — Enter opened a source activity and the test returned to the Canvas without losing saved work. |
+| Screen 15 editing | PASS — all 20 source-link/editor pairs were traversed; the learning-note textarea accepted keyboard text and the test marker was removed with Backspace, restoring the original 155-character value. |
+| Screen 15 confirmation | PASS — both confirmations were checked with Space and Review portfolio and plan was activated with Enter. |
+| Screen 16 editing | PASS — all four final textareas accepted a keyboard character and returned exactly to their prior lengths/values after Backspace. |
+| Copy output | PASS — Enter copied 3,470 characters beginning `HRBA MEAL, ACCOUNTABILITY AND ADAPTATION CANVAS`. |
+| Download text | PASS with the established fallback observation — Enter created `C:\Users\Omen\Downloads\module-5-hrba-meal-portfolio (1).txt` at 3,482 bytes. The browser download-event observer timed out, as in the earlier desktop test; filesystem evidence confirms the download. |
+| Readable output and completion | PASS — Enter opened the details/summary output; the readable preformatted output and completion button were reachable in forward and reverse order; Enter confirmed completion. |
+| Persistence | PASS — reload retained the four final fields, three confirmations and the `Earlier completion preserved` notice. |
+| Horizontal layout | PASS — the document remained at `scrollWidth = 390` throughout; no horizontal page overflow or hidden control was observed. |
+
+No P0/P1 standalone defect was found.
+
+#### Verified Vercel behavior
+
+Read-only inspection of the signed-in live Vercel project `girumteenexus-8292s-projects/pilot-hrba-e-learn-v1-wajj` established:
+
+- connected repository: `essetlabcso/pilot_hrba_eLearn_v1`;
+- Production branch tracking: `main`;
+- Preview branch tracking: all unassigned Git branches, which includes `release/hrba-pilot-final`;
+- release commit `22f9448736f126a5eb7cbed111606daae4b25a71` created a Preview deployment from `release/hrba-pilot-final`;
+- production deployment `dpl_4UTTSsAsyn2dAct8qJsTxQ71oTvG` is labelled Production and its source is `vercel deploy` rather than an automatic release-branch Git deployment.
+
+Conclusion: merging PR #2 into `release/hrba-pilot-final` may create/update a Preview but does not automatically deploy the authoritative production project. Production requires a separate owner-controlled `vercel deploy --prod` action or an explicitly reviewed promotion/deployment action. The current CLI identity `essetlab-5136` still cannot address the owner scope, so the Vercel owner must perform or explicitly authorize the later production action from the reviewed merge commit.
+
+The two technical pre-merge questions are resolved. PR #2 is ready to leave Draft and enter human review. It is not yet approved for merge, and production deployment remains blocked by authenticated Hub acceptance, exact reviewed-commit/Preview verification, owner-controlled production action and explicit production approval.
+
+**READY FOR HUMAN REVIEW — do not merge or deploy without the remaining approvals and production gates**
