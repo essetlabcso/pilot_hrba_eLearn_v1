@@ -4,10 +4,22 @@ Date: 2026-07-25
 
 ## Baseline status and rollback
 
-This branch was prepared locally from HRBA candidate
-`7f6bad961b3d94c4ded5fa9ad1f066a73a6dfae3`. It must not be represented as
-the deployed or accepted production baseline until Draft PR #4 receives
-independent acceptance.
+The coordinated technical baseline was accepted on 2026-07-25 after matched
+Preview testing:
+
+- HRBA baseline:
+  `7f6bad961b3d94c4ded5fa9ad1f066a73a6dfae3`;
+- Hub contract baseline:
+  `39dfa68866a9fad81ff6f89c20b2420b8928fc07`;
+- public HRBA acceptance Preview:
+  `https://hrba-public-baseline-7f6bad9.vercel.app`;
+- matched Hub acceptance Preview:
+  `https://hrba-hub-baseline-qa-20260725.vercel.app`.
+
+This is an accepted update-development baseline, not a production promotion.
+Draft PR review and controlled release authorization remain separate gates.
+The complete evidence is in
+`HRBA_COORDINATED_BASELINE_ACCEPTANCE_20260725.md`.
 
 The verified production deployment remains:
 
@@ -116,9 +128,9 @@ Requires coordinated Hub-side code/data/deployment:
 - changing Hub environment variables, database migrations, Supabase, account,
   enrollment, or administrator behavior.
 
-The Hub learner-isolation contract is itself still a Draft PR contract.
-Selecting HRBA `7f6bad9` therefore requires coordinated acceptance of both
-repositories, not only an HRBA branch decision.
+The Hub learner-isolation contract remains in Draft PR #2, but exact commit
+`39dfa688` has passed coordinated acceptance with HRBA `7f6bad9`. Later Hub
+PR-head commits remain outside this frozen baseline unless separately tested.
 
 ## Progress compatibility and rollback procedure
 
