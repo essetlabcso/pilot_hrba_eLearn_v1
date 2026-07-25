@@ -1,0 +1,208 @@
+.m4-enhanced-screen {
+  --m4-enhanced-ink: #17324d;
+  --m4-enhanced-muted: #536579;
+  --m4-enhanced-teal: #087d72;
+  --m4-enhanced-teal-dark: #075e57;
+  --m4-enhanced-mint: #e8f7f2;
+  --m4-enhanced-border: #cad9d7;
+  --m4-enhanced-warning: #8a5a00;
+  --m4-enhanced-focus: #f3b61f;
+  color: var(--m4-enhanced-ink);
+  display: grid;
+  gap: 1rem;
+  margin-inline: auto;
+  max-width: 92rem;
+  padding: clamp(1rem, 2.4vw, 2rem);
+}
+
+.m4-enhanced-screen *,
+.m4-enhanced-screen *::before,
+.m4-enhanced-screen *::after {
+  box-sizing: border-box;
+}
+
+.m4-enhanced-screen__header,
+.m4-enhanced-screen__context,
+.m4-enhanced-screen__activity,
+.m4-enhanced-status {
+  background: #fff;
+  border: 1px solid var(--m4-enhanced-border);
+  border-radius: 0.75rem;
+}
+
+.m4-enhanced-screen__header {
+  border-top: 0.3rem solid var(--m4-enhanced-teal);
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.m4-enhanced-screen__eyebrow {
+  color: var(--m4-enhanced-teal-dark);
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+}
+
+.m4-enhanced-screen h1 {
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  line-height: 1.12;
+  margin: 0;
+  max-width: 30ch;
+}
+
+.m4-enhanced-screen__introduction {
+  color: var(--m4-enhanced-muted);
+  max-width: 75ch;
+}
+
+.m4-enhanced-screen__workspace {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 2fr);
+}
+
+.m4-enhanced-screen__context,
+.m4-enhanced-screen__activity {
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.m4-enhanced-stages {
+  counter-reset: m4-enhanced-stage;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.m4-enhanced-stages__item {
+  align-items: center;
+  border: 2px solid var(--m4-enhanced-border);
+  border-radius: 0.65rem;
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: auto 1fr;
+  min-height: 3.25rem;
+  padding: 0.65rem;
+}
+
+.m4-enhanced-stages__item.is-active {
+  border-color: var(--m4-enhanced-teal);
+  box-shadow: inset 0 -0.2rem 0 var(--m4-enhanced-teal);
+}
+
+.m4-enhanced-stages__item.is-complete {
+  background: var(--m4-enhanced-mint);
+}
+
+.m4-enhanced-stages__number {
+  align-items: center;
+  background: var(--m4-enhanced-ink);
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-weight: 800;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.m4-enhanced-stages__state {
+  color: var(--m4-enhanced-teal-dark);
+  font-size: 0.8rem;
+  font-weight: 800;
+  grid-column: 2;
+}
+
+.m4-enhanced-status {
+  border-left: 0.3rem solid var(--m4-enhanced-teal);
+  padding: 0.9rem 1rem;
+}
+
+.m4-enhanced-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.m4-enhanced-actions__secondary,
+.m4-enhanced-actions__primary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.m4-enhanced-screen button,
+.m4-enhanced-screen input,
+.m4-enhanced-screen select,
+.m4-enhanced-screen textarea,
+.m4-enhanced-screen [tabindex="0"] {
+  min-height: 2.75rem;
+}
+
+.m4-enhanced-screen :focus-visible {
+  outline: 0.2rem solid var(--m4-enhanced-focus);
+  outline-offset: 0.2rem;
+}
+
+@media (max-width: 56.25rem) {
+  .m4-enhanced-screen__workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .m4-enhanced-stages {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 24.375rem) {
+  .m4-enhanced-screen {
+    padding: 0.75rem;
+  }
+
+  .m4-enhanced-actions,
+  .m4-enhanced-actions__secondary,
+  .m4-enhanced-actions__primary {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .m4-enhanced-actions button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m4-enhanced-screen *,
+  .m4-enhanced-screen *::before,
+  .m4-enhanced-screen *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .m4-enhanced-screen__header,
+  .m4-enhanced-screen__context,
+  .m4-enhanced-screen__activity,
+  .m4-enhanced-status,
+  .m4-enhanced-stages__item {
+    border-color: CanvasText;
+  }
+
+  .m4-enhanced-stages__item.is-active {
+    outline: 0.2rem solid Highlight;
+  }
+
+  .m4-enhanced-stages__number {
+    background: CanvasText;
+    color: Canvas;
+  }
+}

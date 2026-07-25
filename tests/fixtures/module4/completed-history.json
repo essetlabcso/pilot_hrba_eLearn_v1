@@ -1,0 +1,45 @@
+{
+  "name": "historically completed learner",
+  "practiceCheckState": {
+    "module4ImplementationNote": {
+      "note": "A historical generalized implementation note.",
+      "status": "completed"
+    },
+    "module4Completion": {
+      "completed": true,
+      "completedAt": "2026-07-20T10:00:00.000Z"
+    },
+    "module5EnhancedPractice": {
+      "schemaVersion": 2
+    }
+  },
+  "screenProgress": {
+    "module_04_implementation": [
+      "M4-S1-01",
+      "M4-S1-02",
+      "M4-S1-03",
+      "M4-S1-04",
+      "M4-S1-05",
+      "M4-S1-06",
+      "M4-S1-07",
+      "M4-S1-08",
+      "M4-S1-09",
+      "M4-S1-10",
+      "M4-S1-11",
+      "M4-S1-12",
+      "M4-S1-13",
+      "M4-S1-14"
+    ],
+    "final_assessment": [
+      "FINAL-ASSESSMENT-COMPLETE"
+    ]
+  },
+  "completedModules": [
+    "module_01_hrba_foundations",
+    "module_02_everyday_cso_work",
+    "module_03_project_design",
+    "module_04_implementation",
+    "module_05_hrba_meal",
+    "final_assessment"
+  ]
+}

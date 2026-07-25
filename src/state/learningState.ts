@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { migrateModule5PracticeState } from '../data/module5/module5EnhancedModel';
+import { migrateModule4EnhancedState } from '../data/module4/module4EnhancedModel';
 import { isValidAssessmentEvidenceId } from '../integration/portalLearnerState';
 import { enforceFinalAssessmentPrerequisites } from './coursePrerequisites';
 export interface LearningState {
@@ -356,6 +357,17 @@ function validateLearningState(
 
   const initialState = cloneInitialLearningState();
 
+  const module5PracticeState = migrateModule5PracticeState({
+    practiceCheckState: isObject(candidate.practiceCheckState) ? candidate.practiceCheckState : {},
+    screenProgress: candidate.screenProgress,
+    completedModules: candidate.completedModules,
+  });
+  const module4Migration = migrateModule4EnhancedState({
+    practiceCheckState: module5PracticeState,
+    screenProgress: candidate.screenProgress,
+    completedModules: candidate.completedModules,
+  });
+
   const validated = enforceFinalAssessmentPrerequisites({
     ...initialState,
     ...candidate,
@@ -363,11 +375,7 @@ function validateLearningState(
       ...initialState.m2FinalPortfolio,
       ...(isObject(candidate.m2FinalPortfolio) ? candidate.m2FinalPortfolio : {}),
     },
-    practiceCheckState: migrateModule5PracticeState({
-      practiceCheckState: isObject(candidate.practiceCheckState) ? candidate.practiceCheckState : {},
-      screenProgress: candidate.screenProgress,
-      completedModules: candidate.completedModules,
-    }),
+    practiceCheckState: module4Migration.practiceCheckState,
     storageVersion: STANDALONE_STORAGE_KEY,
   } as LearningState);
 

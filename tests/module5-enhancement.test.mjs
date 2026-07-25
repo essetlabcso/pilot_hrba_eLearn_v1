@@ -482,15 +482,23 @@ test('Screen 16 shell language does not announce completion before confirmation'
   assert.doesNotMatch(app, /\['M5-PLAYER-COMPLETE', 'Module 5 Complete'/);
 });
 
-test('Screen 1 renderer and Module 3/4 sources are byte-identical to approved release', () => {
+test('Module 5 Screen 1 and Module 3 sources are byte-identical to approved release', () => {
   const protectedFiles = [
     'src/components/course/ScreenRenderer.tsx',
     'src/components/course/Module3Batch2Screens.tsx',
     'src/components/course/Module3Renderer.tsx',
     'src/components/course/Module3RevisedRenderer.tsx',
-    'src/components/course/Module4Renderer.tsx',
   ];
   assert.doesNotThrow(() => execFileSync('git', ['diff', '--exit-code', '4644156', '--', ...protectedFiles]));
+});
+
+test('Module 4 Batch 0 cannot change the active Module 5 renderer contract', () => {
+  const renderer = readFileSync('src/components/course/ScreenRenderer.tsx', 'utf8');
+  assert.match(renderer, /import Module4Renderer from '\.\/Module4Renderer'/);
+  assert.match(renderer, /import Module5Renderer from '\.\/Module5Renderer'/);
+  assert.match(renderer, /if \(isModule4BuiltScreen\)[\s\S]*<Module4Renderer/);
+  assert.match(renderer, /if \(isModule5BuiltScreen\)[\s\S]*<Module5Renderer/);
+  assert.doesNotMatch(renderer, /Module4EnhancedFoundation/);
 });
 
 test('only the canonical enhanced component is reachable from Module5Renderer', () => {

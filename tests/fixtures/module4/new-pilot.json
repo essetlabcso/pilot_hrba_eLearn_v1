@@ -1,0 +1,18 @@
+{
+  "name": "new pilot learner",
+  "practiceCheckState": {
+    "module3_revised_m3_r22": {
+      "status": "completed"
+    }
+  },
+  "screenProgress": {
+    "module_03_project_design": [
+      "M3-R22"
+    ]
+  },
+  "completedModules": [
+    "module_01_hrba_foundations",
+    "module_02_everyday_cso_work",
+    "module_03_project_design"
+  ]
+}
