@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
+import Module4EnhancedBatch1 from './module4/Module4EnhancedBatch1';
 
 type Module4RendererProps = {
   screenId: string;
@@ -41,37 +42,6 @@ const module4Routes: Record<string, string> = {
   'M4-S1-14': '/module-4/screen-4-14',
 };
 
-const projectCycle = ['Situation Analysis', 'Planning and Design', 'Implementation', 'Monitoring and Evaluation'];
-
-const objectives = [
-  'Explain what HRBA means during project implementation.',
-  'Identify implementation issues that may affect HRBA principles.',
-  'Check whether project activities are being implemented in a non-discriminatory way.',
-  'Explain how meaningful participation should continue during implementation.',
-  'Identify how accountability and transparency should be practiced during implementation.',
-  'Distinguish the role of the CSO, rights-holders, duty-bearers, and other actors.',
-  'Prepare a short and safe implementation note for your portfolio.',
-];
-
-const objectiveFrontLabels = [
-  'HRBA during implementation',
-  'Implementation issues',
-  'Non-discrimination',
-  'Meaningful participation',
-  'Accountability and transparency',
-  'Roles and responsibilities',
-  'Portfolio note',
-];
-
-const principleCards = [
-  ['Participation', 'Are rights-holders participating in a meaningful way?'],
-  ['Non-discrimination and equality', 'Are some groups being excluded or benefiting less?'],
-  ['Accountability and transparency', 'Are decisions, criteria, feedback, and results clear?'],
-  ['Roles and responsibilities', 'Are duty-bearers fulfilling their responsibilities?'],
-  ['Empowerment and capacity development', 'Is the project helping rights-holders to claim their rights and duty-bearers to fulfil their obligations?'],
-  ['Safe use of information', 'Are complaints, photos, stories, feedback, and monitoring information handled safely?'],
-];
-
 const summaryCards = [
   ['Non-discrimination and equality', 'Are all rights-holders able to access and benefit from the project fairly?'],
   ['Meaningful participation', 'Are rights-holders able to express views and influence decisions during implementation?'],
@@ -79,24 +49,6 @@ const summaryCards = [
   ['Rights-holders and duty-bearers', 'Are roles and responsibilities clear?'],
   ['Empowerment and capacity development', 'Are rights-holders and duty-bearers becoming more able to act?'],
   ['Safe use of information', 'Are feedback, photos, stories, complaints, and monitoring information handled safely?'],
-];
-
-const scenarioIssues: [string, string, string[]][] = [
-  ['support-list', 'The support list changed after a local committee discussion.', ['Non-discrimination and equality', 'Accountability and transparency']],
-  ['market-fees', 'Some informal women vendors say the market improvement may increase fees.', ['Non-discrimination and equality']],
-  ['youth-follow-up', 'Youth attend activities but are not included in follow-up decisions.', ['Meaningful participation']],
-  ['accessibility-delay', 'Persons with disabilities are counted in the report, but accessibility actions are delayed.', ['Non-discrimination and equality', 'Accountability and transparency']],
-  ['woreda-follow-up', 'Woreda sector staff attended the launch but have not followed up on agreed actions.', ['Roles and responsibilities']],
-  ['feedback-no-answer', 'Feedback forms are collected, but people have not heard what happened next.', ['Accountability and transparency']],
-  ['consent-unclear', 'Field staff are collecting photos and stories, but consent is not always clear.', ['Safe use of information']],
-];
-
-const principleOptions = [
-  'Non-discrimination and equality',
-  'Meaningful participation',
-  'Accountability and transparency',
-  'Roles and responsibilities',
-  'Safe use of information',
 ];
 
 const feedbackSteps = ['Receive feedback', 'Review feedback', 'Decide what can be changed', 'Respond to rights-holders', 'Follow up', 'Record safely'];
@@ -375,127 +327,6 @@ function QuestionList({ title, items }: { title: string; items: string[] }) {
       <h2>{title}</h2>
       <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
     </aside>
-  );
-}
-
-function IntroScreen({ onChangeState }: Module4RendererProps) {
-  const [selected, setSelected] = useState(false);
-  return (
-    <main className="m4-screen m4-final-screen" aria-labelledby="m4-s1-title">
-      <section className="m4-final-two-col">
-        <article className="m4-final-card">
-          <ModuleContextLabel>MODULE 4</ModuleContextLabel>
-          <h1 id="m4-s1-title">Applying HRBA During Implementation</h1>
-          <p>A Human Rights-Based Approach should be applied in all stages of a CSO project.</p>
-          <ul><li>situation analysis;</li><li>planning and design;</li><li>implementation;</li><li>monitoring and evaluation.</li></ul>
-          <p>This module focuses on implementation.</p>
-          <p>During implementation, a CSO should not only ask whether activities are completed. It should also ask whether the project is being carried out in a way that respects human rights principles.</p>
-          <ul><li>non-discrimination and equality;</li><li>meaningful participation;</li><li>accountability and transparency;</li><li>empowerment and capacity development;</li><li>the roles of rights-holders and duty-bearers;</li><li>safe and responsible use of information.</li></ul>
-          <div className="m4-final-key"><strong>Key message</strong><p>HRBA during implementation means carrying out project activities in a way that is fair, participatory, accountable, transparent, and respectful of human dignity.</p></div>
-        </article>
-        <aside className="m4-final-card m4-final-visual">
-          <p className="m4-card-kicker">Project cycle highlight</p>
-          <div className="m4-cycle-strip" aria-label="Project cycle">
-            {projectCycle.map((step) => (
-              <button key={step} type="button" className={step === 'Implementation' && selected ? 'is-selected' : ''} onClick={() => step === 'Implementation' && setSelected(true)}>
-                {step}
-              </button>
-            ))}
-          </div>
-          <p>Click <strong>Implementation</strong> in the project-cycle strip.</p>
-          <PrimaryButton disabled={!selected} onClick={() => completeScreen('M4-S1-01', 'M4-S1-02', onChangeState, 'module4ProjectCycleHighlight', { selected: 'Implementation' })}>Continue</PrimaryButton>
-        </aside>
-      </section>
-    </main>
-  );
-}
-
-function ObjectivesScreen({ onChangeState }: Module4RendererProps) {
-  const [opened, setOpened] = useState<string[]>([]);
-  const openCard = (id: string) => setOpened((prev) => prev.includes(id) ? prev : [...prev, id]);
-  return (
-    <main className="m4-screen m4-final-screen" aria-labelledby="m4-s2-title">
-      <section className="m4-final-stack">
-        <article className="m4-final-card">
-          <ModuleContextLabel>MODULE 4</ModuleContextLabel>
-          <h1 id="m4-s2-title">Learning Objectives</h1>
-          <p>By the end of this module, you will be able to:</p>
-        </article>
-        <section className="m4-final-grid" aria-label="Learning objective cards">
-          {objectives.map((objective, index) => (
-            <button key={objective} type="button" className={`m4-final-reveal ${opened.includes(objective) ? 'is-open' : ''}`} onClick={() => openCard(objective)}>
-              <span>{index + 1}</span>
-              <strong>{opened.includes(objective) ? objective : objectiveFrontLabels[index]}</strong>
-            </button>
-          ))}
-        </section>
-        <PrimaryButton disabled={opened.length < objectives.length} onClick={() => completeScreen('M4-S1-02', 'M4-S1-03', onChangeState, 'module4ObjectivesViewed', { opened })}>Continue</PrimaryButton>
-      </section>
-    </main>
-  );
-}
-
-function PrinciplesScreen({ onChangeState }: Module4RendererProps) {
-  const [opened, setOpened] = useState<string[]>([]);
-  const openCard = (id: string) => setOpened((prev) => prev.includes(id) ? prev : [...prev, id]);
-  return (
-    <main className="m4-screen m4-final-screen" aria-labelledby="m4-s3-title">
-      <section className="m4-final-stack">
-        <article className="m4-final-card">
-          <ModuleContextLabel>MODULE 4</ModuleContextLabel>
-          <h1 id="m4-s3-title">HRBA in the Project Cycle</h1>
-          <p>HRBA is not an additional activity that is added after a project has already been designed. It should guide the whole project cycle.</p>
-          <p>During implementation, the CSO should continue to ask the questions below. The local context should always guide the way HRBA is applied. If the situation changes, the CSO may need to adjust the project in a safe and responsible way.</p>
-          <div className="m4-final-key"><strong>Key message</strong><p>Implementation is not only delivery. It is also a time to check whether the project continues to respect HRBA principles.</p></div>
-        </article>
-        <section className="m4-principle-cluster" aria-label="Implementation principle cards">
-          <div className="m4-principle-center">Implementation</div>
-          {principleCards.map(([title, text]) => (
-            <button key={title} type="button" className={`m4-final-reveal ${opened.includes(title) ? 'is-open' : ''}`} onClick={() => openCard(title)}>
-              <strong>{title}</strong>
-              {opened.includes(title) && <p>{text}</p>}
-            </button>
-          ))}
-        </section>
-        <PrimaryButton disabled={opened.length < principleCards.length} onClick={() => completeScreen('M4-S1-03', 'M4-S1-04', onChangeState, 'module4PrinciplesViewed', { opened })}>Continue</PrimaryButton>
-      </section>
-    </main>
-  );
-}
-
-function ScenarioMatchScreen({ onChangeState }: Module4RendererProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-  const complete = scenarioIssues.every(([id]) => answers[id]);
-  return (
-    <main className="m4-screen m4-final-screen" aria-labelledby="m4-s4-title">
-      <section className="m4-final-two-col">
-        <article className="m4-final-card">
-          <ModuleContextLabel>MODULE 4</ModuleContextLabel>
-          <h1 id="m4-s4-title">Practical Example: The Project Is Being Implemented</h1>
-          <p>Awra Grassroots Initiative is implementing a project in Jiru Amba.</p>
-          <p>The project supports livelihood support for women vendors and youth groups; follow-up with woreda offices on market, water, and health-post commitments; community feedback on service improvements; basic accessibility and communication improvements; public dialogue between community members, CSOs, and duty-bearers; and monitoring and reporting to the donor.</p>
-          <p>After two months, activities are taking place. Reports show progress. However, the CSO notices some issues.</p>
-        </article>
-        <section className="m4-final-card">
-          <h2>Match each issue with the main HRBA principle the CSO should check first.</h2>
-          <div className="m4-final-form-list">
-            {scenarioIssues.map(([id, issue, correctOptions]) => (
-              <label key={id}>
-                <span>{issue}</span>
-                <select value={answers[id] || ''} onChange={(event) => setAnswers({ ...answers, [id]: event.target.value })}>
-                  <option value="">Choose a principle</option>
-                  {principleOptions.map((option) => <option key={option}>{option}</option>)}
-                </select>
-                {submitted && <small>{correctOptions.includes(answers[id]) ? 'Useful match.' : `Suggested first check: ${correctOptions.join(' / ')}.`}</small>}
-              </label>
-            ))}
-          </div>
-          {submitted && <div className="m4-final-key"><p>These issues are not only implementation delays. They may affect HRBA principles. The CSO should check who is affected, what responsibility exists, what information is needed, and what should be adjusted safely.</p></div>}
-          {!submitted ? <PrimaryButton disabled={!complete} onClick={() => { setSubmitted(true); markOnly('M4-S1-04', onChangeState, 'module4ScenarioMatch', { answers }); }}>Check matches</PrimaryButton> : <PrimaryButton onClick={() => completeScreen('M4-S1-04', 'M4-S1-05', onChangeState, 'module4ScenarioMatch', { answers, submitted: true })}>Continue</PrimaryButton>}
-        </section>
-      </section>
-    </main>
   );
 }
 
@@ -902,10 +733,9 @@ function sentenceEnd(value: string) {
 }
 
 export default function Module4Renderer(props: Module4RendererProps) {
-  if (props.screenId === 'M4-S1-01') return <IntroScreen {...props} />;
-  if (props.screenId === 'M4-S1-02') return <ObjectivesScreen {...props} />;
-  if (props.screenId === 'M4-S1-03') return <PrinciplesScreen {...props} />;
-  if (props.screenId === 'M4-S1-04') return <ScenarioMatchScreen {...props} />;
+  if (['M4-S1-01', 'M4-S1-02', 'M4-S1-03', 'M4-S1-04'].includes(props.screenId)) {
+    return <Module4EnhancedBatch1 {...props} screenId={props.screenId as 'M4-S1-01' | 'M4-S1-02' | 'M4-S1-03' | 'M4-S1-04'} />;
+  }
   if (props.screenId === 'M4-S1-05') return <RankingScreen {...props} />;
   if (props.screenId === 'M4-S1-06') return <ParticipationScreen {...props} />;
   if (props.screenId === 'M4-S1-07') return <FeedbackSequenceScreen {...props} />;

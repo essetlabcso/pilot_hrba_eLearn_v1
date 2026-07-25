@@ -50,6 +50,39 @@ export type Module4Workstream =
   | 'consultation_feedback';
 
 export type Module4ResponsePathway = '' | 'adjust' | 'engage' | 'protect';
+export type Module4EvidenceClassification = '' | 'confirmed' | 'needs_checking';
+
+export const MODULE4_WORKSTREAMS = [
+  'market',
+  'water_service',
+  'youth_livelihoods',
+  'health_post',
+  'consultation_feedback',
+] as const satisfies readonly Exclude<Module4Workstream, ''>[];
+
+export type Module4Batch1State = {
+  bridge: {
+    selectedAnswer: '' | 'A' | 'B' | 'C';
+    feedbackViewed: boolean;
+  };
+  practiceJourney: {
+    exampleExpanded: boolean;
+    acknowledged: boolean;
+  };
+  everydayRightsLens: {
+    activeStep: number;
+    exploredSteps: number[];
+    finalAnswer: '' | 'A' | 'B' | 'C';
+    feedbackViewed: boolean;
+  };
+  workstreamExploration: {
+    activeWorkstream: Exclude<Module4Workstream, ''>;
+    exploredWorkstreams: Exclude<Module4Workstream, ''>[];
+    classifications: Partial<
+      Record<Exclude<Module4Workstream, ''>, Record<string, Module4EvidenceClassification>>
+    >;
+  };
+};
 
 export type Module4ImplementationNote = {
   concern: string;
@@ -114,6 +147,7 @@ export type Module4EnhancedState = {
     legacySnapshot: Module4LegacySnapshot | null;
   };
   fields: Module4EnhancedFields;
+  batch1: Module4Batch1State;
   screens: Record<Module4CanonicalScreenId, Module4EnhancedScreenState>;
   reviewRequiredFields: Module4FieldKey[];
   completion: {
@@ -226,6 +260,30 @@ function createInitialScreens(): Record<Module4CanonicalScreenId, Module4Enhance
   ) as Record<Module4CanonicalScreenId, Module4EnhancedScreenState>;
 }
 
+export function createInitialModule4Batch1State(): Module4Batch1State {
+  return {
+    bridge: {
+      selectedAnswer: '',
+      feedbackViewed: false,
+    },
+    practiceJourney: {
+      exampleExpanded: false,
+      acknowledged: false,
+    },
+    everydayRightsLens: {
+      activeStep: 1,
+      exploredSteps: [],
+      finalAnswer: '',
+      feedbackViewed: false,
+    },
+    workstreamExploration: {
+      activeWorkstream: 'market',
+      exploredWorkstreams: [],
+      classifications: {},
+    },
+  };
+}
+
 export function createInitialModule4EnhancedState(
   appliedAt: string,
   options: {
@@ -245,6 +303,7 @@ export function createInitialModule4EnhancedState(
       legacySnapshot: options.legacySnapshot || null,
     },
     fields: createInitialFields(),
+    batch1: createInitialModule4Batch1State(),
     screens: createInitialScreens(),
     reviewRequiredFields: [],
     completion: {
@@ -266,6 +325,56 @@ function isCurrentModule4EnhancedState(value: unknown): value is Module4Enhanced
     && isRecord(value.fields)
     && isRecord(value.screens)
     && isRecord(value.completion);
+}
+
+function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module4EnhancedState {
+  const defaults = createInitialModule4Batch1State();
+  const batch1: Record<string, unknown> = isRecord(value.batch1) ? value.batch1 : {};
+  const bridge: Record<string, unknown> = isRecord(batch1.bridge) ? batch1.bridge : {};
+  const practiceJourney: Record<string, unknown> = isRecord(batch1.practiceJourney) ? batch1.practiceJourney : {};
+  const everydayRightsLens: Record<string, unknown> = isRecord(batch1.everydayRightsLens) ? batch1.everydayRightsLens : {};
+  const workstreamExploration: Record<string, unknown> = isRecord(batch1.workstreamExploration)
+    ? batch1.workstreamExploration
+    : {};
+
+  return {
+    ...value,
+    batch1: {
+      bridge: {
+        ...defaults.bridge,
+        ...bridge,
+      } as Module4Batch1State['bridge'],
+      practiceJourney: {
+        ...defaults.practiceJourney,
+        ...practiceJourney,
+      } as Module4Batch1State['practiceJourney'],
+      everydayRightsLens: {
+        ...defaults.everydayRightsLens,
+        ...everydayRightsLens,
+        exploredSteps: Array.isArray(everydayRightsLens.exploredSteps)
+          ? everydayRightsLens.exploredSteps.filter(
+            (step: unknown): step is number => typeof step === 'number'
+              && Number.isInteger(step)
+              && step >= 1
+              && step <= 6,
+          )
+          : [],
+      } as Module4Batch1State['everydayRightsLens'],
+      workstreamExploration: {
+        ...defaults.workstreamExploration,
+        ...workstreamExploration,
+        exploredWorkstreams: Array.isArray(workstreamExploration.exploredWorkstreams)
+          ? workstreamExploration.exploredWorkstreams.filter(
+            (workstream: unknown): workstream is Exclude<Module4Workstream, ''> =>
+              MODULE4_WORKSTREAMS.includes(workstream as Exclude<Module4Workstream, ''>),
+          )
+          : [],
+        classifications: isRecord(workstreamExploration.classifications)
+          ? workstreamExploration.classifications as Module4Batch1State['workstreamExploration']['classifications']
+          : {},
+      } as Module4Batch1State['workstreamExploration'],
+    },
+  };
 }
 
 function hasMeaningfulValue(value: unknown) {
@@ -322,7 +431,7 @@ export function migrateModule4EnhancedState(input: Module4MigrationInput): Modul
   const historicalCompletionPreserved = completedModules.includes(MODULE4_ID);
   const existing = practice.module4Enhanced;
   const enhanced = isCurrentModule4EnhancedState(existing)
-    ? existing
+    ? hydrateCurrentModule4EnhancedState(existing)
     : createInitialModule4EnhancedState(appliedAt, {
       historicalCompletionPreserved,
       legacySnapshot: captureLegacySnapshot(practice, appliedAt),
