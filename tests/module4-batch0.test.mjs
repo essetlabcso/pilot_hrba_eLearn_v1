@@ -225,7 +225,7 @@ test('scoped accessibility foundation covers focus, mobile, zoom reflow, reduced
   assert.match(component, /aria-current=\{stage\.id === activeStage \? 'step'/);
   assert.match(styles, /\.m4-enhanced-screen :focus-visible/);
   assert.match(styles, /min-height: 2\.75rem/);
-  assert.match(styles, /@media \(max-width: 24\.375rem\)/);
+  assert.match(styles, /@media \(max-width: 30rem\)/);
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(styles, /@media \(forced-colors: active\)/);
   assert.doesNotMatch(styles, /overflow-x:\s*auto/);

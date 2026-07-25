@@ -9,6 +9,7 @@ export function Module4EnhancedScreenFrame({
   context,
   activity,
   status,
+  className,
 }: {
   titleId: string;
   eyebrow: string;
@@ -17,9 +18,13 @@ export function Module4EnhancedScreenFrame({
   context: ReactNode;
   activity: ReactNode;
   status?: ReactNode;
+  className?: string;
 }) {
   return (
-    <main className="m4-enhanced-screen" aria-labelledby={titleId}>
+    <main
+      className={['m4-enhanced-screen', className].filter(Boolean).join(' ')}
+      aria-labelledby={titleId}
+    >
       <header className="m4-enhanced-screen__header">
         <p className="m4-enhanced-screen__eyebrow">{eyebrow}</p>
         <h1 id={titleId}>{title}</h1>

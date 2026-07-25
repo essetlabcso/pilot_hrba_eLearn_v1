@@ -68,6 +68,7 @@ Desktop:
 - `screenshots/screen-2-desktop-feedback.png`
 - `screenshots/screen-3-desktop-ready.png`
 - `screenshots/screen-4-desktop-complete.png`
+- `screenshots/screen-4-desktop-progress.png` (active, explored, available-next, and locked circle states)
 - `screenshots/screen-5-desktop-selected.png`
 
 Mobile:

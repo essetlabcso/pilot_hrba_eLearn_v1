@@ -84,6 +84,9 @@ test('Screens 2-5 include the approved content, interactions, validation, feedba
   assert.match(batch1, /View'\} a fictional example/);
   assert.match(batch1, /exploredSteps/);
   assert.match(batch1, /Explore each step in order/);
+  assert.match(batch1, /Current step/);
+  assert.match(batch1, /Available next/);
+  assert.match(batch1, /m4-enhanced-lens__number/);
   assert.match(batch1, /Classify each statement accurately before moving on/);
   assert.match(batch1, /All five areas are explored/);
   assert.match(batch1, /recordModule4EnhancedScreenCompletion/);
@@ -122,7 +125,9 @@ test('assets remain semantic HTML controls and the scoped CSS supports keyboard,
   assert.match(batch1, /role="radiogroup"/);
   assert.match(batch1, /aria-live="polite"/);
   assert.match(css, /\.m4-enhanced-screen :focus-visible/);
-  assert.match(css, /@media \(max-width: 24\.375rem\)/);
+  assert.match(css, /\.m4-enhanced-lens__step\.is-available/);
+  assert.match(css, /\.m4-enhanced-lens__step\.is-locked/);
+  assert.match(css, /@media \(max-width: 30rem\)/);
   assert.match(css, /@media \(forced-colors: active\)/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.doesNotMatch(css, /overflow-x:\s*auto/);

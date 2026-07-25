@@ -67,36 +67,42 @@ const practiceStages = [
 const lensSteps = [
   {
     title: 'Notice and understand',
+    shortLabel: 'Notice',
     question: 'What does not match the improved design?',
     situation: 'The agreed accessibility improvement at the health post is incomplete.',
     move: 'Record the implementation signal without assuming why it happened.',
   },
   {
     title: 'Analyse rights impacts',
+    shortLabel: 'Analyse',
     question: 'Who may experience the current arrangement differently?',
     situation: 'Some people may be unable to enter or use the consultation venue independently.',
     move: 'Check access needs and preferences with affected participants.',
   },
   {
     title: 'Choose a proportionate response',
+    shortLabel: 'Respond',
     question: 'What response addresses the immediate barrier without exceeding Awra’s role?',
     situation: 'The consultation venue can be changed now, while the public building action needs another actor.',
     move: 'Use an accessible venue and prepare constructive engagement on the unfinished action.',
   },
   {
     title: 'Clarify responsibilities and influence',
+    shortLabel: 'Clarify',
     question: 'What can Awra change, and what belongs to another actor?',
     situation: 'Awra controls its consultation arrangements. The public facility remains the responsibility of the relevant service actor.',
     move: 'Change its own venue and engage the responsible actor about the building action.',
   },
   {
     title: 'Act and implement',
+    shortLabel: 'Act',
     question: 'How should the agreed response be put into practice?',
     situation: 'Participants need clear information about the accessible venue and the action being followed up.',
     move: 'Make the venue change, communicate it accessibly, and document the responsible actor’s action.',
   },
   {
     title: 'Follow up and learn',
+    shortLabel: 'Follow up',
     question: 'What should Awra check after acting?',
     situation: 'The immediate consultation barrier is addressed, but the facility action is still open.',
     move: 'Confirm the responsible role, review date, community update, and lesson for Module 5.',
@@ -462,6 +468,7 @@ function EverydayRightsLensScreen({ state, onChangeState }: Props) {
 
   return (
     <Module4EnhancedScreenFrame
+      className="m4-enhanced-screen--lens"
       titleId="m4-enhanced-lens-title"
       eyebrow="Module 4 · Screen 4"
       title="The Everyday Rights Lens in Action"
@@ -477,6 +484,15 @@ function EverydayRightsLensScreen({ state, onChangeState }: Props) {
           {lensSteps.map((step, index) => {
             const stepNumber = index + 1;
             const canVisit = stepNumber === 1 || explored.has(stepNumber) || explored.has(stepNumber - 1);
+            const isActive = activeStep === stepNumber;
+            const isComplete = explored.has(stepNumber);
+            const visualState = isActive
+              ? 'Current step'
+              : isComplete
+                ? 'Explored'
+                : canVisit
+                  ? 'Available next'
+                  : 'Locked';
             return (
               <button
                 key={step.title}
@@ -484,16 +500,19 @@ function EverydayRightsLensScreen({ state, onChangeState }: Props) {
                 className={[
                   'm4-enhanced-lens__step',
                   `is-step-${stepNumber}`,
-                  activeStep === stepNumber ? 'is-active' : '',
-                  explored.has(stepNumber) ? 'is-complete' : '',
+                  isActive ? 'is-active' : '',
+                  isComplete ? 'is-complete' : '',
+                  canVisit && !isActive && !isComplete ? 'is-available' : '',
+                  !canVisit ? 'is-locked' : '',
                 ].filter(Boolean).join(' ')}
                 disabled={!canVisit}
-                aria-current={activeStep === stepNumber ? 'step' : undefined}
+                aria-current={isActive ? 'step' : undefined}
+                aria-label={`${stepNumber}. ${step.title}. ${visualState}.`}
                 onClick={() => visit(stepNumber)}
               >
-                <span>{stepNumber}</span>
-                {step.title}
-                {explored.has(stepNumber) && <small>Explored</small>}
+                <span className="m4-enhanced-lens__number" aria-hidden="true">{stepNumber}</span>
+                <span className="m4-enhanced-lens__label" aria-hidden="true">{step.shortLabel}</span>
+                <small className="m4-enhanced-lens__state" aria-hidden="true">{visualState}</small>
               </button>
             );
           })}
