@@ -823,20 +823,20 @@ function CourseApplication({
             {
               Layer: 'Layer 2 Player',
               'Screen/State ID': 'M4-S1-05',
-              'Screen/State Title': 'Ensuring Non-Discriminatory Practices',
-              'Learning/Purpose': 'Rank plausible actions for reviewing a changed support list fairly and safely.',
+              'Screen/State Title': 'Fair Access — Evidence, Action and Follow-Up',
+              'Learning/Purpose': 'Use evidence to choose a proportionate fair-access response and define accountable follow-up.',
             },
             {
               Layer: 'Layer 2 Player',
               'Screen/State ID': 'M4-S1-06',
-              'Screen/State Title': 'Realizing Meaningful Participation',
-              'Learning/Purpose': 'Choose the response that best strengthens youth participation during follow-up decisions.',
+              'Screen/State Title': 'Participation with Real Influence',
+              'Learning/Purpose': 'Open a real decision, include relevant voices and show how participation influenced the outcome.',
             },
             {
               Layer: 'Layer 2 Player',
               'Screen/State ID': 'M4-S1-07',
-              'Screen/State Title': 'Accountability and Transparency',
-              'Learning/Purpose': 'Sequence a feedback process from receiving feedback to safe recording.',
+              'Screen/State Title': 'Accountable Concern, Response and Follow-Up',
+              'Learning/Purpose': 'Turn an access concern into an owned, recorded response with explanation and follow-up.',
             },
             {
               Layer: 'Layer 2 Player',

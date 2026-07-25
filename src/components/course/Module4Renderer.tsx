@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 import Module4EnhancedBatch1 from './module4/Module4EnhancedBatch1';
+import Module4EnhancedBatch2 from './module4/Module4EnhancedBatch2';
 
 type Module4RendererProps = {
   screenId: string;
@@ -51,9 +52,6 @@ const summaryCards = [
   ['Safe use of information', 'Are feedback, photos, stories, complaints, and monitoring information handled safely?'],
 ];
 
-const feedbackSteps = ['Receive feedback', 'Review feedback', 'Decide what can be changed', 'Respond to rights-holders', 'Follow up', 'Record safely'];
-const feedbackStepPositions = Object.fromEntries(feedbackSteps.map((step, index) => [step, String(index + 1)]));
-
 const roleActions = [
   ['commitment-info', 'Explain the service commitment and provide follow-up information.', 'CSO and duty-bearer together'],
   ['raise-concerns', 'Raise concerns and share experience safely.', 'Rights-holders'],
@@ -70,32 +68,6 @@ const safeInfoOptions = [
   ['C', 'A group-level summary of feedback trends and actions taken.', 'Safer to use'],
   ['D', 'A personal story shared with clear consent, no sensitive details, and no identifying information.', 'Use with caution'],
   ['E', 'A photo collected quickly because the donor requested it.', 'Do not use'],
-];
-
-const nonDiscriminationQuestions = [
-  'Who is receiving project support?',
-  'Who is not receiving support?',
-  'Are the selection criteria clear?',
-  'Are some groups benefiting more than others?',
-  'Are any groups facing barriers to information, participation, or benefit?',
-  'Is the project reinforcing existing inequalities?',
-];
-
-const participationQuestions = [
-  'Are rights-holders receiving information in a way they understand?',
-  'Are different groups able to express their views safely?',
-  'Are women, youth, persons with disabilities, low-income households, informal workers, and people from remote kebeles able to influence decisions?',
-  'Are rights-holders involved when changes are made to the project?',
-  'Are their views used in follow-up decisions?',
-];
-
-const accountabilityQuestions = [
-  'Do rights-holders know the project criteria, activities, and changes?',
-  'Do people know who is responsible for decisions?',
-  'Can people ask questions or raise concerns safely?',
-  'Is feedback reviewed and answered?',
-  'Are results and changes shared with rights-holders in a clear accessible way?',
-  'Is project information documented properly?',
 ];
 
 const csoMayActions = [
@@ -327,64 +299,6 @@ function QuestionList({ title, items }: { title: string; items: string[] }) {
       <h2>{title}</h2>
       <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
     </aside>
-  );
-}
-
-function RankingScreen({ onChangeState }: Module4RendererProps) {
-  const [rank, setRank] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-  const actions = {
-    A: 'Accept the revised list because the local committee has knowledge of the community, but ask the committee to explain the changes later.',
-    B: 'Review the revised list against the agreed criteria, check whether any group has been unfairly excluded, protect people who raised concerns, and explain the process clearly.',
-    C: 'Reject the revised list immediately and prepare a new list using only the CSO field team’s judgment.',
-  };
-  return (
-    <DecisionScreenShell
-      screenId="M4-S1-05"
-      nextId="M4-S1-06"
-      title="Ensuring Non-Discriminatory Practices"
-      intro={['Non-discrimination and equality are core principles of HRBA.', 'During implementation, the CSO should check whether all rights-holders are able to access and benefit from the project fairly.', 'Some groups may face barriers because of gender, age, disability, income, language, location, social status, lack of information, or local power relations.', 'A livelihood support list was agreed during planning. During implementation, the list changes after a local committee discussion. Some low-income households and informal workers are no longer included. This may raise a concern about fairness and non-discrimination.']}
-      visual="Criteria -> Review -> Explain"
-      onChangeState={onChangeState}
-      completeKey="module4NonDiscriminationRanking"
-      completedPayload={{ rank, submitted: true }}
-      canComplete={submitted}
-    >
-      <QuestionList title="The CSO should ask:" items={nonDiscriminationQuestions} />
-      <h2>Rank the three possible first actions from strongest to weakest.</h2>
-      <div className="m4-final-form-list">
-        {Object.entries(actions).map(([id, text]) => (
-          <label key={id}><span><strong>Action {id}.</strong> {text}</span><select value={rank[id] || ''} onChange={(event) => setRank({ ...rank, [id]: event.target.value })}><option value="">Choose rank</option><option>Strongest</option><option>Partly useful but incomplete</option><option>Weak</option></select></label>
-        ))}
-      </div>
-      {submitted && <FeedbackBlock lines={['Strongest: B. This action checks fairness, uses the agreed criteria, protects people, and explains the process.', 'Partly useful but incomplete: A. Local knowledge is useful, but it should not replace clear criteria and wider checking.', 'Weak: C. The CSO should not replace one unclear process with another unclear process.']} />}
-      {!submitted && <PrimaryButton disabled={Object.keys(rank).length < 3 || new Set(Object.values(rank)).size < 3} onClick={() => { setSubmitted(true); markOnly('M4-S1-05', onChangeState, 'module4NonDiscriminationRanking', { rank, correct: rank.B === 'Strongest' && rank.A === 'Partly useful but incomplete' && rank.C === 'Weak' }); }}>Check ranking</PrimaryButton>}
-    </DecisionScreenShell>
-  );
-}
-
-function ParticipationScreen({ onChangeState }: Module4RendererProps) {
-  const choices: Choice[] = [
-    { id: 'A', text: 'Invite youth to the next meeting and ask one youth representative to report back to others.', feedback: 'A is partly useful but incomplete. Representation may help, but one representative may not reflect different youth experiences.' },
-    { id: 'B', text: 'Create a safe way for different youth groups to share views before follow-up decisions are made, explain how their views will be used, and include them in the follow-up discussion.', feedback: 'B is strongest. It gives youth a real way to influence the follow-up decision.', correct: true },
-    { id: 'C', text: 'Record youth attendance carefully and include the attendance number in the next donor report.', feedback: 'C is weak. Attendance numbers do not show meaningful participation.' },
-  ];
-  return <ChoicePractice screenId="M4-S1-06" nextId="M4-S1-07" title="Realizing Meaningful Participation" intro={['Participation is a core principle of HRBA.', 'In HRBA, participation is not only attending an activity. It is also about being able to influence decisions that affect people’s lives.', 'Youth attend training sessions and sign the attendance sheet. However, when the project discusses follow-up support, only adults and local leaders are invited. Youth are present, but they are not influencing decisions that affect them.']} visual="Present -> Consulted -> Influencing decisions" prompt="Choose the response that best strengthens meaningful participation." choices={choices} keyMessage="Meaningful participation means rights-holders can take part, express views safely, and influence decisions that affect them." stateKey="module4ParticipationDecision" questionTitle="During implementation, the CSO should ask:" questionItems={participationQuestions} onChangeState={onChangeState} />;
-}
-
-function FeedbackSequenceScreen({ onChangeState }: Module4RendererProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <DecisionScreenShell screenId="M4-S1-07" nextId="M4-S1-08" title="Accountability and Transparency" intro={['Accountability means that duty-bearers and other responsible actors should explain their actions and respond to concerns.', 'Transparency means that people have access to clear and relevant information.', 'The CSO collects feedback forms every month. Many people ask why follow-up support has not happened. The team records the comments and includes the number of feedback forms in the donor report, but no response is shared with the people who raised the issue.']} visual="Receive -> Review -> Decide -> Respond -> Follow up -> Record safely" onChangeState={onChangeState} completeKey="module4FeedbackSequence" completedPayload={{ answers, submitted: true }} canComplete={submitted}>
-      <QuestionList title="During implementation, the CSO should ask:" items={accountabilityQuestions} />
-      <h2>Arrange the feedback process in the correct order.</h2>
-      <div className="m4-final-form-list">
-        {feedbackSteps.map((step) => <label key={step}><span>{step}</span><select value={answers[step] || ''} onChange={(event) => setAnswers({ ...answers, [step]: event.target.value })}><option value="">Choose position</option>{feedbackSteps.map((_, index) => <option key={index}>{index + 1}</option>)}</select></label>)}
-      </div>
-      {submitted && <FeedbackBlock lines={['A feedback system is not complete when feedback is only collected and reported.', 'It should be reviewed, answered, followed up, and used to improve the project.', 'Suggested order: Receive, Review, Decide, Respond, Follow up, Record safely.']} />}
-      {!submitted && <PrimaryButton disabled={Object.keys(answers).length < feedbackSteps.length || new Set(Object.values(answers)).size < feedbackSteps.length} onClick={() => { setSubmitted(true); markOnly('M4-S1-07', onChangeState, 'module4FeedbackSequence', { answers, correct: feedbackSteps.every((step) => answers[step] === feedbackStepPositions[step]) }); }}>Check sequence</PrimaryButton>}
-    </DecisionScreenShell>
   );
 }
 
@@ -736,9 +650,9 @@ export default function Module4Renderer(props: Module4RendererProps) {
   if (['M4-S1-01', 'M4-S1-02', 'M4-S1-03', 'M4-S1-04'].includes(props.screenId)) {
     return <Module4EnhancedBatch1 {...props} screenId={props.screenId as 'M4-S1-01' | 'M4-S1-02' | 'M4-S1-03' | 'M4-S1-04'} />;
   }
-  if (props.screenId === 'M4-S1-05') return <RankingScreen {...props} />;
-  if (props.screenId === 'M4-S1-06') return <ParticipationScreen {...props} />;
-  if (props.screenId === 'M4-S1-07') return <FeedbackSequenceScreen {...props} />;
+  if (['M4-S1-05', 'M4-S1-06', 'M4-S1-07'].includes(props.screenId)) {
+    return <Module4EnhancedBatch2 {...props} screenId={props.screenId as 'M4-S1-05' | 'M4-S1-06' | 'M4-S1-07'} />;
+  }
   if (props.screenId === 'M4-S1-08') return <RoleMatchScreen {...props} />;
   if (props.screenId === 'M4-S1-09') return <EmpowermentScreen {...props} />;
   if (props.screenId === 'M4-S1-10') return <AdjustmentScreen {...props} />;

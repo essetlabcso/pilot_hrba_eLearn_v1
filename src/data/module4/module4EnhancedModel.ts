@@ -84,6 +84,52 @@ export type Module4Batch1State = {
   };
 };
 
+export type Module4Batch2State = {
+  fairAccess: {
+    activeStage: 1 | 2 | 3 | 4;
+    selectedEvidence: string[];
+    evidenceFeedback: 'idle' | 'correct' | 'corrective';
+    selectedAction: '' | 'A' | 'B' | 'C';
+    actionFeedback: 'idle' | 'correct' | 'corrective';
+    followUpOwner: string;
+    followUpRole: string;
+    followUpActions: string[];
+    followUpFeedback: 'idle' | 'correct' | 'corrective';
+    decisionSaved: boolean;
+  };
+  participation: {
+    activeStage: 1 | 2 | 3 | 4 | 5;
+    openDecision: '' | 'A' | 'B' | 'C';
+    decisionFeedback: 'idle' | 'correct' | 'corrective';
+    perspectives: string[];
+    perspectivesFeedback: 'idle' | 'correct' | 'corrective';
+    measures: string[];
+    measuresFeedback: 'idle' | 'correct' | 'corrective';
+    explanationItems: string[];
+    explanationOwner: string;
+    explanationChannels: string[];
+    outcomeFeedback: 'idle' | 'correct' | 'corrective';
+    pathwaySaved: boolean;
+  };
+  feedbackLoop: {
+    activeStage: 1 | 2 | 3 | 4 | 5 | 6;
+    exploredHotspots: string[];
+    concernParts: string[];
+    concernFeedback: 'idle' | 'correct' | 'corrective';
+    recordNeeds: string[];
+    recordFeedback: 'idle' | 'correct' | 'corrective';
+    responseOwner: string;
+    responseAction: '' | 'A' | 'B' | 'C';
+    responseFeedback: 'idle' | 'correct' | 'corrective';
+    accountBackItems: string[];
+    accountBackFeedback: 'idle' | 'correct' | 'corrective';
+    followUpPriorities: string[];
+    followUpTiming: string;
+    followUpFeedback: 'idle' | 'correct' | 'corrective';
+    pathwaySaved: boolean;
+  };
+};
+
 export type Module4ImplementationNote = {
   concern: string;
   evidence: string;
@@ -148,6 +194,7 @@ export type Module4EnhancedState = {
   };
   fields: Module4EnhancedFields;
   batch1: Module4Batch1State;
+  batch2: Module4Batch2State;
   screens: Record<Module4CanonicalScreenId, Module4EnhancedScreenState>;
   reviewRequiredFields: Module4FieldKey[];
   completion: {
@@ -284,6 +331,54 @@ export function createInitialModule4Batch1State(): Module4Batch1State {
   };
 }
 
+export function createInitialModule4Batch2State(): Module4Batch2State {
+  return {
+    fairAccess: {
+      activeStage: 1,
+      selectedEvidence: [],
+      evidenceFeedback: 'idle',
+      selectedAction: '',
+      actionFeedback: 'idle',
+      followUpOwner: '',
+      followUpRole: '',
+      followUpActions: [],
+      followUpFeedback: 'idle',
+      decisionSaved: false,
+    },
+    participation: {
+      activeStage: 1,
+      openDecision: '',
+      decisionFeedback: 'idle',
+      perspectives: [],
+      perspectivesFeedback: 'idle',
+      measures: [],
+      measuresFeedback: 'idle',
+      explanationItems: [],
+      explanationOwner: '',
+      explanationChannels: [],
+      outcomeFeedback: 'idle',
+      pathwaySaved: false,
+    },
+    feedbackLoop: {
+      activeStage: 1,
+      exploredHotspots: [],
+      concernParts: [],
+      concernFeedback: 'idle',
+      recordNeeds: [],
+      recordFeedback: 'idle',
+      responseOwner: '',
+      responseAction: '',
+      responseFeedback: 'idle',
+      accountBackItems: [],
+      accountBackFeedback: 'idle',
+      followUpPriorities: [],
+      followUpTiming: '',
+      followUpFeedback: 'idle',
+      pathwaySaved: false,
+    },
+  };
+}
+
 export function createInitialModule4EnhancedState(
   appliedAt: string,
   options: {
@@ -304,6 +399,7 @@ export function createInitialModule4EnhancedState(
     },
     fields: createInitialFields(),
     batch1: createInitialModule4Batch1State(),
+    batch2: createInitialModule4Batch2State(),
     screens: createInitialScreens(),
     reviewRequiredFields: [],
     completion: {
@@ -329,6 +425,7 @@ function isCurrentModule4EnhancedState(value: unknown): value is Module4Enhanced
 
 function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module4EnhancedState {
   const defaults = createInitialModule4Batch1State();
+  const batch2Defaults = createInitialModule4Batch2State();
   const batch1: Record<string, unknown> = isRecord(value.batch1) ? value.batch1 : {};
   const bridge: Record<string, unknown> = isRecord(batch1.bridge) ? batch1.bridge : {};
   const practiceJourney: Record<string, unknown> = isRecord(batch1.practiceJourney) ? batch1.practiceJourney : {};
@@ -336,6 +433,10 @@ function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module
   const workstreamExploration: Record<string, unknown> = isRecord(batch1.workstreamExploration)
     ? batch1.workstreamExploration
     : {};
+  const batch2: Record<string, unknown> = isRecord(value.batch2) ? value.batch2 : {};
+  const fairAccess: Record<string, unknown> = isRecord(batch2.fairAccess) ? batch2.fairAccess : {};
+  const participation: Record<string, unknown> = isRecord(batch2.participation) ? batch2.participation : {};
+  const feedbackLoop: Record<string, unknown> = isRecord(batch2.feedbackLoop) ? batch2.feedbackLoop : {};
 
   return {
     ...value,
@@ -373,6 +474,53 @@ function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module
           ? workstreamExploration.classifications as Module4Batch1State['workstreamExploration']['classifications']
           : {},
       } as Module4Batch1State['workstreamExploration'],
+    },
+    batch2: {
+      fairAccess: {
+        ...batch2Defaults.fairAccess,
+        ...fairAccess,
+        selectedEvidence: Array.isArray(fairAccess.selectedEvidence)
+          ? fairAccess.selectedEvidence.filter((item): item is string => typeof item === 'string')
+          : [],
+        followUpActions: Array.isArray(fairAccess.followUpActions)
+          ? fairAccess.followUpActions.filter((item): item is string => typeof item === 'string')
+          : [],
+      } as Module4Batch2State['fairAccess'],
+      participation: {
+        ...batch2Defaults.participation,
+        ...participation,
+        perspectives: Array.isArray(participation.perspectives)
+          ? participation.perspectives.filter((item): item is string => typeof item === 'string')
+          : [],
+        measures: Array.isArray(participation.measures)
+          ? participation.measures.filter((item): item is string => typeof item === 'string')
+          : [],
+        explanationItems: Array.isArray(participation.explanationItems)
+          ? participation.explanationItems.filter((item): item is string => typeof item === 'string')
+          : [],
+        explanationChannels: Array.isArray(participation.explanationChannels)
+          ? participation.explanationChannels.filter((item): item is string => typeof item === 'string')
+          : [],
+      } as Module4Batch2State['participation'],
+      feedbackLoop: {
+        ...batch2Defaults.feedbackLoop,
+        ...feedbackLoop,
+        exploredHotspots: Array.isArray(feedbackLoop.exploredHotspots)
+          ? feedbackLoop.exploredHotspots.filter((item): item is string => typeof item === 'string')
+          : [],
+        concernParts: Array.isArray(feedbackLoop.concernParts)
+          ? feedbackLoop.concernParts.filter((item): item is string => typeof item === 'string')
+          : [],
+        recordNeeds: Array.isArray(feedbackLoop.recordNeeds)
+          ? feedbackLoop.recordNeeds.filter((item): item is string => typeof item === 'string')
+          : [],
+        accountBackItems: Array.isArray(feedbackLoop.accountBackItems)
+          ? feedbackLoop.accountBackItems.filter((item): item is string => typeof item === 'string')
+          : [],
+        followUpPriorities: Array.isArray(feedbackLoop.followUpPriorities)
+          ? feedbackLoop.followUpPriorities.filter((item): item is string => typeof item === 'string')
+          : [],
+      } as Module4Batch2State['feedbackLoop'],
     },
   };
 }

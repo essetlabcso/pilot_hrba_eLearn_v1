@@ -25,7 +25,7 @@ test('Batch 1 replaces only the canonical Screens 2-5 renderer slots', () => {
 
   assert.match(renderer, /Module4EnhancedBatch1/);
   assert.match(renderer, /\['M4-S1-01', 'M4-S1-02', 'M4-S1-03', 'M4-S1-04'\]/);
-  assert.match(renderer, /M4-S1-05'\) return <RankingScreen/);
+  assert.match(renderer, /Module4EnhancedBatch2/);
   for (const id of ['M4-S1-01', 'M4-S1-02', 'M4-S1-03', 'M4-S1-04']) {
     assert.match(batch1, new RegExp(id));
   }
