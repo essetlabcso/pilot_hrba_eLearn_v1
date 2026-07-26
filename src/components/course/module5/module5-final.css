@@ -1,0 +1,420 @@
+.m5f-screen {
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 2rem);
+  color: #15334f;
+  background: linear-gradient(145deg, #edf8f4 0%, #f8fbff 54%, #fff8e8 100%);
+}
+
+.m5f-shell {
+  width: min(100%, 74rem);
+  margin: 0 auto;
+}
+
+.m5f-hero,
+.m5f-question,
+.m5f-result,
+.m5f-summary-card,
+.m5f-confirm-card,
+.m5f-closure-review,
+.m5f-progress,
+.m5f-retained,
+.m5f-note {
+  border: 1px solid #c7dcd7;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 0.35rem 1.2rem rgb(22 57 79 / 8%);
+}
+
+.m5f-hero {
+  margin-bottom: 1rem;
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  border-top: 0.35rem solid #148276;
+}
+
+.m5f-hero h1 {
+  max-width: 52rem;
+  margin: 0.25rem 0 0.65rem;
+  color: #102f4b;
+  font-size: clamp(1.85rem, 4vw, 3.15rem);
+  line-height: 1.08;
+}
+
+.m5f-hero p,
+.m5f-summary-card p,
+.m5f-question p,
+.m5f-result p,
+.m5f-confirm-card p {
+  line-height: 1.55;
+}
+
+.m5f-eyebrow {
+  margin: 0;
+  color: #0c756b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.m5f-progress {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+}
+
+.m5f-progress span {
+  color: #35617b;
+  font-weight: 700;
+}
+
+.m5f-progress progress {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: #148276;
+}
+
+.m5f-question,
+.m5f-result,
+.m5f-confirm-card,
+.m5f-closure-review {
+  padding: clamp(1.1rem, 2.6vw, 1.75rem);
+}
+
+.m5f-question fieldset,
+.m5f-candidates {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.m5f-question legend {
+  max-width: 58rem;
+  margin: 0.5rem 0 1rem;
+  color: #102f4b;
+  font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.m5f-options {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.m5f-options label,
+.m5f-candidates label,
+.m5f-confirm-card label {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.8rem;
+  border: 1px solid #c8d8e3;
+  border-radius: 0.75rem;
+  background: #fbfdff;
+  cursor: pointer;
+}
+
+.m5f-options label.is-selected,
+.m5f-candidates label:has(input:checked),
+.m5f-confirm-card label:has(input:checked) {
+  border-color: #148276;
+  background: #eef9f6;
+}
+
+.m5f-options input,
+.m5f-candidates input,
+.m5f-confirm-card input {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+  accent-color: #08766c;
+}
+
+.m5f-options label > span:nth-of-type(1) {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #dceeed;
+  color: #0a5d57;
+  font-weight: 800;
+}
+
+.m5f-feedback {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-left: 0.3rem solid #b55e19;
+  background: #fff6e8;
+}
+
+.m5f-feedback.is-correct {
+  border-left-color: #148276;
+  background: #edf9f4;
+}
+
+.m5f-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.m5f-primary,
+.m5f-secondary {
+  min-height: 2.75rem;
+  border-radius: 0.65rem;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.m5f-primary {
+  padding: 0.75rem 1.1rem;
+  border: 1px solid #086d65;
+  background: #08766c;
+  color: #fff;
+}
+
+.m5f-secondary {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #54758c;
+  background: #fff;
+  color: #244c66;
+}
+
+.m5f-primary:disabled,
+.m5f-secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.m5f-primary:focus-visible,
+.m5f-secondary:focus-visible,
+.m5f-options input:focus-visible,
+.m5f-candidates input:focus-visible,
+.m5f-confirm-card input:focus-visible,
+.m5f-edit textarea:focus-visible,
+.m5f-question:focus-visible,
+.m5f-result:focus-visible {
+  outline: 0.2rem solid #f1a62c;
+  outline-offset: 0.2rem;
+}
+
+.m5f-retained,
+.m5f-note {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+}
+
+.m5f-result details {
+  margin: 1rem 0;
+}
+
+.m5f-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.m5f-summary-card {
+  min-width: 0;
+  padding: 1rem;
+}
+
+.m5f-summary-card.needs-review {
+  border: 2px solid #b55e19;
+}
+
+.m5f-summary-card__heading {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.m5f-summary-card__heading h2 {
+  margin: 0;
+  color: #113550;
+  font-size: 1.1rem;
+}
+
+.m5f-summary-card__heading p {
+  margin: 0.3rem 0 0.75rem;
+  color: #47677d;
+}
+
+.m5f-summary-card__heading > span {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: #e5f2ef;
+  color: #0a655d;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.needs-review .m5f-summary-card__heading > span {
+  background: #fff0da;
+  color: #87430e;
+}
+
+.m5f-candidates {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 0.8rem;
+}
+
+.m5f-candidates legend {
+  margin-bottom: 0.45rem;
+  color: #31566f;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.m5f-candidates label span,
+.m5f-carried {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.m5f-candidates strong,
+.m5f-carried strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #0b6f67;
+  font-size: 0.76rem;
+}
+
+.m5f-carried,
+.m5f-current-value {
+  padding: 0.7rem;
+  border-radius: 0.65rem;
+  background: #f3f8fb;
+}
+
+.m5f-edit {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.m5f-edit textarea {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  resize: vertical;
+  padding: 0.65rem;
+  border: 1px solid #7893a6;
+  border-radius: 0.55rem;
+  font: inherit;
+}
+
+.m5f-review-actions {
+  margin-top: 0.65rem;
+  padding: 0.7rem;
+  border-left: 0.25rem solid #b55e19;
+  background: #fff7eb;
+}
+
+.m5f-error {
+  color: #8b2d1a;
+  font-weight: 700;
+}
+
+.m5f-message {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  background: #edf8f5;
+}
+
+.m5f-confirm-card {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.m5f-confirm-card h2,
+.m5f-closure-review h2 {
+  margin: 0;
+  color: #113550;
+}
+
+.m5f-closure-review dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 0;
+}
+
+.m5f-closure-review dl div {
+  min-width: 0;
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  background: #f3f8fb;
+}
+
+.m5f-closure-review dt {
+  color: #386079;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.m5f-closure-review dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 48rem) {
+  .m5f-summary-grid,
+  .m5f-closure-review dl {
+    grid-template-columns: 1fr;
+  }
+
+  .m5f-summary-card__heading {
+    display: grid;
+  }
+
+  .m5f-summary-card__heading > span {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 24.5rem) {
+  .m5f-screen {
+    padding: 0.65rem;
+  }
+
+  .m5f-hero,
+  .m5f-question,
+  .m5f-result,
+  .m5f-summary-card,
+  .m5f-confirm-card,
+  .m5f-closure-review {
+    border-radius: 0.75rem;
+    padding: 0.9rem;
+  }
+
+  .m5f-options label,
+  .m5f-candidates label,
+  .m5f-confirm-card label {
+    padding: 0.65rem;
+  }
+
+  .m5f-primary,
+  .m5f-secondary {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m5f-screen * {
+    scroll-behavior: auto !important;
+  }
+}

@@ -223,7 +223,7 @@ test('new presentation state is additive, versioned and contains no duplicate co
   assert.deepEqual(state.screens, {});
   assert.equal('moduleCompleted' in state, false);
   assert.equal('enhancedJourneyCompleted' in state, false);
-  assert.equal(state.finalKnowledgeCheck.revision, 'pending-content-approval');
+  assert.equal(state.finalKnowledgeCheck.revision, 'm5-final-knowledge-v1');
 });
 
 test('incomplete legacy learners retain old work but receive empty current answers', () => {

@@ -1,11 +1,19 @@
 import {
   MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION,
   MODULE5_BATCH2_PRESENTATION_CONTENT_REVISION,
+  MODULE5_BATCH3_PRESENTATION_CONTENT_REVISION,
   MODULE5_BATCH2_PRESENTATION_SCREEN_IDS,
   MODULE5_BATCH3_PRESENTATION_SCREEN_IDS,
+  MODULE5_FINAL_KNOWLEDGE_PASS_SCORE,
+  MODULE5_FINAL_KNOWLEDGE_QUESTIONS,
+  MODULE5_FINAL_KNOWLEDGE_REVISION,
+  MODULE5_FINAL_SUMMARY_FIELDS,
+  MODULE5_FINAL_SUMMARY_FIELD_IDS,
   MODULE5_PRESENTATION_SCREEN_IDS,
   MODULE5_PRESENTATION_CONTENT_REVISION,
   MODULE5_PRESENTATION_SCHEMA_VERSION,
+  isModule5KnowledgeAnswerCorrect,
+  type Module5FinalSummaryFieldId,
 } from './module5PresentationContent.ts';
 
 export const MODULE5_ID = 'module_05_hrba_meal';
@@ -114,6 +122,7 @@ export type Module5PresentationScreenState = {
   reflectionValues: Record<string, Module5PresentationReflectionValue>;
   reflectionDetails: Record<string, string>;
   reflectionRevision: number;
+  reflectionRevisions: Record<string, number>;
   gateSatisfied: boolean;
   status: 'in_progress' | 'completed' | 'needs_review';
   completedAt: string | null;
@@ -131,23 +140,41 @@ export type Module5PresentationState = {
   screens: Record<string, Module5PresentationScreenState>;
   summary: {
     values: Record<string, string>;
-    provenance: Record<string, { screenId: string; reflectionId: string; revision: number }>;
+    provenance: Record<string, {
+      screenId: string;
+      reflectionId: string;
+      revision: number;
+      learnerEdited?: boolean;
+    }>;
     dependencyRevisions: Record<string, number>;
+    selectedSourceIds: Record<string, string>;
+    learnerEditedFields: string[];
     reviewRequiredFields: string[];
     confirmed: boolean;
+    confirmedAt: string | null;
   };
   finalKnowledgeCheck: {
     revision: string;
+    mode: 'first_attempt' | 'retry' | 'results' | 'passed';
     answers: Record<string, string[]>;
+    checkedIds: string[];
     correctIds: string[];
     retryIds: string[];
+    questionQueue: string[];
+    activeQuestionIndex: number;
+    attemptCount: number;
+    score: number;
     passed: boolean;
     passedAt: string | null;
   };
   finalConfirmation: {
     summaryReviewed: boolean;
+    evidenceUseUnderstood: boolean;
     peerSupportReviewed: boolean;
     readyToComplete: boolean;
+  };
+  completion: {
+    completedAt: string | null;
   };
 };
 
@@ -159,6 +186,7 @@ export function createEmptyModule5PresentationScreenState(): Module5Presentation
     reflectionValues: {},
     reflectionDetails: {},
     reflectionRevision: 0,
+    reflectionRevisions: {},
     gateSatisfied: false,
     status: 'in_progress',
     completedAt: null,
@@ -183,21 +211,34 @@ export function createEmptyModule5PresentationState(
       values: {},
       provenance: {},
       dependencyRevisions: {},
+      selectedSourceIds: {},
+      learnerEditedFields: [],
       reviewRequiredFields: [],
       confirmed: false,
+      confirmedAt: null,
     },
     finalKnowledgeCheck: {
-      revision: 'pending-content-approval',
+      revision: MODULE5_FINAL_KNOWLEDGE_REVISION,
+      mode: 'first_attempt',
       answers: {},
+      checkedIds: [],
       correctIds: [],
       retryIds: [],
+      questionQueue: MODULE5_FINAL_KNOWLEDGE_QUESTIONS.map((question) => question.id),
+      activeQuestionIndex: 0,
+      attemptCount: 0,
+      score: 0,
       passed: false,
       passedAt: null,
     },
     finalConfirmation: {
       summaryReviewed: false,
+      evidenceUseUnderstood: false,
       peerSupportReviewed: false,
       readyToComplete: false,
+    },
+    completion: {
+      completedAt: null,
     },
   };
 }
@@ -230,6 +271,11 @@ function normalizePresentationScreenState(value: unknown, invalidateGate: boolea
       }, {})
       : {},
     reflectionRevision: typeof source.reflectionRevision === 'number' ? source.reflectionRevision : 0,
+    reflectionRevisions: isRecord(source.reflectionRevisions)
+      ? Object.fromEntries(
+        Object.entries(source.reflectionRevisions).filter(([, item]) => typeof item === 'number'),
+      ) as Record<string, number>
+      : {},
     gateSatisfied: invalidateGate ? false : source.gateSatisfied === true,
     status: invalidateGate ? 'needs_review' : source.status === 'completed' ? 'completed' : source.status === 'needs_review' ? 'needs_review' : 'in_progress',
     completedAt: invalidateGate ? null : typeof source.completedAt === 'string' ? source.completedAt : null,
@@ -239,6 +285,7 @@ function normalizePresentationScreenState(value: unknown, invalidateGate: boolea
 
 function getPresentationRevisionInvalidationScreenIds(contentRevision: unknown) {
   if (contentRevision === MODULE5_PRESENTATION_CONTENT_REVISION) return [] as readonly string[];
+  if (contentRevision === MODULE5_BATCH3_PRESENTATION_CONTENT_REVISION) return [] as readonly string[];
   if (contentRevision === MODULE5_BATCH2_PRESENTATION_CONTENT_REVISION) {
     return MODULE5_BATCH3_PRESENTATION_SCREEN_IDS as readonly string[];
   }
@@ -254,7 +301,7 @@ function getPresentationRevisionInvalidationScreenIds(contentRevision: unknown) 
 export function ensureModule5PresentationState(
   practiceCheckState: Record<string, unknown>,
   completedModules: unknown,
-) {
+): Module5PresentationState {
   const completed = Array.isArray(completedModules) && completedModules.includes(MODULE5_ID);
   const legacyWorkspacePresent = Object.keys(practiceCheckState).some((key) =>
     (key.startsWith('module5') && key !== 'module5Presentation') ||
@@ -286,13 +333,18 @@ export function ensureModule5PresentationState(
   const base = createEmptyModule5PresentationState(legacyWorkspacePresent, completed);
   const currentSummary = isRecord(current.summary) ? current.summary : {};
   const summaryValues = isRecord(currentSummary.values)
-    ? Object.fromEntries(Object.entries(currentSummary.values).filter(([, item]) => typeof item === 'string'))
+    ? Object.fromEntries(
+      Object.entries(currentSummary.values).filter(([, item]) => typeof item === 'string'),
+    ) as Record<string, string>
     : {};
   const summaryProvenance = isRecord(currentSummary.provenance)
     ? currentSummary.provenance as Module5PresentationState['summary']['provenance']
     : {};
   const dependencyRevisions = isRecord(currentSummary.dependencyRevisions)
     ? Object.fromEntries(Object.entries(currentSummary.dependencyRevisions).filter(([, item]) => typeof item === 'number')) as Record<string, number>
+    : {};
+  const selectedSourceIds = isRecord(currentSummary.selectedSourceIds)
+    ? Object.fromEntries(Object.entries(currentSummary.selectedSourceIds).filter(([, item]) => typeof item === 'string')) as Record<string, string>
     : {};
   const invalidatedSummaryFields = Object.entries(summaryProvenance)
     .filter(([, provenance]) =>
@@ -313,6 +365,39 @@ export function ensureModule5PresentationState(
     Object.entries(dependencyRevisions).filter(([field]) => !invalidateSummaryFields.includes(field)),
   );
   const invalidateDependentFinalState = revisionChanged && !completed;
+  const currentFinalKnowledge = isRecord(current.finalKnowledgeCheck) ? current.finalKnowledgeCheck : {};
+  const finalKnowledgeRevisionCurrent = currentFinalKnowledge.revision === MODULE5_FINAL_KNOWLEDGE_REVISION;
+  const normalizedFinalKnowledge = finalKnowledgeRevisionCurrent
+    ? {
+      ...base.finalKnowledgeCheck,
+      ...currentFinalKnowledge,
+      answers: isRecord(currentFinalKnowledge.answers)
+        ? Object.fromEntries(Object.entries(currentFinalKnowledge.answers).map(([id, answer]) => [id, normalizeStringArray(answer)]))
+        : {},
+      checkedIds: normalizeStringArray(currentFinalKnowledge.checkedIds),
+      correctIds: normalizeStringArray(currentFinalKnowledge.correctIds),
+      retryIds: normalizeStringArray(currentFinalKnowledge.retryIds),
+      questionQueue: normalizeStringArray(currentFinalKnowledge.questionQueue).length
+        ? normalizeStringArray(currentFinalKnowledge.questionQueue)
+        : base.finalKnowledgeCheck.questionQueue,
+      activeQuestionIndex: typeof currentFinalKnowledge.activeQuestionIndex === 'number'
+        ? Math.max(0, Math.floor(currentFinalKnowledge.activeQuestionIndex))
+        : 0,
+      attemptCount: typeof currentFinalKnowledge.attemptCount === 'number'
+        ? Math.max(0, Math.floor(currentFinalKnowledge.attemptCount))
+        : 0,
+      score: normalizeStringArray(currentFinalKnowledge.correctIds).length,
+      passed: currentFinalKnowledge.passed === true,
+      passedAt: typeof currentFinalKnowledge.passedAt === 'string' ? currentFinalKnowledge.passedAt : null,
+    } as Module5PresentationState['finalKnowledgeCheck']
+    : base.finalKnowledgeCheck;
+  const currentCompletion = isRecord(current.completion) ? current.completion : {};
+  const legacyCompletion = isRecord(practiceCheckState.m5_s16) ? practiceCheckState.m5_s16 : {};
+  const historicalCompletedAt = typeof currentCompletion.completedAt === 'string'
+    ? currentCompletion.completedAt
+    : typeof legacyCompletion.completedAt === 'string'
+      ? legacyCompletion.completedAt
+      : null;
 
   return {
     ...base,
@@ -328,23 +413,430 @@ export function ensureModule5PresentationState(
       values: summaryValues,
       provenance: summaryProvenance,
       dependencyRevisions: preservedDependencyRevisions,
+      selectedSourceIds,
+      learnerEditedFields: normalizeStringArray(currentSummary.learnerEditedFields),
       reviewRequiredFields,
       confirmed: invalidateDependentFinalState ? false : currentSummary.confirmed === true,
+      confirmedAt: invalidateDependentFinalState
+        ? null
+        : typeof currentSummary.confirmedAt === 'string'
+          ? currentSummary.confirmedAt
+          : null,
     },
-    finalKnowledgeCheck: invalidateAllGates ? base.finalKnowledgeCheck : {
-      ...base.finalKnowledgeCheck,
-      ...(isRecord(current.finalKnowledgeCheck) ? current.finalKnowledgeCheck : {}),
-    } as Module5PresentationState['finalKnowledgeCheck'],
+    finalKnowledgeCheck: invalidateAllGates ? base.finalKnowledgeCheck : normalizedFinalKnowledge,
     finalConfirmation: invalidateAllGates || invalidateDependentFinalState ? base.finalConfirmation : {
       ...base.finalConfirmation,
       ...(isRecord(current.finalConfirmation) ? current.finalConfirmation : {}),
     } as Module5PresentationState['finalConfirmation'],
+    completion: {
+      completedAt: historicalCompletedAt,
+    },
   };
 }
 
 export function getModule5PresentationState(practiceCheckState: unknown) {
   if (!isRecord(practiceCheckState) || !isRecord(practiceCheckState.module5Presentation)) return null;
   return practiceCheckState.module5Presentation as unknown as Module5PresentationState;
+}
+
+export function selectModule5FinalKnowledgeAnswer(
+  state: Module5PresentationState,
+  questionId: string,
+  optionId: string,
+) {
+  const check = state.finalKnowledgeCheck;
+  if (
+    check.passed
+    || check.checkedIds.includes(questionId)
+    || check.correctIds.includes(questionId)
+    || check.questionQueue[check.activeQuestionIndex] !== questionId
+  ) return state;
+  return {
+    ...state,
+    finalKnowledgeCheck: {
+      ...check,
+      answers: { ...check.answers, [questionId]: [optionId] },
+    },
+  };
+}
+
+export function checkModule5FinalKnowledgeAnswer(
+  state: Module5PresentationState,
+  questionId: string,
+  checkedAt = new Date().toISOString(),
+) {
+  const check = state.finalKnowledgeCheck;
+  const question = MODULE5_FINAL_KNOWLEDGE_QUESTIONS.find((item) => item.id === questionId);
+  const selected = check.answers[questionId] || [];
+  if (
+    !question
+    || !selected.length
+    || check.passed
+    || check.checkedIds.includes(questionId)
+    || check.questionQueue[check.activeQuestionIndex] !== questionId
+  ) return state;
+  const correct = isModule5KnowledgeAnswerCorrect(question, selected);
+  const correctIds = correct
+    ? [...new Set([...check.correctIds, questionId])]
+    : check.correctIds.filter((id) => id !== questionId);
+  const retryIds = correct
+    ? check.retryIds.filter((id) => id !== questionId)
+    : [...new Set([...check.retryIds, questionId])];
+  const checkedIds = [...new Set([...check.checkedIds, questionId])];
+  const roundComplete = check.questionQueue.every((id) => checkedIds.includes(id));
+  const passed = roundComplete && correctIds.length >= MODULE5_FINAL_KNOWLEDGE_PASS_SCORE;
+  return {
+    ...state,
+    finalKnowledgeCheck: {
+      ...check,
+      checkedIds,
+      correctIds,
+      retryIds,
+      score: correctIds.length,
+      passed,
+      passedAt: passed ? check.passedAt || checkedAt : null,
+      attemptCount: roundComplete ? check.attemptCount + 1 : check.attemptCount,
+      mode: passed ? 'passed' : roundComplete ? 'results' : check.mode,
+    },
+  };
+}
+
+export function advanceModule5FinalKnowledgeQuestion(state: Module5PresentationState) {
+  const check = state.finalKnowledgeCheck;
+  const activeId = check.questionQueue[check.activeQuestionIndex];
+  if (
+    !activeId
+    || !check.checkedIds.includes(activeId)
+    || check.activeQuestionIndex >= check.questionQueue.length - 1
+  ) return state;
+  return {
+    ...state,
+    finalKnowledgeCheck: {
+      ...check,
+      activeQuestionIndex: check.activeQuestionIndex + 1,
+    },
+  };
+}
+
+export function retryMissedModule5FinalKnowledgeQuestions(
+  state: Module5PresentationState,
+): Module5PresentationState {
+  const check = state.finalKnowledgeCheck;
+  if (check.mode !== 'results' || !check.retryIds.length) return state;
+  return {
+    ...state,
+    finalKnowledgeCheck: {
+      ...check,
+      mode: 'retry',
+      questionQueue: [...check.retryIds],
+      activeQuestionIndex: 0,
+      checkedIds: [],
+    },
+  };
+}
+
+export type Module5FinalSummaryCandidate = {
+  screenId: string;
+  reflectionId: string;
+  revision: number;
+  value: string;
+};
+
+function serializeModule5SummaryCandidate(
+  screen: Module5PresentationScreenState,
+  reflectionId: string,
+  valueIndex?: 0 | 1,
+) {
+  const value = screen.reflectionValues[reflectionId];
+  const detail = String(screen.reflectionDetails[reflectionId] || '').trim();
+  if (Array.isArray(value)) {
+    if (valueIndex !== undefined) return String(value[valueIndex] || '').trim();
+    return value.map((part) => String(part || '').trim()).filter(Boolean).join(' — ');
+  }
+  const primary = String(value || '').trim();
+  return detail && primary ? `${primary} — ${detail}` : primary;
+}
+
+export function getModule5FinalSummaryCandidates(
+  state: Module5PresentationState,
+  fieldId: Module5FinalSummaryFieldId,
+) {
+  const definition = MODULE5_FINAL_SUMMARY_FIELDS.find((field) => field.id === fieldId);
+  if (!definition) return [] as Module5FinalSummaryCandidate[];
+  return definition.sources.flatMap((source) => {
+    const screen = state.screens[source.screenId];
+    if (!screen) return [];
+    const value = serializeModule5SummaryCandidate(screen, source.reflectionId, source.valueIndex);
+    if (!value) return [];
+    return [{
+      screenId: source.screenId,
+      reflectionId: source.reflectionId,
+      revision: screen.reflectionRevisions[source.reflectionId] ?? screen.reflectionRevision,
+      value,
+    }];
+  });
+}
+
+export function seedModule5FinalSummary(state: Module5PresentationState) {
+  let next = state;
+  for (const definition of MODULE5_FINAL_SUMMARY_FIELDS) {
+    if (String(next.summary.values[definition.id] || '').trim()) continue;
+    const candidate = getModule5FinalSummaryCandidates(next, definition.id)[0];
+    if (!candidate) continue;
+    next = selectModule5FinalSummaryCandidate(next, definition.id, candidate.reflectionId);
+  }
+  return next;
+}
+
+export function selectModule5FinalSummaryCandidate(
+  state: Module5PresentationState,
+  fieldId: Module5FinalSummaryFieldId,
+  reflectionId: string,
+) {
+  const candidate = getModule5FinalSummaryCandidates(state, fieldId)
+    .find((item) => item.reflectionId === reflectionId);
+  if (!candidate) return state;
+  return {
+    ...state,
+    summary: {
+      ...state.summary,
+      values: { ...state.summary.values, [fieldId]: candidate.value },
+      provenance: {
+        ...state.summary.provenance,
+        [fieldId]: {
+          screenId: candidate.screenId,
+          reflectionId: candidate.reflectionId,
+          revision: candidate.revision,
+          learnerEdited: false,
+        },
+      },
+      dependencyRevisions: {
+        ...state.summary.dependencyRevisions,
+        [fieldId]: candidate.revision,
+      },
+      selectedSourceIds: {
+        ...state.summary.selectedSourceIds,
+        [fieldId]: candidate.reflectionId,
+      },
+      learnerEditedFields: state.summary.learnerEditedFields.filter((id) => id !== fieldId),
+      reviewRequiredFields: state.summary.reviewRequiredFields.filter((id) => id !== fieldId),
+      confirmed: false,
+      confirmedAt: null,
+    },
+    finalConfirmation: {
+      ...state.finalConfirmation,
+      summaryReviewed: false,
+      readyToComplete: false,
+    },
+  };
+}
+
+export function editModule5FinalSummaryField(
+  state: Module5PresentationState,
+  fieldId: Module5FinalSummaryFieldId,
+  value: string,
+) {
+  const provenance = state.summary.provenance[fieldId];
+  return {
+    ...state,
+    summary: {
+      ...state.summary,
+      values: { ...state.summary.values, [fieldId]: value },
+      provenance: provenance
+        ? {
+          ...state.summary.provenance,
+          [fieldId]: { ...provenance, learnerEdited: true },
+        }
+        : state.summary.provenance,
+      learnerEditedFields: [...new Set([...state.summary.learnerEditedFields, fieldId])],
+      confirmed: false,
+      confirmedAt: null,
+    },
+    finalConfirmation: {
+      ...state.finalConfirmation,
+      summaryReviewed: false,
+      readyToComplete: false,
+    },
+  };
+}
+
+export function keepEditedModule5FinalSummaryField(
+  state: Module5PresentationState,
+  fieldId: Module5FinalSummaryFieldId,
+) {
+  const selectedId = state.summary.selectedSourceIds[fieldId];
+  const currentCandidate = getModule5FinalSummaryCandidates(state, fieldId)
+    .find((candidate) => candidate.reflectionId === selectedId);
+  if (!currentCandidate || !String(state.summary.values[fieldId] || '').trim()) return state;
+  return {
+    ...state,
+    summary: {
+      ...state.summary,
+      provenance: {
+        ...state.summary.provenance,
+        [fieldId]: {
+          screenId: currentCandidate.screenId,
+          reflectionId: currentCandidate.reflectionId,
+          revision: currentCandidate.revision,
+          learnerEdited: true,
+        },
+      },
+      dependencyRevisions: {
+        ...state.summary.dependencyRevisions,
+        [fieldId]: currentCandidate.revision,
+      },
+      reviewRequiredFields: state.summary.reviewRequiredFields.filter((id) => id !== fieldId),
+      confirmed: false,
+      confirmedAt: null,
+    },
+  };
+}
+
+export function getModule5FinalSummaryFieldIdsForReflection(
+  state: Module5PresentationState,
+  reflectionId: string,
+) {
+  return MODULE5_FINAL_SUMMARY_FIELDS.filter((definition) => {
+    if (!definition.sources.some((source) => source.reflectionId === reflectionId)) return false;
+    if (definition.invalidateForAnyCandidate) return true;
+    return state.summary.selectedSourceIds[definition.id] === reflectionId;
+  }).map((definition) => definition.id);
+}
+
+export function invalidateModule5FinalSummaryForReflection(
+  state: Module5PresentationState,
+  reflectionId: string,
+) {
+  const affected = getModule5FinalSummaryFieldIdsForReflection(state, reflectionId)
+    .filter((fieldId) => String(state.summary.values[fieldId] || '').trim());
+  if (!affected.length) return state;
+  return {
+    ...state,
+    summary: {
+      ...state.summary,
+      reviewRequiredFields: [...new Set([...state.summary.reviewRequiredFields, ...affected])],
+      confirmed: false,
+      confirmedAt: null,
+    },
+    finalConfirmation: {
+      ...state.finalConfirmation,
+      summaryReviewed: false,
+      readyToComplete: false,
+    },
+  };
+}
+
+function wordCount(value: string) {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
+}
+
+export function getModule5FinalSummaryReadiness(state: Module5PresentationState) {
+  const invalidFields = MODULE5_FINAL_SUMMARY_FIELDS.filter((definition) => {
+    const value = String(state.summary.values[definition.id] || '').trim();
+    const provenance = state.summary.provenance[definition.id];
+    const candidates = getModule5FinalSummaryCandidates(state, definition.id);
+    const selected = candidates.find((candidate) =>
+      candidate.reflectionId === state.summary.selectedSourceIds[definition.id]);
+    return !value
+      || wordCount(value) > definition.maxWords
+      || containsPotentiallySensitiveModule5Text(value)
+      || !provenance
+      || !selected
+      || provenance.revision !== selected.revision;
+  }).map((definition) => definition.id);
+  return {
+    invalidFields,
+    reviewRequiredFields: state.summary.reviewRequiredFields
+      .filter((id): id is Module5FinalSummaryFieldId =>
+        (MODULE5_FINAL_SUMMARY_FIELD_IDS as readonly string[]).includes(id)),
+    ready: invalidFields.length === 0 && state.summary.reviewRequiredFields.length === 0,
+  };
+}
+
+export function confirmModule5FinalSummary(
+  state: Module5PresentationState,
+  confirmed: boolean,
+  confirmedAt = new Date().toISOString(),
+) {
+  if (!confirmed || !getModule5FinalSummaryReadiness(state).ready) return state;
+  return {
+    ...state,
+    summary: {
+      ...state.summary,
+      confirmed: true,
+      confirmedAt: state.summary.confirmedAt || confirmedAt,
+    },
+    finalConfirmation: {
+      ...state.finalConfirmation,
+      summaryReviewed: false,
+      readyToComplete: false,
+    },
+  };
+}
+
+export function updateModule5FinalConfirmation(
+  state: Module5PresentationState,
+  key: 'summaryReviewed' | 'evidenceUseUnderstood' | 'readyToComplete',
+  value: boolean,
+) {
+  return {
+    ...state,
+    finalConfirmation: {
+      ...state.finalConfirmation,
+      [key]: value,
+    },
+  };
+}
+
+export function getModule5FinalCompletionReadiness(
+  state: Module5PresentationState,
+  moduleProgress: readonly string[],
+) {
+  const summary = getModule5FinalSummaryReadiness(state);
+  const confirmation = state.finalConfirmation;
+  const knowledgePassed = state.finalKnowledgeCheck.passed
+    && state.finalKnowledgeCheck.score >= MODULE5_FINAL_KNOWLEDGE_PASS_SCORE;
+  const progressReady = ['M5-R13', 'M5-R14'].every((id) => moduleProgress.includes(id));
+  const confirmationsReady = confirmation.summaryReviewed
+    && confirmation.evidenceUseUnderstood
+    && confirmation.readyToComplete;
+  return {
+    knowledgePassed,
+    summaryReady: summary.ready && state.summary.confirmed,
+    progressReady,
+    confirmationsReady,
+    ready: knowledgePassed
+      && summary.ready
+      && state.summary.confirmed
+      && progressReady
+      && confirmationsReady,
+  };
+}
+
+export function completeModule5FinalJourney(
+  state: {
+    screenProgress: Record<string, string[]>;
+    completedModules: string[];
+    module5Presentation: Module5PresentationState;
+  },
+  completedAt = new Date().toISOString(),
+) {
+  if (state.completedModules.includes(MODULE5_ID)) return state;
+  const progress = state.screenProgress[MODULE5_ID] || [];
+  if (!getModule5FinalCompletionReadiness(state.module5Presentation, progress).ready) return state;
+  return {
+    screenProgress: {
+      ...state.screenProgress,
+      [MODULE5_ID]: [...new Set([...progress, 'M5-PLAYER-COMPLETE'])],
+    },
+    completedModules: [...new Set([...state.completedModules, MODULE5_ID])],
+    module5Presentation: {
+      ...state.module5Presentation,
+      completion: {
+        completedAt: state.module5Presentation.completion.completedAt || completedAt,
+      },
+    },
+  };
 }
 
 export function migrateModule5PresentationScreenProgress(input: Module5MigrationInput) {
@@ -354,7 +846,12 @@ export function migrateModule5PresentationScreenProgress(input: Module5Migration
   const practice = isRecord(input.practiceCheckState) ? input.practiceCheckState : {};
   const current = isRecord(practice.module5Presentation) ? practice.module5Presentation : null;
   if (current?.contentRevision === MODULE5_PRESENTATION_CONTENT_REVISION) return progressMap;
-  const idsToClear = getPresentationRevisionInvalidationScreenIds(current?.contentRevision);
+  const idsToClear = [
+    ...getPresentationRevisionInvalidationScreenIds(current?.contentRevision),
+    'M5-R13',
+    'M5-R14',
+    'M5-PLAYER-COMPLETE',
+  ];
   const moduleProgress = Array.isArray(progressMap[MODULE5_ID])
     ? progressMap[MODULE5_ID].filter((id) =>
       typeof id === 'string' && !(idsToClear as readonly string[]).includes(canonicalizeModule5ScreenId(id)))

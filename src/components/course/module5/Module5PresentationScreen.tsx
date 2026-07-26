@@ -7,11 +7,13 @@ import {
   ensureModule5PresentationState,
   getModule5PresentationState,
   containsPotentiallySensitiveModule5Text,
+  invalidateModule5FinalSummaryForReflection,
   type Module5PresentationReflectionValue,
   type Module5PresentationScreenState,
 } from '../../../data/module5/module5EnhancedModel';
 import {
   MODULE5_PRESENTATION_CONTENT,
+  MODULE5_FINAL_SUMMARY_FIELD_IDS,
   isModule5KnowledgeAnswerCorrect,
   isModule5ReflectionValueReady,
   type Module5KnowledgeQuestion,
@@ -97,7 +99,8 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
       const updatedScreen = update(currentScreen);
       let summary = nextPresentation.summary;
       if (summaryUpdate?.prompt.carryForwardField || summaryUpdate?.prompt.carryForwardFields) {
-        const revision = updatedScreen.reflectionRevision;
+        const revision = updatedScreen.reflectionRevisions[summaryUpdate.prompt.id]
+          ?? updatedScreen.reflectionRevision;
         const updates = summaryUpdate.prompt.carryForwardFields && Array.isArray(summaryUpdate.value)
           ? summaryUpdate.prompt.carryForwardFields.map((field, index) => ({
             field,
@@ -111,13 +114,18 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
         const provenance = { ...summary.provenance };
         const reviewRequiredFields = new Set(summary.reviewRequiredFields);
         for (const update of updates) {
+          const isFinalizedSummaryField = (
+            MODULE5_FINAL_SUMMARY_FIELD_IDS as readonly string[]
+          ).includes(update.field) && Boolean(summary.selectedSourceIds[update.field]);
           if (summary.values[update.field]) reviewRequiredFields.add(update.field);
-          values[update.field] = update.value;
-          provenance[update.field] = {
-            screenId,
-            reflectionId: summaryUpdate.prompt.id,
-            revision,
-          };
+          if (!isFinalizedSummaryField) {
+            values[update.field] = update.value;
+            provenance[update.field] = {
+              screenId,
+              reflectionId: summaryUpdate.prompt.id,
+              revision,
+            };
+          }
         }
         summary = {
           ...summary,
@@ -129,6 +137,22 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
       }
       const moduleCompleted = previous.completedModules.includes(MODULE5_ID);
       const currentProgress = previous.screenProgress[MODULE5_ID] || [];
+      let updatedPresentation = {
+        ...nextPresentation,
+        screens: { ...nextPresentation.screens, [screenId]: updatedScreen },
+        summary,
+        finalConfirmation: {
+          ...nextPresentation.finalConfirmation,
+          summaryReviewed: false,
+          readyToComplete: false,
+        },
+      };
+      if (summaryUpdate) {
+        updatedPresentation = invalidateModule5FinalSummaryForReflection(
+          updatedPresentation,
+          summaryUpdate.prompt.id,
+        );
+      }
       return {
         ...previous,
         screenProgress: moduleCompleted
@@ -139,16 +163,7 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
           },
         practiceCheckState: {
           ...previous.practiceCheckState,
-          module5Presentation: {
-            ...nextPresentation,
-            screens: { ...nextPresentation.screens, [screenId]: updatedScreen },
-            summary,
-            finalConfirmation: {
-              ...nextPresentation.finalConfirmation,
-              summaryReviewed: false,
-              readyToComplete: false,
-            },
-          },
+          module5Presentation: updatedPresentation,
         },
       };
     });
@@ -196,6 +211,10 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
       ...current,
       reflectionValues: { ...current.reflectionValues, [prompt.id]: value },
       reflectionRevision: current.reflectionRevision + 1,
+      reflectionRevisions: {
+        ...current.reflectionRevisions,
+        [prompt.id]: (current.reflectionRevisions[prompt.id] || 0) + 1,
+      },
       gateSatisfied: false,
       status: 'in_progress',
       completedAt: null,
@@ -210,6 +229,10 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
       ...current,
       reflectionDetails: { ...current.reflectionDetails, [prompt.id]: detail },
       reflectionRevision: current.reflectionRevision + 1,
+      reflectionRevisions: {
+        ...current.reflectionRevisions,
+        [prompt.id]: (current.reflectionRevisions[prompt.id] || 0) + 1,
+      },
       gateSatisfied: false,
       status: 'in_progress',
       completedAt: null,

@@ -773,8 +773,8 @@ function CourseApplication({
       ['M5-R11', 'Accountability: Feedback, Response and Community Scorecards', 'Close the feedback-response-account-back loop and agree responsible action.'],
       ['M5-R12', 'Learning and Adaptation: Dashboard, Decisions and Account-Back', 'Turn evidence signals into role-appropriate decisions, adaptation and account-back.'],
       ['M5-R13', 'Knowledge Check: From Evidence to Action', 'Review applied judgement across the complete HRBA MEAL evidence journey.'],
-      ['M5-R14', 'Portfolio: Build Your HRBA MEAL Framework and Safe Data Plan', 'Assemble the carried-forward HRBA MEAL, Accountability and Adaptation Canvas.'],
-      ['M5-PLAYER-COMPLETE', MODULE5_COMPLETION_SCREEN_TITLE, 'Review the dashboard and 90-day plan, then explicitly confirm Module 5 completion.'],
+      ['M5-R14', 'Build Your HRBA MEAL, Accountability and Adaptation Canvas', 'Review and confirm the concise carried-forward learning and future-support summary.'],
+      ['M5-PLAYER-COMPLETE', MODULE5_COMPLETION_SCREEN_TITLE, 'Review the Module 5 learning summary, then explicitly confirm Module 5 completion.'],
     ].map(([id, title, purpose]) => ({
       Layer: 'Layer 2 Player',
       'Screen/State ID': id,

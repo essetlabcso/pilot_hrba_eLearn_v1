@@ -1,7 +1,10 @@
 export const MODULE5_PRESENTATION_SCHEMA_VERSION = 1;
 export const MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch1-v1';
 export const MODULE5_BATCH2_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch2-v1';
-export const MODULE5_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch3-v1';
+export const MODULE5_BATCH3_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch3-v1';
+export const MODULE5_PRESENTATION_CONTENT_REVISION = 'm5-presentation-final-v1';
+export const MODULE5_FINAL_KNOWLEDGE_REVISION = 'm5-final-knowledge-v1';
+export const MODULE5_FINAL_KNOWLEDGE_PASS_SCORE = 7;
 
 export const MODULE5_BATCH1_PRESENTATION_SCREEN_IDS = [
   'M5-R01',
@@ -46,6 +49,40 @@ export type Module5KnowledgeQuestion = {
   prompt: string;
   options: Module5KnowledgeOption[];
   correctOptionIds: string[];
+};
+
+export type Module5FinalKnowledgeQuestion = Module5KnowledgeQuestion & {
+  sourceQuestionIds: string[];
+  learningOutcome: string;
+};
+
+export const MODULE5_FINAL_SUMMARY_FIELD_IDS = [
+  'priority_result_or_question',
+  'missing_perspective',
+  'cycle_break_point',
+  'priority_decision_question',
+  'future_meal_knowledge',
+  'future_meal_skill',
+  'future_meal_tool',
+  'peer_learning_question',
+  'support_need',
+] as const;
+
+export type Module5FinalSummaryFieldId = typeof MODULE5_FINAL_SUMMARY_FIELD_IDS[number];
+
+export type Module5FinalSummarySource = {
+  screenId: Module5PresentationScreenId;
+  reflectionId: string;
+  valueIndex?: 0 | 1;
+};
+
+export type Module5FinalSummaryField = {
+  id: Module5FinalSummaryFieldId;
+  label: string;
+  guidance: string;
+  maxWords: number;
+  sources: Module5FinalSummarySource[];
+  invalidateForAnyCandidate?: boolean;
 };
 
 export type Module5ReflectionPrompt = {
@@ -1159,3 +1196,222 @@ export function isModule5ReflectionValueReady(
   if (!text) return false;
   return !prompt.maxWords || text.split(/\s+/).length <= prompt.maxWords;
 }
+
+export const MODULE5_FINAL_KNOWLEDGE_QUESTIONS: readonly Module5FinalKnowledgeQuestion[] = [
+  {
+    id: 'M5-S14-KC01',
+    type: 'single',
+    sourceQuestionIds: ['M5-S02-KC01'],
+    learningOutcome: 'Recognize an unsupported conclusion and match claims to available evidence.',
+    prompt: 'Awra has evidence that six Jiru Amba meetings were held and 240 attendances were recorded. Which conclusion is best supported?',
+    correctOptionIds: ['B'],
+    options: [
+      option('A', 'Participation was equitable across all groups.', 'Not supported. Total attendance does not show who was represented, who was missing or what barriers different groups faced.'),
+      option('B', 'The planned meetings occurred and recorded attendance reached 240.', 'Correct. This conclusion stays within the activity and attendance evidence available.'),
+      option('C', 'The community was satisfied with the Futures Plan.', 'Not supported. Four positive stories cannot represent the views of everyone who participated or did not participate.'),
+      option('D', 'The feedback mechanism was effective.', 'Not supported. A feedback box shows that a channel existed, not that feedback was accessible, acknowledged, answered or closed.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC02',
+    type: 'single',
+    sourceQuestionIds: ['M5-S05-KC02'],
+    learningOutcome: 'Choose a decision-useful learning question that reveals different experiences.',
+    prompt: 'Awra must decide whether to change consultation timing. Which learning question is strongest?',
+    correctOptionIds: ['C'],
+    options: [
+      option('A', 'How many meetings did Awra hold?', 'Too narrow. The activity count does not explain who can participate or which barrier should change.'),
+      option('B', 'Did participants like the project?', 'Too broad and vague. It does not identify the decision, participation barrier or evidence needed.'),
+      option('C', 'Who can participate at current times, who cannot, and which barrier should Awra address before the next round?', 'Correct. The question identifies different experiences and connects directly to the timing decision.'),
+      option('D', 'Can Awra collect more information about every participant?', 'Collection volume is not a learning purpose. The option also risks unnecessary personal data.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC03',
+    type: 'single',
+    sourceQuestionIds: ['M5-S06-KC02'],
+    learningOutcome: 'Select a balanced rights-based indicator set.',
+    prompt: 'Which indicator set best supports the result “more people understand options and influence priorities”?',
+    correctOptionIds: ['C'],
+    options: [
+      option('A', 'Meetings held; total attendance; reports submitted', 'These are useful delivery signals, but they do not show understanding or influence.'),
+      option('B', 'Total attendance only, disaggregated into many categories', 'Disaggregation may reveal patterns, but attendance alone still does not show understanding or influence and excessive detail may create risk.'),
+      option('C', 'Accessible meetings held; broad participation pattern; accounts of views used; change in understanding', 'Correct. This set covers output, process, influence and outcome with mixed evidence.'),
+      option('D', 'Four positive quotations from participants', 'Positive stories can illustrate experience but cannot show the overall pattern or represent everyone.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC04',
+    type: 'single',
+    sourceQuestionIds: ['M5-S07-KC01'],
+    learningOutcome: 'Match a decision question to a proportionate evidence mix.',
+    prompt: 'Awra wants to know how common a timing barrier is and why it affects participation. Which mix best fits?',
+    correctOptionIds: ['B'],
+    options: [
+      option('A', 'Attendance totals only', 'Totals may show a pattern but cannot explain why timing creates a barrier.'),
+      option('B', 'A short accessible question for a broad pattern plus a few private conversations for explanation', 'Correct. The methods have distinct jobs and answer both scale and meaning.'),
+      option('C', 'One large group discussion with community leaders only', 'This may exclude people experiencing the barrier and may not support safe participation.'),
+      option('D', 'Observation only', 'Observation may show timing and access conditions but cannot reliably explain people’s reasons.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC05',
+    type: 'single',
+    sourceQuestionIds: ['M5-S08-KC02'],
+    learningOutcome: 'Respond safely to small-cell and indirect-identification risk.',
+    prompt: 'A table cell and quotation may identify the only person in a small subgroup. What is the strongest response?',
+    correctOptionIds: ['C'],
+    options: [
+      option('A', 'Publish both because the name is absent.', 'Indirect details can identify someone even when the name is removed.'),
+      option('B', 'Replace the name with initials.', 'Initials may still identify the person and do not address the small-cell risk.'),
+      option('C', 'Broaden or merge categories, remove identifying detail and suppress the cell or quotation if risk remains.', 'Correct. This layers reduction, aggregation and suppression.'),
+      option('D', 'Ask the collector to decide informally after publication.', 'Risk should be assessed and managed before sharing.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC06',
+    type: 'single',
+    sourceQuestionIds: ['M5-S09-KC01', 'M5-S10-KC01'],
+    learningOutcome: 'Apply traceable evidence cleaning, then check comparability and interpret contradictory evidence without discarding a source.',
+    prompt: 'Before Awra analyses a survey and feedback file, it finds two similar records and conflicting findings about access. Which approach is strongest?',
+    correctOptionIds: ['B'],
+    options: [
+      option('A', 'Delete one similar record immediately and report only the survey because it has more responses.', 'Similarity alone does not confirm a duplicate, and more responses do not make a relevant minority experience disappear.'),
+      option('B', 'Apply the documented duplicate rule and retain an audit trail, then check definitions and coverage, report both findings, and examine whether they concern different groups or moments.', 'Correct. The evidence remains traceable, and the contradiction is used to build a more precise explanation.'),
+      option('C', 'Average the similar records and combine the survey and feedback into one score.', 'Averaging does not establish whether records are duplicates, and unlike evidence types cannot be made comparable through an invented score.'),
+      option('D', 'Add participant names to verify the records, then use the most vivid story as the conclusion.', 'Adding identifiers increases risk, and one story does not automatically represent a broad pattern.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC07',
+    type: 'single',
+    sourceQuestionIds: ['M5-S11-KC01', 'M5-S11-KC02'],
+    learningOutcome: 'Evaluate distribution and equity while making a bounded contribution claim.',
+    prompt: 'Jiru Amba participation improved overall after Awra changed accessible information and meeting times, but one group did not improve and community leadership may also have influenced the result. Which evaluation conclusion is strongest?',
+    correctOptionIds: ['C'],
+    options: [
+      option('A', 'Awra caused the improvement for every group.', 'This ignores another influence, exceeds the evidence and contradicts the unequal group result.'),
+      option('B', 'Participation improved overall, so the consultation worked equally for everyone.', 'A broad improvement can conceal unequal change.'),
+      option('C', 'Participation improved overall, but one group did not; Awra’s changes plausibly contributed alongside community leadership, and the group difference needs further examination.', 'Correct. This reports the equity difference and makes a bounded contribution claim that acknowledges another influence.'),
+      option('D', 'No conclusion is possible unless every influence is controlled.', 'Contribution can be assessed without claiming perfect causal control, while uncertainty and group differences remain visible.'),
+    ],
+  },
+  {
+    id: 'M5-S14-KC08',
+    type: 'single',
+    sourceQuestionIds: ['M5-S12-KC01', 'M5-S13-KC01', 'M5-S13-KC02'],
+    learningOutcome: 'Complete an accountability loop and turn a bounded finding into a traceable adaptation and account-back decision.',
+    prompt: 'Jiru Amba feedback shows a persistent timing barrier and one perspective is still missing. Which response best completes accountability and supports adaptation?',
+    correctOptionIds: ['B'],
+    options: [
+      option('A', 'Continue unchanged because the overall signal is positive.', 'This ignores the persistent barrier and the missing perspective.'),
+      option('B', 'Acknowledge the feedback, assign responsibility, adapt the feasible barrier, consult the missing perspective, account back on the decision and reason, and set a review point.', 'Correct. This completes the response loop and connects evidence, responsibility, adaptation, account-back and review.'),
+      option('C', 'Pause every activity until perfect evidence is available.', 'Uncertainty does not automatically require stopping all action; a proportionate response can address the feasible barrier and evidence gap.'),
+      option('D', 'Record the feedback and wait to see whether the concern appears again.', 'Recording alone does not provide acknowledgement, ownership, response, account-back or closure.'),
+    ],
+  },
+] as const;
+
+export const MODULE5_FINAL_SUMMARY_FIELDS: readonly Module5FinalSummaryField[] = [
+  {
+    id: 'priority_result_or_question',
+    label: 'Priority result or learning question',
+    guidance: 'Choose the result or question that should anchor your future MEAL learning.',
+    maxWords: 40,
+    invalidateForAnyCandidate: true,
+    sources: [
+      { screenId: 'M5-R06', reflectionId: 'M5-S07-R02' },
+      { screenId: 'M5-R04', reflectionId: 'M5-S05-R03' },
+      { screenId: 'M5-R10', reflectionId: 'M5-S11-R01' },
+      { screenId: 'M5-R04', reflectionId: 'M5-S05-R01' },
+      { screenId: 'M5-R01', reflectionId: 'M5-S02-R01' },
+    ],
+  },
+  {
+    id: 'missing_perspective',
+    label: 'Perspective or group least visible',
+    guidance: 'Keep one broad, non-identifying group or access perspective visible.',
+    maxWords: 20,
+    invalidateForAnyCandidate: true,
+    sources: [
+      { screenId: 'M5-R11', reflectionId: 'M5-S12-R02' },
+      { screenId: 'M5-R10', reflectionId: 'M5-S11-R02' },
+      { screenId: 'M5-R09', reflectionId: 'M5-S10-R02' },
+      { screenId: 'M5-R01', reflectionId: 'M5-S02-R02' },
+    ],
+  },
+  {
+    id: 'cycle_break_point',
+    label: 'Priority MEAL or accountability break',
+    guidance: 'Identify where evidence most needs to move into response, accountability or learning.',
+    maxWords: 20,
+    invalidateForAnyCandidate: true,
+    sources: [
+      { screenId: 'M5-R11', reflectionId: 'M5-S12-R01' },
+      { screenId: 'M5-R03', reflectionId: 'M5-S04-R01' },
+    ],
+  },
+  {
+    id: 'priority_decision_question',
+    label: 'Priority decision question',
+    guidance: 'State the question that should guide a proportionate evidence choice.',
+    maxWords: 30,
+    sources: [
+      { screenId: 'M5-R06', reflectionId: 'M5-S07-R02' },
+      { screenId: 'M5-R04', reflectionId: 'M5-S05-R03' },
+    ],
+  },
+  {
+    id: 'future_meal_knowledge',
+    label: 'MEAL knowledge to deepen',
+    guidance: 'Name one concept to continue learning.',
+    maxWords: 20,
+    sources: [{ screenId: 'M5-R12', reflectionId: 'M5-S13-R01' }],
+  },
+  {
+    id: 'future_meal_skill',
+    label: 'MEAL skill to strengthen',
+    guidance: 'Name one practical skill to practise next.',
+    maxWords: 20,
+    sources: [
+      { screenId: 'M5-R12', reflectionId: 'M5-S13-R02', valueIndex: 0 },
+      { screenId: 'M5-R09', reflectionId: 'M5-S10-R03' },
+    ],
+  },
+  {
+    id: 'future_meal_tool',
+    label: 'Tool or template needed',
+    guidance: 'Name one supporting aid, not a new workplace output.',
+    maxWords: 20,
+    sources: [{ screenId: 'M5-R12', reflectionId: 'M5-S13-R02', valueIndex: 1 }],
+  },
+  {
+    id: 'peer_learning_question',
+    label: 'Peer-learning question',
+    guidance: 'Keep one focused question or experience for exchange with another CSO.',
+    maxWords: 30,
+    sources: [
+      { screenId: 'M5-R12', reflectionId: 'M5-S13-R03' },
+      { screenId: 'M5-R01', reflectionId: 'M5-S02-R03' },
+      { screenId: 'M5-R03', reflectionId: 'M5-S04-R03' },
+      { screenId: 'M5-R05', reflectionId: 'M5-S06-R03' },
+      { screenId: 'M5-R06', reflectionId: 'M5-S07-R04' },
+      { screenId: 'M5-R07', reflectionId: 'M5-S08-R04' },
+      { screenId: 'M5-R08', reflectionId: 'M5-S09-R04' },
+      { screenId: 'M5-R09', reflectionId: 'M5-S10-R04' },
+      { screenId: 'M5-R10', reflectionId: 'M5-S11-R04' },
+      { screenId: 'M5-R11', reflectionId: 'M5-S12-R04' },
+    ],
+  },
+  {
+    id: 'support_need',
+    label: 'Capacity-support need',
+    guidance: 'Identify the enabling support that would make the learning usable.',
+    maxWords: 25,
+    sources: [
+      { screenId: 'M5-R12', reflectionId: 'M5-S13-R04' },
+      { screenId: 'M5-R04', reflectionId: 'M5-S05-R04' },
+      { screenId: 'M5-R02', reflectionId: 'M5-S03-R03' },
+    ],
+  },
+] as const;

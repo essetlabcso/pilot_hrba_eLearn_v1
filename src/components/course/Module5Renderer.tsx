@@ -4,6 +4,7 @@ import { canonicalizeModule5ScreenId } from '../../data/module5/module5EnhancedM
 import { isModule5PresentationScreenId } from '../../data/module5/module5PresentationContent';
 import Module5EnhancedJourney from './Module5EnhancedJourney';
 import Module5PresentationScreen from './module5/Module5PresentationScreen';
+import Module5FinalScreens from './module5/Module5FinalScreens';
 
 type Module5RendererProps = {
   screenId: string;
@@ -27,6 +28,9 @@ export default function Module5Renderer(props: Module5RendererProps) {
 
   if (isModule5PresentationScreenId(screenId)) {
     return <Module5PresentationScreen {...props} screenId={screenId} />;
+  }
+  if (screenId === 'M5-R13' || screenId === 'M5-R14' || screenId === 'M5-PLAYER-COMPLETE') {
+    return <Module5FinalScreens {...props} screenId={screenId} />;
   }
 
   return <Module5EnhancedJourney {...props} screenId={screenId} />;
