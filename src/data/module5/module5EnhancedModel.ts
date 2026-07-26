@@ -1,5 +1,7 @@
 import {
-  MODULE5_BATCH1_PRESENTATION_SCREEN_IDS,
+  MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION,
+  MODULE5_BATCH2_PRESENTATION_SCREEN_IDS,
+  MODULE5_PRESENTATION_SCREEN_IDS,
   MODULE5_PRESENTATION_CONTENT_REVISION,
   MODULE5_PRESENTATION_SCHEMA_VERSION,
 } from './module5PresentationContent.ts';
@@ -247,12 +249,20 @@ export function ensureModule5PresentationState(
   if (!current) return createEmptyModule5PresentationState(legacyWorkspacePresent, completed);
 
   const revisionChanged = current.contentRevision !== MODULE5_PRESENTATION_CONTENT_REVISION;
-  const invalidateGate = revisionChanged && !completed;
+  const upgradingFromBatch1 = current.contentRevision === MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION;
+  const invalidateAllGates = revisionChanged && !completed && !upgradingFromBatch1;
   const currentScreens = isRecord(current.screens) ? current.screens : {};
   const screens = Object.fromEntries(
     Object.entries(currentScreens).map(([screenId, screen]) => [
       screenId,
-      normalizePresentationScreenState(screen, invalidateGate),
+      normalizePresentationScreenState(
+        screen,
+        invalidateAllGates || (
+          revisionChanged
+          && !completed
+          && (MODULE5_BATCH2_PRESENTATION_SCREEN_IDS as readonly string[]).includes(screenId)
+        ),
+      ),
     ]),
   );
   const base = createEmptyModule5PresentationState(legacyWorkspacePresent, completed);
@@ -266,6 +276,25 @@ export function ensureModule5PresentationState(
   const dependencyRevisions = isRecord(currentSummary.dependencyRevisions)
     ? Object.fromEntries(Object.entries(currentSummary.dependencyRevisions).filter(([, item]) => typeof item === 'number')) as Record<string, number>
     : {};
+  const batch2SummaryFields = Object.entries(summaryProvenance)
+    .filter(([, provenance]) =>
+      (MODULE5_BATCH2_PRESENTATION_SCREEN_IDS as readonly string[]).includes(provenance.screenId))
+    .map(([field]) => field);
+  const invalidateSummaryFields = invalidateAllGates
+    ? Object.keys(summaryValues)
+    : revisionChanged && !completed
+      ? batch2SummaryFields
+      : [];
+  const reviewRequiredFields = [
+    ...new Set([
+      ...normalizeStringArray(currentSummary.reviewRequiredFields),
+      ...invalidateSummaryFields,
+    ]),
+  ];
+  const preservedDependencyRevisions = Object.fromEntries(
+    Object.entries(dependencyRevisions).filter(([field]) => !invalidateSummaryFields.includes(field)),
+  );
+  const invalidateDependentFinalState = invalidateSummaryFields.length > 0;
 
   return {
     ...base,
@@ -280,17 +309,15 @@ export function ensureModule5PresentationState(
     summary: {
       values: summaryValues,
       provenance: summaryProvenance,
-      dependencyRevisions: invalidateGate ? {} : dependencyRevisions,
-      reviewRequiredFields: invalidateGate
-        ? Object.keys(summaryValues)
-        : normalizeStringArray(currentSummary.reviewRequiredFields),
-      confirmed: invalidateGate ? false : currentSummary.confirmed === true,
+      dependencyRevisions: preservedDependencyRevisions,
+      reviewRequiredFields,
+      confirmed: invalidateDependentFinalState ? false : currentSummary.confirmed === true,
     },
-    finalKnowledgeCheck: invalidateGate ? base.finalKnowledgeCheck : {
+    finalKnowledgeCheck: invalidateAllGates ? base.finalKnowledgeCheck : {
       ...base.finalKnowledgeCheck,
       ...(isRecord(current.finalKnowledgeCheck) ? current.finalKnowledgeCheck : {}),
     } as Module5PresentationState['finalKnowledgeCheck'],
-    finalConfirmation: invalidateGate ? base.finalConfirmation : {
+    finalConfirmation: invalidateAllGates || invalidateDependentFinalState ? base.finalConfirmation : {
       ...base.finalConfirmation,
       ...(isRecord(current.finalConfirmation) ? current.finalConfirmation : {}),
     } as Module5PresentationState['finalConfirmation'],
@@ -309,9 +336,12 @@ export function migrateModule5PresentationScreenProgress(input: Module5Migration
   const practice = isRecord(input.practiceCheckState) ? input.practiceCheckState : {};
   const current = isRecord(practice.module5Presentation) ? practice.module5Presentation : null;
   if (current?.contentRevision === MODULE5_PRESENTATION_CONTENT_REVISION) return progressMap;
+  const idsToClear = current?.contentRevision === MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION
+    ? MODULE5_BATCH2_PRESENTATION_SCREEN_IDS
+    : MODULE5_PRESENTATION_SCREEN_IDS;
   const moduleProgress = Array.isArray(progressMap[MODULE5_ID])
     ? progressMap[MODULE5_ID].filter((id) =>
-      typeof id === 'string' && !(MODULE5_BATCH1_PRESENTATION_SCREEN_IDS as readonly string[]).includes(canonicalizeModule5ScreenId(id)))
+      typeof id === 'string' && !(idsToClear as readonly string[]).includes(canonicalizeModule5ScreenId(id)))
     : [];
   if (Array.isArray(progressMap[MODULE5_ID])) progressMap[MODULE5_ID] = moduleProgress;
   return progressMap;

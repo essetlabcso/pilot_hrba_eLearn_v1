@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
+  MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION,
   MODULE5_BATCH1_PRESENTATION_SCREEN_IDS,
+  MODULE5_BATCH2_PRESENTATION_SCREEN_IDS,
   MODULE5_PRESENTATION_CONTENT,
   MODULE5_PRESENTATION_CONTENT_REVISION,
   isModule5KnowledgeAnswerCorrect,
@@ -21,6 +23,13 @@ const expected = [
   ['M5-R02', 3, 'Learning Objectives and MEAL Roadmap', 'RKqECrl4PQs', '/module-5/screen-5-2'],
   ['M5-R03', 4, 'The MEAL Cycle Through an HRBA Lens', 'B0Y988AKdeg', '/module-5/screen-5-3'],
   ['M5-R04', 5, 'Planning MEAL: Define Results, Success and Learning Questions', 'VsYQSEEejv4', '/module-5/screen-5-4'],
+];
+
+const expectedBatch2 = [
+  ['M5-R05', 6, 'Monitoring: Build Rights-Based Indicators', 'i6rVGG6reGo', '/module-5/screen-5-5'],
+  ['M5-R06', 7, 'Data Collection: Choose the Right Methods', 'Qo4Tf5Jv9JI', '/module-5/screen-5-6'],
+  ['M5-R07', 8, 'Safe Disaggregation and Ethical Data Collection', 'TtvXvb00UH0', '/module-5/screen-5-7'],
+  ['M5-R08', 9, 'Data Management: Organize, Clean and Protect Evidence', 'RwnBCFx2tfI', '/module-5/screen-5-8'],
 ];
 
 test('Batch 1 config preserves exact canonical IDs, routes, titles and public videos', () => {
@@ -57,6 +66,39 @@ test('every Batch 1 screen has the approved stable question IDs and exact-set va
   assert.equal(isModule5KnowledgeAnswerCorrect(multiple, ['A', 'B', 'C', 'D']), false);
 });
 
+test('Batch 2 config preserves exact canonical IDs, routes, titles, videos and question IDs', () => {
+  assert.deepEqual([...MODULE5_BATCH2_PRESENTATION_SCREEN_IDS], expectedBatch2.map(([id]) => id));
+  for (const [screenId, number, title, videoId, route] of expectedBatch2) {
+    const entry = MODULE5_PRESENTATION_CONTENT[screenId];
+    assert.equal(entry.number, number);
+    assert.equal(entry.title, title);
+    assert.equal(entry.videoId, videoId);
+    assert.equal(entry.embedUrl, `https://www.youtube-nocookie.com/embed/${videoId}`);
+    assert.equal(entry.watchUrl, `https://youtu.be/${videoId}`);
+    assert.equal(MODULE5_SCREEN_ROUTES[screenId], route);
+    assert.deepEqual(
+      entry.questions.map((question, index) => question.id),
+      [1, 2, 3].map((questionNumber) => `M5-S${String(number).padStart(2, '0')}-KC0${questionNumber}`),
+    );
+    assert.ok(entry.accessibilitySummary.length > 400);
+  }
+});
+
+test('Batch 2 knowledge checks require exact reviewed answers and retain approved feedback', () => {
+  for (const screenId of MODULE5_BATCH2_PRESENTATION_SCREEN_IDS) {
+    const entry = MODULE5_PRESENTATION_CONTENT[screenId];
+    for (const question of entry.questions) {
+      assert.equal(question.type, 'single');
+      assert.equal(question.options.length, 4);
+      assert.equal(isModule5KnowledgeAnswerCorrect(question, question.correctOptionIds), true);
+      assert.equal(isModule5KnowledgeAnswerCorrect(question, []), false);
+      const incorrect = question.options.find((item) => !question.correctOptionIds.includes(item.id));
+      assert.equal(isModule5KnowledgeAnswerCorrect(question, [incorrect.id]), false);
+      assert.ok(question.options.every((item) => item.feedback.length > 20));
+    }
+  }
+});
+
 test('only core carry-forward reflections are required', () => {
   const expectedRequired = {
     'M5-R01': ['M5-S02-R01', 'M5-S02-R02'],
@@ -64,7 +106,8 @@ test('only core carry-forward reflections are required', () => {
     'M5-R03': ['M5-S04-R01', 'M5-S04-R02'],
     'M5-R04': ['M5-S05-R01', 'M5-S05-R02', 'M5-S05-R03', 'M5-S05-R04'],
   };
-  for (const [screenId, entry] of Object.entries(MODULE5_PRESENTATION_CONTENT)) {
+  for (const screenId of MODULE5_BATCH1_PRESENTATION_SCREEN_IDS) {
+    const entry = MODULE5_PRESENTATION_CONTENT[screenId];
     assert.deepEqual(entry.reflections.filter((item) => item.required).map((item) => item.id), expectedRequired[screenId]);
     for (const reflection of entry.reflections) {
       assert.equal(reflection.required, Boolean(reflection.carryForwardField));
@@ -72,6 +115,26 @@ test('only core carry-forward reflections are required', () => {
   }
   assert.equal(MODULE5_PRESENTATION_CONTENT['M5-R02'].reflections.find((item) => item.id === 'M5-S03-R02').required, false);
   assert.equal(MODULE5_PRESENTATION_CONTENT['M5-R03'].reflections.find((item) => item.id === 'M5-S04-R03').required, false);
+});
+
+test('Batch 2 requires only carry-forward reflections and uses constrained text where no source options exist', () => {
+  const expectedRequired = {
+    'M5-R05': ['M5-S06-R01', 'M5-S06-R02'],
+    'M5-R06': ['M5-S07-R02', 'M5-S07-R03'],
+    'M5-R07': ['M5-S08-R01', 'M5-S08-R02', 'M5-S08-R03'],
+    'M5-R08': ['M5-S09-R01', 'M5-S09-R02', 'M5-S09-R03'],
+  };
+  for (const screenId of MODULE5_BATCH2_PRESENTATION_SCREEN_IDS) {
+    const entry = MODULE5_PRESENTATION_CONTENT[screenId];
+    assert.deepEqual(entry.reflections.filter((item) => item.required).map((item) => item.id), expectedRequired[screenId]);
+    for (const reflection of entry.reflections) {
+      assert.equal(reflection.required, Boolean(reflection.carryForwardField));
+    }
+  }
+  assert.equal(MODULE5_PRESENTATION_CONTENT['M5-R07'].reflections[0].control, 'short-text');
+  assert.equal(MODULE5_PRESENTATION_CONTENT['M5-R08'].reflections[1].control, 'short-text');
+  assert.match(MODULE5_PRESENTATION_CONTENT['M5-R07'].safeInputGuidance, /raw organisational datasets/);
+  assert.match(MODULE5_PRESENTATION_CONTENT['M5-R08'].safeInputGuidance, /confidential complaints/);
 });
 
 test('new presentation state is additive, versioned and contains no duplicate completion flag', () => {
@@ -104,7 +167,7 @@ test('incomplete legacy learners retain old work but receive empty current answe
     screenProgress: { [MODULE5_ID]: ['M5-R01', 'M5-R02', 'M5-R05'] },
     completedModules: [],
   });
-  assert.deepEqual(progress[MODULE5_ID], ['M5-R05']);
+  assert.deepEqual(progress[MODULE5_ID], []);
 });
 
 test('historically completed Module 5 remains complete and keeps its canonical progress', () => {
@@ -151,14 +214,56 @@ test('current migration is idempotent and content revision invalidates only inco
   assert.equal(preserved.migration.historicalCompletionPreserved, true);
 });
 
-test('renderer activates presentation flow only for Screens 2–5', () => {
+test('Batch 1 to Batch 2 migration preserves accepted Batch 1 state and clears only incomplete Batch 2 gates', () => {
+  const current = createEmptyModule5PresentationState();
+  current.contentRevision = MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION;
+  current.screens['M5-R01'] = {
+    answers: { 'M5-S02-KC01': ['B'] },
+    checkedIds: ['M5-S02-KC01'],
+    correctIds: ['M5-S02-KC01'],
+    reflectionValues: { 'M5-S02-R01': 'Participation' },
+    reflectionDetails: {},
+    reflectionRevision: 2,
+    gateSatisfied: true,
+    status: 'completed',
+    completedAt: '2026-07-27T09:00:00.000Z',
+    updatedAt: '2026-07-27T09:00:00.000Z',
+  };
+  current.screens['M5-R05'] = {
+    answers: { 'M5-S06-KC01': ['B'] },
+    checkedIds: ['M5-S06-KC01'],
+    correctIds: ['M5-S06-KC01'],
+    reflectionValues: { 'M5-S06-R01': 'Attendance' },
+    reflectionDetails: {},
+    reflectionRevision: 1,
+    gateSatisfied: true,
+    status: 'completed',
+    completedAt: '2026-07-27T10:00:00.000Z',
+    updatedAt: '2026-07-27T10:00:00.000Z',
+  };
+  const migrated = ensureModule5PresentationState({ module5Presentation: current }, []);
+  assert.equal(migrated.screens['M5-R01'].gateSatisfied, true);
+  assert.deepEqual(migrated.screens['M5-R01'].answers, { 'M5-S02-KC01': ['B'] });
+  assert.equal(migrated.screens['M5-R05'].gateSatisfied, false);
+  assert.equal(migrated.screens['M5-R05'].status, 'needs_review');
+  assert.deepEqual(migrated.screens['M5-R05'].answers, { 'M5-S06-KC01': ['B'] });
+
+  const progress = migrateModule5PresentationScreenProgress({
+    practiceCheckState: { module5Presentation: current },
+    screenProgress: { [MODULE5_ID]: ['M5-R01', 'M5-R02', 'M5-R03', 'M5-R04', 'M5-R05'] },
+    completedModules: [],
+  });
+  assert.deepEqual(progress[MODULE5_ID], ['M5-R01', 'M5-R02', 'M5-R03', 'M5-R04']);
+});
+
+test('renderer activates presentation flow only for Screens 2–9', () => {
   const renderer = readFileSync('src/components/course/Module5Renderer.tsx', 'utf8');
   assert.match(renderer, /isModule5PresentationScreenId\(screenId\)/);
   assert.match(renderer, /<Module5PresentationScreen/);
   assert.match(renderer, /<Module5EnhancedJourney/);
   const source = readFileSync('src/data/module5/module5PresentationContent.ts', 'utf8');
-  for (const id of ['M5-R01', 'M5-R02', 'M5-R03', 'M5-R04']) assert.match(source, new RegExp(`'${id}'`));
-  for (const id of ['M5-R05', 'M5-R13', 'M5-R14', 'M5-PLAYER-COMPLETE']) {
+  for (const id of ['M5-R01', 'M5-R02', 'M5-R03', 'M5-R04', 'M5-R05', 'M5-R06', 'M5-R07', 'M5-R08']) assert.match(source, new RegExp(`'${id}'`));
+  for (const id of ['M5-R09', 'M5-R13', 'M5-R14', 'M5-PLAYER-COMPLETE']) {
     assert.equal(Object.hasOwn(MODULE5_PRESENTATION_CONTENT, id), false);
   }
 });

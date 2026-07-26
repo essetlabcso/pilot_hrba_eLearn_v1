@@ -282,6 +282,7 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
           prompts={content.reflections}
           values={stored.reflectionValues}
           details={stored.reflectionDetails}
+          safeInputGuidance={content.safeInputGuidance}
           onChangeValue={changeReflection}
           onChangeDetail={changeReflectionDetail}
         />

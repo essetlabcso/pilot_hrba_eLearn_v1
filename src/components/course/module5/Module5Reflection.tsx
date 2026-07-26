@@ -10,6 +10,7 @@ type Props = {
   prompts: Module5ReflectionPrompt[];
   values: Record<string, Module5PresentationReflectionValue>;
   details: Record<string, string>;
+  safeInputGuidance?: string;
   onChangeValue: (prompt: Module5ReflectionPrompt, value: Module5PresentationReflectionValue) => void;
   onChangeDetail: (prompt: Module5ReflectionPrompt, value: string) => void;
 };
@@ -60,6 +61,7 @@ export default function Module5Reflection({
   prompts,
   values,
   details,
+  safeInputGuidance,
   onChangeValue,
   onChangeDetail,
 }: Props) {
@@ -72,7 +74,7 @@ export default function Module5Reflection({
       </div>
       <aside className="m5p-safety" role="note">
         <strong>Keep the reflection safe and generalized</strong>
-        <span>Do not enter names, contact details, confidential cases, diagnoses or exact locations.</span>
+        <span>{safeInputGuidance || 'Do not enter names, contact details, confidential cases, diagnoses or exact locations.'}</span>
       </aside>
       <div className="m5p-reflection-list">
         {prompts.map((prompt) => {
