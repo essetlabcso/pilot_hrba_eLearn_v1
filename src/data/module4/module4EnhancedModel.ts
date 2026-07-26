@@ -2,6 +2,8 @@ export const MODULE4_ID = 'module_04_implementation';
 export const MODULE4_ENHANCED_SCHEMA_VERSION = 1 as const;
 export const MODULE4_ENHANCED_CONTENT_REVISION = 'module4-enhanced-2026-07-25';
 export const MODULE4_ENHANCED_MIGRATION_MARKER = 'module4-enhanced-v1';
+export const MODULE4_FINAL_SCREENS_SCHEMA_VERSION = 1 as const;
+export const MODULE4_KNOWLEDGE_CHECK_REVISION = 'm4-kc-v1' as const;
 
 export const MODULE4_CANONICAL_SCREEN_IDS = [
   'M4-S1-01',
@@ -59,6 +61,44 @@ export const MODULE4_WORKSTREAMS = [
   'health_post',
   'consultation_feedback',
 ] as const satisfies readonly Exclude<Module4Workstream, ''>[];
+
+export const MODULE4_KNOWLEDGE_QUESTION_IDS = [
+  'M4-KC-Q01',
+  'M4-KC-Q02',
+  'M4-KC-Q03',
+  'M4-KC-Q04',
+  'M4-KC-Q05',
+  'M4-KC-Q06',
+  'M4-KC-Q07',
+  'M4-KC-Q08',
+] as const;
+
+export type Module4KnowledgeQuestionId = typeof MODULE4_KNOWLEDGE_QUESTION_IDS[number];
+export type Module4KnowledgeChoiceId = 'A' | 'B' | 'C';
+
+export type Module4FinalScreensState = {
+  schemaVersion: typeof MODULE4_FINAL_SCREENS_SCHEMA_VERSION;
+  knowledgeCheck: {
+    questionRevision: typeof MODULE4_KNOWLEDGE_CHECK_REVISION;
+    mode: 'first-attempt' | 'retry' | 'results' | 'passed';
+    questionQueue: Module4KnowledgeQuestionId[];
+    activeQuestionIndex: number;
+    checkedQuestionIds: Module4KnowledgeQuestionId[];
+    answers: Partial<Record<Module4KnowledgeQuestionId, Module4KnowledgeChoiceId>>;
+    correctQuestionIds: Module4KnowledgeQuestionId[];
+    missedQuestionIds: Module4KnowledgeQuestionId[];
+    attemptsByQuestion: Partial<Record<Module4KnowledgeQuestionId, number>>;
+    score: number;
+    passed: boolean;
+    passedAt: string | null;
+  };
+  completionConfirmation: {
+    noteConfirmed: boolean;
+    reviewCommitmentConfirmed: boolean;
+    readyToCompleteConfirmed: boolean;
+    confirmedAt: string | null;
+  };
+};
 
 export type Module4Batch1State = {
   bridge: {
@@ -267,6 +307,7 @@ export type Module4EnhancedState = {
   batch1: Module4Batch1State;
   batch2: Module4Batch2State;
   batch3: Module4Batch3State;
+  finalScreens: Module4FinalScreensState;
   screens: Record<Module4CanonicalScreenId, Module4EnhancedScreenState>;
   reviewRequiredFields: Module4FieldKey[];
   completion: {
@@ -520,6 +561,32 @@ export function createInitialModule4Batch3State(): Module4Batch3State {
   };
 }
 
+export function createInitialModule4FinalScreensState(): Module4FinalScreensState {
+  return {
+    schemaVersion: MODULE4_FINAL_SCREENS_SCHEMA_VERSION,
+    knowledgeCheck: {
+      questionRevision: MODULE4_KNOWLEDGE_CHECK_REVISION,
+      mode: 'first-attempt',
+      questionQueue: [...MODULE4_KNOWLEDGE_QUESTION_IDS],
+      activeQuestionIndex: 0,
+      checkedQuestionIds: [],
+      answers: {},
+      correctQuestionIds: [],
+      missedQuestionIds: [],
+      attemptsByQuestion: {},
+      score: 0,
+      passed: false,
+      passedAt: null,
+    },
+    completionConfirmation: {
+      noteConfirmed: false,
+      reviewCommitmentConfirmed: false,
+      readyToCompleteConfirmed: false,
+      confirmedAt: null,
+    },
+  };
+}
+
 export function createInitialModule4EnhancedState(
   appliedAt: string,
   options: {
@@ -542,6 +609,7 @@ export function createInitialModule4EnhancedState(
     batch1: createInitialModule4Batch1State(),
     batch2: createInitialModule4Batch2State(),
     batch3: createInitialModule4Batch3State(),
+    finalScreens: createInitialModule4FinalScreensState(),
     screens: createInitialScreens(),
     reviewRequiredFields: [],
     completion: {
@@ -586,6 +654,47 @@ function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module
   const support: Record<string, unknown> = isRecord(batch3.support) ? batch3.support : {};
   const pathways: Record<string, unknown> = isRecord(batch3.pathways) ? batch3.pathways : {};
   const information: Record<string, unknown> = isRecord(batch3.information) ? batch3.information : {};
+  const finalDefaults = createInitialModule4FinalScreensState();
+  const finalScreens: Record<string, unknown> = isRecord(value.finalScreens) ? value.finalScreens : {};
+  const knowledgeCheck: Record<string, unknown> = isRecord(finalScreens.knowledgeCheck)
+    ? finalScreens.knowledgeCheck
+    : {};
+  const completionConfirmation: Record<string, unknown> = isRecord(finalScreens.completionConfirmation)
+    ? finalScreens.completionConfirmation
+    : {};
+  const questionRevisionCurrent =
+    knowledgeCheck.questionRevision === MODULE4_KNOWLEDGE_CHECK_REVISION;
+  const validQuestionIds = (input: unknown): Module4KnowledgeQuestionId[] =>
+    Array.isArray(input)
+      ? input.filter(
+        (item): item is Module4KnowledgeQuestionId =>
+          MODULE4_KNOWLEDGE_QUESTION_IDS.includes(item as Module4KnowledgeQuestionId),
+      )
+      : [];
+  const validAnswers = isRecord(knowledgeCheck.answers)
+    ? Object.fromEntries(
+      Object.entries(knowledgeCheck.answers).filter(([questionId, answer]) =>
+        MODULE4_KNOWLEDGE_QUESTION_IDS.includes(questionId as Module4KnowledgeQuestionId)
+          && ['A', 'B', 'C'].includes(String(answer))),
+    )
+    : {};
+  const validAttempts = isRecord(knowledgeCheck.attemptsByQuestion)
+    ? Object.fromEntries(
+      Object.entries(knowledgeCheck.attemptsByQuestion).filter(([questionId, attempts]) =>
+        MODULE4_KNOWLEDGE_QUESTION_IDS.includes(questionId as Module4KnowledgeQuestionId)
+          && typeof attempts === 'number'
+          && Number.isInteger(attempts)
+          && attempts >= 0),
+    )
+    : {};
+  const hydratedCorrectQuestionIds = validQuestionIds(knowledgeCheck.correctQuestionIds);
+  const hydratedPassed = knowledgeCheck.passed === true
+    && hydratedCorrectQuestionIds.length >= 7;
+  const hydratedMode = hydratedPassed
+    ? 'passed'
+    : ['first-attempt', 'retry', 'results'].includes(String(knowledgeCheck.mode))
+      ? knowledgeCheck.mode as 'first-attempt' | 'retry' | 'results'
+      : 'first-attempt';
   const pathwayDecisions = isRecord(pathways.decisions) ? pathways.decisions : {};
   const pathwayPracticeComplete = ['adjust', 'engage', 'protect'].every(
     (key) => typeof pathwayDecisions[key] === 'string' && pathwayDecisions[key].length > 0,
@@ -726,6 +835,47 @@ function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module
           : [],
       } as Module4Batch3State['information'],
     },
+    finalScreens: questionRevisionCurrent
+      ? {
+        schemaVersion: MODULE4_FINAL_SCREENS_SCHEMA_VERSION,
+        knowledgeCheck: {
+          ...finalDefaults.knowledgeCheck,
+          ...knowledgeCheck,
+          questionRevision: MODULE4_KNOWLEDGE_CHECK_REVISION,
+          mode: hydratedMode,
+          questionQueue: validQuestionIds(knowledgeCheck.questionQueue).length > 0
+            ? validQuestionIds(knowledgeCheck.questionQueue)
+            : [...MODULE4_KNOWLEDGE_QUESTION_IDS],
+          activeQuestionIndex: typeof knowledgeCheck.activeQuestionIndex === 'number'
+            ? Math.max(0, Math.min(
+              validQuestionIds(knowledgeCheck.questionQueue).length - 1,
+              Math.floor(knowledgeCheck.activeQuestionIndex),
+            ))
+            : 0,
+          checkedQuestionIds: validQuestionIds(knowledgeCheck.checkedQuestionIds),
+          answers: validAnswers,
+          correctQuestionIds: hydratedCorrectQuestionIds,
+          missedQuestionIds: validQuestionIds(knowledgeCheck.missedQuestionIds),
+          attemptsByQuestion: validAttempts,
+          score: hydratedCorrectQuestionIds.length,
+          passed: hydratedPassed,
+          passedAt: hydratedPassed
+            && typeof knowledgeCheck.passedAt === 'string'
+            ? knowledgeCheck.passedAt
+            : null,
+        } as Module4FinalScreensState['knowledgeCheck'],
+        completionConfirmation: {
+          ...finalDefaults.completionConfirmation,
+          ...completionConfirmation,
+          noteConfirmed: completionConfirmation.noteConfirmed === true,
+          reviewCommitmentConfirmed: completionConfirmation.reviewCommitmentConfirmed === true,
+          readyToCompleteConfirmed: completionConfirmation.readyToCompleteConfirmed === true,
+          confirmedAt: typeof completionConfirmation.confirmedAt === 'string'
+            ? completionConfirmation.confirmedAt
+            : null,
+        },
+      }
+      : finalDefaults,
   };
 }
 
@@ -782,6 +932,14 @@ export function migrateModule4EnhancedState(input: Module4MigrationInput): Modul
     : [];
   const historicalCompletionPreserved = completedModules.includes(MODULE4_ID);
   const existing = practice.module4Enhanced;
+  const storedFinalScreens = isRecord(existing) && isRecord(existing.finalScreens)
+    ? existing.finalScreens
+    : null;
+  const storedKnowledgeCheck = storedFinalScreens && isRecord(storedFinalScreens.knowledgeCheck)
+    ? storedFinalScreens.knowledgeCheck
+    : null;
+  const questionRevisionChanged = isCurrentModule4EnhancedState(existing)
+    && storedKnowledgeCheck?.questionRevision !== MODULE4_KNOWLEDGE_CHECK_REVISION;
   const enhanced = isCurrentModule4EnhancedState(existing)
     ? hydrateCurrentModule4EnhancedState(existing)
     : createInitialModule4EnhancedState(appliedAt, {
@@ -789,7 +947,24 @@ export function migrateModule4EnhancedState(input: Module4MigrationInput): Modul
       legacySnapshot: captureLegacySnapshot(practice, appliedAt),
     });
 
-  practice.module4Enhanced = enhanced;
+  practice.module4Enhanced = questionRevisionChanged && !historicalCompletionPreserved
+    ? {
+      ...enhanced,
+      screens: {
+        ...enhanced.screens,
+        'M4-S1-13': { gateSatisfied: false, completedAt: null },
+        'M4-S1-14': { gateSatisfied: false, completedAt: null },
+      },
+      completion: {
+        enhancedJourneyCompleted: false,
+        completedAt: null,
+      },
+    }
+    : enhanced;
+  if (questionRevisionChanged && !historicalCompletionPreserved) {
+    screenProgress[MODULE4_ID] = (screenProgress[MODULE4_ID] || [])
+      .filter((screenId) => screenId !== 'M4-S1-13' && screenId !== 'M4-S1-14');
+  }
 
   if (!input.resetSyntheticInternalTest) {
     return { practiceCheckState: practice, screenProgress, completedModules };

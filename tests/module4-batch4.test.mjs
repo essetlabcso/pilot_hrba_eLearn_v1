@@ -76,12 +76,12 @@ function completedUpstreamState(workstream = 'water_service') {
   ], { learnerEdited: true, sourceScreenId: 'M4-S1-11' });
 }
 
-test('Batch 4 replaces only canonical Screen 13 and leaves Screens 14-15 renderers in place', () => {
+test('Batch 4 remains on canonical Screen 13 beside the approved final-screen renderers', () => {
   const renderer = read('src/components/course/Module4Renderer.tsx');
   assert.match(renderer, /Module4EnhancedBatch4/);
   assert.match(renderer, /screenId === 'M4-S1-12'.*Module4EnhancedBatch4/);
-  assert.match(renderer, /screenId === 'M4-S1-13'.*KnowledgeCheckScreen/);
-  assert.match(renderer, /screenId === 'M4-S1-14'.*CompletionScreen/);
+  assert.match(renderer, /screenId === 'M4-S1-13'.*Module4EnhancedKnowledgeCheck/);
+  assert.match(renderer, /screenId === 'M4-S1-14'.*Module4EnhancedCompletion/);
 });
 
 test('complete Screens 5-12 state assembles every required note section', () => {
