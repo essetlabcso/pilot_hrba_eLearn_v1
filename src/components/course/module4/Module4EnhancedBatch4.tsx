@@ -176,6 +176,7 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
     ) || (savedExists ? [...EDITABLE_ESSENTIALS] : []),
   );
   const [resolvedSections, setResolvedSections] = useState<Module4NoteSection[]>([]);
+  const [stage2EditableFields, setStage2EditableFields] = useState<Module4NoteField[] | null>(null);
   const missing = missingImplementationNoteFields(draft);
   const affected = affectedImplementationNoteSections(enhanced);
   const affectedNoteFields = affected.filter(
@@ -184,7 +185,7 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
   );
   const unresolvedAffected = affected.filter((section) => !resolvedSections.includes(section));
   const needsReview = field.reviewRequired || affected.length > 0;
-  const editableFields = [...new Set<Module4NoteField>([
+  const currentEditableFields = [...new Set<Module4NoteField>([
     ...EDITABLE_ESSENTIALS,
     ...missing,
   ])];
@@ -209,8 +210,19 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
     });
     setLearnerEdited((current) => current.filter((key) => !affectedNoteFields.includes(key)));
     setResolvedSections(affected);
+    setStage2EditableFields(null);
     setConfirmed(false);
     setSavedSignature('');
+  };
+
+  const enterStage2 = () => {
+    setStage2EditableFields(currentEditableFields);
+    setStage(2);
+  };
+
+  const leaveStage2 = (nextStage: 1 | 3) => {
+    setStage2EditableFields(null);
+    setStage(nextStage);
   };
 
   const saveNote = () => {
@@ -337,7 +349,7 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
                     type="button"
                     className="m4-enhanced-button is-primary"
                     disabled={unresolvedAffected.length > 0}
-                    onClick={() => setStage(2)}
+                    onClick={enterStage2}
                   >
                     Complete essentials
                   </button>
@@ -352,7 +364,7 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
               <h2 id="m4-b4-stage2-title">Complete only missing essentials</h2>
               <p>Most decisions are already assembled. Keep these final details brief and practical.</p>
               <div className="m4-b4-edit-list">
-                {editableFields.map((key) => (
+                {(stage2EditableFields || currentEditableFields).map((key) => (
                   <label key={key} className={missing.includes(key) ? 'is-missing' : ''}>
                     <span>{MODULE4_NOTE_LABELS[key]}</span>
                     <span className="m4-b4-field-hint">{FIELD_HINTS[key]}</span>
@@ -374,8 +386,8 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
                 </p>
               )}
               <Module4EnhancedActionBar
-                secondary={<button type="button" className="m4-enhanced-button" onClick={() => setStage(1)}>Back to assembled note</button>}
-                primary={<button type="button" className="m4-enhanced-button is-primary" disabled={!complete} onClick={() => setStage(3)}>Review final note</button>}
+                secondary={<button type="button" className="m4-enhanced-button" onClick={() => leaveStage2(1)}>Back to assembled note</button>}
+                primary={<button type="button" className="m4-enhanced-button is-primary" disabled={!complete} onClick={() => leaveStage2(3)}>Review final note</button>}
               />
             </section>
           )}
@@ -404,7 +416,7 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
                 <span>I confirm that this note reflects the decisions reviewed and is safe to use for implementation follow-up.</span>
               </label>
               <Module4EnhancedActionBar
-                secondary={<button type="button" className="m4-enhanced-button" onClick={() => { setStage(2); setConfirmed(false); setSavedSignature(''); }}>Make limited edits</button>}
+                secondary={<button type="button" className="m4-enhanced-button" onClick={() => { enterStage2(); setConfirmed(false); setSavedSignature(''); }}>Make limited edits</button>}
                 primary={(
                   <button
                     type="button"
