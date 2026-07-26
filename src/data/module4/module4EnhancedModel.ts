@@ -130,6 +130,70 @@ export type Module4Batch2State = {
   };
 };
 
+export type Module4Batch3State = {
+  roles: {
+    activeStage: 1 | 2 | 3 | 4 | 5 | 6;
+    assignments: Record<string, string>;
+    assignmentsFeedback: 'idle' | 'correct' | 'corrective';
+    selectedResponse: '' | 'A' | 'B' | 'C';
+    responseFeedback: 'idle' | 'correct' | 'corrective';
+    selectedPosition: '' | 'A' | 'B' | 'C';
+    positionFeedback: 'idle' | 'correct' | 'corrective';
+    formalTriggers: string[];
+    formalFeedback: 'idle' | 'correct' | 'corrective';
+    followUpWho: string;
+    followUpWhen: string;
+    followUpPurpose: string;
+    followUpDocumented: string;
+    followUpInformed: string;
+    followUpFeedback: 'idle' | 'correct' | 'corrective';
+    confirmItems: string[];
+    explainItems: string[];
+    reviewTiming: string;
+    confirmFeedback: 'idle' | 'correct' | 'corrective';
+    planSaved: boolean;
+  };
+  support: {
+    activeStage: 1 | 2 | 3 | 4 | 5;
+    classifications: Record<string, string>;
+    classificationsFeedback: 'idle' | 'correct' | 'corrective';
+    firstSupport: '' | 'A' | 'B' | 'C';
+    firstSupportFeedback: 'idle' | 'correct' | 'corrective';
+    condition1: string;
+    condition2: string;
+    condition3: string;
+    pathwayFeedback: 'idle' | 'correct' | 'corrective';
+    reviewItems: string[];
+    reviewTiming: string;
+    updateUse: string[];
+    reviewFeedback: 'idle' | 'correct' | 'corrective';
+    planSaved: boolean;
+  };
+  pathways: {
+    activeStage: 1 | 2 | 3;
+    matches: Record<string, string>;
+    matchesFeedback: 'idle' | 'correct' | 'corrective';
+    decisions: Record<string, string>;
+    decisionsFeedback: 'idle' | 'correct' | 'corrective';
+    whyConfirmed: boolean;
+    planSaved: boolean;
+  };
+  information: {
+    activeStage: 1 | 2 | 3 | 4 | 5;
+    selectedEvidence: '' | 'A' | 'B' | 'C';
+    evidenceFeedback: 'idle' | 'correct' | 'corrective';
+    selectedMinNeeded: string[];
+    minNeededFeedback: 'idle' | 'correct' | 'corrective';
+    selectedResponse: '' | 'A' | 'B' | 'C';
+    responseFeedback: 'idle' | 'correct' | 'corrective';
+    improveFields: string[];
+    limitation: string;
+    nextSteps: string[];
+    noteFeedback: 'idle' | 'correct' | 'corrective';
+    noteSaved: boolean;
+  };
+};
+
 export type Module4ImplementationNote = {
   concern: string;
   evidence: string;
@@ -195,6 +259,7 @@ export type Module4EnhancedState = {
   fields: Module4EnhancedFields;
   batch1: Module4Batch1State;
   batch2: Module4Batch2State;
+  batch3: Module4Batch3State;
   screens: Record<Module4CanonicalScreenId, Module4EnhancedScreenState>;
   reviewRequiredFields: Module4FieldKey[];
   completion: {
@@ -379,6 +444,72 @@ export function createInitialModule4Batch2State(): Module4Batch2State {
   };
 }
 
+export function createInitialModule4Batch3State(): Module4Batch3State {
+  return {
+    roles: {
+      activeStage: 1,
+      assignments: {},
+      assignmentsFeedback: 'idle',
+      selectedResponse: '',
+      responseFeedback: 'idle',
+      selectedPosition: '',
+      positionFeedback: 'idle',
+      formalTriggers: [],
+      formalFeedback: 'idle',
+      followUpWho: '',
+      followUpWhen: '',
+      followUpPurpose: '',
+      followUpDocumented: '',
+      followUpInformed: '',
+      followUpFeedback: 'idle',
+      confirmItems: [],
+      explainItems: [],
+      reviewTiming: '',
+      confirmFeedback: 'idle',
+      planSaved: false,
+    },
+    support: {
+      activeStage: 1,
+      classifications: {},
+      classificationsFeedback: 'idle',
+      firstSupport: '',
+      firstSupportFeedback: 'idle',
+      condition1: '',
+      condition2: '',
+      condition3: '',
+      pathwayFeedback: 'idle',
+      reviewItems: [],
+      reviewTiming: '',
+      updateUse: [],
+      reviewFeedback: 'idle',
+      planSaved: false,
+    },
+    pathways: {
+      activeStage: 1,
+      matches: {},
+      matchesFeedback: 'idle',
+      decisions: {},
+      decisionsFeedback: 'idle',
+      whyConfirmed: false,
+      planSaved: false,
+    },
+    information: {
+      activeStage: 1,
+      selectedEvidence: '',
+      evidenceFeedback: 'idle',
+      selectedMinNeeded: [],
+      minNeededFeedback: 'idle',
+      selectedResponse: '',
+      responseFeedback: 'idle',
+      improveFields: [],
+      limitation: '',
+      nextSteps: [],
+      noteFeedback: 'idle',
+      noteSaved: false,
+    },
+  };
+}
+
 export function createInitialModule4EnhancedState(
   appliedAt: string,
   options: {
@@ -400,6 +531,7 @@ export function createInitialModule4EnhancedState(
     fields: createInitialFields(),
     batch1: createInitialModule4Batch1State(),
     batch2: createInitialModule4Batch2State(),
+    batch3: createInitialModule4Batch3State(),
     screens: createInitialScreens(),
     reviewRequiredFields: [],
     completion: {
@@ -437,6 +569,17 @@ function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module
   const fairAccess: Record<string, unknown> = isRecord(batch2.fairAccess) ? batch2.fairAccess : {};
   const participation: Record<string, unknown> = isRecord(batch2.participation) ? batch2.participation : {};
   const feedbackLoop: Record<string, unknown> = isRecord(batch2.feedbackLoop) ? batch2.feedbackLoop : {};
+
+  const batch3Defaults = createInitialModule4Batch3State();
+  const batch3: Record<string, unknown> = isRecord(value.batch3) ? value.batch3 : {};
+  const roles: Record<string, unknown> = isRecord(batch3.roles) ? batch3.roles : {};
+  const support: Record<string, unknown> = isRecord(batch3.support) ? batch3.support : {};
+  const pathways: Record<string, unknown> = isRecord(batch3.pathways) ? batch3.pathways : {};
+  const information: Record<string, unknown> = isRecord(batch3.information) ? batch3.information : {};
+  const pathwayDecisions = isRecord(pathways.decisions) ? pathways.decisions : {};
+  const pathwayPracticeComplete = ['adjust', 'engage', 'protect'].every(
+    (key) => typeof pathwayDecisions[key] === 'string' && pathwayDecisions[key].length > 0,
+  );
 
   return {
     ...value,
@@ -521,6 +664,57 @@ function hydrateCurrentModule4EnhancedState(value: Module4EnhancedState): Module
           ? feedbackLoop.followUpPriorities.filter((item): item is string => typeof item === 'string')
           : [],
       } as Module4Batch2State['feedbackLoop'],
+    },
+    batch3: {
+      roles: {
+        ...batch3Defaults.roles,
+        ...roles,
+        assignments: isRecord(roles.assignments) ? roles.assignments : {},
+        formalTriggers: Array.isArray(roles.formalTriggers)
+          ? roles.formalTriggers.filter((item): item is string => typeof item === 'string')
+          : [],
+        confirmItems: Array.isArray(roles.confirmItems)
+          ? roles.confirmItems.filter((item): item is string => typeof item === 'string')
+          : [],
+        explainItems: Array.isArray(roles.explainItems)
+          ? roles.explainItems.filter((item): item is string => typeof item === 'string')
+          : [],
+      } as Module4Batch3State['roles'],
+      support: {
+        ...batch3Defaults.support,
+        ...support,
+        classifications: isRecord(support.classifications) ? support.classifications : {},
+        reviewItems: Array.isArray(support.reviewItems)
+          ? support.reviewItems.filter((item): item is string => typeof item === 'string')
+          : [],
+        updateUse: Array.isArray(support.updateUse)
+          ? support.updateUse.filter((item): item is string => typeof item === 'string')
+          : [],
+      } as Module4Batch3State['support'],
+      pathways: {
+        ...batch3Defaults.pathways,
+        ...pathways,
+        matches: isRecord(pathways.matches) ? pathways.matches : {},
+        decisions: pathwayDecisions,
+        whyConfirmed: pathwayPracticeComplete && pathways.whyConfirmed === true,
+        planSaved: pathwayPracticeComplete && pathways.planSaved === true,
+        activeStage: !pathwayPracticeComplete && pathways.activeStage === 3
+          ? (pathways.matchesFeedback === 'correct' ? 2 : 1)
+          : pathways.activeStage || batch3Defaults.pathways.activeStage,
+      } as Module4Batch3State['pathways'],
+      information: {
+        ...batch3Defaults.information,
+        ...information,
+        selectedMinNeeded: Array.isArray(information.selectedMinNeeded)
+          ? information.selectedMinNeeded.filter((item): item is string => typeof item === 'string')
+          : [],
+        improveFields: Array.isArray(information.improveFields)
+          ? information.improveFields.filter((item): item is string => typeof item === 'string')
+          : [],
+        nextSteps: Array.isArray(information.nextSteps)
+          ? information.nextSteps.filter((item): item is string => typeof item === 'string')
+          : [],
+      } as Module4Batch3State['information'],
     },
   };
 }

@@ -39,6 +39,9 @@ docs/module-review/**/screenshots/
 docs/module-review/**/current-state/screenshots/
 docs/module-review/**/redesign/qa/screenshots/
 
+# Source mockups are reference-only and must never enter the runtime bundle
+public/mockups/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

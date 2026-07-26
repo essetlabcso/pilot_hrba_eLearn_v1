@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import type { ReactNode } from 'react';
 import type { LearningState } from '../../state/learningState';
 import Module4EnhancedBatch1 from './module4/Module4EnhancedBatch1';
 import Module4EnhancedBatch2 from './module4/Module4EnhancedBatch2';
+import Module4EnhancedBatch3 from './module4/Module4EnhancedBatch3';
 
 type Module4RendererProps = {
   screenId: string;
@@ -52,68 +52,7 @@ const summaryCards = [
   ['Safe use of information', 'Are feedback, photos, stories, complaints, and monitoring information handled safely?'],
 ];
 
-const roleActions = [
-  ['commitment-info', 'Explain the service commitment and provide follow-up information.', 'CSO and duty-bearer together'],
-  ['raise-concerns', 'Raise concerns and share experience safely.', 'Rights-holders'],
-  ['document-issue', 'Review its own project actions and document the issue.', 'CSO'],
-  ['respond-service', 'Respond to the public service commitment.', 'Duty-bearer'],
-  ['support-communication', 'Support communication, but not control access to support.', 'Community structure'],
-];
 
-const roleOptions = ['Rights-holders', 'CSO', 'Duty-bearer', 'Community structure', 'CSO and duty-bearer together'];
-
-const safeInfoOptions = [
-  ['A', 'Full names, photos, exact kebele, and personal complaint details.', 'Do not use'],
-  ['B', 'A general example showing the type of change, without names or identifying details.', 'Safer to use'],
-  ['C', 'A group-level summary of feedback trends and actions taken.', 'Safer to use'],
-  ['D', 'A personal story shared with clear consent, no sensitive details, and no identifying information.', 'Use with caution'],
-  ['E', 'A photo collected quickly because the donor requested it.', 'Do not use'],
-];
-
-const csoMayActions = [
-  'support rights-holders to understand and claim their rights;',
-  'facilitate dialogue between rights-holders and duty-bearers;',
-  'monitor whether commitments are followed up;',
-  'document concerns and project learning;',
-  'adjust its own activities when needed;',
-  'engage duty-bearers constructively.',
-];
-
-const csoAvoidActions = [
-  'taking over all duty-bearer responsibilities;',
-  'blaming actors publicly without checking evidence and risk;',
-  'exposing people who raise concerns;',
-  'creating confusion about who is responsible for what.',
-];
-
-const empowermentQuestions = [
-  'Do rights-holders understand the project, the criteria, and their rights?',
-  'Are they able to ask questions or raise concerns safely?',
-  'Are excluded groups receiving the support they need to participate?',
-  'Do duty-bearers understand the commitments made during the project?',
-  'Does the project strengthen the ability of both rights-holders and duty-bearers to act?',
-];
-
-const adjustmentQuestions = [
-  'What is the issue?',
-  'Who may be affected differently?',
-  'What information do we have?',
-  'What information can be collected safely?',
-  'What can the CSO change?',
-  'Which duty-bearer or actor should be engaged?',
-  'How will the change be explained?',
-  'How will the change be documented?',
-];
-
-const safeInformationQuestions = [
-  'Why do we need this information?',
-  'Is the information necessary?',
-  'Did people understand how the information will be used?',
-  'Is consent clear?',
-  'Could the information expose or harm anyone?',
-  'Can the information be reported in a general or anonymous way?',
-  'Who will have access to the information?',
-];
 
 const portfolioFields = [
   {
@@ -277,13 +216,7 @@ function completeScreen(
   setRoute(module4Routes[nextScreenId]);
 }
 
-function markOnly(screenId: string, onChangeState: Module4RendererProps['onChangeState'], practiceKey: string, payload: Record<string, unknown> = {}) {
-  onChangeState((prev) => ({
-    ...prev,
-    screenProgress: addProgress(prev, screenId),
-    practiceCheckState: updatePracticeState(prev, practiceKey, payload),
-  }));
-}
+
 
 function ModuleContextLabel({ children }: { children: string }) {
   return <p className="m4-context-label">{children}</p>;
@@ -293,67 +226,8 @@ function PrimaryButton({ children, onClick, disabled = false }: { children: stri
   return <button type="button" className="m4-primary-button" onClick={onClick} disabled={disabled}>{children}</button>;
 }
 
-function QuestionList({ title, items }: { title: string; items: string[] }) {
-  return (
-    <aside className="m4-question-list">
-      <h2>{title}</h2>
-      <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
-    </aside>
-  );
-}
 
-function RoleMatchScreen({ onChangeState }: Module4RendererProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <DecisionScreenShell screenId="M4-S1-08" nextId="M4-S1-09" title="Rights-Holders, Duty-Bearers, and the Role of CSOs" intro={['In HRBA, every person is a rights-holder. Every right also has corresponding duty-bearers.', 'The State is the primary duty-bearer. This includes public institutions and officials with responsibility to respect, protect, and fulfil rights.', 'During implementation, CSOs should support accountability, but they should not replace duty-bearers.', 'A woreda sector office agreed to follow up on a water service issue, but no action has happened. Community members ask the CSO to solve the full issue alone.']} visual="Rights-holders / CSO / Duty-bearers / Community structures" onChangeState={onChangeState} completeKey="module4RoleMatching" completedPayload={{ answers, submitted: true }} canComplete={submitted}>
-      <div className="m4-balanced-panels">
-        <QuestionList title="A CSO may:" items={csoMayActions} />
-        <QuestionList title="A CSO should avoid:" items={csoAvoidActions} />
-      </div>
-      <h2>Match each action to the most appropriate actor.</h2>
-      <div className="m4-final-form-list">
-        {roleActions.map(([id, action, correct]) => <label key={id}><span>{action}</span><select value={answers[id] || ''} onChange={(event) => setAnswers({ ...answers, [id]: event.target.value })}><option value="">Choose actor</option>{roleOptions.map((option) => <option key={option}>{option}</option>)}</select>{submitted && <small>{answers[id] === correct ? 'Useful match.' : `Suggested match: ${correct}.`}</small>}</label>)}
-      </div>
-      {submitted && <FeedbackBlock lines={['HRBA implementation requires clear roles.', 'The CSO can support communication and accountability, but it should not replace the duty-bearer.', 'HRBA accountability does not always mean confrontation. It can also mean clear roles, constructive engagement, follow-up, and support for duty-bearers to fulfil their responsibilities.']} />}
-      {!submitted && <PrimaryButton disabled={Object.keys(answers).length < roleActions.length} onClick={() => { setSubmitted(true); markOnly('M4-S1-08', onChangeState, 'module4RoleMatching', { answers }); }}>Check roles</PrimaryButton>}
-    </DecisionScreenShell>
-  );
-}
 
-function EmpowermentScreen({ onChangeState }: Module4RendererProps) {
-  const choices: Choice[] = [
-    { id: 'A', text: 'Tell people once that they can give feedback, and leave the feedback box at the project office.', feedback: 'A is incomplete. Information given once may not be enough.' },
-    { id: 'B', text: 'Explain what issues can be raised, who reviews feedback, how people will receive a response, and how privacy will be protected.', feedback: 'B is strongest. It helps rights-holders understand and use the feedback process safely.', correct: true },
-    { id: 'C', text: 'Ask local leaders to collect all concerns and report them to the CSO.', feedback: 'C may create risk. Local leaders can support communication, but they should not control who can raise concerns.' },
-  ];
-  return <ChoicePractice screenId="M4-S1-09" nextId="M4-S1-10" title="Empowerment and Capacity Development" intro={['Empowerment and capacity development are important principles of HRBA.', 'Rights-holders should be supported to know their rights, participate in decisions, ask questions, and claim their rights.', 'Duty-bearers should be supported to understand and fulfil their responsibilities.', 'Community members are told that they can give feedback. However, many do not know what issues they can raise, who will review the feedback, or whether it is safe to complain.']} visual="Rights-holders strengthened / Duty-bearers supported" prompt="Choose the strongest capacity-development action." choices={choices} keyMessage="Empowerment is not only giving information. It is helping rights-holders use information, participate, and claim their rights safely." stateKey="module4EmpowermentDecision" questionTitle="During implementation, the CSO should ask:" questionItems={empowermentQuestions} onChangeState={onChangeState} />;
-}
-
-function AdjustmentScreen({ onChangeState }: Module4RendererProps) {
-  const choices: Choice[] = [
-    { id: 'A', text: 'Continue with the current plan, but include the concern in the final report.', feedback: 'A is incomplete. Recording the concern later does not address the immediate risk.' },
-    { id: 'B', text: 'Pause the relevant part of the activity briefly, review the concern safely, explain the criteria, protect people who raised the issue, and adjust the process if it is unfair.', feedback: 'B is strongest. It checks the issue, protects people, explains the process, and allows a necessary adjustment.', correct: true },
-    { id: 'C', text: 'Ask the local committee to identify the people who complained so that the CSO can speak with them directly.', feedback: 'C is unsafe. People who raise concerns should not be exposed.' },
-  ];
-  return <ChoicePractice screenId="M4-S1-10" nextId="M4-S1-11" title="Making Necessary Adjustments During Implementation" intro={['A project plan is important. However, implementation may show that something needs to change.', 'A CSO should make necessary adjustments when evidence shows that the project is excluding people, creating risk, or not meeting HRBA principles.', 'The project is behind schedule. The team wants to continue quickly. However, feedback shows that some people do not understand the selection criteria and are afraid to ask questions.']} visual="Issue -> People affected -> Evidence -> Action -> Follow-up" prompt="Select the most appropriate adjustment." choices={choices} keyMessage="Making adjustments is part of good implementation when the change is based on evidence, protects people, and is documented safely." stateKey="module4AdjustmentDecision" questionTitle="Before making an adjustment, the CSO should ask:" questionItems={adjustmentQuestions} onChangeState={onChangeState} />;
-}
-
-function SafeInformationScreen({ onChangeState }: Module4RendererProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <DecisionScreenShell screenId="M4-S1-11" nextId="M4-S1-12" title="Safe Use of Information During Implementation" intro={['During implementation, CSOs collect information for monitoring, reporting, learning, and accountability.', 'This information may include attendance, feedback, photos, stories, complaints, case examples, and monitoring notes.', 'The CSO should collect and use information carefully.', 'A donor asks for photos and personal stories to show project results. Some people do not clearly understand how the photos and stories will be used.']} visual="Safer to use / Use with caution / Do not use" onChangeState={onChangeState} completeKey="module4SafeInformationSort" completedPayload={{ answers, submitted: true }} canComplete={submitted}>
-      <QuestionList title="The CSO should ask:" items={safeInformationQuestions} />
-      <h2>Select the information that is safer to use in a project report.</h2>
-      <div className="m4-final-form-list">
-        {safeInfoOptions.map(([id, text, correct]) => <label key={id}><span><strong>{id}.</strong> {text}</span><select value={answers[id] || ''} onChange={(event) => setAnswers({ ...answers, [id]: event.target.value })}><option value="">Choose category</option><option>Safer to use</option><option>Use with caution</option><option>Do not use</option></select>{submitted && <small>{answers[id] === correct ? 'Useful category.' : `Suggested category: ${correct}.`}</small>}</label>)}
-      </div>
-      {submitted && <FeedbackBlock lines={['B and C are generally safer.', 'D may be acceptable only if consent is clear and the story does not expose the person.', 'A and E are unsafe. Good reporting should not expose rights-holders or create risk.']} />}
-      {!submitted && <PrimaryButton disabled={Object.keys(answers).length < safeInfoOptions.length} onClick={() => { setSubmitted(true); markOnly('M4-S1-11', onChangeState, 'module4SafeInformationSort', { answers }); }}>Check sorting</PrimaryButton>}
-    </DecisionScreenShell>
-  );
-}
 
 function PortfolioScreen({ state, onChangeState }: Module4RendererProps) {
   const saved = state.practiceCheckState.module4ImplementationNote || {};
@@ -544,92 +418,9 @@ function CompletionScreen({ state, onChangeState }: Module4RendererProps) {
   );
 }
 
-function DecisionScreenShell({
-  screenId,
-  nextId,
-  title,
-  intro,
-  visual,
-  children,
-  onChangeState,
-  completeKey,
-  completedPayload,
-  canComplete,
-}: {
-  screenId: string;
-  nextId: string;
-  title: string;
-  intro: string[];
-  visual: string;
-  children: ReactNode;
-  onChangeState: Module4RendererProps['onChangeState'];
-  completeKey: string;
-  completedPayload: Record<string, unknown>;
-  canComplete: boolean;
-}) {
-  return (
-    <main className="m4-screen m4-final-screen" aria-labelledby={`${screenId}-title`}>
-      <section className="m4-final-two-col">
-        <article className="m4-final-card">
-          <ModuleContextLabel>MODULE 4</ModuleContextLabel>
-          <h1 id={`${screenId}-title`}>{title}</h1>
-          {intro.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <div className="m4-process-line">{visual}</div>
-        </article>
-        <section className="m4-final-card">
-          {children}
-          {canComplete && <PrimaryButton onClick={() => completeScreen(screenId, nextId, onChangeState, completeKey, completedPayload)}>Continue</PrimaryButton>}
-        </section>
-      </section>
-    </main>
-  );
-}
 
-function ChoicePractice({
-  screenId,
-  nextId,
-  title,
-  intro,
-  visual,
-  prompt,
-  choices,
-  keyMessage,
-  stateKey,
-  questionTitle,
-  questionItems,
-  onChangeState,
-}: {
-  screenId: string;
-  nextId: string;
-  title: string;
-  intro: string[];
-  visual: string;
-  prompt: string;
-  choices: Choice[];
-  keyMessage: string;
-  stateKey: string;
-  questionTitle?: string;
-  questionItems?: string[];
-  onChangeState: Module4RendererProps['onChangeState'];
-}) {
-  const [selected, setSelected] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <DecisionScreenShell screenId={screenId} nextId={nextId} title={title} intro={intro} visual={visual} onChangeState={onChangeState} completeKey={stateKey} completedPayload={{ selected, submitted: true }} canComplete={submitted}>
-      {questionTitle && questionItems && <QuestionList title={questionTitle} items={questionItems} />}
-      <h2>{prompt}</h2>
-      <div className="m4-choice-list" role="radiogroup" aria-label={prompt}>
-        {choices.map((choice) => <button key={choice.id} type="button" role="radio" aria-checked={selected === choice.id} className={`${selected === choice.id ? 'is-selected' : ''} ${submitted && choice.correct ? 'is-correct' : ''}`} onClick={() => !submitted && setSelected(choice.id)}><span>{choice.id}</span>{choice.text}</button>)}
-      </div>
-      {submitted && <FeedbackBlock lines={[...choices.map((choice) => choice.feedback), keyMessage]} />}
-      {!submitted && <PrimaryButton disabled={!selected} onClick={() => { setSubmitted(true); markOnly(screenId, onChangeState, stateKey, { selected }); }}>Submit answer</PrimaryButton>}
-    </DecisionScreenShell>
-  );
-}
 
-function FeedbackBlock({ lines }: { lines: string[] }) {
-  return <div className="m4-final-key" aria-live="polite">{lines.map((line) => <p key={line}>{line}</p>)}</div>;
-}
+
 
 function buildPortfolioNote(answers: Record<string, string>) {
   if (!answers.issue && !answers.group && !answers.concern && !answers.action && !answers.followUp) {
@@ -653,10 +444,9 @@ export default function Module4Renderer(props: Module4RendererProps) {
   if (['M4-S1-05', 'M4-S1-06', 'M4-S1-07'].includes(props.screenId)) {
     return <Module4EnhancedBatch2 {...props} screenId={props.screenId as 'M4-S1-05' | 'M4-S1-06' | 'M4-S1-07'} />;
   }
-  if (props.screenId === 'M4-S1-08') return <RoleMatchScreen {...props} />;
-  if (props.screenId === 'M4-S1-09') return <EmpowermentScreen {...props} />;
-  if (props.screenId === 'M4-S1-10') return <AdjustmentScreen {...props} />;
-  if (props.screenId === 'M4-S1-11') return <SafeInformationScreen {...props} />;
+  if (['M4-S1-08', 'M4-S1-09', 'M4-S1-10', 'M4-S1-11'].includes(props.screenId)) {
+    return <Module4EnhancedBatch3 {...props} screenId={props.screenId as 'M4-S1-08' | 'M4-S1-09' | 'M4-S1-10' | 'M4-S1-11'} />;
+  }
   if (props.screenId === 'M4-S1-12') return <PortfolioScreen {...props} />;
   if (props.screenId === 'M4-S1-13') return <KnowledgeCheckScreen {...props} />;
   if (props.screenId === 'M4-S1-14') return <CompletionScreen {...props} />;
