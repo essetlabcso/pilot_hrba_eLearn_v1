@@ -8,6 +8,7 @@ import {
 } from '../../../data/module4/module4EnhancedModel';
 import {
   MODULE4_NOTE_LABELS,
+  MODULE4_PRACTICE_INSIGHTS,
   affectedImplementationNoteSections,
   assembleImplementationDecisionNote,
   canContinueFromImplementationNote,
@@ -17,6 +18,7 @@ import {
   saveImplementationDecisionNote,
   type CompleteModule4ImplementationNote,
   type Module4NoteField,
+  type Module4NoteSection,
 } from '../../../data/module4/module4EnhancedBatch4Rules';
 import {
   Module4EnhancedActionBar,
@@ -69,9 +71,11 @@ function noteSignature(note: Module4ImplementationNote) {
 function SummaryCards({
   note,
   affected,
+  learnerEdited,
 }: {
   note: CompleteModule4ImplementationNote;
   affected: readonly Module4NoteField[];
+  learnerEdited: readonly Module4NoteField[];
 }) {
   const groups: Array<{ title: string; fields: Module4NoteField[] }> = [
     { title: 'Confirmed information', fields: ['concern', 'evidence', 'affectedPeople'] },
@@ -98,7 +102,19 @@ function SummaryCards({
             <dl>
               {group.fields.map((field) => (
                 <div key={field}>
-                  <dt>{MODULE4_NOTE_LABELS[field]}</dt>
+                  <dt>
+                    <span>{MODULE4_NOTE_LABELS[field]}</span>
+                    <span className={[
+                      'm4-b4-provenance',
+                      affected.includes(field) ? 'needs-review' : '',
+                    ].filter(Boolean).join(' ')}>
+                      {affected.includes(field)
+                        ? 'Needs review'
+                        : learnerEdited.includes(field)
+                          ? 'Learner edited'
+                          : 'Carried forward'}
+                    </span>
+                  </dt>
                   <dd>{note[field] || <span className="m4-b4-missing">Missing essential</span>}</dd>
                 </div>
               ))}
@@ -110,6 +126,32 @@ function SummaryCards({
   );
 }
 
+function PracticeInsights({ affected }: { affected: readonly Module4NoteSection[] }) {
+  return (
+    <section className="m4-b4-practice-insights" aria-labelledby="m4-b4-practice-title">
+      <header>
+        <p className="m4-enhanced-kicker">Practice insights</p>
+        <h3 id="m4-b4-practice-title">Lessons kept separate from your main note</h3>
+      </header>
+      <p>These examples inform practice but are not facts about your selected workstream.</p>
+      <div>
+        {MODULE4_PRACTICE_INSIGHTS.map((insight) => {
+          const needsReview = affected.includes(insight.section);
+          return (
+            <article key={insight.section} className={needsReview ? 'needs-review' : ''}>
+              <h4>{insight.label}</h4>
+              <span className={['m4-b4-provenance', needsReview ? 'needs-review' : ''].filter(Boolean).join(' ')}>
+                {needsReview ? 'Needs review' : 'Practice insight'}
+              </span>
+              <p>{insight.text}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
   const enhanced = currentEnhancedState(state);
   const field = enhanced.fields.implementationDecisionNote;
@@ -118,14 +160,30 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
   const initialNote = savedExists ? normalizeImplementationNote(field.value) : assembled;
   const [draft, setDraft] = useState<CompleteModule4ImplementationNote>(initialNote);
   const [stage, setStage] = useState<1 | 2 | 3>(
-    savedExists && !field.reviewRequired ? 3 : 1,
+    savedExists && !field.reviewRequired && Boolean(field.sectionDependencyRevisions) ? 3 : 1,
   );
-  const [confirmed, setConfirmed] = useState(savedExists && !field.reviewRequired);
+  const [confirmed, setConfirmed] = useState(
+    savedExists && !field.reviewRequired && Boolean(field.sectionDependencyRevisions),
+  );
   const [savedSignature, setSavedSignature] = useState(
-    savedExists && !field.reviewRequired ? noteSignature(field.value) : '',
+    savedExists && !field.reviewRequired && field.sectionDependencyRevisions
+      ? noteSignature(field.value)
+      : '',
   );
+  const [learnerEdited, setLearnerEdited] = useState<Module4NoteField[]>(
+    field.learnerEditedSections?.filter(
+      (key): key is Module4NoteField => (MODULE4_NOTE_LABELS as Record<string, string>)[key] !== undefined,
+    ) || (savedExists ? [...EDITABLE_ESSENTIALS] : []),
+  );
+  const [resolvedSections, setResolvedSections] = useState<Module4NoteSection[]>([]);
   const missing = missingImplementationNoteFields(draft);
-  const affected = affectedImplementationNoteSections(enhanced, field.value);
+  const affected = affectedImplementationNoteSections(enhanced);
+  const affectedNoteFields = affected.filter(
+    (section): section is Module4NoteField =>
+      (MODULE4_NOTE_LABELS as Record<string, string>)[section] !== undefined,
+  );
+  const unresolvedAffected = affected.filter((section) => !resolvedSections.includes(section));
+  const needsReview = field.reviewRequired || affected.length > 0;
   const editableFields = [...new Set<Module4NoteField>([
     ...EDITABLE_ESSENTIALS,
     ...missing,
@@ -136,17 +194,21 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
 
   const updateDraft = (key: Module4NoteField, value: string) => {
     setDraft((current) => ({ ...current, [key]: value }));
+    setLearnerEdited((current) => current.includes(key) ? current : [...current, key]);
     setConfirmed(false);
     setSavedSignature('');
   };
 
-  const restoreCarriedForward = () => {
-    setDraft((current) => ({
-      ...assembled,
-      followUpQuestion: current.followUpQuestion || assembled.followUpQuestion,
-      responsibleActor: current.responsibleActor || assembled.responsibleActor,
-      reviewPoint: current.reviewPoint || assembled.reviewPoint,
-    }));
+  const refreshAffectedSections = () => {
+    setDraft((current) => {
+      const refreshed = { ...current };
+      affectedNoteFields.forEach((key) => {
+        refreshed[key] = assembled[key];
+      });
+      return refreshed;
+    });
+    setLearnerEdited((current) => current.filter((key) => !affectedNoteFields.includes(key)));
+    setResolvedSections(affected);
     setConfirmed(false);
     setSavedSignature('');
   };
@@ -161,7 +223,10 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
         completedModules: prev.completedModules,
       });
       const current = migrated.practiceCheckState.module4Enhanced as Module4EnhancedState;
-      const updated = saveImplementationDecisionNote(current, draft);
+      const updated = saveImplementationDecisionNote(current, draft, {
+        learnerEditedSections: learnerEdited,
+        resolvedSections,
+      });
       return {
         ...prev,
         practiceCheckState: {
@@ -199,7 +264,7 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
     });
   };
 
-  const status = field.reviewRequired
+  const status = needsReview
     ? 'The saved note needs review. Continue remains blocked until you reconfirm and save it.'
     : savedCurrent
       ? 'Implementation Decision and Follow-Up Note saved. Continue is ready.'
@@ -238,14 +303,18 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          {field.reviewRequired && (
+          {needsReview && (
             <div className="m4-b4-review-alert" role="alert">
               <strong>Needs review</strong>
               <p>
-                An upstream decision changed. Your saved wording is preserved; review the marked sections and reconfirm the note.
+                An upstream decision changed. Your saved wording is preserved. Refresh every marked carried-forward section before reconfirming.
               </p>
               {affected.length > 0 && (
-                <p>Affected sections: {affected.map((key) => MODULE4_NOTE_LABELS[key]).join('; ')}.</p>
+                <p>
+                  {unresolvedAffected.length > 0
+                    ? `${unresolvedAffected.length} affected ${unresolvedAffected.length === 1 ? 'section remains' : 'sections remain'} unresolved.`
+                    : 'All affected sections have been refreshed and are ready for reconfirmation.'}
+                </p>
               )}
             </div>
           )}
@@ -255,10 +324,24 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
               <p className="m4-enhanced-kicker">Stage 1 of 3</p>
               <h2 id="m4-b4-stage1-title">Review the assembled note</h2>
               <p>These sections carry forward the decisions recorded across Screens 5–12.</p>
-              <SummaryCards note={draft} affected={affected} />
+              <SummaryCards note={draft} affected={affectedNoteFields} learnerEdited={learnerEdited} />
+              <PracticeInsights affected={affected} />
               <Module4EnhancedActionBar
-                secondary={savedExists && <button type="button" className="m4-enhanced-button" onClick={restoreCarriedForward}>Refresh carried-forward sections</button>}
-                primary={<button type="button" className="m4-enhanced-button is-primary" onClick={() => setStage(2)}>Complete essentials</button>}
+                secondary={affected.length > 0 && (
+                  <button type="button" className="m4-enhanced-button" onClick={refreshAffectedSections}>
+                    Refresh carried-forward sections
+                  </button>
+                )}
+                primary={(
+                  <button
+                    type="button"
+                    className="m4-enhanced-button is-primary"
+                    disabled={unresolvedAffected.length > 0}
+                    onClick={() => setStage(2)}
+                  >
+                    Complete essentials
+                  </button>
+                )}
               />
             </section>
           )}
@@ -306,7 +389,8 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
                   <p className="m4-enhanced-kicker">Final output</p>
                   <h3>Implementation Decision and Follow-Up Note</h3>
                 </header>
-                <SummaryCards note={draft} affected={[]} />
+                <SummaryCards note={draft} affected={[]} learnerEdited={learnerEdited} />
+                <PracticeInsights affected={[]} />
               </div>
               <label className="m4-b4-confirmation">
                 <input
@@ -325,10 +409,10 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
                   <button
                     type="button"
                     className="m4-enhanced-button is-primary"
-                    disabled={!confirmed || !complete}
+                    disabled={!confirmed || !complete || unresolvedAffected.length > 0}
                     onClick={saveNote}
                   >
-                    {field.reviewRequired ? 'Reconfirm and save note' : 'Save note'}
+                    {needsReview ? 'Reconfirm and save note' : 'Save note'}
                   </button>
                 )}
               />

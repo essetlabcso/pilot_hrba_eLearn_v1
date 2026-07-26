@@ -228,6 +228,10 @@ export type Module4FieldEnvelope<T> = {
   sourceScreenId: Module4CanonicalScreenId | 'migration';
   revision: number;
   dependencyRevisions: Partial<Record<Module4FieldKey, number>>;
+  sectionDependencyRevisions?: Partial<
+    Record<string, Partial<Record<Module4FieldKey, number>>>
+  >;
+  learnerEditedSections?: string[];
   learnerEdited: boolean;
   reviewRequired: boolean;
   updatedAt: string | null;

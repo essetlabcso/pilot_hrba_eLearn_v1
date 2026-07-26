@@ -21,6 +21,11 @@ export const MODULE4_NOTE_FIELDS = [
 
 export type Module4NoteField = typeof MODULE4_NOTE_FIELDS[number];
 export type CompleteModule4ImplementationNote = Required<Module4ImplementationNote>;
+export type Module4PracticeInsightSection =
+  | 'practiceWater'
+  | 'practiceYouth'
+  | 'practiceConsultation';
+export type Module4NoteSection = Module4NoteField | Module4PracticeInsightSection;
 
 export const MODULE4_NOTE_LABELS: Readonly<Record<Module4NoteField, string>> = Object.freeze({
   concern: 'Selected implementation concern',
@@ -43,18 +48,47 @@ const WORKSTREAM_LABELS: Readonly<Record<Exclude<Module4Workstream, ''>, string>
   consultation_feedback: 'Consultation and feedback',
 };
 
-const NOTE_DEPENDENCIES = [
-  'selectedWorkstream',
-  'evidenceClassifications',
-  'unresolvedQuestions',
-  'participationDecisions',
-  'actorResponsibilities',
-  'engagementDecisions',
-  'feedbackAccountBackActions',
-  'supportDiagnosis',
-  'selectedResponsePathway',
-  'minimumNecessaryInformation',
-] as const satisfies readonly Module4FieldKey[];
+const WORKSTREAM_PROFILES: Readonly<Record<
+  Exclude<Module4Workstream, ''>,
+  { responsibleActor: string; awraRole: string }
+>> = {
+  market: {
+    responsibleActor: 'Market committee or responsible local authority',
+    awraRole: 'Document access barriers, support inclusive participation and follow up with the responsible authority',
+  },
+  water_service: {
+    responsibleActor: 'Woreda Water Desk',
+    awraRole: 'Document service-access concerns, communicate with affected groups and support follow-up',
+  },
+  youth_livelihoods: {
+    responsibleActor: 'Youth livelihoods programme or training provider',
+    awraRole: 'Document access barriers, support inclusive participation and follow up on agreed adjustments',
+  },
+  health_post: {
+    responsibleActor: 'Health-post management or responsible public service actor',
+    awraRole: 'Document accessibility concerns, support inclusive participation and follow up with the responsible actor',
+  },
+  consultation_feedback: {
+    responsibleActor: 'Responsible CSO or local decision-making body',
+    awraRole: 'Document participation barriers, support safe feedback and follow up on agreed changes',
+  },
+};
+
+const BASE_SECTION_DEPENDENCIES: Readonly<Record<Module4NoteSection, readonly Module4FieldKey[]>> = {
+  concern: ['selectedWorkstream'],
+  evidence: ['evidenceClassifications', 'unresolvedQuestions'],
+  affectedPeople: ['participationDecisions'],
+  response: ['selectedResponsePathway', 'feedbackAccountBackActions'],
+  rolesAndInclusion: ['selectedWorkstream'],
+  participationAction: ['participationDecisions'],
+  accountBack: ['feedbackAccountBackActions'],
+  followUpQuestion: ['unresolvedQuestions'],
+  responsibleActor: ['selectedWorkstream'],
+  reviewPoint: ['feedbackAccountBackActions'],
+  practiceWater: ['actorResponsibilities', 'engagementDecisions'],
+  practiceYouth: ['supportDiagnosis'],
+  practiceConsultation: ['minimumNecessaryInformation'],
+};
 
 const PATHWAY_LABELS = {
   adjust: 'Adjust now',
@@ -115,18 +149,35 @@ export function assembleImplementationDecisionNote(
   const fields = state.fields;
   const workstream = fields.selectedWorkstream.value;
   const workstreamLabel = workstream ? WORKSTREAM_LABELS[workstream] : '';
-  const evidenceEntries = Object.entries(fields.evidenceClassifications.value);
+  const evidenceEntries = fields.evidenceClassifications.reviewRequired
+    ? []
+    : Object.entries(fields.evidenceClassifications.value);
   const confirmedEvidence = evidenceEntries
     .filter(([, value]) => value === 'selected' || value === 'confirmed')
     .map(([key]) => humanize(key.split(':').at(-1) || key));
-  const uncertainty = fields.unresolvedQuestions.value.map(humanize).filter(Boolean);
-  const participation = fields.participationDecisions.value;
-  const responsibilities = fields.actorResponsibilities.value;
-  const engagement = fields.engagementDecisions.value;
-  const accountBack = fields.feedbackAccountBackActions.value;
-  const support = fields.supportDiagnosis.value;
-  const minimumInformation = fields.minimumNecessaryInformation.value.map(humanize).filter(Boolean);
-  const pathway = fields.selectedResponsePathway.value;
+  const uncertainty = fields.unresolvedQuestions.reviewRequired
+    ? []
+    : fields.unresolvedQuestions.value.map(humanize).filter(Boolean);
+  const participation = fields.participationDecisions.reviewRequired
+    ? {}
+    : fields.participationDecisions.value;
+  const accountBack = fields.feedbackAccountBackActions.reviewRequired
+    ? {}
+    : fields.feedbackAccountBackActions.value;
+  const pathway = fields.selectedResponsePathway.reviewRequired
+    ? ''
+    : fields.selectedResponsePathway.value;
+  const profile = workstream ? WORKSTREAM_PROFILES[workstream] : undefined;
+  const waterResponsibilities = workstream === 'water_service'
+    && !fields.actorResponsibilities.reviewRequired
+    ? fields.actorResponsibilities.value
+    : undefined;
+  const responsibleActor = clean(waterResponsibilities?.responsibleActor)
+    ? humanize(waterResponsibilities?.responsibleActor || '')
+    : profile?.responsibleActor || '';
+  const awraRole = clean(waterResponsibilities?.awraRole)
+    ? humanize(waterResponsibilities?.awraRole || '')
+    : profile?.awraRole || '';
 
   const affected = meaningfulObjectValues(participation, [
     'selected',
@@ -146,20 +197,16 @@ export function assembleImplementationDecisionNote(
       : '',
     evidence: joinParts([
       confirmedEvidence.length ? `Confirmed: ${confirmedEvidence.join(', ')}.` : '',
-      minimumInformation.length ? `Use only: ${minimumInformation.join(' ')}` : '',
       uncertainty.length ? `Still to confirm: ${uncertainty.join(' ')}` : '',
     ]),
     affectedPeople: affected.length ? affected.join('; ') : '',
     response: joinParts([
       pathway ? `${PATHWAY_LABELS[pathway]}.` : '',
-      support.firstResponse ? humanize(support.firstResponse) : '',
-      support.conditionalAdjustments ? humanize(support.conditionalAdjustments) : '',
+      clean(accountBack.response) ? humanize(accountBack.response) : '',
     ]),
     rolesAndInclusion: joinParts([
-      responsibilities.awraRole ? `Awra: ${humanize(responsibilities.awraRole)}.` : '',
-      responsibilities.responsibleActor
-        ? `Other actor: ${humanize(responsibilities.responsibleActor)}.`
-        : '',
+      awraRole ? `Awra: ${awraRole}.` : '',
+      responsibleActor ? `Other actor: ${responsibleActor}.` : '',
     ]),
     participationAction: inclusion.length
       ? inclusion.join('; ')
@@ -167,17 +214,62 @@ export function assembleImplementationDecisionNote(
         ? humanize(participation.measures)
         : '',
     accountBack: accountBackParts.length ? accountBackParts.join('; ') : '',
-    followUpQuestion: uncertainty[0]
-      || (clean(engagement.followUpPurpose) ? humanize(engagement.followUpPurpose) : ''),
-    responsibleActor: clean(responsibilities.responsibleActor)
-      ? humanize(responsibilities.responsibleActor)
-      : '',
-    reviewPoint: joinParts([
-      clean(engagement.followUpWhen) ? humanize(engagement.followUpWhen) : '',
-      clean(engagement.reviewTiming) ? humanize(engagement.reviewTiming) : '',
-      clean(support.reviewCommitment) ? humanize(support.reviewCommitment) : '',
-    ]),
+    followUpQuestion: uncertainty[0] || '',
+    responsibleActor,
+    reviewPoint: clean(accountBack.followUp) ? humanize(accountBack.followUp) : '',
   };
+}
+
+export const MODULE4_PRACTICE_INSIGHTS = Object.freeze([
+  {
+    section: 'practiceWater',
+    label: 'Practice insight from the Water Service example',
+    text: 'Clarify responsibility boundaries, engage the duty-bearer constructively and agree a documented follow-up point.',
+  },
+  {
+    section: 'practiceYouth',
+    label: 'Practice insight from the Youth Livelihoods example',
+    text: 'Diagnose access and communication barriers before adding capacity support, then review whether adjustments work.',
+  },
+  {
+    section: 'practiceConsultation',
+    label: 'Practice insight from the Consultation and Feedback example',
+    text: 'Use only the minimum information needed to assign, explain and follow up; do not collect unnecessary personal details.',
+  },
+] as const satisfies ReadonlyArray<{
+  section: Module4PracticeInsightSection;
+  label: string;
+  text: string;
+}>);
+
+export function implementationNoteSectionDependencies(
+  state: Module4EnhancedState,
+): Readonly<Record<Module4NoteSection, readonly Module4FieldKey[]>> {
+  if (state.fields.selectedWorkstream.value !== 'water_service') {
+    return BASE_SECTION_DEPENDENCIES;
+  }
+  return {
+    ...BASE_SECTION_DEPENDENCIES,
+    rolesAndInclusion: ['selectedWorkstream', 'actorResponsibilities'],
+    responsibleActor: ['selectedWorkstream', 'actorResponsibilities'],
+  };
+}
+
+function hasMeaningfulSavedNote(state: Module4EnhancedState): boolean {
+  const field = state.fields.implementationDecisionNote;
+  return Boolean(field.updatedAt) && isImplementationDecisionNoteComplete(field.value);
+}
+
+function sectionRevisionSnapshot(
+  state: Module4EnhancedState,
+): Partial<Record<Module4NoteSection, Partial<Record<Module4FieldKey, number>>>> {
+  const dependencies = implementationNoteSectionDependencies(state);
+  return Object.fromEntries(
+    Object.entries(dependencies).map(([section, keys]) => [
+      section,
+      Object.fromEntries(keys.map((key) => [key, state.fields[key].revision])),
+    ]),
+  );
 }
 
 export function missingImplementationNoteFields(
@@ -195,22 +287,37 @@ export function isImplementationDecisionNoteComplete(
 
 export function affectedImplementationNoteSections(
   state: Module4EnhancedState,
-  savedNote: Module4ImplementationNote,
-): Module4NoteField[] {
-  if (!state.fields.implementationDecisionNote.reviewRequired) return [];
-  const assembled = assembleImplementationDecisionNote(state);
-  const saved = normalizeImplementationNote(savedNote);
-  const changed = MODULE4_NOTE_FIELDS.filter((key) => assembled[key] !== saved[key]);
-  return changed.length ? changed : ['concern', 'evidence', 'response', 'reviewPoint'];
+): Module4NoteSection[] {
+  const dependencies = implementationNoteSectionDependencies(state);
+  if (!hasMeaningfulSavedNote(state)) {
+    return (Object.keys(dependencies) as Module4NoteSection[]).filter((section) =>
+      dependencies[section].some((key) => state.fields[key].reviewRequired));
+  }
+  const stored = state.fields.implementationDecisionNote.sectionDependencyRevisions;
+  if (!stored) return Object.keys(dependencies) as Module4NoteSection[];
+  return (Object.keys(dependencies) as Module4NoteSection[]).filter((section) =>
+    dependencies[section].some((key) =>
+      stored[section]?.[key] !== state.fields[key].revision));
 }
+
+export type SaveImplementationNoteOptions = {
+  updatedAt?: string;
+  learnerEditedSections?: readonly Module4NoteField[];
+  resolvedSections?: readonly Module4NoteSection[];
+};
 
 export function saveImplementationDecisionNote(
   state: Module4EnhancedState,
   note: Module4ImplementationNote,
-  updatedAt = new Date().toISOString(),
+  options: string | SaveImplementationNoteOptions = {},
 ): Module4EnhancedState {
   const normalized = normalizeImplementationNote(note);
   if (!isImplementationDecisionNoteComplete(normalized)) return state;
+  const normalizedOptions = typeof options === 'string' ? { updatedAt: options } : options;
+  const affected = affectedImplementationNoteSections(state);
+  const resolved = new Set(normalizedOptions.resolvedSections || []);
+  if (affected.some((section) => !resolved.has(section))) return state;
+  const updatedAt = normalizedOptions.updatedAt || new Date().toISOString();
 
   const updated = updateModule4Field(
     state,
@@ -222,8 +329,10 @@ export function saveImplementationDecisionNote(
       updatedAt,
     },
   );
+  const sectionDependencyRevisions = sectionRevisionSnapshot(updated);
   const dependencyRevisions = Object.fromEntries(
-    NOTE_DEPENDENCIES.map((key) => [key, updated.fields[key].revision]),
+    [...new Set(Object.values(implementationNoteSectionDependencies(updated)).flat())]
+      .map((key) => [key, updated.fields[key].revision]),
   );
 
   return {
@@ -233,6 +342,8 @@ export function saveImplementationDecisionNote(
       implementationDecisionNote: {
         ...updated.fields.implementationDecisionNote,
         dependencyRevisions,
+        sectionDependencyRevisions,
+        learnerEditedSections: [...new Set(normalizedOptions.learnerEditedSections || [])],
       },
     },
   };
@@ -245,6 +356,7 @@ export function canContinueFromImplementationNote(
   const field = state.fields.implementationDecisionNote;
   return isImplementationDecisionNoteComplete(draft)
     && !field.reviewRequired
+    && affectedImplementationNoteSections(state).length === 0
     && JSON.stringify(normalizeImplementationNote(field.value))
       === JSON.stringify(normalizeImplementationNote(draft));
 }

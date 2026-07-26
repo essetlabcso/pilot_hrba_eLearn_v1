@@ -11,9 +11,11 @@ import {
 } from '../src/data/module4/module4EnhancedModel.ts';
 import {
   MODULE4_NOTE_FIELDS,
+  MODULE4_PRACTICE_INSIGHTS,
   affectedImplementationNoteSections,
   assembleImplementationDecisionNote,
   canContinueFromImplementationNote,
+  implementationNoteSectionDependencies,
   isImplementationDecisionNoteComplete,
   missingImplementationNoteFields,
   saveImplementationDecisionNote,
@@ -26,22 +28,22 @@ function read(relativePath) {
   return readFileSync(resolve(repoRoot, relativePath), 'utf8');
 }
 
-function completedUpstreamState() {
+function completedUpstreamState(workstream = 'water_service') {
   let state = createInitialModule4EnhancedState('2026-07-26T08:00:00.000Z');
-  state = updateModule4Field(state, 'selectedWorkstream', 'water_service', {
+  state = updateModule4Field(state, 'selectedWorkstream', workstream, {
     learnerEdited: true,
     sourceScreenId: 'M4-S1-04',
   });
   state = updateModule4Field(state, 'evidenceClassifications', {
-    'screen6:water_service:published_criteria': 'selected',
-    'screen6:water_service:rumour': 'not_selected',
+    [`screen6:${workstream}:published_criteria`]: 'selected',
+    [`screen6:${workstream}:rumour`]: 'not_selected',
   }, { learnerEdited: true, sourceScreenId: 'M4-S1-05' });
   state = updateModule4Field(state, 'unresolvedQuestions', [
     'Confirm why the service schedule changed.',
     'Confirm the responsible actor and review date.',
   ], { learnerEdited: true, sourceScreenId: 'M4-S1-05' });
   state = updateModule4Field(state, 'participationDecisions', {
-    perspectives: 'women_vendors|persons_with_disabilities|remote_households',
+    perspectives: 'women_caregivers|persons_with_disabilities|remote_households',
     measures: 'accessible_meeting|transport_support|plain_language_update',
     explanationChannels: 'community_meeting|notice_board',
   }, { learnerEdited: true, sourceScreenId: 'M4-S1-06' });
@@ -91,14 +93,54 @@ test('complete Screens 5-12 state assembles every required note section', () => 
   assert.match(note.concern, /Water service access/);
   assert.match(note.evidence, /Published criteria/);
   assert.match(note.evidence, /Still to confirm/);
-  assert.match(note.affectedPeople, /Women vendors/);
+  assert.match(note.affectedPeople, /Women caregivers/);
   assert.match(note.response, /Engage and agree/);
   assert.match(note.rolesAndInclusion, /Awra:/);
   assert.match(note.participationAction, /Accessible meeting/);
   assert.match(note.accountBack, /Explain the agreed action/);
   assert.match(note.followUpQuestion, /Confirm why the service schedule changed/);
   assert.match(note.responsibleActor, /Woreda Water Desk/);
-  assert.match(note.reviewPoint, /agreed update date/i);
+  assert.match(note.reviewPoint, /next review point/i);
+  assert.doesNotMatch(note.evidence, /minimum-information|personal histories/i);
+  assert.doesNotMatch(note.response, /access arrangements|barrier remains/i);
+});
+
+test('Health Post, Market and Water Service produce coherent main notes', () => {
+  const expectations = [
+    ['health_post', /Health-post accessibility/, /Health-post management/, /accessibility concerns/],
+    ['market', /Market access and layout/, /Market committee/, /access barriers/],
+    ['water_service', /Water service access/, /Woreda Water Desk/, /document the issue/],
+  ];
+  for (const [workstream, concern, actor, role] of expectations) {
+    const state = completedUpstreamState(workstream);
+    const note = assembleImplementationDecisionNote(state);
+    assert.match(note.concern, concern);
+    assert.match(note.responsibleActor, actor);
+    assert.match(note.rolesAndInclusion, role);
+    if (workstream !== 'water_service') assert.doesNotMatch(JSON.stringify(note), /Woreda Water Desk/);
+    if (workstream !== 'youth_livelihoods') assert.doesNotMatch(JSON.stringify(note), /training provider/);
+    assert.equal(isImplementationDecisionNoteComplete(note), true);
+    assert.doesNotMatch(JSON.stringify(note), /minimum-information|personal histories/i);
+  }
+});
+
+test('fixed scenarios are exposed only as brief labelled practice insights', () => {
+  assert.deepEqual(
+    MODULE4_PRACTICE_INSIGHTS.map(({ label }) => label),
+    [
+      'Practice insight from the Water Service example',
+      'Practice insight from the Youth Livelihoods example',
+      'Practice insight from the Consultation and Feedback example',
+    ],
+  );
+  assert.ok(MODULE4_PRACTICE_INSIGHTS.every(({ text }) => text.length < 180));
+  const healthNote = assembleImplementationDecisionNote(
+    updateModule4Field(completedUpstreamState(), 'selectedWorkstream', 'health_post', {
+      learnerEdited: true,
+      sourceScreenId: 'M4-S1-04',
+    }),
+  );
+  assert.doesNotMatch(JSON.stringify(healthNote), /Water Desk|training|minimum information/i);
 });
 
 test('missing upstream information is identified and can be completed without new analysis state', () => {
@@ -123,12 +165,20 @@ test('learner edits save without recording progress and survive hydration', () =
   const saved = saveImplementationDecisionNote(
     upstream,
     note,
-    '2026-07-26T08:30:00.000Z',
+    {
+      updatedAt: '2026-07-26T08:30:00.000Z',
+      learnerEditedSections: ['followUpQuestion', 'responsibleActor', 'reviewPoint'],
+    },
   );
 
   assert.equal(saved.fields.implementationDecisionNote.reviewRequired, false);
   assert.equal(saved.fields.implementationDecisionNote.learnerEdited, true);
   assert.deepEqual(saved.fields.implementationDecisionNote.value, note);
+  assert.deepEqual(saved.fields.implementationDecisionNote.learnerEditedSections, [
+    'followUpQuestion',
+    'responsibleActor',
+    'reviewPoint',
+  ]);
   assert.equal(saved.screens['M4-S1-12'].gateSatisfied, false);
   assert.equal(canContinueFromImplementationNote(saved, note), true);
 
@@ -144,7 +194,7 @@ test('learner edits save without recording progress and survive hydration', () =
   assert.equal(canContinueFromImplementationNote(hydrated, note), true);
 });
 
-test('upstream revision preserves authored text, marks affected sections, and blocks Continue', () => {
+test('minimum-information revision affects only its practice insight and preserves authored follow-up', () => {
   const upstream = completedUpstreamState();
   const note = {
     ...assembleImplementationDecisionNote(upstream),
@@ -161,10 +211,10 @@ test('upstream revision preserves authored text, marks affected sections, and bl
     'Preserve this learner-authored follow-up question.',
   );
   assert.equal(canContinueFromImplementationNote(changed, note), false);
-  assert.ok(affectedImplementationNoteSections(changed, note).includes('evidence'));
+  assert.deepEqual(affectedImplementationNoteSections(changed), ['practiceConsultation']);
 });
 
-test('reconfirmation clears review, refreshes dependency snapshot, and restores Continue', () => {
+test('stale sections cannot be reconfirmed and snapshots advance only after every affected section resolves', () => {
   const upstream = completedUpstreamState();
   const original = {
     ...assembleImplementationDecisionNote(upstream),
@@ -176,15 +226,44 @@ test('reconfirmation clears review, refreshes dependency snapshot, and restores 
     sourceScreenId: 'M4-S1-04',
   });
   assert.equal(changed.fields.implementationDecisionNote.reviewRequired, true);
+  const affected = affectedImplementationNoteSections(changed);
+  assert.deepEqual(affected, ['concern', 'rolesAndInclusion', 'responsibleActor']);
 
   const reconfirmedNote = {
     ...original,
     concern: assembleImplementationDecisionNote(changed).concern,
+    rolesAndInclusion: assembleImplementationDecisionNote(changed).rolesAndInclusion,
+    responsibleActor: assembleImplementationDecisionNote(changed).responsibleActor,
   };
+  const staleAttempt = saveImplementationDecisionNote(
+    changed,
+    reconfirmedNote,
+    {
+      updatedAt: '2026-07-26T09:00:00.000Z',
+      learnerEditedSections: ['reviewPoint'],
+    },
+  );
+  assert.equal(staleAttempt.fields.implementationDecisionNote.reviewRequired, true);
+  assert.equal(
+    staleAttempt.fields.implementationDecisionNote.sectionDependencyRevisions.concern.selectedWorkstream,
+    saved.fields.selectedWorkstream.revision,
+  );
+
+  const partiallyResolved = saveImplementationDecisionNote(
+    changed,
+    reconfirmedNote,
+    { resolvedSections: ['concern', 'rolesAndInclusion'] },
+  );
+  assert.equal(partiallyResolved.fields.implementationDecisionNote.reviewRequired, true);
+
   const reconfirmed = saveImplementationDecisionNote(
     changed,
     reconfirmedNote,
-    '2026-07-26T09:00:00.000Z',
+    {
+      updatedAt: '2026-07-26T09:00:00.000Z',
+      learnerEditedSections: ['reviewPoint'],
+      resolvedSections: affected,
+    },
   );
   assert.equal(reconfirmed.fields.implementationDecisionNote.reviewRequired, false);
   assert.equal(
@@ -193,6 +272,43 @@ test('reconfirmation clears review, refreshes dependency snapshot, and restores 
   );
   assert.equal(reconfirmed.fields.implementationDecisionNote.value.reviewPoint, original.reviewPoint);
   assert.equal(canContinueFromImplementationNote(reconfirmed, reconfirmedNote), true);
+});
+
+test('responsibility revisions affect only responsibility-related sections for the selected scenario', () => {
+  const water = completedUpstreamState();
+  const note = assembleImplementationDecisionNote(water);
+  const saved = saveImplementationDecisionNote(water, note, {
+    learnerEditedSections: ['followUpQuestion'],
+  });
+  const changed = updateModule4Field(saved, 'actorResponsibilities', {
+    responsibleActor: 'Updated Water Desk focal role',
+    awraRole: 'Preserved coordination role',
+  }, { learnerEdited: true, sourceScreenId: 'M4-S1-08' });
+  assert.deepEqual(affectedImplementationNoteSections(changed), [
+    'rolesAndInclusion',
+    'responsibleActor',
+    'practiceWater',
+  ]);
+  assert.equal(
+    changed.fields.implementationDecisionNote.value.followUpQuestion,
+    note.followUpQuestion,
+  );
+
+  const market = completedUpstreamState('market');
+  const marketSaved = saveImplementationDecisionNote(market, assembleImplementationDecisionNote(market));
+  const marketChanged = updateModule4Field(marketSaved, 'actorResponsibilities', {
+    responsibleActor: 'Changed fixed water actor',
+  }, { learnerEdited: true, sourceScreenId: 'M4-S1-08' });
+  assert.deepEqual(affectedImplementationNoteSections(marketChanged), ['practiceWater']);
+});
+
+test('section provenance mapping is explicit and unrelated edits remain valid', () => {
+  const state = completedUpstreamState();
+  const mapping = implementationNoteSectionDependencies(state);
+  assert.deepEqual(mapping.evidence, ['evidenceClassifications', 'unresolvedQuestions']);
+  assert.deepEqual(mapping.response, ['selectedResponsePathway', 'feedbackAccountBackActions']);
+  assert.deepEqual(mapping.practiceConsultation, ['minimumNecessaryInformation']);
+  assert.ok(!mapping.followUpQuestion.includes('minimumNecessaryInformation'));
 });
 
 test('progress is recorded only at the final validated Continue gate', () => {
@@ -219,6 +335,13 @@ test('progress is recorded only at the final validated Continue gate', () => {
   );
   assert.deepEqual(afterGate.screenProgress.module_04_implementation, ['M4-S1-12']);
   assert.equal(afterGate.module4Enhanced.screens['M4-S1-12'].gateSatisfied, true);
+
+  const repeatedGate = recordModule4EnhancedScreenCompletion(
+    afterGate,
+    'M4-S1-12',
+    canContinueFromImplementationNote(afterGate.module4Enhanced, note),
+  );
+  assert.deepEqual(repeatedGate.screenProgress.module_04_implementation, ['M4-S1-12']);
 });
 
 test('Screen 13 uses three semantic stages, no runtime image, and responsive scoped CSS', () => {
@@ -231,6 +354,10 @@ test('Screen 13 uses three semantic stages, no runtime image, and responsive sco
   assert.match(component, /role="alert"/);
   assert.match(component, /aria-live="polite"/);
   assert.match(component, /type="checkbox"/);
+  assert.match(component, /Carried forward/);
+  assert.match(component, /Learner edited/);
+  assert.match(component, /Practice insight/);
+  assert.match(component, /Needs review/);
   assert.doesNotMatch(component, /<img|MODULE4_ENHANCED_ASSETS/);
   assert.match(css, /\.m4-enhanced-screen--batch4/);
   assert.match(css, /@media \(max-width: 390px\)/);

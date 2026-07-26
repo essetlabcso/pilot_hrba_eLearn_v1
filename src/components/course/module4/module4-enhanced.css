@@ -1616,6 +1616,11 @@
 }
 
 .m4-b4-note-section dt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  align-items: center;
+  justify-content: space-between;
   color: var(--m4-enhanced-muted);
   font-size: 0.78rem;
   font-weight: 800;
@@ -1623,11 +1628,75 @@
   text-transform: uppercase;
 }
 
+.m4-b4-provenance {
+  display: inline-block;
+  flex: 0 0 auto;
+  padding: 0.15rem 0.4rem;
+  border: 0.0625rem solid #9babb3;
+  border-radius: 999px;
+  background: #f4f7f8;
+  color: #40545e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: none;
+}
+
+.m4-b4-provenance.needs-review {
+  border-color: #b56616;
+  background: #fff0d8;
+  color: #6f3c0d;
+}
+
 .m4-b4-note-section dd {
   margin: 0.18rem 0 0;
   overflow-wrap: anywhere;
   color: var(--m4-enhanced-ink);
   line-height: 1.5;
+}
+
+.m4-b4-practice-insights {
+  margin-block: 1rem;
+  padding: 1rem;
+  border: 0.0625rem solid var(--m4-enhanced-border);
+  border-radius: 0.75rem;
+  background: #f7faf9;
+}
+
+.m4-b4-practice-insights > header h3,
+.m4-b4-practice-insights > p {
+  margin-block: 0.2rem 0;
+}
+
+.m4-b4-practice-insights > div {
+  display: grid;
+  gap: 0.7rem;
+  margin-block-start: 0.8rem;
+}
+
+.m4-b4-practice-insights article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.7rem;
+  padding: 0.75rem;
+  border-inline-start: 0.25rem solid var(--m4-enhanced-teal);
+  background: #fff;
+}
+
+.m4-b4-practice-insights article.needs-review {
+  border-inline-start-color: #b56616;
+}
+
+.m4-b4-practice-insights h4,
+.m4-b4-practice-insights p {
+  margin: 0;
+}
+
+.m4-b4-practice-insights p {
+  grid-column: 1 / -1;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
 }
 
 .m4-b4-missing {
@@ -1733,7 +1802,8 @@
   }
 
   .m4-b4-note-section,
-  .m4-b4-final-note {
+  .m4-b4-final-note,
+  .m4-b4-practice-insights {
     padding: 0.8rem;
   }
 }
@@ -1744,6 +1814,14 @@
   }
 
   .m4-b4-review-chip {
+    justify-self: start;
+  }
+
+  .m4-b4-practice-insights article {
+    grid-template-columns: 1fr;
+  }
+
+  .m4-b4-practice-insights .m4-b4-provenance {
     justify-self: start;
   }
 
