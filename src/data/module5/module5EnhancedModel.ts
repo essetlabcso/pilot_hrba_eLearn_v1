@@ -1,3 +1,9 @@
+import {
+  MODULE5_BATCH1_PRESENTATION_SCREEN_IDS,
+  MODULE5_PRESENTATION_CONTENT_REVISION,
+  MODULE5_PRESENTATION_SCHEMA_VERSION,
+} from './module5PresentationContent.ts';
+
 export const MODULE5_ID = 'module_05_hrba_meal';
 export const MODULE5_COMPLETION_SCREEN_TITLE = 'Portfolio Review and Module Closure';
 
@@ -95,6 +101,222 @@ function isRecord(value: unknown): value is RecordValue {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
+export type Module5PresentationReflectionValue = string | string[];
+
+export type Module5PresentationScreenState = {
+  answers: Record<string, string[]>;
+  checkedIds: string[];
+  correctIds: string[];
+  reflectionValues: Record<string, Module5PresentationReflectionValue>;
+  reflectionDetails: Record<string, string>;
+  reflectionRevision: number;
+  gateSatisfied: boolean;
+  status: 'in_progress' | 'completed' | 'needs_review';
+  completedAt: string | null;
+  updatedAt: string | null;
+};
+
+export type Module5PresentationState = {
+  schemaVersion: number;
+  contentRevision: string;
+  migration: {
+    appliedVersion: number;
+    legacyWorkspacePresent: boolean;
+    historicalCompletionPreserved: boolean;
+  };
+  screens: Record<string, Module5PresentationScreenState>;
+  summary: {
+    values: Record<string, string>;
+    provenance: Record<string, { screenId: string; reflectionId: string; revision: number }>;
+    dependencyRevisions: Record<string, number>;
+    reviewRequiredFields: string[];
+    confirmed: boolean;
+  };
+  finalKnowledgeCheck: {
+    revision: string;
+    answers: Record<string, string[]>;
+    correctIds: string[];
+    retryIds: string[];
+    passed: boolean;
+    passedAt: string | null;
+  };
+  finalConfirmation: {
+    summaryReviewed: boolean;
+    peerSupportReviewed: boolean;
+    readyToComplete: boolean;
+  };
+};
+
+export function createEmptyModule5PresentationScreenState(): Module5PresentationScreenState {
+  return {
+    answers: {},
+    checkedIds: [],
+    correctIds: [],
+    reflectionValues: {},
+    reflectionDetails: {},
+    reflectionRevision: 0,
+    gateSatisfied: false,
+    status: 'in_progress',
+    completedAt: null,
+    updatedAt: null,
+  };
+}
+
+export function createEmptyModule5PresentationState(
+  legacyWorkspacePresent = false,
+  historicalCompletionPreserved = false,
+): Module5PresentationState {
+  return {
+    schemaVersion: MODULE5_PRESENTATION_SCHEMA_VERSION,
+    contentRevision: MODULE5_PRESENTATION_CONTENT_REVISION,
+    migration: {
+      appliedVersion: MODULE5_PRESENTATION_SCHEMA_VERSION,
+      legacyWorkspacePresent,
+      historicalCompletionPreserved,
+    },
+    screens: {},
+    summary: {
+      values: {},
+      provenance: {},
+      dependencyRevisions: {},
+      reviewRequiredFields: [],
+      confirmed: false,
+    },
+    finalKnowledgeCheck: {
+      revision: 'pending-content-approval',
+      answers: {},
+      correctIds: [],
+      retryIds: [],
+      passed: false,
+      passedAt: null,
+    },
+    finalConfirmation: {
+      summaryReviewed: false,
+      peerSupportReviewed: false,
+      readyToComplete: false,
+    },
+  };
+}
+
+function normalizeStringArray(value: unknown) {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+function normalizePresentationScreenState(value: unknown, invalidateGate: boolean): Module5PresentationScreenState {
+  const source = isRecord(value) ? value : {};
+  const reflectionValues = isRecord(source.reflectionValues)
+    ? Object.entries(source.reflectionValues).reduce<Record<string, Module5PresentationReflectionValue>>((result, [id, item]) => {
+      if (typeof item === 'string') result[id] = item;
+      if (Array.isArray(item) && item.every((part) => typeof part === 'string')) result[id] = item as string[];
+      return result;
+    }, {})
+    : {};
+  const answers = isRecord(source.answers)
+    ? Object.fromEntries(Object.entries(source.answers).map(([id, answer]) => [id, normalizeStringArray(answer)]))
+    : {};
+  return {
+    answers,
+    checkedIds: invalidateGate ? [] : normalizeStringArray(source.checkedIds),
+    correctIds: invalidateGate ? [] : normalizeStringArray(source.correctIds),
+    reflectionValues,
+    reflectionDetails: isRecord(source.reflectionDetails)
+      ? Object.entries(source.reflectionDetails).reduce<Record<string, string>>((result, [id, item]) => {
+        if (typeof item === 'string') result[id] = item;
+        return result;
+      }, {})
+      : {},
+    reflectionRevision: typeof source.reflectionRevision === 'number' ? source.reflectionRevision : 0,
+    gateSatisfied: invalidateGate ? false : source.gateSatisfied === true,
+    status: invalidateGate ? 'needs_review' : source.status === 'completed' ? 'completed' : source.status === 'needs_review' ? 'needs_review' : 'in_progress',
+    completedAt: invalidateGate ? null : typeof source.completedAt === 'string' ? source.completedAt : null,
+    updatedAt: typeof source.updatedAt === 'string' ? source.updatedAt : null,
+  };
+}
+
+export function ensureModule5PresentationState(
+  practiceCheckState: Record<string, unknown>,
+  completedModules: unknown,
+) {
+  const completed = Array.isArray(completedModules) && completedModules.includes(MODULE5_ID);
+  const legacyWorkspacePresent = Object.keys(practiceCheckState).some((key) =>
+    (key.startsWith('module5') && key !== 'module5Presentation') ||
+    /^m5_s(?:0[2-9]|1[0-6])$/.test(key));
+  const current = isRecord(practiceCheckState.module5Presentation)
+    ? practiceCheckState.module5Presentation
+    : null;
+  if (!current) return createEmptyModule5PresentationState(legacyWorkspacePresent, completed);
+
+  const revisionChanged = current.contentRevision !== MODULE5_PRESENTATION_CONTENT_REVISION;
+  const invalidateGate = revisionChanged && !completed;
+  const currentScreens = isRecord(current.screens) ? current.screens : {};
+  const screens = Object.fromEntries(
+    Object.entries(currentScreens).map(([screenId, screen]) => [
+      screenId,
+      normalizePresentationScreenState(screen, invalidateGate),
+    ]),
+  );
+  const base = createEmptyModule5PresentationState(legacyWorkspacePresent, completed);
+  const currentSummary = isRecord(current.summary) ? current.summary : {};
+  const summaryValues = isRecord(currentSummary.values)
+    ? Object.fromEntries(Object.entries(currentSummary.values).filter(([, item]) => typeof item === 'string'))
+    : {};
+  const summaryProvenance = isRecord(currentSummary.provenance)
+    ? currentSummary.provenance as Module5PresentationState['summary']['provenance']
+    : {};
+  const dependencyRevisions = isRecord(currentSummary.dependencyRevisions)
+    ? Object.fromEntries(Object.entries(currentSummary.dependencyRevisions).filter(([, item]) => typeof item === 'number')) as Record<string, number>
+    : {};
+
+  return {
+    ...base,
+    migration: {
+      ...base.migration,
+      ...(isRecord(current.migration) ? current.migration : {}),
+      appliedVersion: MODULE5_PRESENTATION_SCHEMA_VERSION,
+      legacyWorkspacePresent,
+      historicalCompletionPreserved: completed || (isRecord(current.migration) && current.migration.historicalCompletionPreserved === true),
+    },
+    screens,
+    summary: {
+      values: summaryValues,
+      provenance: summaryProvenance,
+      dependencyRevisions: invalidateGate ? {} : dependencyRevisions,
+      reviewRequiredFields: invalidateGate
+        ? Object.keys(summaryValues)
+        : normalizeStringArray(currentSummary.reviewRequiredFields),
+      confirmed: invalidateGate ? false : currentSummary.confirmed === true,
+    },
+    finalKnowledgeCheck: invalidateGate ? base.finalKnowledgeCheck : {
+      ...base.finalKnowledgeCheck,
+      ...(isRecord(current.finalKnowledgeCheck) ? current.finalKnowledgeCheck : {}),
+    } as Module5PresentationState['finalKnowledgeCheck'],
+    finalConfirmation: invalidateGate ? base.finalConfirmation : {
+      ...base.finalConfirmation,
+      ...(isRecord(current.finalConfirmation) ? current.finalConfirmation : {}),
+    } as Module5PresentationState['finalConfirmation'],
+  };
+}
+
+export function getModule5PresentationState(practiceCheckState: unknown) {
+  if (!isRecord(practiceCheckState) || !isRecord(practiceCheckState.module5Presentation)) return null;
+  return practiceCheckState.module5Presentation as unknown as Module5PresentationState;
+}
+
+export function migrateModule5PresentationScreenProgress(input: Module5MigrationInput) {
+  const progressMap = isRecord(input.screenProgress) ? { ...input.screenProgress } : {};
+  const completed = Array.isArray(input.completedModules) && input.completedModules.includes(MODULE5_ID);
+  if (completed) return progressMap;
+  const practice = isRecord(input.practiceCheckState) ? input.practiceCheckState : {};
+  const current = isRecord(practice.module5Presentation) ? practice.module5Presentation : null;
+  if (current?.contentRevision === MODULE5_PRESENTATION_CONTENT_REVISION) return progressMap;
+  const moduleProgress = Array.isArray(progressMap[MODULE5_ID])
+    ? progressMap[MODULE5_ID].filter((id) =>
+      typeof id === 'string' && !(MODULE5_BATCH1_PRESENTATION_SCREEN_IDS as readonly string[]).includes(canonicalizeModule5ScreenId(id)))
+    : [];
+  if (Array.isArray(progressMap[MODULE5_ID])) progressMap[MODULE5_ID] = moduleProgress;
+  return progressMap;
+}
+
 const NEW_TO_RELEASE_LEGACY: Record<string, string> = {
   m5_s02: 'module5IntroVideo',
   m5_s03: 'module5LearningObjectives',
@@ -145,7 +367,8 @@ export function migrateModule5PracticeState(input: Module5MigrationInput) {
   const completed = Array.isArray(input.completedModules) && input.completedModules.includes(MODULE5_ID);
   const hasLegacy = Object.keys(practice).some((key) => key.startsWith('module5'));
   const hasNew = Object.keys(practice).some((key) => /^m5_s(?:0[2-9]|1[0-6])$/.test(key));
-  if (!hasLegacy && !hasNew && progress.length === 0 && !completed) return practice;
+  const hasPresentationState = isRecord(practice.module5Presentation);
+  if (!hasLegacy && !hasNew && !hasPresentationState && progress.length === 0 && !completed) return practice;
 
   Object.entries(NEW_TO_RELEASE_LEGACY).forEach(([targetKey, sourceKey]) => {
     if (isRecord(practice[targetKey])) return;
@@ -166,6 +389,7 @@ export function migrateModule5PracticeState(input: Module5MigrationInput) {
       ...(completed && targetKey === 'm5_s16' ? { legacyCompletionPreserved: true } : {}),
     };
   });
+  practice.module5Presentation = ensureModule5PresentationState(practice, input.completedModules);
   return practice;
 }
 

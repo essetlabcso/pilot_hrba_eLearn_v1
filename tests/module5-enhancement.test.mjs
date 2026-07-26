@@ -501,8 +501,10 @@ test('Module 4 Batch 0 cannot change the active Module 5 renderer contract', () 
   assert.doesNotMatch(renderer, /Module4EnhancedFoundation/);
 });
 
-test('only the canonical enhanced component is reachable from Module5Renderer', () => {
+test('Module5Renderer uses the approved presentation flow for Batch 1 and retains the enhanced flow for later screens', () => {
   const renderer = readFileSync('src/components/course/Module5Renderer.tsx', 'utf8');
+  assert.match(renderer, /isModule5PresentationScreenId\(screenId\)/);
+  assert.match(renderer, /Module5PresentationScreen/);
   assert.match(renderer, /Module5EnhancedJourney/);
   assert.doesNotMatch(renderer, /Module5IntroVideoScreen|Module5CanvasScreen|coming soon/);
 });

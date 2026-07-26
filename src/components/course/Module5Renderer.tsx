@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import type { LearningState } from '../../state/learningState';
 import { canonicalizeModule5ScreenId } from '../../data/module5/module5EnhancedModel';
+import { isModule5PresentationScreenId } from '../../data/module5/module5PresentationContent';
 import Module5EnhancedJourney from './Module5EnhancedJourney';
+import Module5PresentationScreen from './module5/Module5PresentationScreen';
 
 type Module5RendererProps = {
   screenId: string;
@@ -22,6 +24,10 @@ export default function Module5Renderer(props: Module5RendererProps) {
         element.scrollLeft = 0;
       });
   }, [screenId]);
+
+  if (isModule5PresentationScreenId(screenId)) {
+    return <Module5PresentationScreen {...props} screenId={screenId} />;
+  }
 
   return <Module5EnhancedJourney {...props} screenId={screenId} />;
 }
