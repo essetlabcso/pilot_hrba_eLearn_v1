@@ -24,17 +24,18 @@ function textInput(
   value: string,
   onChange: (value: string) => void,
   label = 'Your concise response',
+  inputId = `${prompt.id}-value`,
 ) {
   const wordCount = countWords(value);
   const tooLong = Boolean(prompt.maxWords && wordCount > prompt.maxWords);
   const sensitive = containsPotentiallySensitiveModule5Text(value);
-  const helpId = `${prompt.id}-help`;
-  const errorId = `${prompt.id}-error`;
+  const helpId = `${inputId}-help`;
+  const errorId = `${inputId}-error`;
   return (
-    <label className="m5p-text-field" htmlFor={`${prompt.id}-value`}>
+    <label key={inputId} className="m5p-text-field" htmlFor={inputId}>
       <span>{label}</span>
       <textarea
-        id={`${prompt.id}-value`}
+        id={inputId}
         rows={3}
         maxLength={360}
         value={value}
@@ -142,6 +143,23 @@ export default function Module5Reflection({
                       {prompt.options?.map((item) => <option key={item} value={item}>{item}</option>)}
                     </select>
                   </label>
+                </div>
+              )}
+
+              {prompt.control === 'paired-text' && (
+                <div className="m5p-paired-text">
+                  {(prompt.pairLabels || ['First response', 'Second response']).map((label, index) =>
+                    textInput(
+                      prompt,
+                      pairValue[index] || '',
+                      (next) => {
+                        const updated = [...pairValue];
+                        updated[index] = next;
+                        onChangeValue(prompt, updated);
+                      },
+                      label,
+                      `${prompt.id}-value-${index + 1}`,
+                    ))}
                 </div>
               )}
 

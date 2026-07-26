@@ -1,6 +1,7 @@
 export const MODULE5_PRESENTATION_SCHEMA_VERSION = 1;
 export const MODULE5_BATCH1_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch1-v1';
-export const MODULE5_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch2-v1';
+export const MODULE5_BATCH2_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch2-v1';
+export const MODULE5_PRESENTATION_CONTENT_REVISION = 'm5-presentation-batch3-v1';
 
 export const MODULE5_BATCH1_PRESENTATION_SCREEN_IDS = [
   'M5-R01',
@@ -16,14 +17,22 @@ export const MODULE5_BATCH2_PRESENTATION_SCREEN_IDS = [
   'M5-R08',
 ] as const;
 
+export const MODULE5_BATCH3_PRESENTATION_SCREEN_IDS = [
+  'M5-R09',
+  'M5-R10',
+  'M5-R11',
+  'M5-R12',
+] as const;
+
 export const MODULE5_PRESENTATION_SCREEN_IDS = [
   ...MODULE5_BATCH1_PRESENTATION_SCREEN_IDS,
   ...MODULE5_BATCH2_PRESENTATION_SCREEN_IDS,
+  ...MODULE5_BATCH3_PRESENTATION_SCREEN_IDS,
 ] as const;
 
 export type Module5PresentationScreenId = typeof MODULE5_PRESENTATION_SCREEN_IDS[number];
 export type Module5KnowledgeQuestionType = 'single' | 'multiple';
-export type Module5ReflectionControl = 'short-text' | 'single-choice' | 'rating' | 'stage-pair';
+export type Module5ReflectionControl = 'short-text' | 'single-choice' | 'rating' | 'stage-pair' | 'paired-text';
 
 export type Module5KnowledgeOption = {
   id: string;
@@ -47,7 +56,9 @@ export type Module5ReflectionPrompt = {
   control: Module5ReflectionControl;
   required: boolean;
   carryForwardField?: string;
+  carryForwardFields?: [string, string];
   options?: string[];
+  pairLabels?: [string, string];
   maxWords?: number;
   detailMaxWords?: number;
 };
@@ -756,6 +767,366 @@ const content: Record<Module5PresentationScreenId, Module5PresentationContent> =
       },
     ],
   },
+  'M5-R09': {
+    screenId: 'M5-R09',
+    number: 10,
+    nextScreenId: 'M5-R10',
+    title: 'Analysis: Combine Numbers, Feedback and Stories',
+    videoId: 'EUerIXqB6xU',
+    watchUrl: 'https://youtu.be/EUerIXqB6xU',
+    embedUrl: 'https://www.youtube-nocookie.com/embed/EUerIXqB6xU',
+    accessibilitySummary: 'This eight-slide narrated deck explains how to combine numbers, feedback and stories. It distinguishes the job of each source, then uses illustrative Jiru Amba evidence to show a broad pattern, a group difference and a missing perspective. A five-step route explains thematic analysis. Later slides show how contradictions can improve an explanation, how triangulation compares agreement, addition, tension and limitations, and how participatory sensemaking can test meaning using a safe summary. The final conclusion names the represented population and evidence gap. All relationships are labelled in text, colour is redundant, and every slide includes narration, a visual description and sources.',
+    questions: [
+      {
+        id: 'M5-S10-KC01',
+        type: 'single',
+        prompt: 'A survey shows high satisfaction, while feedback describes barriers for one group. What is the strongest analysis?',
+        correctOptionIds: ['C'],
+        options: [
+          option('A', 'Report only the survey because it has more responses.', 'More responses do not make a relevant minority experience disappear.'),
+          option('B', 'Report only the feedback because stories are more meaningful.', 'Feedback adds meaning, but it should be compared with the broader pattern.'),
+          option('C', 'Check definitions and coverage, report both findings, and examine whether the sources concern different groups or moments.', 'Correct. This uses the contradiction to build a more precise explanation.'),
+          option('D', 'Average the survey and feedback into one score.', 'Unlike evidence types cannot be made comparable by an invented average.'),
+        ],
+      },
+      {
+        id: 'M5-S10-KC02',
+        type: 'single',
+        prompt: 'Which statement best describes triangulation?',
+        correctOptionIds: ['B'],
+        options: [
+          option('A', 'Three sources always prove a result.', 'The number of sources does not remove shared bias or weak quality.'),
+          option('B', 'Compare sources for agreement, addition, tension and limitations.', 'Correct. Triangulation is a structured comparison.'),
+          option('C', 'Use only evidence that agrees.', 'Excluding tension can hide important differences or quality problems.'),
+          option('D', 'Select the most vivid story as the conclusion.', 'One story may explain experience but does not automatically represent a broad pattern.'),
+        ],
+      },
+      {
+        id: 'M5-S10-KC03',
+        type: 'single',
+        prompt: 'Which is the most defensible conclusion when a group is under-represented?',
+        correctOptionIds: ['C'],
+        options: [
+          option('A', 'Everyone in Jiru Amba understood and accessed the process.', 'The claim extends beyond the represented evidence.'),
+          option('B', 'Nothing can be learned from the available evidence.', 'A useful bounded pattern may still be reported.'),
+          option('C', 'Most respondents reported understanding; accessibility for the under-represented group remains uncertain and needs further inquiry.', 'Correct. It states the pattern, population and limitation.'),
+          option('D', 'The missing group probably had the same experience as everyone else.', 'Assuming similarity conceals the evidence gap.'),
+        ],
+      },
+    ],
+    reflections: [
+      {
+        id: 'M5-S10-R01',
+        prompt: 'Which current finding contains the most important difference or contradiction?',
+        whyItMatters: 'It identifies where deeper interpretation is most valuable.',
+        responseType: 'One short finding',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'priority_interpretation_gap',
+        maxWords: 25,
+      },
+      {
+        id: 'M5-S10-R02',
+        prompt: 'Whose perspective is least visible in that finding?',
+        whyItMatters: 'It carries forward the HRBA focus on representation.',
+        responseType: 'Name one broad group or perspective',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'missing_perspective',
+        maxWords: 20,
+      },
+      {
+        id: 'M5-S10-R03',
+        prompt: 'Which analysis skill would most strengthen your interpretation?',
+        whyItMatters: 'It identifies a concise future learning need.',
+        responseType: 'Select comparison, themes, triangulation or bounded conclusions',
+        control: 'single-choice',
+        required: true,
+        carryForwardField: 'future_meal_skill',
+        options: ['Comparison', 'Themes', 'Triangulation', 'Bounded conclusions'],
+      },
+      {
+        id: 'M5-S10-R04',
+        prompt: 'What interpretation question would you discuss with peers?',
+        whyItMatters: 'It supports peer learning around difficult analytical judgement.',
+        responseType: 'One short question',
+        control: 'short-text',
+        required: false,
+        maxWords: 25,
+      },
+    ],
+  },
+  'M5-R10': {
+    screenId: 'M5-R10',
+    number: 11,
+    nextScreenId: 'M5-R11',
+    title: 'Evaluation: Understand Change, Equity and Contribution',
+    videoId: '-BvbM8imPkg',
+    watchUrl: 'https://youtu.be/-BvbM8imPkg',
+    embedUrl: 'https://www.youtube-nocookie.com/embed/-BvbM8imPkg',
+    accessibilitySummary: 'This seven-slide narrated deck distinguishes monitoring from evaluation, then traces change from activity to outcome and an equity check. Four familiar HRBA dimensions—Access, Participation, Influence and Response—show how process quality joins outcome judgement. A six-card landscape identifies Awra actions, community action, context, other actors, starting points and unintended effects. Plain-language evaluation approach examples follow. The final fictional Jiru Amba judgement states change, an equity qualification, Awra’s plausible contribution and other influences. All routes and comparisons are text-labelled, colour is redundant, and each slide includes narration, a visual description and sources.',
+    questions: [
+      {
+        id: 'M5-S11-KC01',
+        type: 'single',
+        prompt: 'Which statement is the strongest contribution claim?',
+        correctOptionIds: ['C'],
+        options: [
+          option('A', 'Awra caused all improvement in participation.', 'This ignores other influences and exceeds the evidence.'),
+          option('B', 'Participation improved, so the consultation must have worked equally for everyone.', 'A broad improvement can conceal unequal change.'),
+          option('C', 'Awra’s accessible information and schedule changes plausibly contributed to improvement, alongside community leadership and other influences.', 'Correct. It states a plausible pathway and alternative influences.'),
+          option('D', 'No conclusion is possible unless every influence is controlled.', 'Contribution can be assessed without claiming perfect causal control.'),
+        ],
+      },
+      {
+        id: 'M5-S11-KC02',
+        type: 'single',
+        prompt: 'An average outcome improved, but one group did not. What should the evaluation do?',
+        correctOptionIds: ['B'],
+        options: [
+          option('A', 'Report only the average because it is positive.', 'This hides an important equity difference.'),
+          option('B', 'Report the overall change and the group difference, then examine access, process and possible explanations.', 'Correct. This integrates outcome and equity.'),
+          option('C', 'Remove the group because its result complicates the message.', 'Excluding the group weakens both accuracy and HRBA.'),
+          option('D', 'Assume the group will catch up later.', 'Future improvement should not be assumed without evidence.'),
+        ],
+      },
+      {
+        id: 'M5-S11-KC03',
+        type: 'single',
+        prompt: 'Which approach best fits a question about how Awra’s actions interacted with other influences?',
+        correctOptionIds: ['B'],
+        options: [
+          option('A', 'Count only the number of activities.', 'Activity counts do not test how change happened.'),
+          option('B', 'Test the result pathway against multiple sources and plausible alternative influences.', 'Correct. This is a contribution-focused inquiry.'),
+          option('C', 'Select one positive story and treat it as proof.', 'One story may explain change but cannot establish the full contribution claim.'),
+          option('D', 'Ignore contextual information to keep the evaluation simple.', 'Context is necessary for a credible contribution judgement.'),
+        ],
+      },
+    ],
+    reflections: [
+      {
+        id: 'M5-S11-R01',
+        prompt: 'Which intended change is least well understood?',
+        whyItMatters: 'It identifies the strongest future evaluation question.',
+        responseType: 'One short change statement',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'priority_change_question',
+        maxWords: 25,
+      },
+      {
+        id: 'M5-S11-R02',
+        prompt: 'For which group is evidence of change or equity weakest?',
+        whyItMatters: 'It identifies the most important distribution gap.',
+        responseType: 'Name one broad group or perspective',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'missing_perspective',
+        maxWords: 20,
+      },
+      {
+        id: 'M5-S11-R03',
+        prompt: 'Which alternative influence most needs consideration?',
+        whyItMatters: 'It strengthens the credibility of a future contribution judgement.',
+        responseType: 'One short influence',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'priority_interpretation_gap',
+        maxWords: 20,
+      },
+      {
+        id: 'M5-S11-R04',
+        prompt: 'What evaluation question would you discuss with peers?',
+        whyItMatters: 'It supports peer learning about change, equity or contribution.',
+        responseType: 'One short question',
+        control: 'short-text',
+        required: false,
+        maxWords: 25,
+      },
+    ],
+  },
+  'M5-R11': {
+    screenId: 'M5-R11',
+    number: 12,
+    nextScreenId: 'M5-R12',
+    title: 'Accountability: Feedback, Response and Community Scorecards',
+    videoId: 'JI2hKTMhIkc',
+    watchUrl: 'https://youtu.be/JI2hKTMhIkc',
+    embedUrl: 'https://www.youtube-nocookie.com/embed/JI2hKTMhIkc',
+    accessibilitySummary: 'This eight-slide narrated deck presents accountability as a complete response loop. It starts with accessible information, feedback reception and acknowledgement, then moves through assigned responsibility, response or referral, account-back and closure. Four cards address information, channel choice and accessibility. A separate slide explains how to handle sensitive or urgent concerns safely. Community Scorecard logic is taught as five labelled steps: define criteria, assess, dialogue, agree follow-up and review. A fictional Jiru Amba example closes the loop. All sequences are text-labelled, colour is redundant, and every slide includes narration, a visual description and sources.',
+    safeInputGuidance: 'Keep every reflection hypothetical and generalized. Do not enter real complaints, names, contact details, sensitive case information, identifiable evidence or confidential data.',
+    questions: [
+      {
+        id: 'M5-S12-KC01',
+        type: 'single',
+        prompt: 'Which sequence represents a complete accountability mechanism?',
+        correctOptionIds: ['B'],
+        options: [
+          option('A', 'Open a suggestion box and count entries.', 'This creates an intake channel but no response or closure.'),
+          option('B', 'Inform people, receive and acknowledge feedback, assign responsibility, respond or refer, then account back and record closure.', 'Correct. This completes the response loop.'),
+          option('C', 'Collect feedback and publish only positive comments.', 'Selective publication weakens trust and does not resolve issues.'),
+          option('D', 'Wait to see whether the same complaint appears again.', 'Silence or non-repetition does not show that an issue was resolved.'),
+        ],
+      },
+      {
+        id: 'M5-S12-KC02',
+        type: 'single',
+        prompt: 'A participant raises a sensitive protection concern. What is the strongest response?',
+        correctOptionIds: ['C'],
+        options: [
+          option('A', 'Ask for every detail so the record is complete.', 'Unnecessary detail can increase harm and exposure.'),
+          option('B', 'Promise complete confidentiality and a specific outcome.', 'The receiver should not promise beyond actual capacity or confidentiality limits.'),
+          option('C', 'Listen without pressing, explain limits and next steps, record only what is necessary, and use the approved referral pathway.', 'Correct. This combines respect, minimisation and safe referral.'),
+          option('D', 'Put the concern in the general feedback summary.', 'Sensitive detail should not be exposed through general records or reporting.'),
+        ],
+      },
+      {
+        id: 'M5-S12-KC03',
+        type: 'single',
+        prompt: 'What makes a Community Scorecard accountable rather than just a rating exercise?',
+        correctOptionIds: ['C'],
+        options: [
+          option('A', 'The highest possible score.', 'A high score does not itself show dialogue or response.'),
+          option('B', 'A large number of criteria.', 'More criteria can create burden without improving accountability.'),
+          option('C', 'Community-defined criteria, explanation of different experiences, dialogue, agreed follow-up, responsibility, timing and review.', 'Correct. These elements connect assessment to response.'),
+          option('D', 'Keeping the results within the programme team.', 'Accountability requires appropriate dialogue and account-back.'),
+        ],
+      },
+    ],
+    reflections: [
+      {
+        id: 'M5-S12-R01',
+        prompt: 'Where is the current accountability loop most likely to break: inform, hear, assign, respond, refer, account-back or close?',
+        whyItMatters: 'It identifies the strongest accountability priority.',
+        responseType: 'Select one step; optional reason',
+        control: 'single-choice',
+        required: true,
+        carryForwardField: 'cycle_break_point',
+        options: ['Inform', 'Hear', 'Assign', 'Respond', 'Refer', 'Account-back', 'Close'],
+        detailMaxWords: 20,
+      },
+      {
+        id: 'M5-S12-R02',
+        prompt: 'Whose access to feedback channels is least certain?',
+        whyItMatters: 'It keeps accessibility and representation visible.',
+        responseType: 'Name one broad group or access condition',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'missing_perspective',
+        maxWords: 20,
+      },
+      {
+        id: 'M5-S12-R03',
+        prompt: 'Which part of account-back most needs strengthening: what was heard, the decision, the reason, the next step or timing?',
+        whyItMatters: 'It identifies a concise accountability communication need.',
+        responseType: 'Select one',
+        control: 'single-choice',
+        required: true,
+        carryForwardField: 'accountback_priority',
+        options: ['What was heard', 'The decision', 'The reason', 'The next step', 'Timing'],
+      },
+      {
+        id: 'M5-S12-R04',
+        prompt: 'What feedback-response question would you discuss with peers?',
+        whyItMatters: 'It supports peer exchange about difficult accountability choices.',
+        responseType: 'One short question',
+        control: 'short-text',
+        required: false,
+        maxWords: 25,
+      },
+    ],
+  },
+  'M5-R12': {
+    screenId: 'M5-R12',
+    number: 13,
+    nextScreenId: 'M5-R13',
+    title: 'Learning and Adaptation: Dashboard, Decisions and Account-Back',
+    videoId: 'OASqwEDxauo',
+    watchUrl: 'https://youtu.be/OASqwEDxauo',
+    embedUrl: 'https://www.youtube-nocookie.com/embed/OASqwEDxauo',
+    accessibilitySummary: 'This eight-slide narrated deck presents learning and adaptation through interpretation of a concise evidence view and proportionate choices. The evidence view contains a result question, key signals, safe differences, limitations and an update date. An illustrative Jiru Amba view combines a signal, a perspective and a limitation. Six labelled decision cards cover continue, adapt, consult, engage, refer, narrow and pause. Later slides show a concise decision record, honest reporting, review timing and account-back. The final five prompts collect future MEAL knowledge, skill, tool or template, peer-learning and capacity-support needs. Every relationship is text-labelled, colour is redundant, and each slide includes narration, a visual description and sources.',
+    questions: [
+      {
+        id: 'M5-S13-KC01',
+        type: 'single',
+        prompt: 'A dashboard shows a positive overall signal, a persistent barrier and a missing perspective. What is the strongest response?',
+        correctOptionIds: ['B'],
+        options: [
+          option('A', 'Continue unchanged because the overall signal is positive.', 'This ignores the barrier and evidence gap.'),
+          option('B', 'Adapt the feasible barrier, consult the missing perspective, record the limitation and set a review point.', 'Correct. The response matches the different evidence conditions.'),
+          option('C', 'Pause every activity until perfect evidence is available.', 'Uncertainty does not automatically require stopping all action.'),
+          option('D', 'Remove the limitation from the dashboard so the message is clearer.', 'Removing the limitation encourages overclaiming.'),
+        ],
+      },
+      {
+        id: 'M5-S13-KC02',
+        type: 'single',
+        prompt: 'Which is the strongest honest report?',
+        correctOptionIds: ['B'],
+        options: [
+          option('A', 'The programme succeeded for everyone.', 'This exceeds represented evidence and hides uncertainty.'),
+          option('B', 'Most represented participants reported improvement; one perspective remains under-represented, so Awra will consult further and review the decision on the stated date.', 'Correct. It states evidence, population, limitation, response and review.'),
+          option('C', 'The evidence is incomplete, so nothing can be reported.', 'A bounded finding can still be useful.'),
+          option('D', 'The dashboard decided that meeting times must change.', 'People make decisions; a dashboard organises evidence.'),
+        ],
+      },
+      {
+        id: 'M5-S13-KC03',
+        type: 'single',
+        prompt: 'Which decision record is complete?',
+        correctOptionIds: ['C'],
+        options: [
+          option('A', 'Decision: adapt.', 'The evidence, limitation, responsibility and review point are missing.'),
+          option('B', 'Evidence and decision only.', 'The reasoning is partly visible, but ownership and review are absent.'),
+          option('C', 'Evidence, limitation, choice, responsible role, review timing and account-back route.', 'Correct. This supports traceable learning and accountability.'),
+          option('D', 'A list of every available indicator.', 'A long evidence list does not replace a decision record.'),
+        ],
+      },
+    ],
+    reflections: [
+      {
+        id: 'M5-S13-R01',
+        prompt: 'What future MEAL knowledge do you most need to deepen?',
+        whyItMatters: 'It identifies the learner’s priority concept for continued development.',
+        responseType: 'One concise concept',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'future_meal_knowledge',
+        maxWords: 20,
+      },
+      {
+        id: 'M5-S13-R02',
+        prompt: 'Which MEAL skill and tool or template would help you next?',
+        whyItMatters: 'It records one practical skill and one supporting aid.',
+        responseType: 'One skill plus one tool or template',
+        control: 'paired-text',
+        required: true,
+        carryForwardFields: ['future_meal_skill', 'future_meal_tool'],
+        pairLabels: ['MEAL skill', 'Tool or template'],
+        maxWords: 20,
+      },
+      {
+        id: 'M5-S13-R03',
+        prompt: 'What question or experience should peers explore together?',
+        whyItMatters: 'It defines a focused peer-learning agenda.',
+        responseType: 'One concise question or experience',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'peer_learning_question',
+        maxWords: 25,
+      },
+      {
+        id: 'M5-S13-R04',
+        prompt: 'What capacity support—such as coaching, time, access or organisational support—would make the learning usable?',
+        whyItMatters: 'It identifies the enabling support required beyond individual effort.',
+        responseType: 'One concise support need',
+        control: 'short-text',
+        required: true,
+        carryForwardField: 'support_need',
+        maxWords: 25,
+      },
+    ],
+  },
 };
 
 export const MODULE5_PRESENTATION_CONTENT = Object.freeze(content);
@@ -779,7 +1150,10 @@ export function isModule5ReflectionValueReady(
 ) {
   if (!prompt.required) return true;
   if (Array.isArray(value)) {
-    return value.length === 2 && value.every((item) => typeof item === 'string' && item.trim());
+    return value.length === 2 && value.every((item) =>
+      typeof item === 'string' &&
+      item.trim() &&
+      (!prompt.maxWords || item.trim().split(/\s+/).length <= prompt.maxWords));
   }
   const text = typeof value === 'string' ? value.trim() : '';
   if (!text) return false;

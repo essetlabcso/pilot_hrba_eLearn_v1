@@ -52,7 +52,8 @@ function reflectionTextIsSafe(
 ) {
   const parts = Array.isArray(value) ? value : [String(value || '')];
   if ([...parts, detail].some((item) => containsPotentiallySensitiveModule5Text(item))) return false;
-  if (prompt.maxWords && typeof value === 'string' && countWords(value) > prompt.maxWords) return false;
+  const maxWords = prompt.maxWords;
+  if (maxWords && parts.some((item) => countWords(item) > maxWords)) return false;
   if (prompt.detailMaxWords && countWords(detail) > prompt.detailMaxWords) return false;
   return true;
 }
@@ -95,22 +96,34 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
       const currentScreen = nextPresentation.screens[screenId] || createEmptyModule5PresentationScreenState();
       const updatedScreen = update(currentScreen);
       let summary = nextPresentation.summary;
-      if (summaryUpdate?.prompt.carryForwardField) {
-        const field = summaryUpdate.prompt.carryForwardField;
+      if (summaryUpdate?.prompt.carryForwardField || summaryUpdate?.prompt.carryForwardFields) {
         const revision = updatedScreen.reflectionRevision;
+        const updates = summaryUpdate.prompt.carryForwardFields && Array.isArray(summaryUpdate.value)
+          ? summaryUpdate.prompt.carryForwardFields.map((field, index) => ({
+            field,
+            value: String(summaryUpdate.value[index] || '').trim(),
+          }))
+          : [{
+            field: summaryUpdate.prompt.carryForwardField as string,
+            value: serializeReflectionValue(summaryUpdate.value, summaryUpdate.detail),
+          }];
+        const values = { ...summary.values };
+        const provenance = { ...summary.provenance };
+        const reviewRequiredFields = new Set(summary.reviewRequiredFields);
+        for (const update of updates) {
+          if (summary.values[update.field]) reviewRequiredFields.add(update.field);
+          values[update.field] = update.value;
+          provenance[update.field] = {
+            screenId,
+            reflectionId: summaryUpdate.prompt.id,
+            revision,
+          };
+        }
         summary = {
           ...summary,
-          values: {
-            ...summary.values,
-            [field]: serializeReflectionValue(summaryUpdate.value, summaryUpdate.detail),
-          },
-          provenance: {
-            ...summary.provenance,
-            [field]: { screenId, reflectionId: summaryUpdate.prompt.id, revision },
-          },
-          reviewRequiredFields: summary.values[field]
-            ? [...new Set([...summary.reviewRequiredFields, field])]
-            : summary.reviewRequiredFields,
+          values,
+          provenance,
+          reviewRequiredFields: [...reviewRequiredFields],
           confirmed: false,
         };
       }
