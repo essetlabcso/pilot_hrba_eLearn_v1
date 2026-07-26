@@ -336,7 +336,7 @@ function SummaryScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
   };
 
   const keepEdit = (fieldId: Module5FinalSummaryFieldId) => {
-    setMessage('Your learner-edited wording is preserved and its source revision is current.');
+    setMessage('Your learner-edited wording is preserved and its carried-forward source is current.');
     updatePresentation(onChangeState, (current) =>
       keepEditedModule5FinalSummaryField(current, fieldId));
   };
@@ -604,7 +604,7 @@ function CompletionScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
 
         {historicalCompletion && (
           <aside className="m5f-note" role="status">
-            Your historical Module 5 completion remains preserved. You may review this revised closure without losing or duplicating completion.
+            Your historical Module 5 completion remains preserved. You may review this closure without losing or duplicating completion.
           </aside>
         )}
 

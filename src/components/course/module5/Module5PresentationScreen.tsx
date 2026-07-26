@@ -290,7 +290,7 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
         {presentationState?.migration.legacyWorkspacePresent && !presentationState.screens[screenId] && (
           <aside className="m5p-notice" role="note">
             <strong>Earlier Module 5 work preserved</strong>
-            <span>Your earlier workspace remains available as legacy evidence, but it does not answer or complete this revised presentation screen.</span>
+            <span>Your earlier saved work remains preserved, but it does not answer or complete this presentation screen.</span>
           </aside>
         )}
 
