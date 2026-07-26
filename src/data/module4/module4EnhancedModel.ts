@@ -197,10 +197,13 @@ export type Module4Batch3State = {
 export type Module4ImplementationNote = {
   concern: string;
   evidence: string;
+  affectedPeople?: string;
   response: string;
   rolesAndInclusion: string;
+  participationAction?: string;
   accountBack: string;
   followUpQuestion: string;
+  responsibleActor?: string;
   reviewPoint: string;
 };
 
@@ -271,10 +274,13 @@ export type Module4EnhancedState = {
 const EMPTY_IMPLEMENTATION_NOTE: Module4ImplementationNote = {
   concern: '',
   evidence: '',
+  affectedPeople: '',
   response: '',
   rolesAndInclusion: '',
+  participationAction: '',
   accountBack: '',
   followUpQuestion: '',
+  responsibleActor: '',
   reviewPoint: '',
 };
 

@@ -3,6 +3,7 @@ import type { LearningState } from '../../state/learningState';
 import Module4EnhancedBatch1 from './module4/Module4EnhancedBatch1';
 import Module4EnhancedBatch2 from './module4/Module4EnhancedBatch2';
 import Module4EnhancedBatch3 from './module4/Module4EnhancedBatch3';
+import Module4EnhancedBatch4 from './module4/Module4EnhancedBatch4';
 
 type Module4RendererProps = {
   screenId: string;
@@ -53,71 +54,6 @@ const summaryCards = [
 ];
 
 
-
-const portfolioFields = [
-  {
-    id: 'issue',
-    prompt: 'What issue needs attention?',
-    options: [
-      'Some people may not be benefiting equally.',
-      'Selection criteria may not be clear.',
-      'Rights-holders are present but not influencing decisions.',
-      'Feedback is collected but not answered.',
-      'A duty-bearer commitment is not followed up.',
-      'Photos, stories, or complaints may not be handled safely.',
-      'Another safe issue.',
-    ],
-  },
-  {
-    id: 'group',
-    prompt: 'Who may be affected differently?',
-    options: [
-      'Women or girls',
-      'Youth',
-      'Persons with disabilities',
-      'Low-income households',
-      'Informal workers',
-      'People from remote kebeles',
-      'Older persons',
-      'People with less access to information',
-      'Another safe group.',
-    ],
-  },
-  {
-    id: 'concern',
-    prompt: 'What may be the main concern?',
-    options: [
-      'Information is not reaching everyone.',
-      'Criteria or decisions are unclear.',
-      'Local power may be influencing access.',
-      'Support is not useful for some groups.',
-      'Feedback is not receiving a response.',
-      'The duty-bearer role is unclear.',
-      'Privacy or safety is not protected.',
-    ],
-  },
-  {
-    id: 'action',
-    prompt: 'What action should the CSO take?',
-    options: [
-      'Review the evidence safely and explain criteria or decisions clearly.',
-      'Consult affected groups in a safe way and adjust the activity or support process.',
-      'Engage the responsible duty-bearer constructively and document the change.',
-      'Strengthen the feedback and response process and protect data, photos, stories, or complaints.',
-    ],
-  },
-  {
-    id: 'followUp',
-    prompt: 'How will the CSO document and follow up?',
-    options: [
-      'Record what changed and why, without names.',
-      'Share a safe response with rights-holders.',
-      'Follow up with the responsible actor.',
-      'Review the issue again in the next monitoring visit.',
-      'Save the lesson for Module 5.',
-    ],
-  },
-] as const;
 
 const knowledgeQuestions: Question[] = [
   {
@@ -229,105 +165,6 @@ function PrimaryButton({ children, onClick, disabled = false }: { children: stri
 
 
 
-function PortfolioScreen({ state, onChangeState }: Module4RendererProps) {
-  const saved = state.practiceCheckState.module4ImplementationNote || {};
-  const initialSignature = JSON.stringify({
-    issue: saved.issue || '',
-    group: saved.group || '',
-    concern: saved.concern || '',
-    action: saved.action || '',
-    followUp: saved.followUp || '',
-  });
-  const [answers, setAnswers] = useState<Record<string, string>>(() => ({
-    issue: String(saved.issue || ''),
-    group: String(saved.group || ''),
-    concern: String(saved.concern || ''),
-    action: String(saved.action || ''),
-    followUp: String(saved.followUp || ''),
-  }));
-  const [activeStep, setActiveStep] = useState(0);
-  const [savedSignature, setSavedSignature] = useState(String(saved.status || '') === 'saved' ? initialSignature : '');
-  const allDone = portfolioFields.every((field) => answers[field.id]);
-  const note = buildPortfolioNote(answers);
-  const activeField = portfolioFields[activeStep];
-  const currentSignature = JSON.stringify({
-    issue: answers.issue || '',
-    group: answers.group || '',
-    concern: answers.concern || '',
-    action: answers.action || '',
-    followUp: answers.followUp || '',
-  });
-  const savedCurrentNote = allDone && savedSignature === currentSignature && state.practiceCheckState.module4ImplementationNote?.status === 'saved';
-  const updateAnswer = (fieldId: string, value: string) => {
-    setAnswers({ ...answers, [fieldId]: value });
-    setSavedSignature('');
-  };
-  const save = () => {
-    const signatureToSave = currentSignature;
-    onChangeState((prev) => ({
-      ...prev,
-      screenProgress: addProgress(prev, 'M4-S1-12'),
-      practiceCheckState: updatePracticeState(prev, 'module4ImplementationNote', {
-        ...answers,
-        note,
-        status: 'saved',
-        savedAt: new Date().toISOString(),
-      }),
-    }));
-    setSavedSignature(signatureToSave);
-  };
-  return (
-    <main className="m4-screen m4-final-screen" aria-labelledby="m4-s12-title">
-      <section className="m4-final-two-col">
-        <article className="m4-final-card">
-          <ModuleContextLabel>MODULE 4</ModuleContextLabel>
-          <h1 id="m4-s12-title">Activity: Preparing an Implementation Note</h1>
-          <p>In this activity, you will prepare a short implementation note for your portfolio.</p>
-          <p>The note should be general and safe. Do not include real names, phone numbers, exact sensitive locations, complaint details, survivor stories, children’s details, officials’ names, or unsupported accusations.</p>
-          <div className="m4-step-tabs" role="tablist" aria-label="Implementation note steps">
-            {portfolioFields.map((field, index) => (
-              <button
-                key={field.id}
-                type="button"
-                role="tab"
-                aria-selected={activeStep === index}
-                className={`${activeStep === index ? 'is-active' : ''} ${answers[field.id] ? 'is-complete' : ''}`}
-                onClick={() => setActiveStep(index)}
-              >
-                Step {index + 1}
-              </button>
-            ))}
-          </div>
-          <div className="m4-final-form-list">
-            <label>
-              <span>Step {activeStep + 1} - {activeField.prompt}</span>
-              <select value={answers[activeField.id] || ''} onChange={(event) => updateAnswer(activeField.id, event.target.value)}>
-                <option value="">Choose one</option>
-                {activeField.options.map((option) => <option key={option}>{option}</option>)}
-              </select>
-            </label>
-          </div>
-          <div className="m4-final-actions m4-final-actions--inline">
-            <button type="button" className="m4-portfolio-secondary" disabled={activeStep === 0} onClick={() => setActiveStep(Math.max(0, activeStep - 1))}>Previous step</button>
-            <button type="button" className="m4-portfolio-secondary" disabled={activeStep === portfolioFields.length - 1 || !answers[activeField.id]} onClick={() => setActiveStep(Math.min(portfolioFields.length - 1, activeStep + 1))}>Next step</button>
-          </div>
-        </article>
-        <aside className="m4-final-card m4-note-card">
-          <p className="m4-card-kicker">My Implementation Note</p>
-          <h2>Generated note</h2>
-          <p>{note}</p>
-          <div className="m4-final-actions">
-            <button type="button" className="m4-portfolio-secondary" onClick={() => { setAnswers({ issue: '', group: '', concern: '', action: '', followUp: '' }); setActiveStep(0); setSavedSignature(''); }}>Revise my note</button>
-            <PrimaryButton disabled={!allDone} onClick={save}>Save to My Portfolio</PrimaryButton>
-            <p className="m4-save-status" aria-live="polite">{savedCurrentNote ? 'Saved to My Portfolio.' : allDone ? 'Save your current note before continuing.' : 'Complete all five steps to save your note.'}</p>
-            <PrimaryButton disabled={!savedCurrentNote} onClick={() => completeScreen('M4-S1-12', 'M4-S1-13', onChangeState, 'module4ImplementationNote', { ...answers, note })}>Continue</PrimaryButton>
-          </div>
-        </aside>
-      </section>
-    </main>
-  );
-}
-
 function KnowledgeCheckScreen({ onChangeState }: Module4RendererProps) {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -422,21 +259,6 @@ function CompletionScreen({ state, onChangeState }: Module4RendererProps) {
 
 
 
-function buildPortfolioNote(answers: Record<string, string>) {
-  if (!answers.issue && !answers.group && !answers.concern && !answers.action && !answers.followUp) {
-    return 'Your safe implementation note will appear here as you make choices.';
-  }
-  return `The CSO noticed that ${sentenceEnd(lowerFirst(answers.issue || 'an implementation issue may need attention'))} This may affect ${sentenceEnd(lowerFirst(answers.group || 'a rights-holder group'))} The main concern may be that ${sentenceEnd(lowerFirst(answers.concern || 'an HRBA principle needs to be checked'))} The CSO should ${sentenceEnd(lowerFirst(answers.action || 'review the issue safely'))} The CSO will ${sentenceEnd(lowerFirst(answers.followUp || 'document and follow up safely'))}`;
-}
-
-function lowerFirst(value: string) {
-  return value.charAt(0).toLowerCase() + value.slice(1);
-}
-
-function sentenceEnd(value: string) {
-  return /[.!?]$/.test(value.trim()) ? value.trim() : `${value.trim()}.`;
-}
-
 export default function Module4Renderer(props: Module4RendererProps) {
   if (['M4-S1-01', 'M4-S1-02', 'M4-S1-03', 'M4-S1-04'].includes(props.screenId)) {
     return <Module4EnhancedBatch1 {...props} screenId={props.screenId as 'M4-S1-01' | 'M4-S1-02' | 'M4-S1-03' | 'M4-S1-04'} />;
@@ -447,7 +269,7 @@ export default function Module4Renderer(props: Module4RendererProps) {
   if (['M4-S1-08', 'M4-S1-09', 'M4-S1-10', 'M4-S1-11'].includes(props.screenId)) {
     return <Module4EnhancedBatch3 {...props} screenId={props.screenId as 'M4-S1-08' | 'M4-S1-09' | 'M4-S1-10' | 'M4-S1-11'} />;
   }
-  if (props.screenId === 'M4-S1-12') return <PortfolioScreen {...props} />;
+  if (props.screenId === 'M4-S1-12') return <Module4EnhancedBatch4 {...props} />;
   if (props.screenId === 'M4-S1-13') return <KnowledgeCheckScreen {...props} />;
   if (props.screenId === 'M4-S1-14') return <CompletionScreen {...props} />;
 

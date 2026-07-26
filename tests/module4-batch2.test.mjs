@@ -23,7 +23,7 @@ test('Batch 2 owns only the canonical Screen 6-8 renderer slots', () => {
 
   assert.match(renderer, /Module4EnhancedBatch2/);
   assert.match(renderer, /\['M4-S1-05', 'M4-S1-06', 'M4-S1-07'\]/);
-  assert.match(renderer, /M4-S1-12'\) return <PortfolioScreen/);
+  assert.match(renderer, /M4-S1-12'\) return <Module4EnhancedBatch4/);
   for (const id of ['M4-S1-05', 'M4-S1-06', 'M4-S1-07']) {
     assert.match(batch2, new RegExp(id));
   }
