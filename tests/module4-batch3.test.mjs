@@ -20,6 +20,7 @@ import {
   isScreen12NoteCorrect,
   isScreen9FollowUpComplete,
   isScreen9RoleMappingCorrect,
+  shouldRestartBatch3Review,
 } from '../src/data/module4/module4EnhancedBatch3Rules.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -244,6 +245,212 @@ test('upstream changes require review and reconfirmation before readiness', () =
   assert.equal(canCompleteBatch3Screen(true, reconfirmed.fields.supportDiagnosis.reviewRequired), true);
 });
 
+test('Screen 9 review preserves the plan and reconfirms both governed fields', () => {
+  let state = createInitialModule4EnhancedState('2026-07-25T12:00:00.000Z');
+  state = updateModule4Field(state, 'selectedWorkstream', 'water_service', {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-04',
+  });
+  const responsibilities = {
+    responsibleActor: 'Woreda Water Desk',
+    awraRole: 'Learner-authored coordination and follow-up wording',
+  };
+  const decisions = {
+    position: 'Constructive rights-based engagement',
+    accountBack: 'Learner-authored community update',
+  };
+  state = updateModule4Field(state, 'actorResponsibilities', responsibilities, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-08',
+  });
+  state = updateModule4Field(state, 'engagementDecisions', decisions, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-08',
+  });
+  state.batch3.roles.assignments = { info_share: 'coordinate' };
+  state.batch3.roles.planSaved = true;
+
+  const changed = updateModule4Field(state, 'selectedWorkstream', 'health_post', {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-04',
+  });
+  const upstreamRevision = changed.fields.selectedWorkstream.revision;
+  assert.equal(changed.fields.actorResponsibilities.reviewRequired, true);
+  assert.equal(changed.fields.engagementDecisions.reviewRequired, true);
+  assert.equal(canCompleteBatch3Screen(changed.batch3.roles.planSaved, true), false);
+  assert.equal(shouldRestartBatch3Review(true, changed.batch3.roles.planSaved), true);
+  assert.deepEqual(changed.fields.actorResponsibilities.value, responsibilities);
+  assert.deepEqual(changed.fields.engagementDecisions.value, decisions);
+  assert.deepEqual(changed.batch3.roles.assignments, { info_share: 'coordinate' });
+
+  const progressBefore = recordModule4EnhancedScreenCompletion(
+    { screenProgress: { module_04_implementation: [] }, module4Enhanced: changed },
+    'M4-S1-08',
+    false,
+  );
+  assert.deepEqual(progressBefore.screenProgress.module_04_implementation, []);
+
+  changed.batch3.roles.planSaved = false;
+  assert.equal(shouldRestartBatch3Review(true, changed.batch3.roles.planSaved), false);
+  let reconfirmed = updateModule4Field(changed, 'actorResponsibilities', responsibilities, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-08',
+  });
+  reconfirmed = updateModule4Field(reconfirmed, 'engagementDecisions', decisions, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-08',
+  });
+  reconfirmed.batch3.roles.planSaved = true;
+
+  assert.equal(reconfirmed.fields.actorResponsibilities.reviewRequired, false);
+  assert.equal(reconfirmed.fields.engagementDecisions.reviewRequired, false);
+  assert.equal(
+    reconfirmed.fields.actorResponsibilities.dependencyRevisions.selectedWorkstream,
+    upstreamRevision,
+  );
+  assert.equal(
+    reconfirmed.fields.engagementDecisions.dependencyRevisions.selectedWorkstream,
+    upstreamRevision,
+  );
+  assert.deepEqual(reconfirmed.fields.actorResponsibilities.value, responsibilities);
+  assert.deepEqual(reconfirmed.fields.engagementDecisions.value, decisions);
+  assert.equal(canCompleteBatch3Screen(reconfirmed.batch3.roles.planSaved, false), true);
+
+  const hydrated = migrateModule4EnhancedState({
+    practiceCheckState: { module4Enhanced: JSON.parse(JSON.stringify(reconfirmed)) },
+    screenProgress: progressBefore.screenProgress,
+    completedModules: [],
+  }).practiceCheckState.module4Enhanced;
+  assert.equal(hydrated.fields.actorResponsibilities.reviewRequired, false);
+  assert.equal(hydrated.fields.engagementDecisions.reviewRequired, false);
+  assert.equal(hydrated.batch3.roles.planSaved, true);
+});
+
+test('Screen 10 review preserves support decisions and restores readiness', () => {
+  let state = createInitialModule4EnhancedState('2026-07-25T12:00:00.000Z');
+  state = updateModule4Field(state, 'selectedWorkstream', 'youth_livelihoods', {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-04',
+  });
+  const diagnosis = {
+    firstResponse: 'Adjust timing',
+    reviewCommitment: 'Learner-authored review commitment',
+  };
+  state = updateModule4Field(state, 'supportDiagnosis', diagnosis, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-09',
+  });
+  state.batch3.support.classifications = { sig1: 'access_scheduling' };
+  state.batch3.support.planSaved = true;
+
+  const changed = updateModule4Field(state, 'selectedWorkstream', 'market', {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-04',
+  });
+  const upstreamRevision = changed.fields.selectedWorkstream.revision;
+  assert.equal(changed.fields.supportDiagnosis.reviewRequired, true);
+  assert.equal(canCompleteBatch3Screen(changed.batch3.support.planSaved, true), false);
+  assert.equal(shouldRestartBatch3Review(true, changed.batch3.support.planSaved), true);
+  assert.deepEqual(changed.fields.supportDiagnosis.value, diagnosis);
+  assert.deepEqual(changed.batch3.support.classifications, { sig1: 'access_scheduling' });
+
+  const progressBefore = recordModule4EnhancedScreenCompletion(
+    { screenProgress: { module_04_implementation: [] }, module4Enhanced: changed },
+    'M4-S1-09',
+    false,
+  );
+  assert.deepEqual(progressBefore.screenProgress.module_04_implementation, []);
+
+  changed.batch3.support.planSaved = false;
+  assert.equal(shouldRestartBatch3Review(true, changed.batch3.support.planSaved), false);
+  const reconfirmed = updateModule4Field(changed, 'supportDiagnosis', diagnosis, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-09',
+  });
+  reconfirmed.batch3.support.planSaved = true;
+
+  assert.equal(reconfirmed.fields.supportDiagnosis.reviewRequired, false);
+  assert.equal(
+    reconfirmed.fields.supportDiagnosis.dependencyRevisions.selectedWorkstream,
+    upstreamRevision,
+  );
+  assert.deepEqual(reconfirmed.fields.supportDiagnosis.value, diagnosis);
+  assert.equal(canCompleteBatch3Screen(reconfirmed.batch3.support.planSaved, false), true);
+
+  const hydrated = migrateModule4EnhancedState({
+    practiceCheckState: { module4Enhanced: JSON.parse(JSON.stringify(reconfirmed)) },
+    screenProgress: progressBefore.screenProgress,
+    completedModules: [],
+  }).practiceCheckState.module4Enhanced;
+  assert.equal(hydrated.fields.supportDiagnosis.reviewRequired, false);
+  assert.equal(hydrated.batch3.support.planSaved, true);
+});
+
+test('Screen 12 review preserves the information note and restores readiness', () => {
+  let state = createInitialModule4EnhancedState('2026-07-25T12:00:00.000Z');
+  state = updateModule4Field(state, 'selectedWorkstream', 'consultation_feedback', {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-04',
+  });
+  const minimumInformation = [
+    'Learner-authored response-owner field',
+    'Learner-authored account-back field',
+  ];
+  state = updateModule4Field(state, 'minimumNecessaryInformation', minimumInformation, {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-11',
+  });
+  state.batch3.information.selectedMinNeeded = ['reviewed', 'assigned', 'explained', 'followed_up'];
+  state.batch3.information.noteSaved = true;
+
+  const changed = updateModule4Field(state, 'selectedWorkstream', 'health_post', {
+    learnerEdited: true,
+    sourceScreenId: 'M4-S1-04',
+  });
+  const upstreamRevision = changed.fields.selectedWorkstream.revision;
+  assert.equal(changed.fields.minimumNecessaryInformation.reviewRequired, true);
+  assert.equal(canCompleteBatch3Screen(changed.batch3.information.noteSaved, true), false);
+  assert.equal(shouldRestartBatch3Review(true, changed.batch3.information.noteSaved), true);
+  assert.deepEqual(changed.fields.minimumNecessaryInformation.value, minimumInformation);
+  assert.deepEqual(
+    changed.batch3.information.selectedMinNeeded,
+    ['reviewed', 'assigned', 'explained', 'followed_up'],
+  );
+
+  const progressBefore = recordModule4EnhancedScreenCompletion(
+    { screenProgress: { module_04_implementation: [] }, module4Enhanced: changed },
+    'M4-S1-11',
+    false,
+  );
+  assert.deepEqual(progressBefore.screenProgress.module_04_implementation, []);
+
+  changed.batch3.information.noteSaved = false;
+  assert.equal(shouldRestartBatch3Review(true, changed.batch3.information.noteSaved), false);
+  const reconfirmed = updateModule4Field(
+    changed,
+    'minimumNecessaryInformation',
+    minimumInformation,
+    { learnerEdited: true, sourceScreenId: 'M4-S1-11' },
+  );
+  reconfirmed.batch3.information.noteSaved = true;
+
+  assert.equal(reconfirmed.fields.minimumNecessaryInformation.reviewRequired, false);
+  assert.equal(
+    reconfirmed.fields.minimumNecessaryInformation.dependencyRevisions.selectedWorkstream,
+    upstreamRevision,
+  );
+  assert.deepEqual(reconfirmed.fields.minimumNecessaryInformation.value, minimumInformation);
+  assert.equal(canCompleteBatch3Screen(reconfirmed.batch3.information.noteSaved, false), true);
+
+  const hydrated = migrateModule4EnhancedState({
+    practiceCheckState: { module4Enhanced: JSON.parse(JSON.stringify(reconfirmed)) },
+    screenProgress: progressBefore.screenProgress,
+    completedModules: [],
+  }).practiceCheckState.module4Enhanced;
+  assert.equal(hydrated.fields.minimumNecessaryInformation.reviewRequired, false);
+  assert.equal(hydrated.batch3.information.noteSaved, true);
+});
+
 test('progress records only after the final screen gate', () => {
   const module4Enhanced = createInitialModule4EnhancedState('2026-07-25T12:00:00.000Z');
   const before = {
@@ -268,6 +475,10 @@ test('Screens 9-12 content and interaction hooks', () => {
   const batch3 = read('src/components/course/module4/Module4EnhancedBatch3.tsx');
 
   assert.doesNotMatch(batch3, /selectedProfile|workstreamProfiles/);
+  assert.equal(
+    (batch3.match(/shouldRestartBatch3Review\(reviewRequired, saved\.(?:planSaved|noteSaved)\)/g) || []).length,
+    3,
+  );
   for (const fixedLabel of [
     'label="Water Service"',
     'label="Youth Livelihoods"',

@@ -20,6 +20,7 @@ import {
   isScreen12NoteCorrect,
   isScreen9FollowUpComplete,
   isScreen9RoleMappingCorrect,
+  shouldRestartBatch3Review,
 } from '../../../data/module4/module4EnhancedBatch3Rules';
 import { MODULE4_ENHANCED_ASSETS } from '../../../data/module4/module4EnhancedAssets';
 import {
@@ -842,7 +843,7 @@ function RolesScreen({ state, onChangeState }: Props) {
                   <button
                     type="button"
                     className="m4-enhanced-button is-primary"
-                    onClick={reviewRequired
+                    onClick={shouldRestartBatch3Review(reviewRequired, saved.planSaved)
                       ? () => save({ ...saved, activeStage: 1, planSaved: false })
                       : recordPlan}
                   >
@@ -1229,7 +1230,7 @@ function SupportScreen({ state, onChangeState }: Props) {
                   <button
                     type="button"
                     className="m4-enhanced-button is-primary"
-                    onClick={reviewRequired
+                    onClick={shouldRestartBatch3Review(reviewRequired, saved.planSaved)
                       ? () => save({ ...saved, activeStage: 1, planSaved: false })
                       : recordPlan}
                   >
@@ -1764,7 +1765,7 @@ function InformationScreen({ state, onChangeState }: Props) {
                   <button
                     type="button"
                     className="m4-enhanced-button is-primary"
-                    onClick={reviewRequired
+                    onClick={shouldRestartBatch3Review(reviewRequired, saved.noteSaved)
                       ? () => save({ ...saved, activeStage: 1, noteSaved: false })
                       : recordNote}
                   >

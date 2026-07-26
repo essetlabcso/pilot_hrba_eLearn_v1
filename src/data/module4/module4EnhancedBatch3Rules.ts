@@ -94,6 +94,10 @@ export function canCompleteBatch3Screen(saved: boolean, reviewRequired: boolean)
   return saved && !reviewRequired;
 }
 
+export function shouldRestartBatch3Review(reviewRequired: boolean, saved: boolean) {
+  return reviewRequired && saved;
+}
+
 function sameStringSet(values: string[], expected: readonly string[]) {
   return values.length === expected.length && expected.every((item) => values.includes(item));
 }
