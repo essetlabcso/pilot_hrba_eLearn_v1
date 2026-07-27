@@ -570,9 +570,13 @@ function Screen13WaterProjects({
           </p>
         </div>
       </section>
+      <p id="m2-final-water-compare-instruction" className="m2-final-interaction-instruction">
+        Drag the blue divider left or right to compare the two approaches.
+      </p>
       <section
         className="m2-final-compare m2-final-water-compare"
         aria-label="An interactive slider comparing Community A depending on repeated water deliveries with Community B advocating with local officials for water infrastructure."
+        aria-describedby="m2-final-water-compare-instruction"
       >
         <div className="m2-final-compare__visual">
           <img src={module2FinalAssets.waterProjectsAfter.src} alt={module2FinalAssets.waterProjectsAfter.alt} />
@@ -621,6 +625,7 @@ function Screen13WaterProjects({
               }
             }}
             aria-valuetext={`${slider}% Needs Lens overlay`}
+            aria-describedby="m2-final-water-compare-instruction"
           />
         </label>
       </section>
@@ -721,7 +726,14 @@ function Screen21RightsHolders({ onNext }: Pick<Module2FinalRendererProps, 'onNe
           </p>
         </div>
       </section>
-      <section className="m2-final-card-grid m2-final-rights-grid" aria-label="Three interactive cards labeled Displaced Youth, Rural Women, and Persons with Disabilities.">
+      <p id="m2-final-rights-card-instruction" className="m2-final-interaction-instruction">
+        Select each group card to reveal why the group holds rights.
+      </p>
+      <section
+        className="m2-final-card-grid m2-final-rights-grid"
+        aria-label="Three interactive cards labeled Displaced Youth, Rural Women, and Persons with Disabilities."
+        aria-describedby="m2-final-rights-card-instruction"
+      >
         {cards.map((card) => {
           const isOpen = Boolean(opened[card.id]);
           return (
