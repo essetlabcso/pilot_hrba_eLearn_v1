@@ -6245,10 +6245,6 @@
   text-align: center;
 }
 
-.m3-context-mobile-drawer {
-  display: none;
-}
-
 .m3-context-safe-inline {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -6634,22 +6630,6 @@
     grid-column: 1;
   }
 
-  .m3-context-practice-layout > .m3-context-live-panel {
-    display: none;
-  }
-
-  .m3-context-mobile-drawer {
-    display: block;
-    position: static;
-    z-index: auto;
-    margin-top: 0.25rem;
-  }
-
-  .m3-context-mobile-drawer .m3-context-live-panel {
-    position: static;
-    max-height: none;
-    overflow: visible;
-  }
 }
 
 @media (max-width: 640px) {
@@ -6738,6 +6718,53 @@
 
 .m3-guided-live-panel p {
   margin: 0;
+}
+
+.m3-guided-generate-panel {
+  align-content: start;
+}
+
+.m3-guided-requirement-count {
+  padding: 0.75rem;
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #16354f;
+}
+
+.m3-guided-remaining {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 12px;
+  background: rgba(239, 246, 255, 0.94);
+  color: #123c73;
+}
+
+.m3-guided-remaining ul {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.m3-guided-ready-status {
+  border-left: 4px solid #9a5b00;
+  padding: 0.7rem 0.8rem;
+  background: #fff8e8;
+  color: #704000;
+  font-weight: 850;
+}
+
+.m3-guided-ready-status.is-ready {
+  border-left-color: #17704b;
+  background: #edf9f3;
+  color: #155b3e;
+}
+
+.m3-guided-generate-panel > .m3-primary-button {
+  width: 100%;
 }
 
 .m3-guided-chip-list {
@@ -21977,6 +22004,17 @@
 .m3-b5-carried-findings p { max-width: 85ch; }
 
 .m3-s11-classification-list { display: grid; gap: 0.65rem; }
+.m3-s11-classification-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  gap: 0.8rem;
+  padding: 0 0.75rem;
+  color: #0f4f76;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 .m3-s11-classification-list label {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
@@ -21991,8 +22029,45 @@
 .m3-s11-classification-list small { display: block; }
 .m3-s11-classification-list select { width: 100%; min-height: 2.75rem; }
 
-@media (max-width: 480px) {
-  .m3-s11-classification-list label { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  .m3-s11-classification-header {
+    display: none;
+  }
+
+  .m3-s11-classification-list label {
+    grid-template-columns: 1fr;
+  }
+
+  .m3-s11-classification-list label > span::before {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #0f4f76;
+    content: "Design statement";
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .m3-s11-classification-list label select {
+    width: 100%;
+  }
+
+  .m3-s11-method-table {
+    overflow-x: visible;
+  }
+
+  .m3-s11-method-table > * {
+    min-width: 0;
+  }
+
+  .m3-s11-method-row {
+    grid-template-columns: 1fr;
+  }
+
+  .m3-s11-method-row span {
+    border-right: 0;
+  }
 }
 
 /* Module 3 simple UI/UX polish: clearer controls, hierarchy and responsive actions. */

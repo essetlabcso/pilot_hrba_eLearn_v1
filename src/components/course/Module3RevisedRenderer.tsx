@@ -7846,6 +7846,50 @@ function SecondaryButton({ children, onClick }: { children: string; onClick: () 
   );
 }
 
+function GuidedGeneratePanel({
+  title,
+  completedCount,
+  totalCount,
+  remainingRequirements,
+  ready,
+  actionLabel,
+  onAction,
+  testId,
+}: {
+  title: string;
+  completedCount: number;
+  totalCount: number;
+  remainingRequirements: string[];
+  ready: boolean;
+  actionLabel: string;
+  onAction: () => void;
+  testId?: string;
+}) {
+  const titleId = `${testId || title.replace(/\s+/g, '-').toLowerCase()}-title`;
+  return (
+    <aside className="m3-guided-live-panel m3-guided-generate-panel" aria-labelledby={titleId} data-testid={testId}>
+      <h2 id={titleId}>{title}</h2>
+      <p className="m3-guided-requirement-count" aria-live="polite">
+        <strong>{completedCount} of {totalCount}</strong> requirements complete
+      </p>
+      <div className="m3-guided-remaining" aria-live="polite">
+        <strong>{ready ? 'No remaining requirements.' : 'Still required:'}</strong>
+        {!ready && (
+          <ul>
+            {remainingRequirements.map((requirement) => <li key={requirement}>{requirement}</li>)}
+          </ul>
+        )}
+      </div>
+      <p className={`m3-guided-ready-status${ready ? ' is-ready' : ''}`}>
+        {ready ? 'Ready to generate' : 'Not ready to generate'}
+      </p>
+      <button type="button" className="m3-primary-button" disabled={!ready} onClick={onAction}>
+        {actionLabel}
+      </button>
+    </aside>
+  );
+}
+
 function ScreenShell({
   screen,
   children,
@@ -8832,6 +8876,20 @@ function ContextInequalityScanScreen({
   const currentSignature = selected.join('|');
   const outputIsStale = submitted && generatedSignature !== currentSignature;
   const readyToGenerate = selected.length >= 3 && currentHasGroupSignal && currentHasBarrierSignal && currentHasEvidenceSignal && !currentOnlySurfaceEvidence;
+  const contextRequirements = [
+    {
+      complete: selected.length >= 3,
+      remaining: `Select ${Math.max(0, 3 - selected.length)} more context signal${Math.max(0, 3 - selected.length) === 1 ? '' : 's'}.`,
+    },
+    { complete: currentHasGroupSignal, remaining: 'Include at least one affected-group signal.' },
+    { complete: currentHasBarrierSignal, remaining: 'Include at least one possible-barrier signal.' },
+    { complete: currentHasEvidenceSignal, remaining: 'Include at least one safe-evidence signal.' },
+    { complete: selected.length > 0 && !currentOnlySurfaceEvidence, remaining: 'Include at least one signal that goes beyond surface activity evidence.' },
+  ];
+  const remainingContextRequirements = contextRequirements
+    .filter((requirement) => !requirement.complete)
+    .map((requirement) => requirement.remaining);
+  const completedContextRequirements = contextRequirements.length - remainingContextRequirements.length;
   const feedbackTone =
     selectedStrong >= 4 && outputHasGroupSignal && outputHasBarrierSignal && outputHasEvidenceSignal
       ? 'strong'
@@ -8843,7 +8901,6 @@ function ContextInequalityScanScreen({
     partial: 'Good start. You identified some important signals, but the scan needs one more layer. A context scan is useful when it moves from observation to design decisions.',
     support: 'This scan is still too close to visible evidence. Attendance, activity lists, budget lines, or inclusion statements alone show that a plan exists, but they do not prove that the design is rights-based.',
   }[feedbackTone];
-  const selectedCountLabel = selected.length === 1 ? '1 signal selected' : `${selected.length} signals selected`;
   const selectedContextSignalGroups = module3ContextOutputGroups.reduce<Record<string, string[]>>((groups, group) => {
     groups[group.id] = outputChoices
       .filter((choice) => choice.outputGroup === group.id)
@@ -9146,33 +9203,16 @@ function ContextInequalityScanScreen({
   );
 
   const renderScanPanel = () => (
-    <aside className="m3-context-live-panel" aria-label="Your scan so far">
-      <div className="m3-context-live-head">
-        <span aria-hidden="true">✓</span>
-        <div>
-          <h2>Your scan so far</h2>
-          <p>{selected.length > 0 ? selectedCountLabel : 'Your scan will appear here'}</p>
-        </div>
-      </div>
-      <div className="m3-context-live-chip-list">
-        {selected.length > 0 ? selectedChoices.map((choice) => (
-          <button key={choice.id} type="button" onClick={() => toggleChoice(choice.id)} className="m3-context-live-chip">
-            <span aria-hidden="true">✓</span>
-            {choice.tag}
-            <span aria-hidden="true">×</span>
-          </button>
-        )) : <p>Select at least three context signals to generate your draft scan.</p>}
-      </div>
-      <div className="m3-context-live-status">
-        <strong>Ready to generate: {readyToGenerate ? 'Yes' : 'Not yet'}</strong>
-        <span>{readyToGenerate ? 'You have selected the minimum mix of signals.' : 'Select at least three signals, including affected groups, barriers, and safe evidence.'}</span>
-      </div>
-      {safeEvidenceWarning}
-      <button type="button" className="m3-context-scan-submit-button" disabled={!readyToGenerate} onClick={submitScan}>
-        {submitted && outputIsStale ? 'Update context and inequality scan' : submitted ? 'Regenerate context and inequality scan' : 'Generate context and inequality scan'}
-      </button>
-      <p aria-live="polite" className="m3-context-live-helper">{validationMessage || (submitted && !outputIsStale ? 'Draft scan generated. Review and save when ready.' : 'You can update selections later.')}</p>
-    </aside>
+    <GuidedGeneratePanel
+      title="Generate your context scan"
+      completedCount={completedContextRequirements}
+      totalCount={contextRequirements.length}
+      remainingRequirements={remainingContextRequirements}
+      ready={readyToGenerate}
+      actionLabel={submitted && outputIsStale ? 'Update context and inequality scan' : submitted ? 'Regenerate context and inequality scan' : 'Generate context and inequality scan'}
+      onAction={submitScan}
+      testId="m3-s05-generate-panel"
+    />
   );
 
   return (
@@ -9425,13 +9465,9 @@ function ContextInequalityScanScreen({
                   );
                 })}
               </div>
-              <ContextInequalitySnapshot
-                viewModel={contextSnapshotViewModel}
-                validationMessage={validationMessage}
-              />
+              {validationMessage && <p className="m3-context-ready-note" role="alert">{validationMessage}</p>}
             </div>
             {renderScanPanel()}
-            <div className="m3-context-mobile-drawer">{renderScanPanel()}</div>
           </section>
         )}
 
@@ -13519,8 +13555,19 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
   const completedCheckFields = Object.values(inclusionCheckDraft).filter(Boolean).length;
   const checkComplete = Boolean(selectedDesignArea && completedCheckFields === 5);
   const allRequiredClassificationsComplete = screen11Signals.every((signal) => validStatuses.has(classifications[signal.id] as InclusionStatus));
-  const completedCheckCount = checkComplete ? 1 : 0;
+  const completedClassifications = screen11Signals.filter((signal) => validStatuses.has(classifications[signal.id] as InclusionStatus)).length;
   const canSubmit = checkComplete && allRequiredClassificationsComplete;
+  const screen11CompletedRequirementCount = completedClassifications + (selectedDesignArea ? 1 : 0) + completedCheckFields;
+  const screen11TotalRequirementCount = screen11Signals.length + 1 + 5;
+  const screen11RemainingRequirements = [
+    ...(completedClassifications < screen11Signals.length
+      ? [`Classify ${screen11Signals.length - completedClassifications} remaining design statement${screen11Signals.length - completedClassifications === 1 ? '' : 's'}.`]
+      : []),
+    ...(!selectedDesignArea ? ['Select one design area or activity to repair.'] : []),
+    ...(completedCheckFields < 5
+      ? [`Complete ${5 - completedCheckFields} remaining inclusion-check field${5 - completedCheckFields === 1 ? '' : 's'}.`]
+      : []),
+  ];
   const currentSignature = JSON.stringify({ selectedDesignAreaId, inclusionCheckDraft, classifications, selectedRepairs: [...selectedRepairs].sort() });
   const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
   const canContinue = Boolean(submittedOutput && !formChanged);
@@ -13806,9 +13853,13 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
           <section className="m3-s11-practice-step" aria-labelledby={`${screen.id}-design-area-step`}>
             <h3 id={`${screen.id}-classification-step`}>Step 1: Classify every required design statement</h3>
             <p>Use Missing, Mentioned but not integrated, or Integrated into design. Gender and disability remain separate considerations even where barriers overlap.</p>
-            <div className="m3-s11-classification-list">
+            <div className="m3-s11-classification-list" role="group" aria-labelledby={`${screen.id}-classification-step`} data-testid="m3-s11-responsive-classifications">
+              <div className="m3-s11-classification-header" aria-hidden="true">
+                <span>Design statement</span>
+                <span>Classification</span>
+              </div>
               {screen11Signals.map((signal) => (
-                <label key={signal.id}>
+                <label key={signal.id} data-testid="m3-s11-classification-row">
                   <span><strong>{signal.title}</strong><small>{signal.text}</small></span>
                   <select aria-label={`Classification for ${signal.title}`} value={classifications[signal.id] || ''} onChange={(event) => setClassifications((current) => ({ ...current, [signal.id]: event.target.value as InclusionStatus }))}>
                     <option value="">Choose classification</option>
@@ -13874,35 +13925,22 @@ function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
             )}
           </section>
 
-          <div className="m3-s11-submit-row">
-            <button type="button" className="m3-s11-submit-button" disabled={!canSubmit} data-testid="m3-s11-generate-dashboard" onClick={submitDashboard}>
-              {submittedOutput ? 'Update inclusion check' : 'Generate inclusion check'}
-            </button>
-            <p aria-live="polite">{helperText}</p>
-          </div>
         </section>
         <GenderDisabilityDashboardVisualization
           viewModel={screen11VisualizationViewModel}
           idPrefix={`${screen.id}-practice-visualization`}
         />
           </div>
-          <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-gender-live`}>
-            <h2 id={`${screen.id}-gender-live`}>Inclusion check so far</h2>
-            <p aria-live="polite">{selectedDesignArea ? '1 selected design area' : 'No design area selected yet'}</p>
-            <div className="m3-guided-chip-list">
-              {selectedDesignArea ? (
-                <span className="m3-guided-selected-chip">{selectedDesignArea.designArea}</span>
-              ) : (
-                <span className="m3-guided-muted">Select one design area.</span>
-              )}
-            </div>
-            <p className="m3-guided-helper">Completed fields: {completedCheckFields} of 5</p>
-            <p className="m3-guided-helper">Completed checks: {completedCheckCount}</p>
-            <p className="m3-guided-helper">{helperText}</p>
-            <button type="button" className="m3-s11-submit-button" disabled={!canSubmit} onClick={submitDashboard}>
-              {submittedOutput ? 'Update inclusion check' : 'Generate inclusion check'}
-            </button>
-          </aside>
+          <GuidedGeneratePanel
+            title="Generate your inclusion check"
+            completedCount={screen11CompletedRequirementCount}
+            totalCount={screen11TotalRequirementCount}
+            remainingRequirements={screen11RemainingRequirements}
+            ready={canSubmit}
+            actionLabel={submittedOutput ? 'Update inclusion check' : 'Generate inclusion check'}
+            onAction={submitDashboard}
+            testId="m3-s11-generate-panel"
+          />
         </section>
         )}
 
