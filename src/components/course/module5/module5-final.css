@@ -6,7 +6,7 @@
 }
 
 .m5f-shell {
-  width: min(100%, 74rem);
+  width: min(100%, 84rem);
   margin: 0 auto;
 }
 
@@ -218,11 +218,14 @@
 
 .m5f-summary-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
   gap: 1rem;
 }
 
 .m5f-summary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   min-width: 0;
   padding: 1rem;
 }

@@ -69,7 +69,7 @@
 
 .m4-enhanced-screen--batch2 .m4-enhanced-screen__workspace {
   align-items: start;
-  grid-template-columns: minmax(18rem, 0.9fr) minmax(28rem, 1.6fr);
+  grid-template-columns: minmax(18rem, 0.95fr) minmax(0, 1.45fr);
 }
 
 .m4-b2-stage-path {
@@ -253,7 +253,7 @@
   border: 0;
   display: grid;
   gap: 0.65rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   margin: 0;
   min-width: 0;
   padding: 0;
@@ -459,11 +459,11 @@
 .m4-enhanced-screen__workspace {
   display: grid;
   gap: 1rem;
-  grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 2fr);
+  grid-template-columns: minmax(18rem, 1fr) minmax(0, 1.4fr);
 }
 
 .m4-enhanced-screen--lens .m4-enhanced-screen__workspace {
-  grid-template-columns: minmax(19rem, 0.95fr) minmax(0, 1.75fr);
+  grid-template-columns: minmax(19rem, 1.05fr) minmax(0, 1.35fr);
 }
 
 .m4-enhanced-screen--lens .m4-enhanced-screen__context {
