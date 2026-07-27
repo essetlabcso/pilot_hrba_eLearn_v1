@@ -8890,7 +8890,7 @@ function ContextInequalityScanScreen({
   const generatedSignature = generatedSelected.join('|');
   const currentSignature = selected.join('|');
   const outputIsStale = submitted && generatedSignature !== currentSignature;
-  const readyToGenerate = selected.length >= 3 && currentHasGroupSignal && currentHasBarrierSignal && currentHasEvidenceSignal && !currentOnlySurfaceEvidence;
+  const readyToGenerate = selected.length >= 2 && (currentHasGroupSignal || currentHasBarrierSignal || currentHasEvidenceSignal) && !currentOnlySurfaceEvidence;
   const contextRequirements = [
     {
       complete: selected.length >= 3,
@@ -9183,6 +9183,11 @@ function ContextInequalityScanScreen({
   const buildSavePayload = () => ({
     selectedContextSignals: generatedSelected,
     submitted: true,
+    contextInsight: {
+      priorityContextFactors: outputChoices.map((choice) => choice.label).slice(0, 2),
+      primaryAffectedGroup: selectedAffectedGroups[0] || 'Women traders, young people, and rural kebele residents',
+      keyInequalityGap: `In Jiru Amba, ${outputChoices.map((choice) => choice.label).slice(0, 2).join(' and ') || 'service access constraints'} disproportionately restrict information flow, participation, and decision-making for ${selectedAffectedGroups[0] || 'women vendors and rural residents'}.`,
+    },
     contextInequalityScan: {
       selectedJiruAmbaAffectedGroups: selectedAffectedGroups,
       selectedBarriers,
@@ -15797,7 +15802,7 @@ function ObjectiveRepairScreen({ screen, state, onComplete }: {
             {renderDesignRepairArtifact()}
             <article className="m3-integrated-continue-card">
               <div><h3>Required repair ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
-              <button type="button" className="m3-primary-button" data-testid="m3-s14-final-continue" data-qa="m3-s14-final-continue" onClick={() => submittedOutput && onComplete({ designRepairPackage: submittedOutput.designRepairPackage, repairedObjective: submittedOutput.repairedObjective, repairedActivityPackage: submittedOutput.repairedActivityPackage, interventionLogicIndicators: submittedOutput.interventionLogicIndicators, screen14: submittedOutput })}>{screen.continueLabel}</button>
+              <button type="button" className="m3-primary-button" data-testid="m3-s14-final-continue" data-qa="m3-s14-final-continue" onClick={() => submittedOutput && onComplete({ designRepairPackage: submittedOutput.designRepairPackage, repairedObjective: submittedOutput.repairedObjective, repairedActivityPackage: submittedOutput.repairedActivityPackage, interventionLogicIndicators: submittedOutput.interventionLogicIndicators, repairedDesignElement: { repairedHrbaObjective: submittedOutput.repairedObjective.repairedHrbaObjective, repairedActivity: submittedOutput.repairedActivityPackage.generatedSummary, implementationWatchPoint: submittedOutput.designRepairPackage.implementationWatchPoint }, screen14: submittedOutput })}>{screen.continueLabel}</button>
             </article>
             <div className="m3-guided-tabs" role="tablist" aria-label="Optional apply or download">
               <button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
