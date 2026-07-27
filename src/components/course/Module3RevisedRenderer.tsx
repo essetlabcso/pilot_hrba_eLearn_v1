@@ -1918,6 +1918,8 @@ type Screen8BarrierId =
   | 'income_related_barrier'
   | 'unclear_pathway_to_benefit';
 
+type Screen8ActorLane = 'public' | 'service' | 'community' | 'participation' | 'voice' | 'support' | 'careful' | 'cso';
+
 type CapacityGapHintId =
   | 'mandate_unclear'
   | 'limited_budget_resources'
@@ -1986,6 +1988,7 @@ type Screen8BarrierActorLink = {
     actorId: string;
     actorLabel: string;
     category: ActorCategory;
+    lane?: Screen8ActorLane;
     actionIds: string[];
   }[];
   capacityGapHintIds: CapacityGapHintId[];
@@ -4305,19 +4308,29 @@ function restoreScreen8Mappings(output: Screen8Submission | null): Record<string
   return Object.fromEntries(output.barrierActorLinks.map((link) => {
     const mapping = createEmptyScreen8Mapping();
     link.actorSelections.forEach((selection) => {
-      const key: keyof Screen8BarrierMapping = selection.category === 'primary_public_responsibility'
-        ? 'publicActorIds'
+      const fallbackLane: Screen8ActorLane = selection.category === 'primary_public_responsibility'
+        ? 'public'
         : selection.category === 'service_or_local_implementation'
+          ? 'service'
+          : ['community_influence_actor', 'participation_actor', 'rights_holder_voice_support'].includes(selection.category)
+            ? 'community'
+            : ['support_ally_actor', 'careful_engagement_actor'].includes(selection.category)
+              ? 'service'
+              : 'cso';
+      const lane = selection.lane || fallbackLane;
+      const key: keyof Screen8BarrierMapping = lane === 'public'
+        ? 'publicActorIds'
+        : lane === 'service'
           ? 'serviceActorIds'
-          : selection.category === 'community_influence_actor'
+          : lane === 'community'
             ? 'communityActorIds'
-            : selection.category === 'participation_actor'
+            : lane === 'participation'
               ? 'participationActorIds'
-              : selection.category === 'rights_holder_voice_support'
+              : lane === 'voice'
                 ? 'voiceActorIds'
-                : selection.category === 'support_ally_actor'
+                : lane === 'support'
                   ? 'supportActorIds'
-                  : selection.category === 'careful_engagement_actor'
+                  : lane === 'careful'
                     ? 'carefulActorIds'
                     : 'csoRoleIds';
       mapping[key].push(selection.actorId);
@@ -4434,6 +4447,17 @@ function getScreen8SelectedActorIds(mapping: Screen8BarrierMapping) {
   ];
 }
 
+function getScreen8ActorLane(mapping: Screen8BarrierMapping, actorId: string): Screen8ActorLane {
+  if (mapping.publicActorIds.includes(actorId)) return 'public';
+  if (mapping.serviceActorIds.includes(actorId)) return 'service';
+  if (mapping.communityActorIds.includes(actorId)) return 'community';
+  if (mapping.participationActorIds.includes(actorId)) return 'participation';
+  if (mapping.voiceActorIds.includes(actorId)) return 'voice';
+  if (mapping.supportActorIds.includes(actorId)) return 'support';
+  if (mapping.carefulActorIds.includes(actorId)) return 'careful';
+  return 'cso';
+}
+
 function generateScreen8Rows(
   selectedBarrierIds: Screen8BarrierId[],
   mappings: Record<string, Screen8BarrierMapping>,
@@ -4528,6 +4552,7 @@ function buildScreen8ActorLinks(
         actorId,
         actorLabel: getActorLabel(actorId, actors),
         category: getActorCategory(actorId, actors),
+        lane: getScreen8ActorLane(mapping, actorId),
         actionIds: mapping.actionIdsByActor[actorId] || [],
       })),
       capacityGapHintIds: mapping.capacityGapHintIds,
@@ -12283,7 +12308,7 @@ function PowerInfluenceMapScreen({
   const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(savedOutput ? 4 : restoredActorIds.length ? 3 : 1);
   const [understandAnswer, setUnderstandAnswer] = useState(savedOutput ? 'informal' : '');
   const [exampleReviewed, setExampleReviewed] = useState(Boolean(savedOutput));
-  const [activeActorFilter, setActiveActorFilter] = useState<'public' | 'service' | 'rights' | 'community' | 'support' | 'custom' | 'all'>('public');
+  const [activeActorFilter, setActiveActorFilter] = useState<'public' | 'service' | 'rights' | 'community' | 'support' | 'custom' | 'all'>('all');
   const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
   const [copyStatus, setCopyStatus] = useState('');
   const outputRef = useRef<HTMLHeadingElement>(null);

@@ -187,6 +187,9 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   assert.equal(await page.getByTestId('m3-s08-community-selector').isVisible(), false);
   await optionalDetails.locator('summary').click();
   assert.equal(await page.getByTestId('m3-s08-community-selector').isVisible(), true);
+  await page.getByTestId('m3-s08-community-selector').selectOption({
+    label: 'Disability representative or OPD',
+  });
   await screen8Panel.getByText('5 of 5 requirements complete').waitFor();
   await screen8Panel.getByText('Ready to generate', { exact: true }).waitFor();
   await screenshot(page, 'screen-08-practice-desktop.png');
@@ -221,8 +224,30 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   await page.waitForURL(/\/module-3\/screen-3-9$/);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-8`);
   await page.getByRole('heading', { name: 'Your draft Actor Responsibility Map' }).waitFor();
+  await page.evaluate((storageKey) => {
+    const state = JSON.parse(localStorage.getItem(storageKey));
+    Object.values(state.practiceCheckState || {}).forEach((record) => {
+      const output = record?.screen8?.screenId === 'M3-R08'
+        ? record.screen8
+        : record?.screenId === 'M3-R08'
+          ? record
+          : null;
+      output?.barrierActorLinks?.forEach((link) => {
+        link.actorSelections?.forEach((selection) => {
+          delete selection.lane;
+        });
+      });
+    });
+    localStorage.setItem(storageKey, JSON.stringify(state));
+  }, STORAGE_KEY);
   await page.reload();
   await page.getByRole('heading', { name: 'Your draft Actor Responsibility Map' }).waitFor();
+  await page.getByTestId('m3-s08-stage-practice').click();
+  await page.locator('.m3-responsibility-map-secondary-guidance summary').click();
+  assert.equal(
+    await page.getByTestId('m3-s08-community-selector').inputValue(),
+    'disability_representative_or_opd',
+  );
 
   await seedModule3(page, 'M3-R09', 8);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-9`);
@@ -230,14 +255,33 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   await page.getByRole('button', { name: 'Some actors may have informal influence even without formal responsibility.' }).click();
   await page.getByRole('button', { name: 'Continue to worked example' }).click();
   await page.getByRole('button', { name: 'Start actor selection' }).click();
+  await page.getByText('Disability representative or OPD', { exact: true }).waitFor();
+  await page.getByText('Women traders', { exact: true }).waitFor();
+
+  const isolatedContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  await isolatedContext.route('https://fonts.googleapis.com/**', (route) => route.fulfill({
+    contentType: 'text/css',
+    body: '',
+  }));
+  const isolatedPage = await isolatedContext.newPage();
+  await seedModule3(isolatedPage, 'M3-R09', 8);
+  await isolatedPage.goto(`${APP_ORIGIN}/module-3/screen-3-9`);
+  await isolatedPage.getByRole('button', { name: 'Some actors may have informal influence even without formal responsibility.' }).click();
+  await isolatedPage.getByRole('button', { name: 'Continue to worked example' }).click();
+  await isolatedPage.getByRole('button', { name: 'Start actor selection' }).click();
+  assert.equal(await isolatedPage.getByText('Disability representative or OPD', { exact: true }).count(), 0);
+  assert.equal(await isolatedPage.getByText('Women traders', { exact: true }).count(), 1);
+  await isolatedContext.close();
 
   const chooseFirstActor = async () => {
     const actorCards = page.locator('.m3-power-studio-actor-card');
     assert.ok(await actorCards.count() > 0);
     await actorCards.first().click();
   };
-  await chooseFirstActor();
-  await page.getByRole('button', { name: 'Service and committee actors' }).click();
+  await page.locator('.m3-power-studio-actor-card').filter({
+    hasText: 'Disability representative or OPD',
+  }).click();
+  await page.getByRole('button', { name: 'Formal public actors' }).click();
   await chooseFirstActor();
   await page.getByRole('button', { name: 'Rights-holder groups' }).click();
   await chooseFirstActor();

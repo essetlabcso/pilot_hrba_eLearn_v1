@@ -61,6 +61,9 @@ test('Module 3 routes and completion calls remain canonical', () => {
   assert.match(renderer, /screenId:\s*'M3-R08'/);
   assert.match(renderer, /screenId:\s*'M3-R09'/);
   assert.match(renderer, /module3:\s*\{\s*screen8:\s*submittedOutput\s*\}/);
+  assert.match(renderer, /activeActorFilter[\s\S]*useState<[\s\S]*>\('all'\)/);
+  assert.match(renderer, /lane:\s*getScreen8ActorLane\(mapping,\s*actorId\)/);
+  assert.match(renderer, /const lane = selection\.lane \|\| fallbackLane/);
   assert.match(renderer, /module3:\s*\{\s*screen9:\s*submittedOutput\s*\}/);
   assert.match(renderer, /dutyBearerActorResponsibilityMap:\s*submittedOutput/);
   assert.match(renderer, /powerInfluenceMap:\s*\{/);
