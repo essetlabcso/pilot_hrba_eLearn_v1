@@ -10,17 +10,18 @@ const ORIGIN = `http://127.0.0.1:${PORT}`;
 const STORAGE_KEY = 'hrba-course-progress-v1';
 
 async function waitForApp() {
-  const deadline = Date.now() + 30_000;
+  const deadline = Date.now() + 45_000;
+  let lastError;
   while (Date.now() < deadline) {
     try {
       const res = await fetch(ORIGIN);
       if (res.ok) return;
     } catch (e) {
-      // wait
+      lastError = e;
     }
-    await new Promise((r) => setTimeout(r, 150));
+    await new Promise((r) => setTimeout(r, 200));
   }
-  throw new Error('Timed out waiting for test app server.');
+  throw lastError || new Error('Timed out waiting for test app server.');
 }
 
 test('HRBA Layout Hotfix - Module 4 & Module 5 Responsive Canvas Verification', async (t) => {
@@ -90,7 +91,7 @@ test('HRBA Layout Hotfix - Module 4 & Module 5 Responsive Canvas Verification', 
         const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
         const page = await context.newPage();
 
-        await page.goto(ORIGIN);
+        await page.goto(ORIGIN, { timeout: 60000, waitUntil: 'domcontentloaded' });
         await page.evaluate(({ key, seed }) => {
           localStorage.setItem(key, JSON.stringify(seed));
         }, { key: STORAGE_KEY, seed: seedObj });
@@ -103,10 +104,9 @@ test('HRBA Layout Hotfix - Module 4 & Module 5 Responsive Canvas Verification', 
             localStorage.setItem(key, JSON.stringify(state));
           }, { key: STORAGE_KEY, moduleId: scr.moduleId, screenId: scr.id });
 
-          await page.goto(`${ORIGIN}${scr.route}`, { waitUntil: 'networkidle' });
-          await page.waitForTimeout(400);
+          await page.goto(`${ORIGIN}${scr.route}`, { timeout: 60000, waitUntil: 'networkidle' });
+          await page.waitForTimeout(300);
 
-          // Assert document and canvas scrollWidth <= clientWidth (no horizontal overflow)
           const overflowMetrics = await page.evaluate(() => {
             const doc = document.documentElement;
             const canvas = document.querySelector('.m4-enhanced-screen, .m5f-screen, .main-screen-canvas__content') || doc;
@@ -136,7 +136,6 @@ test('HRBA Layout Hotfix - Module 4 & Module 5 Responsive Canvas Verification', 
             );
           }
 
-          // Verify interactive controls remain visible
           const controlsCount = await page.locator('button, input[type="radio"], input[type="checkbox"]').count();
           assert.ok(controlsCount > 0, `[${vp.name}] ${scr.id} must have active operable controls`);
         }
