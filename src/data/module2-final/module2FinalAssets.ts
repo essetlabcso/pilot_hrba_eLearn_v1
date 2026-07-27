@@ -15,12 +15,22 @@ export const hrbaSharedIcons = {
   },
 };
 
-export const module2FinalVideoPlaceholder = {
+export const module2FinalIntroVideo = {
   title: 'The Jiru Amba Initiative: A New Perspective',
-  videoUrl: '',
-  poster: `${MODULE2_FINAL_ASSET_BASE}/module-2-final-cover.webp`,
-  storyStripFallback: `${MODULE2_FINAL_ASSET_BASE}/m2-s01-opening-story-strip-jiru-amba.svg`,
-  format: '60-90 second animated video or narrated slideshow placeholder',
+  embedUrl: 'https://www.youtube-nocookie.com/embed/A-60i7LvlBM',
+  publicUrl: 'https://youtu.be/A-60i7LvlBM',
+  iframeTitle: 'Jiru Amba case introduction video',
+  transcript: [
+    'Welcome to Jiru Amba, a fictional Ethiopian local development setting created for this course. It includes a small town, surrounding rural kebeles, a weekly market, public water-service points, a health post, local offices, and different community and public actors.',
+    'Awra is the fictional local civil society organization supporting the case. As the story develops, we will consider how Awra can support participation, evidence, dialogue, and follow-up, and what role a local CSO should play without taking over the responsibilities of public institutions.',
+    'The draft Jiru Amba Futures Plan proposes market improvement, water-service repair, youth livelihood training, health-post improvement, community consultation meetings, and feedback boxes. These activities may respond to important local priorities. But how can we know whether the plan is truly inclusive, accountable, and rights-based?',
+    'A repaired water point, a training course, or a consultation meeting may be reported as completed. But what might a completion report fail to show? Who may still receive information late, face barriers, be unable to participate, or have little influence over decisions?',
+    'People do not all receive information, reach services, participate, express priorities, benefit, give feedback, or receive a response in the same way. As we examine the case, we will look more closely at how distance, transport, income, language, literacy, disability access, care responsibilities, social relationships, and local influence may shape these experiences.',
+    'The Everyday Rights Lens does not reject services or practical needs. It invites us to look further. Who may be excluded? Who holds rights? Who has responsibilities? Whose voice influences decisions? And what happens after people give feedback?',
+    'A needs lens asks what service is missing. A rights lens helps us ask additional questions about exclusion, responsibility, standards, voice, and design. Through the Jiru Amba case, we will see how these questions can change the way a project is understood.',
+    'Awra is connected to rights-holders, duty-bearers, and other local actors. As we continue, we will explore what constructive role Awra should play in supporting information, participation, evidence, dialogue, capacity, and follow-up.',
+    'In Module 2, Jiru Amba helps you begin seeing everyday issues through a rights lens. In Module 3, you will return to the same case, examine it step by step, generate practical outputs, and discover what may need to change in the Jiru Amba Futures Plan.',
+  ],
 };
 
 export const module2FinalAssets = {

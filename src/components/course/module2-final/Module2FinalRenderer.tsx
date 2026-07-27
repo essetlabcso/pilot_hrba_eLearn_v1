@@ -12,7 +12,7 @@ import {
   module2FinalCuratedResources,
   module2FinalReferenceSlides,
   module2FinalResources,
-  module2FinalVideoPlaceholder,
+  module2FinalIntroVideo,
 } from '../../../data/module2-final/module2FinalAssets';
 import { module2FinalKnowledgeCheckQuestions } from '../../../data/module2-final/module2FinalKnowledgeCheck';
 import type { Module2FinalScreenId } from '../../../data/module2-final/module2FinalTypes';
@@ -310,8 +310,8 @@ function IntroScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
   return (
     <Module2FinalShell
       eyebrow="Module 2 intro"
-      title={module2FinalVideoPlaceholder.title}
-      lead="The final video will be produced later. This screen keeps the approved title, transcript area, and low-bandwidth story-strip fallback stable."
+      title={module2FinalIntroVideo.title}
+      lead="Meet Jiru Amba, the fictional local development setting used throughout this course. In this introduction, you will meet Awra, explore the Jiru Amba Futures Plan, and begin identifying the participation, inclusion, responsibility, and accountability questions that will guide Module 2."
       heroClassName="m2-final-header--intro"
       heroVisual={(
         <div className="m2-final-intro-hero-visual">
@@ -321,26 +321,59 @@ function IntroScreen({ onNext }: Pick<Module2FinalRendererProps, 'onNext'>) {
         </div>
       )}
     >
-      <section className="m2-final-video-placeholder m2-final-intro-media" aria-label="Intro video placeholder">
-        <div className="m2-final-video-placeholder__poster">
-          <img
-            src={module2FinalVideoPlaceholder.storyStripFallback}
-            alt="Panel 1: CSO staff distributing supplies. Panel 2: CSO staff looking at a broken water pump with an under-resourced local official. Panel 3: A community meeting where a few confident speakers are speaking while people facing barriers are not heard. Panel 4: The CSO team planning a new project."
+      <section className="m2-final-intro-video" aria-labelledby="m2-final-intro-video-title">
+        <div className="m2-final-intro-section-heading">
+          <span className="m2-final-tag">Jiru Amba case</span>
+          <h2 id="m2-final-intro-video-title">Watch the introduction</h2>
+        </div>
+        <div className="m2-final-intro-video__frame">
+          <iframe
+            src={module2FinalIntroVideo.embedUrl}
+            title={module2FinalIntroVideo.iframeTitle}
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
           />
         </div>
-        <div className="m2-final-video-placeholder__body">
-          <p className="m2-final-tag">{module2FinalVideoPlaceholder.format}</p>
-          <h2>Caption and transcript area</h2>
-          <p>
-            Meet Awra, a local civil society organization in Jiru Amba. The team has delivered important services,
-            but recurring water, participation, power, and accountability issues show why an Everyday Rights Lens is needed.
-          </p>
-          <p>
-            The produced video will use the approved narration script and four-scene storyboard. Until then, the story-strip
-            remains the stable illustrated fallback.
-          </p>
-        </div>
+        <p className="m2-final-intro-video__fallback">
+          If the embedded video does not load,{' '}
+          <a href={module2FinalIntroVideo.publicUrl} target="_blank" rel="noreferrer">
+            watch the Jiru Amba case introduction on YouTube
+          </a>.
+        </p>
       </section>
+
+      <section className="m2-final-intro-transcript" aria-labelledby="m2-final-intro-transcript-title">
+        <details className="m2-final-transcript">
+          <summary id="m2-final-intro-transcript-title">Video transcript</summary>
+          <div className="m2-final-transcript__body">
+            {module2FinalIntroVideo.transcript.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </details>
+      </section>
+
+      <section className="m2-final-intro-story" aria-labelledby="m2-final-intro-story-title">
+        <div className="m2-final-intro-section-heading">
+          <span className="m2-final-tag">Alternate format</span>
+          <h2 id="m2-final-intro-story-title">Jiru Amba story summary</h2>
+          <p>Prefer to read or have limited internet access? Use this illustrated summary to follow the same case introduction.</p>
+        </div>
+        <figure>
+          <img
+            src={module2FinalAssets.openingStoryStrip.src}
+            alt="Four illustrated Jiru Amba scenes: Awra delivering support, examining a broken water point with a public official, observing unequal participation in a community meeting, and planning the Jiru Amba Futures Plan."
+            loading="lazy"
+          />
+        </figure>
+      </section>
+
+      <aside className="m2-final-intro-transition" aria-label="Learning transition">
+        <strong>Learning transition</strong>
+        <p>As you continue, notice who may be excluded, who holds rights, who has responsibilities, whose voice influences decisions, and what should happen after people provide feedback.</p>
+      </aside>
+
       <footer className="m2-final-footer">
         <ContinueButton label="Continue to Module 2 Content" onClick={onNext} />
       </footer>
@@ -547,7 +580,7 @@ function Screen13WaterProjects({
 
   return (
     <Module2FinalShell
-      eyebrow="Screen 1.3"
+      eyebrow="Module 2 · Screen 6"
       title="A Tale of Two Water Projects"
       lead="To understand the difference between a needs-based lens and a rights-holder lens, let's look at a brief contrast scenario."
       heroClassName="m2-final-header--water"
@@ -570,6 +603,10 @@ function Screen13WaterProjects({
           </p>
         </div>
       </section>
+      <aside className="m2-final-water-case-bridge" aria-label="Jiru Amba case bridge">
+        <strong>Case connection</strong>
+        <p>From the Jiru Amba case: Water-service repair is one activity in the Jiru Amba Futures Plan. Compare how the same water challenge looks through a Needs Lens and a Rights Lens.</p>
+      </aside>
       <p id="m2-final-water-compare-instruction" className="m2-final-interaction-instruction">
         Drag the blue divider left or right to compare the Needs Lens and the Rights Lens.
       </p>
