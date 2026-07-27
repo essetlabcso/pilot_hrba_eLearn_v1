@@ -88,6 +88,51 @@ async function assertNoHorizontalOverflow(page, label) {
   assert.ok(overflow.canvas <= 1, `${label}: learning canvas overflow was ${overflow.canvas}px`);
 }
 
+async function readMobileLayout(page) {
+  return page.evaluate(() => {
+    const canvas = document.querySelector('.main-screen-canvas__content');
+    const screen = document.querySelector('.m1-b2-first-commitment, .m1-revised-finished-screen');
+    const closureShell = document.querySelector('.m1-closure-shell');
+    const fieldset = document.querySelector('.m1-b2-first-commitment fieldset');
+    const textarea = document.querySelector('#m1-priority-commitment');
+    const heading = document.querySelector('.m1-b2-first-commitment h1');
+    const rect = (element) => element?.getBoundingClientRect().toJSON() ?? null;
+
+    return {
+      viewportWidth: window.innerWidth,
+      canvas: canvas
+        ? {
+            clientWidth: canvas.clientWidth,
+            scrollWidth: canvas.scrollWidth,
+            rect: rect(canvas),
+          }
+        : null,
+      screen: screen
+        ? {
+            clientWidth: screen.clientWidth,
+            scrollWidth: screen.scrollWidth,
+            rect: rect(screen),
+          }
+        : null,
+      closureShell: closureShell
+        ? {
+            clientWidth: closureShell.clientWidth,
+            scrollWidth: closureShell.scrollWidth,
+            rect: rect(closureShell),
+          }
+        : null,
+      fieldset: rect(fieldset),
+      textarea: rect(textarea),
+      heading: heading
+        ? {
+            rect: rect(heading),
+            lineHeight: Number.parseFloat(getComputedStyle(heading).lineHeight),
+          }
+        : null,
+    };
+  });
+}
+
 test('Module 1 remains responsive and its mobile help dialog is readable and focus-safe', {
   timeout: 180_000,
 }, async (t) => {
@@ -230,6 +275,86 @@ test('Module 1 remains responsive and its mobile help dialog is readable and foc
   );
   await page.keyboard.press('Shift+Tab');
   assert.equal(await secondPriority.evaluate((element) => element === document.activeElement), true);
+
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto(`${APP_ORIGIN}/?moduleId=${MODULE_ID}&screenId=M1-S1-06B`);
+  const mobileCommitmentScreen = page.locator('.m1-b2-first-commitment');
+  await mobileCommitmentScreen.waitFor();
+  const mobileFieldset = mobileCommitmentScreen.locator('fieldset');
+  const mobileTextarea = page.locator('#m1-priority-commitment');
+  const commitmentLayout = await readMobileLayout(page);
+  assert.ok(
+    commitmentLayout.canvas
+      && commitmentLayout.screen
+      && commitmentLayout.fieldset
+      && commitmentLayout.textarea
+      && commitmentLayout.heading,
+  );
+  assert.ok(
+    commitmentLayout.canvas.scrollWidth - commitmentLayout.canvas.clientWidth <= 1,
+    `Screen 9 canvas overflow was ${commitmentLayout.canvas.scrollWidth - commitmentLayout.canvas.clientWidth}px`,
+  );
+  assert.ok(
+    commitmentLayout.screen.scrollWidth - commitmentLayout.screen.clientWidth <= 1,
+    `Screen 9 content overflow was ${commitmentLayout.screen.scrollWidth - commitmentLayout.screen.clientWidth}px`,
+  );
+  assert.ok(
+    commitmentLayout.fieldset.width >= commitmentLayout.screen.rect.width * 0.75,
+    `Screen 9 fieldset width ${commitmentLayout.fieldset.width}px was not meaningful`,
+  );
+  assert.ok(
+    commitmentLayout.textarea.width >= commitmentLayout.fieldset.width * 0.75,
+    `Screen 9 textarea width ${commitmentLayout.textarea.width}px was not meaningful`,
+  );
+  assert.ok(
+    commitmentLayout.heading.rect.width >= commitmentLayout.screen.rect.width * 0.75
+      && commitmentLayout.heading.rect.height <= commitmentLayout.heading.lineHeight * 4,
+    'Screen 9 heading should wrap in normal lines rather than a narrow letter-by-letter column',
+  );
+  assert.ok(
+    commitmentLayout.fieldset.x >= commitmentLayout.screen.rect.x - 1
+      && commitmentLayout.fieldset.right <= commitmentLayout.screen.rect.right + 1,
+    'Screen 9 fieldset should remain fully inside the learning screen',
+  );
+  assert.ok(
+    commitmentLayout.textarea.x >= commitmentLayout.screen.rect.x - 1
+      && commitmentLayout.textarea.right <= commitmentLayout.screen.rect.right + 1,
+    'Screen 9 textarea should remain fully inside the learning screen',
+  );
+
+  await page.getByRole('radio', { name: 'I want to improve participation and inclusion.' }).check();
+  const savedCommitment = 'I will check whose voice is missing before each activity.';
+  await mobileTextarea.fill(savedCommitment);
+  await page.getByRole('button', { name: 'Save commitment to portfolio' }).click();
+  await page.reload();
+  await mobileCommitmentScreen.waitFor();
+  assert.equal(await mobileTextarea.inputValue(), savedCommitment, 'Saved Screen 9 text should survive refresh');
+  assert.match(
+    await mobileCommitmentScreen.locator('[aria-live="polite"]').last().textContent(),
+    /saved/i,
+    'Screen 9 should restore its saved confirmation after refresh',
+  );
+  await assertNoHorizontalOverflow(page, 'Saved Screen 9 at 320px');
+
+  await page.goto(`${APP_ORIGIN}/?moduleId=${MODULE_ID}&screenId=M1-PLAYER-COMPLETE`);
+  await page.locator('.m1-revised-finished-screen').waitFor();
+  const completionLayout = await readMobileLayout(page);
+  assert.ok(completionLayout.canvas && completionLayout.screen && completionLayout.closureShell);
+  assert.ok(
+    completionLayout.canvas.scrollWidth - completionLayout.canvas.clientWidth <= 1,
+    `Screen 10 canvas overflow was ${completionLayout.canvas.scrollWidth - completionLayout.canvas.clientWidth}px`,
+  );
+  assert.ok(
+    completionLayout.screen.scrollWidth - completionLayout.screen.clientWidth <= 1,
+    `Screen 10 content overflow was ${completionLayout.screen.scrollWidth - completionLayout.screen.clientWidth}px`,
+  );
+  assert.ok(
+    completionLayout.closureShell.scrollWidth - completionLayout.closureShell.clientWidth <= 1,
+    `Screen 10 closure-shell overflow was ${
+      completionLayout.closureShell.scrollWidth - completionLayout.closureShell.clientWidth
+    }px`,
+  );
+  await assertNoHorizontalOverflow(page, 'Module 1 completion at 320px');
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto(`${APP_ORIGIN}/?moduleId=${MODULE_ID}&screenId=M1-S1-03`);

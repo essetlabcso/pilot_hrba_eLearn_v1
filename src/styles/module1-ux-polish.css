@@ -2293,6 +2293,61 @@
 }
 
 @media (max-width: 720px) {
+  .m1-b2-first-commitment > div,
+  .m1-revised-finished-screen,
+  .m1-closure-shell {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .m1-b2-first-commitment > div {
+    width: 100% !important;
+  }
+
+  .m1-b2-first-commitment > div > *,
+  .m1-b2-first-commitment fieldset,
+  .m1-b2-first-commitment textarea,
+  .m1-closure-shell > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .m1-b2-first-commitment fieldset > div {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+  }
+
+  .m1-b2-first-commitment fieldset legend {
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .m1-b2-first-commitment fieldset label,
+  .m1-b2-first-commitment [aria-label="Example commitments"] button,
+  .m1-b2-first-commitment .m1-b2-primary {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .m1-b2-first-commitment fieldset label {
+    flex-wrap: wrap;
+  }
+
+  .m1-b2-first-commitment fieldset label > span {
+    flex: 1 1 8rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .m1-b2-first-commitment textarea {
+    box-sizing: border-box;
+  }
+
   .m1-sector-grid,
   .m1-perspective-grid,
   .m1-action-priority-grid,
@@ -2423,6 +2478,18 @@
   .m1-s14-footer,
   .m1-completion-footer {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 360px) {
+  .m1-closure-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .m1-closure-header > div {
+    width: 100%;
+    min-width: 0;
   }
 }
 
