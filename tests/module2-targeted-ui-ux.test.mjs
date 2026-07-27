@@ -12,7 +12,7 @@ const styles = readFileSync(
 );
 
 test('Screen 6 exposes exact visible and programmatic divider guidance', () => {
-  assert.match(renderer, /Drag the blue divider left or right to compare the two approaches\./);
+  assert.match(renderer, /Drag the blue divider left or right to compare the Needs Lens and the Rights Lens\./);
   assert.match(renderer, /id="m2-final-water-compare-instruction"/);
   assert.match(renderer, /className="m2-final-compare m2-final-water-compare"[\s\S]*?aria-describedby="m2-final-water-compare-instruction"/);
   assert.match(renderer, /type="range"[\s\S]*?aria-describedby="m2-final-water-compare-instruction"/);

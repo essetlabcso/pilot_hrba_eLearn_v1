@@ -571,7 +571,7 @@ function Screen13WaterProjects({
         </div>
       </section>
       <p id="m2-final-water-compare-instruction" className="m2-final-interaction-instruction">
-        Drag the blue divider left or right to compare the two approaches.
+        Drag the blue divider left or right to compare the Needs Lens and the Rights Lens.
       </p>
       <section
         className="m2-final-compare m2-final-water-compare"

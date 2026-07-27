@@ -131,7 +131,7 @@ test('Module 2 targeted instructions, interaction states, and responsive layouts
   await seedModule2(page, '1.3', 5);
   await page.goto(`${APP_ORIGIN}/module-2/screen-1-3`);
   await page.getByRole('heading', { level: 1, name: 'A Tale of Two Water Projects' }).waitFor();
-  const screen6Instruction = page.getByText('Drag the blue divider left or right to compare the two approaches.', { exact: true });
+  const screen6Instruction = page.getByText('Drag the blue divider left or right to compare the Needs Lens and the Rights Lens.', { exact: true });
   await screen6Instruction.waitFor();
   const range = page.getByRole('slider', { name: 'Compare Needs Lens and Rights Lens' });
   assert.equal(await range.getAttribute('aria-describedby'), 'm2-final-water-compare-instruction');
