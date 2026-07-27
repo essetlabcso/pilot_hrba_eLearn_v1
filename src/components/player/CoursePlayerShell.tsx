@@ -181,7 +181,11 @@ export default function CoursePlayerShell({
     }
 
     const handleMobileToolsEscape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || !window.matchMedia('(max-width: 640px)').matches) {
+      if (
+        event.key !== 'Escape' ||
+        state.activeModal !== null ||
+        !window.matchMedia('(max-width: 640px)').matches
+      ) {
         return;
       }
 
@@ -191,7 +195,7 @@ export default function CoursePlayerShell({
 
     document.addEventListener('keydown', handleMobileToolsEscape);
     return () => document.removeEventListener('keydown', handleMobileToolsEscape);
-  }, [mobileToolsOpen]);
+  }, [mobileToolsOpen, state.activeModal]);
 
   // Filter player-specific screens from the sequence data
   const allPlayerScreens = sequenceData.filter(

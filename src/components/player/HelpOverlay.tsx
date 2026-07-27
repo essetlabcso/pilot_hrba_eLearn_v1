@@ -109,19 +109,19 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
       }}
     >
       {/* Target Highlights and Arrows */}
-      <div style={{ position: 'absolute', top: '15px', left: '20px', textAlign: 'left' }}>
+      <div className="help-overlay__callout help-overlay__callout--course" style={{ position: 'absolute', top: '15px', left: '20px', textAlign: 'left' }}>
         <div style={{ fontSize: '1.5rem', marginBottom: '0.2rem' }}>⬆️</div>
         <strong>Course Info</strong>
         <p style={{ fontSize: '0.85rem', color: '#94a3b8', maxWidth: '240px' }}>Displays the current module and screen progression details.</p>
       </div>
 
-      <div style={{ position: 'absolute', top: '15px', right: '20px', textAlign: 'right' }}>
+      <div className="help-overlay__callout help-overlay__callout--navigation" style={{ position: 'absolute', top: '15px', right: '20px', textAlign: 'right' }}>
         <div style={{ fontSize: '1.5rem', marginBottom: '0.2rem' }}>⬆️</div>
         <strong>Player Navigation Controls</strong>
         <p style={{ fontSize: '0.85rem', color: '#94a3b8', maxWidth: '300px' }}>Move forward or backward screen by screen. Exit returns you to the platform catalog, saving your progress state.</p>
       </div>
 
-      <div style={{ position: 'absolute', top: '100px', left: '20px', textAlign: 'left' }}>
+      <div className="help-overlay__callout help-overlay__callout--tools" style={{ position: 'absolute', top: '100px', left: '20px', textAlign: 'left' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span>⬅️</span>
           <div>
@@ -136,7 +136,7 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
         </div>
       </div>
 
-      <div style={{ position: 'absolute', bottom: '150px', left: '20px', textAlign: 'left' }}>
+      <div className="help-overlay__callout help-overlay__callout--media" style={{ position: 'absolute', bottom: '150px', left: '20px', textAlign: 'left' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span>⬅️</span>
           <div>
@@ -151,6 +151,7 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
       {/* Main prompt box */}
       <div 
         ref={promptRef}
+        className="help-overlay__prompt"
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
         style={{
