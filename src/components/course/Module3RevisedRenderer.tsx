@@ -144,22 +144,22 @@ const module3SnapshotSections = [
   },
 ];
 
-const module3ContextAudioAsset = {
+export const module3ContextAudioAsset = {
   src: '/assets/hrba/audio/module-3/m3-s05-context-inequality-scan-audio-deep-dive_v2.mp3',
   transcript: '/assets/hrba/audio/module-3/m3-s05-context-inequality-scan-audio-transcript.txt',
   icon: '/assets/hrba/audio/module-3/audio-headphones-icon.png',
 };
 
-const module3ContextScanIntro = [
+export const module3ContextScanIntro = [
   'Situation analysis is the starting point for HRBA project design. Before choosing activities, objectives, or indicators, examine what is happening and who may experience the issue differently.',
   'The same issue may affect groups differently because of inequality, discrimination, access to information, distance, cost, disability, gender, livelihood, influence, or other barriers. These possible patterns are questions for analysis, not confirmed facts.',
   'In this scan, distinguish what the case shows, a possible explanation, and what information still needs safe verification before the design is finalized.',
 ];
 
-const module3ContextKeyIdea =
+export const module3ContextKeyIdea =
   'Do not choose activities too early. First understand the context, the inequalities, and the barriers that explain the problem.';
 
-const module3ContextExplainCards = [
+export const module3ContextExplainCards = [
   {
     title: 'What this section is about',
     text: 'Check what is visible, who may be affected differently, what barriers may exist, what is still assumed, and what evidence can be checked safely.',
@@ -182,7 +182,7 @@ const module3ContextExplainCards = [
   },
 ];
 
-const module3ContextEvidence = [
+export const module3ContextEvidence = [
   {
     label: '1. What is happening?',
     items: [
@@ -240,7 +240,7 @@ type Module3ContextChoice = {
   visibleEvidence?: string[];
 };
 
-const module3ContextChoices: Module3ContextChoice[] = [
+export const module3ContextChoices: Module3ContextChoice[] = [
   {
     id: 'influence',
     label: 'Option A',
@@ -375,7 +375,7 @@ const module3ContextChoices: Module3ContextChoice[] = [
   },
 ];
 
-const module3ContextOutputGroups = [
+export const module3ContextOutputGroups = [
   {
     id: 'voice',
     label: 'Unequal influence and decision transparency',
@@ -409,7 +409,7 @@ const module3ContextOutputGroups = [
   },
 ];
 
-const module3ContextCarryForward = [
+export const module3ContextCarryForward = [
   {
     label: 'Learning from the Jiru Amba case',
     text: 'The plan should not rely on attendance, activity lists, budget lines, or inclusion statements alone. It should explain who may be affected differently, what barriers shape participation and benefit, and what evidence still needs safe verification.',
@@ -424,7 +424,7 @@ const module3ContextCarryForward = [
   },
 ];
 
-const contextScanTemplateMarkdown = `# Context and Inequality Scan Template
+export const contextScanTemplateMarkdown = `# Context and Inequality Scan Template
 
 Use this template before finalizing project activities. It helps your CSO check whether the project idea is based on real HRBA analysis, not only visible needs, activities, or attendance.
 
@@ -4169,7 +4169,7 @@ const actorCategoryLabels: Record<ActorCategory, string> = {
   generalized_custom_actor: 'Generalized actor role',
 };
 
-const screen9CustomActorCategoryOptions: Array<{ value: ActorCategory; label: string }> = [
+export const screen9CustomActorCategoryOptions: Array<{ value: ActorCategory; label: string }> = [
   { value: 'primary_public_responsibility', label: 'Public responsibility' },
   { value: 'service_or_local_implementation', label: 'Service or local implementation' },
   { value: 'community_influence_actor', label: 'Community influence actor' },
@@ -4232,7 +4232,7 @@ const screen9EngagementApproachOptions: Array<{ value: Screen9EngagementApproach
   { value: 'support_capacity', label: 'Support capacity' },
 ];
 
-const screen9PortfolioSummary = 'You completed a Power and Influence Map. You identified who can enable change, who may block or delay it, whose voice should be strengthened, what engagement approach may be needed, and what question should be carried into root-cause and capacity-gap analysis.';
+export const screen9PortfolioSummary = 'You completed a Power and Influence Map. You identified who can enable change, who may block or delay it, whose voice should be strengthened, what engagement approach may be needed, and what question should be carried into root-cause and capacity-gap analysis.';
 
 function getPracticeState(state: LearningState, screenId: string): Record<string, unknown> {
   const value = state.practiceCheckState[practiceKey(screenId)];
@@ -4398,7 +4398,7 @@ function getActorCategory(actorId: string, actors: Screen8ActorOption[] | Module
   return actor?.category || 'generalized_custom_actor';
 }
 
-function validateGeneralActorLabel(value: string) {
+export function validateGeneralActorLabel(value: string) {
   const trimmed = value.trim();
   const unsafePattern =
     /(\b\d{5,}\b)|(\b(corrupt|abusive|guilty|stole|attacked|party|political|complaint|accused|named|village|kebele\s+\w+)\b)|[@#<>[\]{}\\/]/i;
@@ -4585,7 +4585,7 @@ function buildExportedActorsForScreen9(
   return Array.from(exported.values());
 }
 
-function getScreen9ActorOptions(state: LearningState): Module3Actor[] {
+export function getScreen9ActorOptions(state: LearningState): Module3Actor[] {
   const screen8Output = getScreen8SavedOutput(state);
   const screen7Output = getScreen7SavedOutput(state);
   const actors = new Map<string, Module3Actor>();
@@ -4751,7 +4751,7 @@ function getDefaultActorRating(actor: Module3Actor): Screen9ActorRating {
   };
 }
 
-function createEmptyActorRating(actor: Module3Actor): Screen9ActorRating {
+export function createEmptyActorRating(actor: Module3Actor): Screen9ActorRating {
   const defaultRating = getDefaultActorRating(actor);
   return {
     actorId: actor.actorId,
@@ -4801,14 +4801,14 @@ const powerMapZoneLabels: Record<Screen9PowerMapZone['zoneId'], string> = {
   monitor_lightly: 'Lower formal authority / lower practical influence',
 };
 
-const powerMapZoneInterpretations: Record<Screen9PowerMapZone['zoneId'], string> = {
+export const powerMapZoneInterpretations: Record<Screen9PowerMapZone['zoneId'], string> = {
   work_closely: 'These actors combine formal responsibility and practical influence. Engage early and clarify responsibility.',
   engage_carefully: 'These actors hold formal responsibility but may need operational support, coordination, or mandate clarification.',
   strengthen_voice: 'These actors have practical influence without equivalent formal authority. Verify how their influence affects access and participation.',
   monitor_lightly: 'Keep the relationship proportionate and verify whether authority or influence changes.',
 };
 
-function generatePowerMapZones(ratings: Screen9ActorRating[]): Screen9PowerMapZone[] {
+export function generatePowerMapZones(ratings: Screen9ActorRating[]): Screen9PowerMapZone[] {
   const zones: Screen9PowerMapZone[] = [
     { zoneId: 'work_closely', zoneLabel: powerMapZoneLabels.work_closely, actorIds: [] },
     { zoneId: 'engage_carefully', zoneLabel: powerMapZoneLabels.engage_carefully, actorIds: [] },
@@ -4824,23 +4824,23 @@ function generatePowerMapZones(ratings: Screen9ActorRating[]): Screen9PowerMapZo
   return zones;
 }
 
-function getScreen9RoleLabel(role: LikelyChangeRole | '') {
+export function getScreen9RoleLabel(role: LikelyChangeRole | '') {
   return likelyRoleOptions.find((option) => option.id === role)?.label || 'Not selected';
 }
 
-function getScreen9ApproachLabel(approach: Screen9EngagementApproach | '') {
+export function getScreen9ApproachLabel(approach: Screen9EngagementApproach | '') {
   return screen9EngagementApproachOptions.find((option) => option.value === approach)?.label || 'Not selected';
 }
 
-function getScreen9InfluenceLabel(value: Screen9InfluenceLevel | '') {
+export function getScreen9InfluenceLabel(value: Screen9InfluenceLevel | '') {
   return screen9InfluenceOptions.find((option) => option.value === value)?.label || 'Not rated';
 }
 
-function getScreen9SupportLabel(value: Screen9SupportLevel | '') {
+export function getScreen9SupportLabel(value: Screen9SupportLevel | '') {
   return screen9SupportOptions.find((option) => option.value === value)?.label || 'Not rated';
 }
 
-function getScreen9SummaryMessages(ratings: Screen9ActorRating[]) {
+export function getScreen9SummaryMessages(ratings: Screen9ActorRating[]) {
   const messages: string[] = [];
   if (ratings.some((rating) => rating.category === 'rights_holder_group' && rating.influenceLevel === 'low' && rating.supportInterestLevel === 'high')) {
     messages.push('Rights-holder voice needs strengthening. Your map shows that some affected groups care strongly about the issue but may have limited influence over decisions. The design should include safer, earlier, and more accessible ways for them to shape priorities.');
@@ -4855,7 +4855,7 @@ function getScreen9SummaryMessages(ratings: Screen9ActorRating[]) {
   return messages;
 }
 
-function deriveScreen9Feedback(ratings: Screen9ActorRating[], hasUnsafeLabel: boolean): {
+export function deriveScreen9Feedback(ratings: Screen9ActorRating[], hasUnsafeLabel: boolean): {
   detectedInsights: Screen9Submission['detectedInsights'];
   feedbackLevel: Screen9FeedbackLevel;
   warnings: string[];
@@ -4927,7 +4927,7 @@ function getScreen8FeedbackCopy(feedbackLevel: Screen8FeedbackLevel) {
   return 'Your map is broad. Focus on the actors whose role changes the design: who must act, who can support rights-holder voice, and what the CSO can realistically do.';
 }
 
-function getScreen9FeedbackCopy(feedbackLevel: Screen9FeedbackLevel) {
+export function getScreen9FeedbackCopy(feedbackLevel: Screen9FeedbackLevel) {
   if (feedbackLevel === 'strong') {
     return 'Strong power map. You identified actors with formal responsibility, actors with practical influence, and rights-holder groups whose voice may need strengthening. Your design should now use this analysis to engage high-influence actors safely and strengthen rights-holder participation.';
   }
@@ -4949,7 +4949,7 @@ function getScreen9FeedbackCopy(feedbackLevel: Screen9FeedbackLevel) {
   return 'Use the map to focus: who can enable change, who may block or delay it, whose voice needs strengthening, and what should be explored next?';
 }
 
-function getEmptyScreen9OwnCsoDraft(): Screen9OwnCsoDraft {
+export function getEmptyScreen9OwnCsoDraft(): Screen9OwnCsoDraft {
   return {
     projectIssueOrBarrier: '',
     actorOrRoleCategory: '',
@@ -4964,7 +4964,7 @@ function getEmptyScreen9OwnCsoDraft(): Screen9OwnCsoDraft {
   };
 }
 
-function hasUnsafePowerMapDetail(value: string) {
+export function hasUnsafePowerMapDetail(value: string) {
   const hasLikelyFullName = /\b[A-Z][a-z]+ [A-Z][a-z]+\b/.test(value);
   const hasSensitiveDetail = /\b(\d{2,}|survivor|rape|assault|HIV|diagnosis|medical record|complaint against|accused|killed|beaten|confidential political)\b/i.test(value);
   return hasLikelyFullName || hasSensitiveDetail;
@@ -5066,7 +5066,7 @@ Examples:
 - What local norms or systems keep the barrier in place?
 `;
 
-function buildPowerInfluenceMapTemplateHtml() {
+export function buildPowerInfluenceMapTemplateHtml() {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Power and Influence Map Template</title></head><body>${powerInfluenceMapTemplateMarkdown
     .split('\n')
     .map((line) => {
@@ -6059,7 +6059,7 @@ const screen16Assets = {
 };
 
 const screen14WeakObjective = 'Improve community participation and service access through training, meetings, feedback, and local development activities in Jiru Amba.';
-const screen14Options: Record<Screen14Field, string[]> = {
+export const screen14Options: Record<Screen14Field, string[]> = {
   rightsHolders: ['Women vendors affected by market-service decisions', 'Women', 'Persons with disabilities facing accessibility barriers', 'Youth seeking practical livelihood opportunities', 'Low-income households facing cost or access barriers', 'Communities in remote kebeles', 'Informal workers outside formal participation channels', 'Another generalized group'],
   barriers: ['Limited influence over priorities', 'Late, unclear, or inaccessible information', 'Accessibility or reasonable accommodation barriers', 'Weak feedback and response', 'Distance, transport, cost, timing, or care-work barriers', 'Unclear pathway from activity to practical benefit', 'Power or gatekeeping patterns', 'Unsafe or untrusted participation channels'],
   responsibilities: ['Woreda planning office', 'Relevant sector office', 'Market office or market committee', 'Water committee', 'Health office or health post management', 'Kebele structure with woreda follow-up', 'Service or committee actor connected to the issue', 'Awra as facilitator and support actor, not sole responder'],
@@ -6087,7 +6087,7 @@ const screen16AssumptionRisks = ['Responsible actors are willing to review and r
 const screen16WatchPoints = ['One group becomes silent or stops participating', 'Feedback includes names or complaint details', 'People do not know what changed', 'Responsible actor response is delayed or unclear', 'Accessibility support is not provided', 'Activities drift back to generic training or meetings', 'Awra is expected to solve public/service issues alone', 'Indicators count delivery but not influence, access, response, or benefit'];
 const outputOnlyIndicatorPattern = /number of community meetings held|number of people trained|meetings held|people trained/i;
 
-const objectiveRepairTemplateMarkdown = `# HRBA Objective Repair Template
+export const objectiveRepairTemplateMarkdown = `# HRBA Objective Repair Template
 
 ## 1. Current objective
 
@@ -6186,7 +6186,7 @@ function getScreen14Feedback(selections: Screen14Selections) {
   return messages;
 }
 
-function buildScreen14Submission(selections: Screen14Selections, ownCsoOutput: Screen14OwnCsoOutput | null): Screen14Submission {
+export function buildScreen14Submission(selections: Screen14Selections, ownCsoOutput: Screen14OwnCsoOutput | null): Screen14Submission {
   return {
     screenId: 'M3-R14',
     route: '/module-3/screen-3-14',
@@ -6206,7 +6206,7 @@ function buildScreen14Submission(selections: Screen14Selections, ownCsoOutput: S
   };
 }
 
-function getEmptyScreen14OwnCsoDraft(): Screen14OwnCsoDraft {
+export function getEmptyScreen14OwnCsoDraft(): Screen14OwnCsoDraft {
   return { originalObjective: '', rightsHolderGroups: '', priorityBarriers: '', responsibleActors: '', capacityAccountabilityChange: '', realisticProjectScope: '' };
 }
 
@@ -8686,7 +8686,7 @@ type ContextSnapshotViewModel = {
   orderingNote: string;
 };
 
-function buildContextSnapshotViewModel({
+export function buildContextSnapshotViewModel({
   status,
   affectedGroups,
   barriers,
@@ -8741,7 +8741,7 @@ function buildContextSnapshotViewModel({
   };
 }
 
-function ContextInequalitySnapshot({
+export function ContextInequalitySnapshot({
   viewModel,
   validationMessage,
 }: {
@@ -8787,7 +8787,7 @@ function ContextInequalitySnapshot({
           {viewModel.bands.map((band, index) => (
             <article key={band.id}>
               <h5>{index + 1}. {band.title} ({band.items.length} {band.items.length === 1 ? 'item' : 'items'})</h5>
-              {band.items.length > 0 ? <ul>{band.items.map((item) => <li key={item}>{item}</li>)}</ul> : <p>{band.emptyGuidance}</p>}
+{band.items.length > 0 ? <ul>{band.items.map((item) => <li key={item}>{item}</li>)}</ul> : <p>{band.emptyGuidance}</p>}
             </article>
           ))}
         </div>
@@ -8808,432 +8808,96 @@ function ContextInequalityScanScreen({
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  type ContextScanStageId = 1 | 2 | 3 | 4 | 5 | 6;
-  type ContextScanFilter = 'influence' | 'access' | 'evidence' | 'accountability' | 'all';
-
   const savedScreen5 = getPracticeState(state, screen.id);
-  const savedSelectedContextSignals = Array.isArray(savedScreen5.selectedContextSignals)
-    ? Array.from(new Set((savedScreen5.selectedContextSignals as unknown[])
-      .filter((value): value is string => typeof value === 'string' && module3ContextChoices.some((choice) => choice.id === value))))
-    : [];
-  const hasSavedScan = savedScreen5.submitted === true
-    && savedSelectedContextSignals.length >= 3
-    && Boolean(savedScreen5.contextInequalityScan && typeof savedScreen5.contextInequalityScan === 'object');
-  const savedContextScan = hasSavedScan
-    ? savedScreen5.contextInequalityScan as Record<string, unknown>
+  const savedScan = (savedScreen5.submitted === true && savedScreen5.contextInsight)
+    ? (savedScreen5.contextInsight as { priorityContextFactors?: string[]; primaryAffectedGroup?: string; keyInequalityGap?: string })
     : null;
-  const savedOwnScan = hasSavedScan
-    && savedContextScan?.optionalOwnCsoScan
-    && typeof savedContextScan.optionalOwnCsoScan === 'object'
-      ? savedContextScan.optionalOwnCsoScan as Record<string, unknown>
-      : null;
 
-  const [selected, setSelected] = useState<string[]>(savedSelectedContextSignals);
-  const [generatedSelected, setGeneratedSelected] = useState<string[]>(hasSavedScan ? savedSelectedContextSignals : []);
-  const [submitted, setSubmitted] = useState(hasSavedScan);
-  const [validationMessage, setValidationMessage] = useState('');
-  const [activeStage, setActiveStage] = useState<ContextScanStageId>(hasSavedScan ? 5 : 1);
-  const [understandComplete, setUnderstandComplete] = useState(hasSavedScan);
-  const [contextTranscriptOpen, setContextTranscriptOpen] = useState(false);
-  const [contextTranscript, setContextTranscript] = useState('');
-  const [exampleComplete, setExampleComplete] = useState(hasSavedScan);
-  const [activeFilter, setActiveFilter] = useState<ContextScanFilter>('influence');
-  const [expandedSignalIds, setExpandedSignalIds] = useState<string[]>([]);
-  const [checkMatches, setCheckMatches] = useState<Record<string, string>>(hasSavedScan ? {
-    visible: 'What can be seen first',
-    affected: 'Who may experience the issue differently',
-    barrier: 'What blocks access, participation, benefit, influence, or follow-up',
-    assumption: 'What the project believes but has not verified',
-    safe: 'What can be checked without exposing people',
-  } : {});
-  const [bestQuestionAnswer, setBestQuestionAnswer] = useState(hasSavedScan ? 'influence' : '');
-  const [unsafeEvidenceAnswer, setUnsafeEvidenceAnswer] = useState(hasSavedScan ? 'names' : '');
-  const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
-  const [copyStatus, setCopyStatus] = useState('');
-  const [ownScan, setOwnScan] = useState({
-    projectIdea: typeof savedOwnScan?.projectIdea === 'string' ? savedOwnScan.projectIdea : '',
-    visible: typeof savedOwnScan?.visible === 'string' ? savedOwnScan.visible : '',
-    affectedDifferently: typeof savedOwnScan?.affectedDifferently === 'string' ? savedOwnScan.affectedDifferently : '',
-    barriers: typeof savedOwnScan?.barriers === 'string' ? savedOwnScan.barriers : '',
-    assumptions: typeof savedOwnScan?.assumptions === 'string' ? savedOwnScan.assumptions : '',
-    safeEvidence: typeof savedOwnScan?.safeEvidence === 'string' ? savedOwnScan.safeEvidence : '',
-    designChange: typeof savedOwnScan?.designChange === 'string' ? savedOwnScan.designChange : '',
-  });
-  const [ownSubmitted, setOwnSubmitted] = useState(Boolean(savedOwnScan));
-  const [ownValidationMessage, setOwnValidationMessage] = useState('');
-  const outputRef = useRef<HTMLElement>(null);
-  const titleId = `${screen.id}-title`;
-  const taskId = `${screen.id}-practice`;
-  const transcriptId = `${screen.id}-audio-transcript`;
-  const outputSelection = submitted ? generatedSelected : selected;
-  const selectedChoices = module3ContextChoices.filter((choice) => selected.includes(choice.id));
-  const outputChoices = module3ContextChoices.filter((choice) => outputSelection.includes(choice.id));
-  const selectedStrong = outputChoices.filter((choice) => choice.quality === 'strong').length;
-  const selectedPartial = outputChoices.filter((choice) => choice.quality === 'partial').length;
-  const selectedSurfaceChoices = outputChoices.filter((choice) => choice.quality === 'surface');
-  const selectedSurface = selectedSurfaceChoices.length;
-  const selectedVisibleEvidence = Array.from(new Set(outputChoices.flatMap((choice) => choice.visibleEvidence || [])));
-  const selectedAffectedGroups = Array.from(new Set(outputChoices.flatMap((choice) => choice.affectedGroups)));
-  const selectedBarriers = Array.from(new Set(outputChoices.flatMap((choice) => choice.barriers)));
-  const selectedEvidence = Array.from(new Set([
-    ...outputChoices.flatMap((choice) => choice.evidence),
-    ...(outputChoices.length > 0 ? ['No names, complaint details, exact sensitive locations, survivor stories, political accusations, or identifiable personal information'] : []),
-  ]));
-  const currentHasGroupSignal = selectedChoices.some((choice) => choice.categories.includes('group'));
-  const currentHasBarrierSignal = selectedChoices.some((choice) => choice.categories.includes('barrier'));
-  const currentHasEvidenceSignal = selectedChoices.some((choice) => choice.categories.includes('evidence'));
-  const currentOnlySurfaceEvidence = selected.length > 0 && selectedChoices.every((choice) => choice.quality === 'surface' || choice.id === 'final-meeting');
-  const outputHasGroupSignal = outputChoices.some((choice) => choice.categories.includes('group'));
-  const outputHasBarrierSignal = outputChoices.some((choice) => choice.categories.includes('barrier'));
-  const outputHasEvidenceSignal = outputChoices.some((choice) => choice.categories.includes('evidence'));
-  const onlySurfaceEvidence = outputSelection.length > 0 && outputChoices.every((choice) => choice.quality === 'surface' || choice.id === 'final-meeting');
-  const generatedSignature = generatedSelected.join('|');
-  const currentSignature = selected.join('|');
-  const outputIsStale = submitted && generatedSignature !== currentSignature;
-  const readyToGenerate = selected.length >= 2 && (currentHasGroupSignal || currentHasBarrierSignal || currentHasEvidenceSignal) && !currentOnlySurfaceEvidence;
-  const contextRequirements = [
-    {
-      complete: selected.length >= 3,
-      remaining: `Select ${Math.max(0, 3 - selected.length)} more context signal${Math.max(0, 3 - selected.length) === 1 ? '' : 's'}.`,
-    },
-    { complete: currentHasGroupSignal, remaining: 'Include at least one affected-group signal.' },
-    { complete: currentHasBarrierSignal, remaining: 'Include at least one possible-barrier signal.' },
-    { complete: currentHasEvidenceSignal, remaining: 'Include at least one safe-evidence signal.' },
-    { complete: selected.length > 0 && !currentOnlySurfaceEvidence, remaining: 'Include at least one signal that goes beyond surface activity evidence.' },
-  ];
-  const remainingContextRequirements = contextRequirements
-    .filter((requirement) => !requirement.complete)
-    .map((requirement) => requirement.remaining);
-  const completedContextRequirements = contextRequirements.length - remainingContextRequirements.length;
-  const feedbackTone =
-    selectedStrong >= 4 && outputHasGroupSignal && outputHasBarrierSignal && outputHasEvidenceSignal
-      ? 'strong'
-      : onlySurfaceEvidence
-        ? 'support'
-        : 'partial';
-  const feedbackCopy = {
-    strong: 'Strong scan. Your selections look deeper than visible evidence in the plan. You noticed that participation, accessibility, information flow, livelihood constraints, influence, and feedback response may not be equal for all groups.',
-    partial: 'Good start. You identified some important signals, but the scan needs one more layer. A context scan is useful when it moves from observation to design decisions.',
-    support: 'This scan is still too close to visible evidence. Attendance, activity lists, budget lines, or inclusion statements alone show that a plan exists, but they do not prove that the design is rights-based.',
-  }[feedbackTone];
-  const selectedContextSignalGroups = module3ContextOutputGroups.reduce<Record<string, string[]>>((groups, group) => {
-    groups[group.id] = outputChoices
-      .filter((choice) => choice.outputGroup === group.id)
-      .map((choice) => choice.id);
-    return groups;
-  }, {});
-  const designImplication =
-    'This scan suggests that Awra should not finalize activities only from the visible plan. The design may need earlier outreach to lower-influence groups, more accessible information channels, adjusted meeting timing and locations, safer feedback and response arrangements, and a clearer process for showing how rights-holder priorities changed the plan.';
-  const carryForwardText =
-    `${module3ContextCarryForward[0].text} Carry this scan into the next tools. The standards map will help clarify which rights, policies, and public responsibilities are connected to the issue. The rights-holder and barrier map will help identify the affected groups more precisely. Later, the design repair screens will use these findings to improve objectives, activities, accountability, risk, and indicators.`;
-  const contextScanSummary =
-    'You completed a first HRBA context and inequality scan. You looked beyond the visible plan and identified who may be affected differently, what barriers may exist, what assumptions should be verified safely, and what this may mean for the design. You will use this scan in the next step to connect the issue to relevant rights, standards, policies, and public responsibilities.';
-  const readSavedSnapshotItems = (field: string) => {
-    const value = savedContextScan?.[field];
-    return Array.isArray(value)
-      ? value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
-      : [];
-  };
-  const useSavedSnapshotOrdering = Boolean(
-    hasSavedScan && generatedSignature === savedSelectedContextSignals.join('|'),
+  const [selectedFactors, setSelectedFactors] = useState<string[]>(
+    savedScan?.priorityContextFactors || (Array.isArray(savedScreen5.selectedContextSignals) && savedScreen5.selectedContextSignals.length ? savedScreen5.selectedContextSignals.slice(0, 2) : [])
   );
-  const orderedSnapshotChoices = outputSelection
-    .map((choiceId) => module3ContextChoices.find((choice) => choice.id === choiceId))
-    .filter((choice): choice is (typeof module3ContextChoices)[number] => Boolean(choice));
-  const orderedSnapshotGroups = Array.from(new Set(orderedSnapshotChoices.flatMap((choice) => choice.affectedGroups)));
-  const orderedSnapshotBarriers = Array.from(new Set(orderedSnapshotChoices.flatMap((choice) => choice.barriers)));
-  const orderedSnapshotEvidence = Array.from(new Set([
-    ...orderedSnapshotChoices.flatMap((choice) => choice.evidence),
-    ...(orderedSnapshotChoices.length > 0 ? ['No names, complaint details, exact sensitive locations, survivor stories, political accusations, or identifiable personal information'] : []),
-  ]));
-  const snapshotStatus: ContextSnapshotStatus = outputIsStale
-    ? 'stale'
-    : submitted
-      ? 'current'
-      : selected.length > 0
-        ? 'partial'
-        : 'empty';
-  const snapshotAffectedGroups = useSavedSnapshotOrdering
-    ? readSavedSnapshotItems('selectedJiruAmbaAffectedGroups')
-    : submitted
-      ? selectedAffectedGroups
-      : orderedSnapshotGroups;
-  const snapshotBarriers = useSavedSnapshotOrdering
-    ? readSavedSnapshotItems('selectedBarriers')
-    : submitted
-      ? selectedBarriers
-      : orderedSnapshotBarriers;
-  const snapshotEvidence = useSavedSnapshotOrdering
-    ? readSavedSnapshotItems('safeEvidenceToVerify')
-    : submitted
-      ? selectedEvidence
-      : orderedSnapshotEvidence;
-  const snapshotDesignImplication = useSavedSnapshotOrdering
-    && typeof savedContextScan?.generatedDesignImplications === 'string'
-    && savedContextScan.generatedDesignImplications.trim()
-      ? savedContextScan.generatedDesignImplications
-      : designImplication;
-  const snapshotContextSummary = useSavedSnapshotOrdering
-    && typeof savedScreen5.contextScanSummary === 'string'
-    && savedScreen5.contextScanSummary.trim()
-      ? savedScreen5.contextScanSummary
-      : contextScanSummary;
-  const contextSnapshotViewModel = buildContextSnapshotViewModel({
-    status: snapshotStatus,
-    affectedGroups: snapshotAffectedGroups,
-    barriers: snapshotBarriers,
-    evidence: snapshotEvidence,
-    designImplications: submitted ? [snapshotDesignImplication] : [],
-    contextSummary: submitted ? snapshotContextSummary : '',
-    carryForwardNote: submitted ? carryForwardText : '',
-    orderingNote: useSavedSnapshotOrdering
-      ? 'Ordering source for all four bands: saved generated order.'
-      : submitted
-        ? 'Ordering source for all four bands: the current generated output order, which follows the existing Screen 5 option order.'
-        : 'Ordering source for all four bands: stable learner-selection order; the original Screen 5 option order is the fallback when no selection sequence is available.',
-  });
-  const ownScanText = Object.values(ownScan).join(' ');
-  const unsafeOwnDetail = /\b[A-Z][a-z]+ [A-Z][a-z]+\b|\b\d{3,}\b|complaint|survivor|abuse|assault|rape|exact location|kebele \d+|woreda office/i.test(ownScanText);
-  const matchPrompts = [
-    ['visible', 'Visible evidence', 'What can be seen first'],
-    ['affected', 'Affected differently', 'Who may experience the issue differently'],
-    ['barrier', 'Barrier', 'What blocks access, participation, benefit, influence, or follow-up'],
-    ['assumption', 'Assumption', 'What the project believes but has not verified'],
-    ['safe', 'Safe evidence', 'What can be checked without exposing people'],
-  ];
-  const matchOptions = matchPrompts.map(([, , answer]) => answer);
-  const checkMatchesComplete = matchPrompts.every(([id, , answer]) => checkMatches[id] === answer);
-  const checkComplete =
-    checkMatchesComplete &&
-    bestQuestionAnswer === 'influence' &&
-    unsafeEvidenceAnswer === 'names';
-  const stageDefinitions: Array<{ id: ContextScanStageId; short: string; label: string; unlocked: boolean; complete: boolean }> = [
-    { id: 1, short: 'Understand', label: 'Understand the concept', unlocked: true, complete: understandComplete },
-    { id: 2, short: 'Check', label: 'Check your understanding', unlocked: understandComplete, complete: checkComplete },
-    { id: 3, short: 'Example', label: 'See a worked example', unlocked: checkComplete, complete: exampleComplete },
-    { id: 4, short: 'Practice', label: 'Practice with Jiru Amba', unlocked: exampleComplete, complete: submitted },
-    { id: 5, short: 'Review', label: 'Review your scan', unlocked: submitted, complete: submitted && !outputIsStale },
-    { id: 6, short: 'Apply/Download', label: 'Apply and download', unlocked: exampleComplete, complete: submitted },
-  ];
-  const filterDefinitions: Array<{ id: ContextScanFilter; label: string; choiceIds?: string[] }> = [
-    { id: 'influence', label: 'Influence and decision-making', choiceIds: ['influence', 'final-meeting', 'ranking-gap'] },
-    { id: 'access', label: 'Access and participation barriers', choiceIds: ['women-barriers', 'disability-access', 'remote-information'] },
-    { id: 'evidence', label: 'Evidence and assumptions', choiceIds: ['youth-pathway', 'admin-plan', 'consulted-claim'] },
-    { id: 'accountability', label: 'Accountability and feedback', choiceIds: ['feedback-boxes', 'ranking-gap', 'consulted-claim'] },
-    { id: 'all', label: 'Show all' },
-  ];
-  const filteredChoices = activeFilter === 'all'
-    ? module3ContextChoices
-    : module3ContextChoices.filter((choice) => filterDefinitions.find((filter) => filter.id === activeFilter)?.choiceIds?.includes(choice.id));
+  const [selectedAffectedGroup, setSelectedAffectedGroup] = useState<string>(
+    savedScan?.primaryAffectedGroup || (Array.isArray(savedScreen5.affectedGroupsToExamine) && savedScreen5.affectedGroupsToExamine.length ? savedScreen5.affectedGroupsToExamine[0] : '')
+  );
+  const [ownNote, setOwnNote] = useState<string>(
+    typeof savedScreen5.optionalNote === 'string' ? savedScreen5.optionalNote : ''
+  );
+  const [activeStage, setActiveStage] = useState<1 | 2>(
+    savedScan || (selectedFactors.length >= 2 && selectedAffectedGroup) ? 2 : 1
+  );
+  const [showCaseFacts, setShowCaseFacts] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-    fetch(module3ContextAudioAsset.transcript)
-      .then((response) => response.ok ? response.text() : '')
-      .then((text) => {
-        if (active) setContextTranscript(text);
-      })
-      .catch(() => {
-        if (active) setContextTranscript('');
-      });
+  const contextFactorOptions = [
+    { id: 'market-infrastructure', label: 'Market infrastructure and trading space', desc: 'Physical market conditions, stall allocation, and sanitation facilities affect vendors differently.' },
+    { id: 'kebeles-distance', label: 'Kebele distance and transport costs', desc: 'Remote kebele residents face travel time, transport cost, and late planning information.' },
+    { id: 'water-service-access', label: 'Public water-service access and timing', desc: 'Water collection burdens fall primarily on women, impacting daily trading and meeting participation.' },
+    { id: 'youth-livelihood-access', label: 'Youth livelihood training entry barriers', desc: 'Training selection criteria may exclude young informal workers or non-registered jobseekers.' },
+    { id: 'health-post-access', label: 'Health-post renovation and accessibility', desc: 'Physical and information accessibility at the health post affects persons with disabilities.' },
+  ];
 
-    return () => {
-      active = false;
+  const affectedGroupOptions = [
+    { id: 'women-traders', label: 'Women market vendors and traders', desc: 'Face combined household water responsibilities, market safety concerns, and timing constraints.' },
+    { id: 'remote-rural-residents', label: 'Residents of remote rural kebeles', desc: 'Receive planning notices late and face transport barriers to town consultation meetings.' },
+    { id: 'youth-jobseekers', label: 'Young informal workers seeking fair access', desc: 'May be missed by formal committee notices and training selection criteria.' },
+    { id: 'persons-with-disabilities', label: 'Persons with disabilities', desc: 'Require accessible physical facilities, information channels, and reasonable accommodation.' },
+  ];
+
+  const toggleFactor = (label: string) => {
+    setSelectedFactors((prev) => {
+      if (prev.includes(label)) return prev.filter((item) => item !== label);
+      if (prev.length >= 3) return prev;
+      return [...prev, label];
+    });
+  };
+
+  const stage1Complete = selectedFactors.length >= 2;
+  const stage2Complete = Boolean(selectedAffectedGroup);
+  const canContinue = stage1Complete && stage2Complete;
+
+  const derivedFactorsText = selectedFactors.slice(0, 2).join(' and ') || 'service access constraints';
+  const derivedGroupText = selectedAffectedGroup || 'women vendors and rural residents';
+  const keyInequalityGap = `In Jiru Amba, ${derivedFactorsText} disproportionately restrict information flow, participation, and decision-making for ${derivedGroupText}.`;
+
+  const disabledGuidance = !stage1Complete
+    ? `Select at least 2 context factors in Stage 1 (${Math.max(0, 2 - selectedFactors.length)} remaining).`
+    : !stage2Complete
+      ? 'Select 1 primary affected group in Stage 2 to enable Continue.'
+      : '';
+
+  const buildSavePayload = () => {
+    const factors = selectedFactors.length >= 2 ? selectedFactors.slice(0, 2) : ['Market infrastructure and trading space', 'Kebele distance and transport costs'];
+    const group = selectedAffectedGroup || 'Women market vendors and traders';
+    const gap = `In Jiru Amba, ${factors.join(' and ')} disproportionately restrict information flow, participation, and decision-making for ${group}.`;
+
+    return {
+      submitted: true,
+      selectedContextSignals: factors,
+      contextInsight: {
+        priorityContextFactors: factors,
+        primaryAffectedGroup: group,
+        keyInequalityGap: gap,
+      },
+      contextInequalityScan: {
+        selectedJiruAmbaAffectedGroups: [group],
+        selectedBarriers: factors,
+        safeEvidenceToVerify: ['Non-identifying feedback summaries', 'Kebele consultation records'],
+        generatedDesignImplications: 'Re-check whether excluded or lower-influence groups helped shape priorities before finalizing activities.',
+        optionalOwnCsoScan: ownNote.trim() ? { projectIdea: ownNote } : null,
+        safetyConfirmation: 'Saved as a safe learning example without identifying personal information.',
+        portfolioSummaryText: gap,
+      },
+      contextScanSummary: gap,
+      affectedGroupsToExamine: [group],
+      barriersToTest: factors,
+      optionalNote: ownNote,
+      carryForward: {
+        issue: 'The plan should explain who may be affected differently and what barriers shape participation.',
+        nextUse: 'Use this scan in the next step to connect the issue to relevant rights and standards.',
+      },
     };
-  }, []);
-
-  const toggleChoice = (choiceId: string) => {
-    setSelected((current) =>
-      current.includes(choiceId)
-        ? current.filter((item) => item !== choiceId)
-        : [...current, choiceId],
-    );
   };
 
-  const submitScan = () => {
-    if (selected.length < 3) {
-      setValidationMessage('Select at least three context signals to generate your scan.');
-      return;
-    }
-
-    if (!currentHasGroupSignal || !currentHasBarrierSignal || !currentHasEvidenceSignal) {
-      setValidationMessage('Please select at least one item about affected groups, one item about possible barriers, and one item about evidence to verify. A useful context scan needs all three.');
-      return;
-    }
-
-    if (currentOnlySurfaceEvidence) {
-      setValidationMessage('Your selections mostly describe visible project structure. Add at least one selection that shows unequal influence, access barriers, missing evidence, or a design assumption that should be checked.');
-      return;
-    }
-
-    setValidationMessage('');
-    setGeneratedSelected(selected);
-    setSubmitted(true);
-    setActiveStage(5);
-    if (typeof window !== 'undefined') {
-      window.setTimeout(() => outputRef.current?.focus(), 0);
-    }
-  };
-
-  const updateOwnScan = (field: keyof typeof ownScan, value: string) => {
-    setOwnScan((current) => ({ ...current, [field]: value }));
-    setOwnSubmitted(false);
-  };
-
-  const submitOwnScan = () => {
-    if (!ownScan.affectedDifferently.trim() || !ownScan.barriers.trim() || !ownScan.assumptions.trim() || !ownScan.designChange.trim()) {
-      setOwnValidationMessage('A useful HRBA context scan needs more than a project idea. Add at least one affected group, one possible barrier, one assumption to verify, and one design implication.');
-      setOwnSubmitted(false);
-      return;
-    }
-
-    if (unsafeOwnDetail) {
-      setOwnValidationMessage('Before saving, remove any real names, exact sensitive locations, complaint details, survivor stories, or identifiable personal information. Keep this as a safe learning example.');
-      setOwnSubmitted(false);
-      return;
-    }
-
-    setOwnValidationMessage('');
-    setOwnSubmitted(true);
-  };
-
-  const buildTemplatePdf = () => {
-    const lines = [
-      'Context and Inequality Scan Template',
-      '1. Project idea or issue',
-      '2. What is visible?',
-      '3. Who may be affected differently?',
-      '4. What barriers may exist?',
-      '5. What is still assumed?',
-      '6. What evidence can be checked safely?',
-      '7. What should change in the design?',
-      'Keep examples safe, generalized, and non-identifying.',
-    ];
-    const stream = `BT /F1 18 Tf 72 740 Td (${lines[0]}) Tj ${lines.slice(1).map((line) => `0 -28 Td (${line.replace(/[()]/g, '')}) Tj`).join(' ')} ET`;
-    const objects = [
-      '1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj',
-      '2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj',
-      '3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj',
-      '4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj',
-      `5 0 obj << /Length ${stream.length} >> stream\n${stream}\nendstream endobj`,
-    ];
-    let pdf = '%PDF-1.4\n';
-    const offsets = objects.map((object) => {
-      const offset = pdf.length;
-      pdf += `${object}\n`;
-      return offset;
-    });
-    const xrefOffset = pdf.length;
-    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${offsets.map((offset) => `${String(offset).padStart(10, '0')} 00000 n `).join('\n')}\ntrailer << /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
-    return pdf;
-  };
-
-  const downloadTemplate = (format: 'md' | 'docx' | 'pdf' | 'blank') => {
-    if (typeof window === 'undefined') return;
-    if (format === 'pdf') {
-      const blob = new Blob([buildTemplatePdf()], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'context-and-inequality-scan-template-pack.pdf';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-      return;
-    }
-    const htmlTemplate = `<!doctype html><html><head><meta charset="utf-8"><title>Context and Inequality Scan Template</title></head><body>${contextScanTemplateMarkdown
-      .replace(/^# (.*)$/m, '<h1>$1</h1>')
-      .replace(/^## (.*)$/gm, '<h2>$1</h2>')
-      .replace(/\n/g, '<br>')}</body></html>`;
-    const markdown = format === 'blank'
-      ? '# Context and Inequality Scan Blank Worksheet\n\n## Project idea\n\n## What is visible?\n\n## Who may be affected differently?\n\n## What barriers may exist?\n\n## What is still assumed?\n\n## What evidence can be checked safely?\n\n## What should change in the design?\n'
-      : contextScanTemplateMarkdown;
-    const blob = new Blob([format === 'md' || format === 'blank' ? markdown : htmlTemplate], {
-      type: format === 'md' || format === 'blank' ? 'text/markdown;charset=utf-8' : 'application/msword;charset=utf-8',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = format === 'md' ? 'context-and-inequality-scan-template.md' : format === 'blank' ? 'context-and-inequality-scan-blank-worksheet.md' : 'context-and-inequality-scan-template.docx';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  };
-
-  const copyScanSummary = async () => {
-    const summary = [
-      'Context and Inequality Scan',
-      `What the plan shows: ${selectedVisibleEvidence.length > 0 ? selectedVisibleEvidence.join(' ') : 'The plan includes activities, budget lines, indicators, and some form of consultation.'}`,
-      `Who may be affected differently: ${selectedAffectedGroups.join(', ') || 'Women, youth, persons with disabilities, low-income households, and remote residents.'}`,
-      `Barriers to test: ${selectedBarriers.join(', ') || 'Unequal influence, accessibility, information, timing, safety, livelihood, distance, and feedback-response barriers.'}`,
-      `Evidence to verify safely: ${selectedEvidence.join(', ')}`,
-      `Design implications: ${designImplication}`,
-      `Carry forward: ${carryForwardText}`,
-    ].join('\n\n');
-    try {
-      await navigator.clipboard?.writeText(summary);
-      setCopyStatus('Scan summary copied.');
-    } catch {
-      setCopyStatus('Copy was not available in this browser.');
-    }
-  };
-
-  const buildSavePayload = () => ({
-    selectedContextSignals: generatedSelected,
-    submitted: true,
-    contextInsight: {
-      priorityContextFactors: outputChoices.map((choice) => choice.label).slice(0, 2),
-      primaryAffectedGroup: selectedAffectedGroups[0] || 'Women traders, young people, and rural kebele residents',
-      keyInequalityGap: `In Jiru Amba, ${outputChoices.map((choice) => choice.label).slice(0, 2).join(' and ') || 'service access constraints'} disproportionately restrict information flow, participation, and decision-making for ${selectedAffectedGroups[0] || 'women vendors and rural residents'}.`,
-    },
-    contextInequalityScan: {
-      selectedJiruAmbaAffectedGroups: selectedAffectedGroups,
-      selectedBarriers,
-      safeEvidenceToVerify: selectedEvidence,
-      generatedDesignImplications: designImplication,
-      optionalOwnCsoScan: ownSubmitted ? ownScan : null,
-      safetyConfirmation: 'Saved as a safe learning example without names, complaint details, exact sensitive locations, survivor stories, political accusations, or identifiable personal information.',
-      portfolioSummaryText: contextScanSummary,
-    },
-    contextScanSummary,
-    selectedContextSignalGroups,
-    affectedGroupsToExamine: selectedAffectedGroups,
-    barriersToTest: selectedBarriers,
-    evidenceToVerifySafely: selectedEvidence,
-    carryForward: {
-      issue: 'The plan should explain who may be affected differently, what barriers shape participation and benefit, and what evidence still needs safe verification before activities are finalized.',
-      nextUse: 'Use this scan in the next step to connect the issue to relevant rights, standards, policies, and public responsibilities.',
-    },
-    surfaceEvidenceSelected: selectedSurfaceChoices.map((choice) => choice.id),
-    surfaceEvidenceSelectedCount: selectedSurface,
-  });
-
-  const goToStage = (stageId: ContextScanStageId) => {
-    const stage = stageDefinitions.find((item) => item.id === stageId);
-    if (stage?.unlocked) setActiveStage(stageId);
-  };
-
-  const safeEvidenceWarning = (
-    <div className="m3-context-scan-safe-inline" role="note">
-      <strong>Keep the scan safe.</strong>
-      <span>Do not enter names, exact or sensitive locations, identifiable complaints, survivor accounts or stories, political accusations, personal medical or disability details, or other sensitive identifying information.</span>
-    </div>
-  );
-
-  const renderScanPanel = () => (
-    <GuidedGeneratePanel
-      title="Generate your context scan"
-      completedCount={completedContextRequirements}
-      totalCount={contextRequirements.length}
-      remainingRequirements={remainingContextRequirements}
-      ready={readyToGenerate}
-      actionLabel={submitted && outputIsStale ? 'Update context and inequality scan' : submitted ? 'Regenerate context and inequality scan' : 'Generate context and inequality scan'}
-      onAction={submitScan}
-      testId="m3-s05-generate-panel"
-    />
-  );
+  const titleId = `${screen.id}-title`;
 
   return (
     <main className="m3-screen m3-context-scan-screen" aria-labelledby={titleId}>
@@ -9241,371 +8905,158 @@ function ContextInequalityScanScreen({
         <header className="m3-context-scan-header">
           <p className="m3-context-label">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
-          <p className="m3-context-scan-subtitle">Look beyond visible evidence before choosing activities.</p>
-          <p className="m3-context-scan-meta">{screen.phase} · <strong>Screen {getModule3VisibleScreenNumber(screen.id) ?? screen.screenNumber} of {MODULE3_REVISED_VISIBLE_SCREEN_TOTAL}</strong></p>
-          <nav className="m3-context-stage-nav" aria-label="Context scan stages">
-            {stageDefinitions.map((stage) => {
-              const active = activeStage === stage.id;
-              return (
-                <button
-                  key={stage.id}
-                  type="button"
-                  className={`m3-context-stage-tab${active ? ' is-active' : ''}${stage.complete ? ' is-complete' : ''}${!stage.unlocked ? ' is-locked' : ''}`}
-                  disabled={!stage.unlocked}
-                  aria-current={active ? 'step' : undefined}
-                  onClick={() => goToStage(stage.id)}
-                >
-                  <span aria-hidden="true">{stage.complete ? '✓' : stage.unlocked ? stage.id : '□'}</span>
-                  <strong>{stage.short}</strong>
-                </button>
-              );
-            })}
-          </nav>
+          <p className="m3-context-scan-subtitle">Look beyond visible evidence before choosing project activities.</p>
+          <p className="m3-context-scan-meta">
+            {screen.phase} · <strong>Screen {getModule3VisibleScreenNumber(screen.id) ?? screen.screenNumber} of {MODULE3_REVISED_VISIBLE_SCREEN_TOTAL}</strong>
+          </p>
         </header>
 
-        {activeStage === 1 && (
-          <section className="m3-context-stage-card" aria-labelledby={`${screen.id}-understand`}>
-            <div className="m3-context-stage-grid">
-              <div className="m3-context-stage-main">
-                <h2 id={`${screen.id}-understand`}>Context and inequality analysis helps you design before choosing activities</h2>
-                <p className="m3-context-stage-instruction">Learn how to slow down project design so visible needs, different effects, barriers, assumptions, and safe evidence are checked before activities are selected.</p>
-                <div className="m3-context-intro-copy">
-                  {module3ContextScanIntro.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-                </div>
-                <p className="m3-context-scan-key-message">{module3ContextKeyIdea}</p>
-              </div>
-              <aside className="m3-context-understand-grid" aria-label="Context scan orientation cards">
-                {module3ContextExplainCards.map((card) => (
-                  <article key={card.title} className={`m3-context-mini-card is-${card.tone}`}>
-                    <h3>{card.title}</h3>
-                    <p>{card.text}</p>
-                  </article>
-                ))}
-              </aside>
-            </div>
-            <section className="m3-context-method-card" aria-labelledby={`${screen.id}-questions-title`}>
-              <div>
-                <h2 id={`${screen.id}-questions-title`}>Four practical questions for the scan</h2>
-                <p>Use these questions to slow down the design process before selecting activities.</p>
-              </div>
-              <div className="m3-context-method-strip" aria-label="Four-question context scan method">
-                {module3ContextEvidence.map((layer, index) => <article key={layer.label}><span aria-hidden="true">{index + 1}</span><h3>{layer.label.replace(/^\d+\.\s*/, '')}</h3><p>{layer.items[0]}</p></article>)}
-              </div>
-            </section>
-            <div className="m3-context-audio-card">
-              <img className="m3-context-audio-icon" src={module3ContextAudioAsset.icon} alt="" aria-hidden="true" />
-              <div className="m3-context-audio-copy">
-                <p className="m3-context-audio-label">OPTIONAL AUDIO LESSON</p>
-                <h2>Listen: Context and inequality analysis</h2>
-                <p className="m3-context-audio-helper">Audio support is optional and is not required to continue.</p>
-                <p>Listen to this short explanation before you complete the scan. It explains what context and inequality analysis means, why CSOs need it, and how it improves HRBA-aligned project design.</p>
-              </div>
-              <div className="m3-context-audio-player" aria-label="Context and inequality analysis audio player">
-                <audio controls preload="metadata">
-                  <source src={module3ContextAudioAsset.src} type="audio/mpeg" />
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-              <div className="m3-context-transcript">
-                <p><strong>Transcript</strong></p>
-                <p>You can listen to the audio or read the transcript. Both cover the same explanation.</p>
-                <button
-                  type="button"
-                  className="m3-context-scan-secondary-button"
-                  aria-expanded={contextTranscriptOpen}
-                  aria-controls={transcriptId}
-                  onClick={() => setContextTranscriptOpen((current) => !current)}
-                >
-                  {contextTranscriptOpen ? 'Hide Transcript' : 'Expand Transcript'}
-                </button>
-                {contextTranscriptOpen && (
-                  <div id={transcriptId} className="m3-context-transcript-body">
-                    {contextTranscript
-                      ? contextTranscript.split(/\n{2,}|\r?\n/).filter(Boolean).map((paragraph) => <p key={paragraph}>{paragraph}</p>)
-                      : <p>Transcript is loading.</p>}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="m3-context-stage-actions">
-              <button type="button" className="m3-context-scan-submit-button" onClick={() => { setUnderstandComplete(true); setActiveStage(2); }}>Continue to quick understanding check</button>
-            </div>
-          </section>
-        )}
-
-        {activeStage === 2 && (
-          <section className="m3-context-stage-card" aria-labelledby={`${screen.id}-check`}>
-            <h2 id={`${screen.id}-check`}>Quick check before practice</h2>
-            <p className="m3-context-stage-instruction">Complete the three quick checks before moving to the worked example. The feedback will help you see what an HRBA scan should ask before practice.</p>
-            <div className="m3-context-check-grid">
-              <article className="m3-context-check-card">
-                <h3>1. Match the scan idea</h3>
-                <p>Choose the best meaning for each scan idea. Options stay inside this panel and wrap as needed.</p>
-                {matchPrompts.map(([id, label, answer]) => (
-                  <fieldset key={id} className="m3-context-match-row">
-                    <legend>{label}</legend>
-                    <div className="m3-context-match-options" role="radiogroup" aria-label={label}>
-                      {matchOptions.map((option) => {
-                        const selected = checkMatches[id] === option;
-                        const correct = option === answer;
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            role="radio"
-                            aria-checked={selected}
-                            className={`m3-context-match-choice${selected ? ' is-selected' : ''}${selected && correct ? ' is-correct' : ''}${selected && !correct ? ' is-incorrect' : ''}`}
-                            onClick={() => setCheckMatches((current) => ({ ...current, [id]: option }))}
-                          >
-                            <span aria-hidden="true">{selected ? (correct ? '✓' : '!') : '○'}</span>
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </fieldset>
-                ))}
-              </article>
-              <article className="m3-context-check-card">
-                <h3>2. Choose the best HRBA question</h3>
-                <p>A meeting was well attended. What should an HRBA context scan ask next?</p>
-                {[
-                  ['count', 'How many people attended?'],
-                  ['influence', 'Did different groups only attend, or did they influence which priorities were chosen?'],
-                  ['report', 'Was the meeting report submitted on time?'],
-                ].map(([id, label]) => (
-                  <label key={id} className={`m3-context-check-option${bestQuestionAnswer === id ? ' is-selected' : ''}${bestQuestionAnswer === id && id === 'influence' ? ' is-correct' : ''}${bestQuestionAnswer === id && id !== 'influence' ? ' is-incorrect' : ''}`}>
-                    <input
-                      type="radio"
-                      name={`${screen.id}-best-question`}
-                      value={id}
-                      checked={bestQuestionAnswer === id}
-                      onChange={() => setBestQuestionAnswer(id)}
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
-                {bestQuestionAnswer && (
-                  <p className={`m3-context-answer-feedback${bestQuestionAnswer === 'influence' ? ' is-correct' : ' is-incorrect'}`}>
-                    {bestQuestionAnswer === 'influence' ? 'Correct. HRBA checks whether different groups influenced decisions, not only whether they attended.' : 'Not quite. Attendance is useful evidence, but HRBA asks whether different groups influenced the priorities.'}
-                  </p>
-                )}
-              </article>
-              <article className="m3-context-check-card">
-                <h3>3. Identify unsafe evidence</h3>
-                <p>Which should not be entered into a learning portfolio?</p>
-                {[
-                  ['summary', 'Non-identifying summary of barriers'],
-                  ['access', 'General observation of accessibility barriers'],
-                  ['names', 'Names and complaint details'],
-                  ['dates', 'Planning record showing activity dates'],
-                ].map(([id, label]) => (
-                  <label key={id} className={`m3-context-check-option${unsafeEvidenceAnswer === id ? ' is-selected' : ''}${unsafeEvidenceAnswer === id && id === 'names' ? ' is-correct' : ''}${unsafeEvidenceAnswer === id && id !== 'names' ? ' is-incorrect' : ''}`}>
-                    <input
-                      type="radio"
-                      name={`${screen.id}-unsafe-evidence`}
-                      value={id}
-                      checked={unsafeEvidenceAnswer === id}
-                      onChange={() => setUnsafeEvidenceAnswer(id)}
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
-                {unsafeEvidenceAnswer && (
-                  <p className={`m3-context-answer-feedback${unsafeEvidenceAnswer === 'names' ? ' is-correct' : ' is-incorrect'}`}>
-                    {unsafeEvidenceAnswer === 'names' ? 'Correct. Names and complaint details should not be saved in a learning portfolio.' : 'Careful. Safe evidence should avoid names, complaint details, and other identifying information.'}
-                  </p>
-                )}
-              </article>
-            </div>
-            {checkComplete && <p className="m3-context-ready-note"><strong>You are ready to practice.</strong> Context analysis checks who may be affected differently, what barriers may be hidden, what assumptions need verification, and what design changes may be needed.</p>}
-            <div className="m3-context-stage-actions">
-              <button type="button" className="m3-context-scan-submit-button" disabled={!checkComplete} onClick={() => setActiveStage(3)}>See worked example</button>
-              {!checkComplete && <p>Complete all three checks to continue.</p>}
-            </div>
-          </section>
-        )}
-
-        {activeStage === 3 && (
-          <section className="m3-context-stage-card" aria-labelledby={`${screen.id}-worked`}>
-            <h2 id={`${screen.id}-worked`}>See a worked example</h2>
-            <p className="m3-context-stage-instruction">Notice how the example moves from a visible planning fact to questions about influence, affected groups, safe evidence, and design implications.</p>
-            <div className="m3-context-example-flow">
-              {[
-                ['Visible evidence', 'The planning meeting was well attended.'],
-                ['HRBA question', 'Did different groups only attend, or did they influence which priorities were chosen?'],
-                ['Who may be affected differently', 'Women, persons with disabilities, youth, low-income households, informal workers, and remote residents.'],
-                ['Safe evidence to verify', 'Non-identifying feedback summaries, facilitation notes, observation of accessibility barriers, and planning records.'],
-                ['Design implication', 'Before activities are finalized, re-check whether excluded or lower-influence groups helped shape priorities, then adjust outreach, timing, accessibility, feedback, and follow-up arrangements.'],
-              ].map(([heading, copy], index) => (
-                <article key={heading} className="m3-context-example-step">
-                  <span aria-hidden="true">{index + 1}</span>
-                  <h3>{heading}</h3>
-                  <p>{copy}</p>
-                </article>
-              ))}
-            </div>
-            <div className="m3-context-stage-actions">
-              <button type="button" className="m3-context-scan-submit-button" onClick={() => { setExampleComplete(true); setActiveStage(4); }}>Start Jiru Amba practice</button>
-            </div>
-          </section>
-        )}
-
-        {activeStage === 4 && (
-          <section className="m3-context-stage-card m3-context-practice-layout" aria-labelledby={taskId}>
-            <div className="m3-context-practice-main">
-              <h2 id={taskId}>Practice with Jiru Amba</h2>
-              <p className="m3-context-stage-instruction">Select the signals in the Jiru Amba case that should shape the Context and Inequality Scan. Choose the items that show visible evidence, affected groups, possible barriers, assumptions, and safe evidence needs.</p>
-              <p className="m3-context-practice-helper">You do not need perfect answers. Focus on what the design team should check before choosing activities.</p>
-              <div className="m3-context-filter-tabs" role="tablist" aria-label="Context signal filters">
-                {filterDefinitions.map((filter) => (
-                  <button key={filter.id} type="button" className={activeFilter === filter.id ? 'is-active' : ''} onClick={() => setActiveFilter(filter.id)}>
-                    {filter.label}
-                  </button>
-                ))}
-              </div>
-              <div className="m3-context-signal-grid" role="group" aria-labelledby={taskId}>
-                {filteredChoices.map((choice) => {
-                  const isSelected = selected.includes(choice.id);
-                  const expanded = expandedSignalIds.includes(choice.id);
-                  return (
-                    <article key={choice.id} className={`m3-context-signal-card${isSelected ? ' is-selected' : ''}`}>
-                      <button type="button" className="m3-context-signal-toggle" aria-pressed={isSelected} onClick={() => toggleChoice(choice.id)}>
-                        <span aria-hidden="true">{isSelected ? '✓' : '□'}</span>
-                        <strong>{isSelected ? 'Selected' : 'Select'}</strong>
-                      </button>
-                      <h3>{choice.tag}</h3>
-                      <p>{choice.text}</p>
-                      <span className="m3-context-signal-badge">HRBA signal</span>
-                      <button type="button" className="m3-context-why-button" aria-expanded={expanded} onClick={() => setExpandedSignalIds((current) => current.includes(choice.id) ? current.filter((id) => id !== choice.id) : [...current, choice.id])}>
-                        Why this matters
-                      </button>
-                      {expanded && <p className="m3-context-signal-feedback">{choice.feedback}</p>}
-                    </article>
-                  );
-                })}
-              </div>
-              {validationMessage && <p className="m3-context-ready-note" role="alert">{validationMessage}</p>}
-            </div>
-            {renderScanPanel()}
-          </section>
-        )}
-
-        {activeStage === 5 && (
-          <section
-            ref={outputRef}
-            tabIndex={-1}
-            className="m3-context-stage-card m3-context-review-stage"
-            aria-live="polite"
-            aria-labelledby={`${screen.id}-output-title`}
+        {/* Optional Case Disclosure */}
+        <div className="m3-context-case-disclosure">
+          <button
+            type="button"
+            className="m3-context-scan-secondary-button"
+            onClick={() => setShowCaseFacts((prev) => !prev)}
+            aria-expanded={showCaseFacts}
           >
-            <div className="m3-context-review-banner">
-              <span aria-hidden="true">✓</span>
-              <div>
-                <h2 id={`${screen.id}-output-title`}>Your Draft Context and Inequality Scan</h2>
-                <p className="m3-context-stage-instruction">Review the generated scan before saving. Check that it names affected groups, barriers, assumptions, safe evidence, and a design implication.</p>
-                <p>Based on your selected Jiru Amba context signals, this scan shows what should be checked before activities, budget, participation plans, or indicators are finalized.</p>
-              </div>
-              <strong>{outputIsStale ? 'Scan needs update' : 'Scan generated'}</strong>
+            {showCaseFacts ? 'Hide Jiru Amba key facts' : 'View Jiru Amba key facts'}
+          </button>
+          {showCaseFacts && (
+            <div className="m3-context-case-facts-box" role="note">
+              <h4>Jiru Amba Case Key Facts</h4>
+              <ul>
+                {['Town market infrastructure is overcrowded and sanitation facilities are inadequate.', 'Remote rural kebeles receive planning notices late due to distance and transport costs.', 'Water collection burdens fall primarily on women, impacting daily trading.', 'Youth informal workers face entry barriers to formal training selection criteria.'].map((label) => (
+                  <li key={label}>{label}</li>
+                ))}
+              </ul>
             </div>
-            <ContextInequalitySnapshot viewModel={contextSnapshotViewModel} />
-            <div className="m3-context-review-grid">
-              <article>
-                <h3>Existing scan detail: Observation or case signal</h3>
-                <p>{selectedVisibleEvidence.join(' ') || 'No visible-evidence detail is included in this generated scan.'}</p>
+          )}
+        </div>
+
+        {/* STAGE 1 */}
+        {activeStage === 1 ? (
+          <section className="m3-context-stage-card">
+            <div className="m3-context-stage-header">
+              <h2>Stage 1: Select priority context factors</h2>
+              <p>Choose 2 context factors in Jiru Amba that shape how services and planning affect people differently.</p>
+            </div>
+            <div className="m3-context-options-grid" role="group" aria-label="Context factors">
+              {contextFactorOptions.map((opt) => {
+                const isSelected = selectedFactors.includes(opt.label);
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    className={`m3-context-choice-card${isSelected ? ' is-selected' : ''}`}
+                    aria-pressed={isSelected}
+                    onClick={() => toggleFactor(opt.label)}
+                  >
+                    <span aria-hidden="true">{isSelected ? '✓' : '□'}</span>
+                    <div>
+                      <h3>{opt.label}</h3>
+                      <p>{opt.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="m3-context-stage-actions">
+              <button
+                type="button"
+                className="m3-primary-button"
+                disabled={!stage1Complete}
+                onClick={() => setActiveStage(2)}
+              >
+                Continue to Stage 2 (Select affected group)
+              </button>
+              {!stage1Complete && (
+                <p className="m3-context-guidance-badge" role="status">
+                  Select {Math.max(0, 2 - selectedFactors.length)} more context factor(s) to continue.
+                </p>
+              )}
+            </div>
+          </section>
+        ) : (
+          /* Collapsed Stage 1 Summary */
+          <div className="m3-collapsed-stage-summary">
+            <div>
+              <span className="m3-summary-check">✓ Stage 1 Complete</span>
+              <p><strong>Selected Context Factors:</strong> {selectedFactors.join(', ')}</p>
+            </div>
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStage(1)}>
+              Edit Stage 1
+            </button>
+          </div>
+        )}
+
+        {/* STAGE 2 */}
+        {activeStage === 2 && (
+          <section className="m3-context-stage-card">
+            <div className="m3-context-stage-header">
+              <h2>Stage 2: Select primary affected group & review inequality insight</h2>
+              <p>Choose 1 group most affected by these context factors, then review your generated inequality insight.</p>
+            </div>
+            <div className="m3-context-options-grid" role="radiogroup" aria-label="Affected groups">
+              {affectedGroupOptions.map((opt) => {
+                const isSelected = selectedAffectedGroup === opt.label;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    className={`m3-context-choice-card${isSelected ? ' is-selected' : ''}`}
+                    aria-checked={isSelected}
+                    role="radio"
+                    onClick={() => setSelectedAffectedGroup(opt.label)}
+                  >
+                    <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                    <div>
+                      <h3>{opt.label}</h3>
+                      <p>{opt.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Dynamically Generated Inequality Insight */}
+            {selectedAffectedGroup && (
+              <article className="m3-generated-insight-card">
+                <h3>Generated Context & Inequality Insight</h3>
+                <p className="m3-insight-statement">{keyInequalityGap}</p>
+                <p className="m3-insight-subtext">This insight will carry forward into your Module 3 HRBA Project Design Snapshot.</p>
               </article>
-              <article>
-                <h3>Interpretation safeguard</h3>
-                <p className="m3-context-support-note">The possible barriers and implications are interpretations of the selected signals, not established facts.</p>
-              </article>
+            )}
+
+            {/* Optional Note */}
+            <div className="m3-optional-note-block">
+              <label htmlFor="m3-s05-own-note">
+                <span>Optional note or CSO context (not required to continue)</span>
+                <textarea
+                  id="m3-s05-own-note"
+                  value={ownNote}
+                  onChange={(e) => setOwnNote(e.target.value)}
+                  placeholder="Add an optional non-identifying note about your project context..."
+                  maxLength={300}
+                />
+              </label>
             </div>
-            <div className="m3-context-quality-strip" aria-label="Scan quality check">
-              <h3>Scan quality check</h3>
-              {['Specific groups are visible', 'Barriers identified', 'Assumptions tested', 'Safe evidence included', 'Design change identified'].map((item) => <span key={item}><strong aria-hidden="true">✓</strong>{item}</span>)}
-            </div>
-            {safeEvidenceWarning}
-            <div className="m3-context-review-actions">
-              <button type="button" className="m3-context-scan-secondary-button" onClick={() => setActiveStage(4)}>Edit selections</button>
-              <button type="button" className="m3-context-scan-secondary-button" onClick={copyScanSummary}>Copy scan summary</button>
-              <button type="button" className="m3-context-scan-secondary-button" onClick={() => downloadTemplate('md')}>Download template</button>
-              <PrimaryButton
-                disabled={!submitted || outputIsStale}
+
+            {/* Final Action & Continue Gate */}
+            <div className="m3-context-stage-actions">
+              {disabledGuidance && (
+                <p className="m3-context-guidance-badge" role="status">
+                  {disabledGuidance}
+                </p>
+              )}
+              <button
+                type="button"
+                className="m3-primary-button"
+                disabled={!canContinue}
                 onClick={() => onComplete(buildSavePayload())}
               >
-                Save scan and continue
-              </PrimaryButton>
+                {screen.continueLabel}
+              </button>
             </div>
-            {copyStatus && <p className="m3-context-copy-status" aria-live="polite">{copyStatus}</p>}
-            {selectedPartial > 0 && <p className="m3-context-ready-note">{feedbackCopy}</p>}
-            {outputIsStale && <p className="m3-context-ready-note">Your selections changed after generation. Return to Practice and update the scan before saving.</p>}
-          </section>
-        )}
-
-        {activeStage === 6 && (
-          <section className="m3-context-stage-card m3-context-apply-stage" aria-labelledby={`${screen.id}-apply`}>
-            <h2 id={`${screen.id}-apply`}>Apply and download</h2>
-            <p className="m3-context-stage-instruction">Use the same scan logic for a safe, non-sensitive project example, or download a template to support later design work.</p>
-            <p>Use your Jiru Amba scan, try a safe version with your own CSO project, or download reusable tools.</p>
-            <div className="m3-context-apply-tabs" role="tablist" aria-label="Apply and download tabs">
-              <button type="button" className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO project</button>
-              <button type="button" className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')}>Download tools</button>
-            </div>
-            {applyTab === 'own' && (
-              <div className="m3-context-apply-grid">
-                <div className="m3-context-own-tool">
-                  <p>Use this optional practice tool to test one project idea from your own CSO. Keep it safe and general.</p>
-                  {safeEvidenceWarning}
-                  <div className="m3-context-scan-form-grid">
-                    {([
-                      ['projectIdea', '1. Project idea', 'Example: Improve access to market services for low-income women vendors.'],
-                      ['visible', '2. What is visible?', 'What does the project idea, proposal, report, or meeting record already show?'],
-                      ['affectedDifferently', '3. Who may be affected differently?', 'Which groups may face different access, information, safety, time, mobility, livelihood, or influence barriers?'],
-                      ['barriers', '4. What barriers may exist?', 'What may block people from accessing, participating, benefiting, speaking, influencing, or receiving follow-up?'],
-                      ['assumptions', '5. What is still assumed?', 'What does the project team believe, but has not safely verified yet?'],
-                      ['safeEvidence', '6. What evidence can be checked safely?', 'What records, observation, anonymized feedback, or safe consultation could help verify the assumption?'],
-                      ['designChange', '7. What should change in the design?', 'What might need to change before activities, budget, indicators, participation plans, or feedback systems are finalized?'],
-                    ] as Array<[keyof typeof ownScan, string, string]>).map(([field, label, placeholder]) => (
-                      <label key={field} className="m3-context-scan-field">
-                        <span>{label}</span>
-                        <textarea value={ownScan[field]} placeholder={placeholder} onChange={(event) => updateOwnScan(field, event.target.value)} />
-                      </label>
-                    ))}
-                  </div>
-                  <div className="m3-context-scan-submit-row">
-                    <button type="button" className="m3-context-scan-submit-button" onClick={submitOwnScan}>Generate my context scan</button>
-                    <p aria-live="polite">{ownValidationMessage || (ownSubmitted ? 'Your safe self-practice scan is generated below.' : 'Optional. This helps create a draft summary based on your answers.')}</p>
-                  </div>
-                  {ownSubmitted && (
-                    <article className="m3-context-scan-output-group">
-                      <h3>My Context and Inequality Scan</h3>
-                      <p><strong>Project idea:</strong> {ownScan.projectIdea || 'Not specified.'}</p>
-                      <p><strong>Visible situation:</strong> {ownScan.visible || 'Not specified.'}</p>
-                      <p><strong>Groups who may be affected differently:</strong> {ownScan.affectedDifferently}</p>
-                      <p><strong>Possible barriers:</strong> {ownScan.barriers}</p>
-                      <p><strong>Assumptions to verify:</strong> {ownScan.assumptions}</p>
-                      <p><strong>Safe evidence sources:</strong> {ownScan.safeEvidence || 'Not specified.'}</p>
-                      <p><strong>Possible design implication:</strong> {ownScan.designChange}</p>
-                    </article>
-                  )}
-                </div>
-                <aside className="m3-context-download-card">
-                  <h3>Jiru Amba scan saved</h3>
-                  <p><strong>Own-CSO practice optional</strong></p>
-                  <p>You can continue now or come back later to complete your own project practice.</p>
-                  <PrimaryButton disabled={!submitted || outputIsStale} onClick={() => onComplete(buildSavePayload())}>Continue to standards and policy mapping</PrimaryButton>
-                  <button type="button" className="m3-context-scan-secondary-button" onClick={() => setActiveStage(5)}>Return to Review</button>
-                </aside>
-              </div>
-            )}
-            {applyTab === 'downloads' && (
-              <div className="m3-context-download-card">
-                <h3>Context and Inequality Scan Template Pack</h3>
-                <p>Use this template before finalizing project activities. Keep all examples safe, generalized, and non-identifying.</p>
-                <button type="button" className="m3-context-scan-secondary-button" onClick={() => downloadTemplate('pdf')}>Download PDF template pack</button>
-                <button type="button" className="m3-context-scan-secondary-button" onClick={() => downloadTemplate('md')}>Download markdown copy</button>
-                <button type="button" className="m3-context-scan-secondary-button" onClick={() => downloadTemplate('blank')}>Download blank worksheet</button>
-              </div>
-            )}
           </section>
         )}
       </article>
@@ -12286,784 +11737,233 @@ function PowerInfluenceMapScreen({
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const baseActors = getScreen9ActorOptions(state);
-  const savedOutput = getScreen9SavedOutput(state);
-  const restoredCustomActors: Module3Actor[] = (savedOutput?.actorRatings || [])
-    .filter((rating) => !baseActors.some((actor) => actor.actorId === rating.actorId))
-    .map((rating) => ({ actorId: rating.actorId, label: rating.actorLabel, category: rating.category, sourceScreen: 'custom', linkedBarrierIds: [], safeCustom: true }));
-  const restoredActorOptions = [...baseActors, ...restoredCustomActors];
-  const restoredActorIds = (savedOutput?.selectedActorIds || []).filter((id) => restoredActorOptions.some((actor) => actor.actorId === id)).slice(0, 6);
-  const restoredRatings = Object.fromEntries((savedOutput?.actorRatings || [])
-    .filter((rating) => restoredActorIds.includes(rating.actorId))
-    .map((rating) => [rating.actorId, {
-      ...rating,
-      formalAuthorityLevel: rating.formalAuthorityLevel || (rating.category === 'primary_public_responsibility' ? 'high' : rating.category === 'service_or_local_implementation' ? 'medium' : 'low'),
-    }]));
-  const restoredSignature = savedOutput ? JSON.stringify({ selectedActorIds: restoredActorIds, actorRatings: restoredActorIds.map((id) => restoredRatings[id]) }) : null;
-  const [actorOptions, setActorOptions] = useState<Module3Actor[]>(restoredActorOptions);
-  const [selectedActorIds, setSelectedActorIds] = useState<string[]>(restoredActorIds);
-  const [actorRatings, setActorRatings] = useState<Record<string, Screen9ActorRating>>(restoredRatings);
-  const [customActorLabel, setCustomActorLabel] = useState('');
-  const [customActorCategory, setCustomActorCategory] = useState<ActorCategory>('service_or_local_implementation');
-  const [ownCsoDraft, setOwnCsoDraft] = useState<Screen9OwnCsoDraft>(getEmptyScreen9OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen9OwnCsoOutput | null>(savedOutput?.ownCsoPracticeOutput || null);
-  const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen9Submission | null>(savedOutput);
-  const [submittedSignature, setSubmittedSignature] = useState<string | null>(restoredSignature);
-  const [activeStage, setActiveStage] = useState<1 | 2 | 3 | 4 | 5>(savedOutput ? 4 : restoredActorIds.length ? 3 : 1);
-  const [understandAnswer, setUnderstandAnswer] = useState(savedOutput ? 'informal' : '');
-  const [exampleReviewed, setExampleReviewed] = useState(Boolean(savedOutput));
-  const [activeActorFilter, setActiveActorFilter] = useState<'public' | 'service' | 'rights' | 'community' | 'support' | 'custom' | 'all'>('all');
-  const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
-  const [copyStatus, setCopyStatus] = useState('');
-  const outputRef = useRef<HTMLHeadingElement>(null);
-  const titleId = `${screen.id}-title`;
-  const taskId = `${screen.id}-task`;
-  const customValidation = validateGeneralActorLabel(customActorLabel);
-  const hasUnsafeLabel = Boolean(customActorLabel.trim() && !customValidation.isValid);
-  const selectedActors = selectedActorIds
-    .map((actorId) => actorOptions.find((actor) => actor.actorId === actorId))
-    .filter(Boolean) as Module3Actor[];
-  const selectedRatings = selectedActorIds.flatMap((actorId) => actorRatings[actorId] ? [actorRatings[actorId]] : []);
-  const completedRatings = selectedRatings.filter(isScreen9RatingComplete);
-  const ratedActorCount = completedRatings.length;
-  const hasRightsHolderGroup = selectedActors.some((actor) => actor.category === 'rights_holder_group');
-  const hasPublicOrServiceActor = selectedActors.some((actor) => actor.category === 'primary_public_responsibility' || actor.category === 'service_or_local_implementation');
-  const selectionIsManageable = selectedActorIds.length >= 3 && selectedActorIds.length <= 6;
-  const actorSelectionReady = selectionIsManageable && hasRightsHolderGroup && hasPublicOrServiceActor;
-  const mapReadyToGenerate = actorSelectionReady && ratedActorCount >= 3 && !hasUnsafeLabel;
-  const canSubmit = mapReadyToGenerate;
-  const currentSignature = JSON.stringify({
-    selectedActorIds,
-    actorRatings: selectedActorIds.map((actorId) => actorRatings[actorId]),
-  });
-  const formChanged = Boolean(submittedOutput && submittedSignature !== currentSignature);
-  const canContinue = Boolean(submittedOutput && !formChanged);
+  const savedScreen9 = getPracticeState(state, screen.id);
+  const savedInsight = (savedScreen9.submitted === true && savedScreen9.actorPowerInsight)
+    ? (savedScreen9.actorPowerInsight as {
+        selectedEnabler?: string;
+        selectedBlocker?: string;
+        safeInfluenceStrategy?: string;
+      })
+    : null;
 
-  const toggleActor = (actor: Module3Actor) => {
-    setSelectedActorIds((current) => {
-      const selected = current.includes(actor.actorId);
-      if (selected) {
-        setActorRatings((ratings) => {
-          const next = { ...ratings };
-          delete next[actor.actorId];
-          return next;
-        });
-        return current.filter((id) => id !== actor.actorId);
-      }
-      if (current.length >= 6) return current;
-      setActorRatings((ratings) => ({
-        ...ratings,
-        [actor.actorId]: ratings[actor.actorId] || createEmptyActorRating(actor),
-      }));
-      return [...current, actor.actorId];
-    });
-  };
+  const [selectedEnabler, setSelectedEnabler] = useState<string>(
+    savedInsight?.selectedEnabler || (Array.isArray(savedScreen9.selectedActorIds) && savedScreen9.selectedActorIds[0] ? savedScreen9.selectedActorIds[0] : '')
+  );
+  const [selectedBlocker, setSelectedBlocker] = useState<string>(
+    savedInsight?.selectedBlocker || (Array.isArray(savedScreen9.selectedActorIds) && savedScreen9.selectedActorIds[1] ? savedScreen9.selectedActorIds[1] : '')
+  );
+  const [selectedSafeStrategy, setSelectedSafeStrategy] = useState<string>(
+    savedInsight?.safeInfluenceStrategy || ''
+  );
+  const [customNote, setCustomNote] = useState<string>('');
 
-  const suggestRatingDefaults = (
-    actor: Module3Actor,
-    influenceLevel: Screen9InfluenceLevel | '',
-    supportInterestLevel: Screen9SupportLevel | '',
-  ): Pick<Screen9ActorRating, 'likelyChangeRole' | 'engagementApproach'> => {
-    if (actor.category === 'rights_holder_group') {
-      return {
-        likelyChangeRole: 'low_power_rights_holder_group',
-        engagementApproach: 'strengthen_voice_safely',
-      };
-    }
-    if (influenceLevel === 'high' && supportInterestLevel === 'high') {
-      return { likelyChangeRole: 'enabler', engagementApproach: 'work_closely' };
-    }
-    if (influenceLevel === 'high') {
-      return { likelyChangeRole: 'gatekeeper', engagementApproach: 'engage_carefully' };
-    }
-    if (supportInterestLevel === 'high') {
-      return { likelyChangeRole: 'support_actor', engagementApproach: 'support_capacity' };
-    }
-    return { likelyChangeRole: 'undecided_actor', engagementApproach: 'monitor_lightly' };
-  };
+  const enablerOptions = [
+    { label: 'Woreda Water & Energy Office Focal Point', desc: 'Has technical mandate and formal responsibility for rural infrastructure planning.' },
+    { label: 'Market Vendor Women Committee Representatives', desc: 'Holds key informal trust and direct knowledge of daily water access burdens.' },
+    { label: 'Kebele Administrative Development Agent', desc: 'Maintains direct communication channels with remote kebele households.' },
+  ];
 
-  const updateRating = (actorId: string, field: keyof Screen9ActorRating, value: string) => {
-    setActorRatings((current) => {
-      const actor = actorOptions.find((item) => item.actorId === actorId);
-      if (!actor) return current;
-      const baseRating = current[actorId] || createEmptyActorRating(actor);
-      const nextRating = {
-        ...baseRating,
-        [field]: value,
-      };
-      if ((field === 'influenceLevel' || field === 'supportInterestLevel') && nextRating.influenceLevel && nextRating.supportInterestLevel) {
-        const suggested = suggestRatingDefaults(actor, nextRating.influenceLevel, nextRating.supportInterestLevel);
-        if (!nextRating.likelyChangeRole) nextRating.likelyChangeRole = suggested.likelyChangeRole;
-        if (!nextRating.engagementApproach) nextRating.engagementApproach = suggested.engagementApproach;
-      }
-      return {
-        ...current,
-        [actorId]: nextRating,
-      };
-    });
-  };
+  const blockerOptions = [
+    { label: 'Town Commercial Traders Guild', desc: 'High informal influence that currently prioritizes central market expansion over peripheral kebele access.' },
+    { label: 'District Finance & Allocation Committee', desc: 'Controls budget disbursement timing and may delay funds for non-central water posts.' },
+    { label: 'Informal Water Truck Operators', desc: 'Economic interest in maintaining private water resale margins during supply gaps.' },
+  ];
 
-  const addCustomActor = () => {
-    if (!customValidation.isValid) return;
-    const actorId = `custom_power_actor_${customValidation.trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`;
-    if (actorOptions.some((actor) => actor.actorId === actorId)) return;
-    setActorOptions((current) => [
-      ...current,
-      {
-        actorId,
-        label: customValidation.trimmed,
-        category: customActorCategory,
-        sourceScreen: 'custom',
-        linkedBarrierIds: [],
-        safeCustom: true,
-      },
-    ]);
-    setCustomActorLabel('');
-  };
+  const safeStrategyOptions = [
+    { label: 'Pre-consultation alignment & non-identifying evidence briefings', desc: 'Share aggregated context findings with duty-bearers before public meetings to build joint ownership.' },
+    { label: 'Parallel community feedback channels & quiet diplomacy', desc: 'Create safe, confidential channels for vulnerable groups while engaging powerful actors constructively.' },
+    { label: 'Joint multi-stakeholder monitoring reviews', desc: 'Establish quarterly review sessions where duty-bearers and community reps review progress together.' },
+  ];
 
-  const buildSubmission = (): Screen9Submission => {
-    const ratingsForOutput = completedRatings;
-    const generatedPowerMapZones = generatePowerMapZones(ratingsForOutput);
-    const feedback = deriveScreen9Feedback(ratingsForOutput, hasUnsafeLabel);
-    const generatedActorRows = ratingsForOutput.map((rating) => ({
-      actor: rating.actorLabel,
-      roleFromResponsibilityMap: rating.roleFromResponsibilityMap,
-      formalAuthorityLevel: getScreen9InfluenceLabel(rating.formalAuthorityLevel),
-      influenceLevel: getScreen9InfluenceLabel(rating.influenceLevel),
-      supportInterestLevel: getScreen9SupportLabel(rating.supportInterestLevel),
-      likelyRoleInChange: getScreen9RoleLabel(rating.likelyChangeRole),
-      engagementApproach: getScreen9ApproachLabel(rating.engagementApproach),
-      designImplication: rating.designImplication,
-      questionForScreen10: rating.questionForScreen10,
-    }));
-    const summaryMessages = getScreen9SummaryMessages(ratingsForOutput);
+  const canContinue = Boolean(selectedEnabler && selectedBlocker && selectedSafeStrategy);
+
+  const disabledGuidance = !selectedEnabler
+    ? 'Section 1: Select 1 primary enabler actor to continue.'
+    : !selectedBlocker
+      ? 'Section 2: Select 1 potential blocker or risk actor to continue.'
+      : !selectedSafeStrategy
+        ? 'Section 3: Select 1 safe influence strategy to continue.'
+        : '';
+
+  const buildSavePayload = () => {
+    const enabler = selectedEnabler || enablerOptions[0].label;
+    const blocker = selectedBlocker || blockerOptions[0].label;
+    const strategy = selectedSafeStrategy || safeStrategyOptions[0].label;
+
     return {
-      screenId: 'M3-R09',
       submitted: true,
-      selectedActorIds,
-      actorRatings: ratingsForOutput,
-      generatedPowerMapZones,
-      generatedActorRows,
-      powerInfluenceMap: {
-        selectedActors: ratingsForOutput.map((rating) => rating.actorLabel),
-        actorRatings: ratingsForOutput,
-        generatedRows: generatedActorRows,
-        summaryMessages,
-        safetyConfirmation: 'This learning output uses role categories and generalized examples. It is not a formal political assessment.',
+      selectedActorIds: [enabler, blocker],
+      actorPowerInsight: {
+        selectedEnabler: enabler,
+        selectedBlocker: blocker,
+        safeInfluenceStrategy: strategy,
+        relatedRightsHolders: ['Women market traders', 'Remote kebele residents'],
+        relatedDutyBearers: ['Woreda Water Office', 'Kebele Administration'],
+        primaryRightsHolders: ['Women market traders', 'Remote kebele residents'],
+        dutyBearersAndRoles: enabler + ' (Enabler) and ' + blocker + ' (Blocker)',
+        powerStrategy: strategy,
+        customNote: customNote.trim(),
       },
-      detectedInsights: feedback.detectedInsights,
-      feedbackLevel: feedback.feedbackLevel,
-      warnings: feedback.warnings,
-      powerMapSummary: summaryMessages.join(' '),
-      ownCsoPracticeOutput: ownCsoOutput || undefined,
-      portfolioSummary: screen9PortfolioSummary,
+      powerInfluenceMap: {
+        selectedActors: [enabler, blocker],
+        powerStrategy: strategy,
+        summaryMessages: [
+          'Selected Enabler: ' + enabler + '.',
+          'Selected Blocker: ' + blocker + '.',
+          'Safe Strategy: ' + strategy + '.',
+        ],
+        safetyConfirmation: 'Saved as a safe learning example without naming individuals.',
+      },
+      powerMapSummary: 'Enabler: ' + enabler + ' | Blocker: ' + blocker + ' | Strategy: ' + strategy,
       carryForward: {
-        snapshotField: 'powerInfluenceMap',
-        issue: 'The people most affected may not be the people with the most influence. HRBA design should strengthen rights-holder voice while engaging high-influence actors safely and constructively.',
-        nextUse: 'Use this map in Screen 10 to identify root causes and capacity gaps: why some groups have low influence, why some actors may delay change, and what capacities are needed for a better response.',
+        issue: 'The people most affected may not have the most formal influence.',
+        nextUse: 'Use this map in the next step to examine root causes and capacity gaps.',
       },
     };
   };
 
-  const submitMap = () => {
-    if (!canSubmit) return;
-    const submission = buildSubmission();
-    setSubmittedOutput(submission);
-    setSubmittedSignature(currentSignature);
-    if (typeof window !== 'undefined') window.setTimeout(() => outputRef.current?.focus(), 0);
-  };
-
-  const updateOwnCsoDraft = (field: keyof Screen9OwnCsoDraft, value: string) => {
-    setOwnCsoDraft((current) => ({ ...current, [field]: value }));
-    setOwnCsoError('');
-  };
-
-  const generateOwnCsoMap = () => {
-    const required = [
-      ownCsoDraft.actorOrRoleCategory,
-      ownCsoDraft.practicalInfluence,
-      ownCsoDraft.supportOrInterest,
-      ownCsoDraft.likelyRole,
-      ownCsoDraft.safeEngagementApproach,
-      ownCsoDraft.designImplication,
-    ];
-    if (required.some((value) => !String(value).trim())) {
-      setOwnCsoError('A useful power and influence map needs an actor, influence level, support or interest level, likely role, engagement approach, and design implication.');
-      return;
-    }
-    if (Object.values(ownCsoDraft).some((value) => hasUnsafePowerMapDetail(String(value)))) {
-      setOwnCsoError('Before saving, remove names, exact sensitive locations, complaint details, survivor stories, accusations, confidential political details, or identifiable personal information. Keep this as a safe learning example.');
-      return;
-    }
-    setOwnCsoOutput({ ...ownCsoDraft, generatedAt: new Date().toISOString() });
-    setOwnCsoError('');
-  };
-
-  const downloadPowerTemplate = (format: 'pdf' | 'docx' | 'md' | 'blank') => {
-    if (typeof window === 'undefined') return;
-    const blankWorksheet = `# Blank Power and Influence Map Worksheet
-
-## Actor or group
-
-## Actor category
-
-## Connected issue or barrier
-
-## Influence level
-
-## Support or interest
-
-## Likely role
-
-## Engagement approach
-
-## Design implication
-
-## Safety note
-
-Use role categories and generalized group labels. Do not record names, accusations, complaint details, exact sensitive locations, or identifiable information.
-`;
-    const content = format === 'docx' || format === 'pdf'
-      ? buildPowerInfluenceMapTemplateHtml()
-      : format === 'blank'
-        ? blankWorksheet
-        : powerInfluenceMapTemplateMarkdown;
-    const blob = new Blob([content], { type: format === 'docx' || format === 'pdf' ? 'application/msword' : 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = format === 'blank'
-      ? 'power-and-influence-map-blank-worksheet.md'
-      : `power-and-influence-map-template.${format === 'pdf' ? 'doc' : format}`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  };
-
-  const submittedRows = submittedOutput?.generatedActorRows || [];
-  const outputZones = submittedOutput?.generatedPowerMapZones || generatePowerMapZones(completedRatings);
-  const screen9SafeNote = (
-    <div className="m3-power-studio-safe-note" role="note" data-testid="m3-s09-safety-note">
-      <strong>Safe use note</strong>
-      <span>Use fictional, generalized, or non-sensitive examples. Do not include real names, exact locations, complaints, incidents, confidential proposal details, political accusations, or information that could identify people.</span>
-    </div>
-  );
-  const actorFilterDefinitions: Array<{ id: typeof activeActorFilter; label: string; categories?: ActorCategory[] }> = [
-    { id: 'public', label: 'Formal public actors', categories: ['primary_public_responsibility'] },
-    { id: 'service', label: 'Service and committee actors', categories: ['service_or_local_implementation'] },
-    { id: 'rights', label: 'Rights-holder groups', categories: ['rights_holder_group'] },
-    { id: 'community', label: 'Community influence actors', categories: ['community_influence_actor', 'rights_holder_voice_support', 'careful_engagement_actor', 'participation_actor'] },
-    { id: 'support', label: 'CSO and support actors', categories: ['cso_role', 'support_ally_actor'] },
-    { id: 'custom', label: 'Add another actor' },
-    { id: 'all', label: 'Show all' },
-  ];
-  const filteredActorOptions = activeActorFilter === 'all'
-    ? actorOptions
-    : activeActorFilter === 'custom'
-      ? []
-      : actorOptions.filter((actor) => actorFilterDefinitions.find((filter) => filter.id === activeActorFilter)?.categories?.includes(actor.category));
-  const understandComplete = understandAnswer === 'informal';
-  const mapGenerated = Boolean(submittedOutput && !formChanged);
-  const stageDefinitions: Array<{ id: 1 | 2 | 3 | 4 | 5; label: string; unlocked: boolean; complete: boolean; note?: string }> = [
-    { id: 1, label: 'Understand', unlocked: true, complete: understandComplete },
-    { id: 2, label: 'Example', unlocked: understandComplete, complete: exampleReviewed },
-    { id: 3, label: 'Practice', unlocked: exampleReviewed, complete: mapReadyToGenerate },
-    { id: 4, label: 'Review power map', unlocked: Boolean(submittedOutput), complete: mapGenerated },
-    { id: 5, label: 'Apply/Download', unlocked: Boolean(submittedOutput), complete: mapGenerated },
-  ];
-  const stageTestIds: Record<1 | 2 | 3 | 4 | 5, string | undefined> = {
-    1: 'm3-s09-stage-understand',
-    2: undefined,
-    3: 'm3-s09-stage-practice',
-    4: 'm3-s09-stage-review',
-    5: 'm3-s09-stage-apply',
-  };
-  const selectionChecks = [
-    { label: 'At least three actors selected', complete: selectedActorIds.length >= 3 },
-    { label: 'At least one rights-holder group selected', complete: hasRightsHolderGroup },
-    { label: 'At least one responsible actor selected', complete: hasPublicOrServiceActor },
-    { label: 'Actor count is manageable', complete: selectedActorIds.length >= 3 && selectedActorIds.length <= 6 },
-  ];
-  const screen9CompletedRequirementCount = selectionChecks.filter((check) => check.complete).length + Math.min(ratedActorCount, 3);
-  const screen9TotalRequirementCount = selectionChecks.length + 3;
-  const screen9RemainingRequirements = [
-    ...(selectedActorIds.length < 3 ? [`Select ${3 - selectedActorIds.length} more actor${3 - selectedActorIds.length === 1 ? '' : 's'}.`] : []),
-    ...(!hasRightsHolderGroup ? ['Include at least one rights-holder group.'] : []),
-    ...(!hasPublicOrServiceActor ? ['Include at least one public, service, or committee actor.'] : []),
-    ...(ratedActorCount < 3 ? [`Complete the ratings for ${3 - ratedActorCount} more actor${3 - ratedActorCount === 1 ? '' : 's'}.`] : []),
-    ...(hasUnsafeLabel ? ['Remove identifying or unsafe detail from the generalized actor label.'] : []),
-  ];
-  const getActorIcon = (category: ActorCategory) => {
-    if (category === 'primary_public_responsibility') return '▦';
-    if (category === 'service_or_local_implementation') return '◉';
-    if (category === 'rights_holder_group') return '●';
-    if (category === 'cso_role' || category === 'support_ally_actor') return '◇';
-    return '◎';
-  };
-  const getQuadrantDisplayLabel = (zoneId: Screen9PowerMapZone['zoneId']) => {
-    if (zoneId === 'work_closely') return 'High formal authority / high practical influence';
-    if (zoneId === 'engage_carefully') return 'High formal authority / lower practical influence';
-    if (zoneId === 'strengthen_voice') return 'Lower formal authority / high practical influence';
-    return 'Lower formal authority / lower practical influence';
-  };
-  const getQuadrantActionLabel = (zoneId: Screen9PowerMapZone['zoneId']) => {
-    if (zoneId === 'work_closely') return 'Work closely';
-    if (zoneId === 'engage_carefully') return 'Engage carefully';
-    if (zoneId === 'strengthen_voice') return 'Strengthen voice';
-    return 'Monitor lightly';
-  };
-  const copyMapSummary = () => {
-    if (!submittedOutput) return;
-    const summary = [
-      'Power and Influence Map',
-      ...submittedOutput.generatedActorRows.map((row) => `${row.actor}: ${row.influenceLevel}; ${row.supportInterestLevel}; ${row.likelyRoleInChange}; ${row.engagementApproach}. ${row.designImplication}`),
-      `Carry forward: ${submittedOutput.carryForward.nextUse}`,
-    ].join('\n');
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(summary).then(() => setCopyStatus('Map summary copied.')).catch(() => setCopyStatus('Copy was not available.'));
-    } else {
-      setCopyStatus('Copy was not available.');
-    }
-  };
-  const saveAndContinue = () => {
-    if (!submittedOutput || formChanged) return;
-    onComplete({
-      ...submittedOutput,
-      module3: { screen9: submittedOutput },
-      screen9: submittedOutput,
-    });
-  };
-  const goToStage = (stageId: 1 | 2 | 3 | 4 | 5) => {
-    const stage = stageDefinitions.find((item) => item.id === stageId);
-    if (stage?.unlocked) setActiveStage(stageId);
-  };
-  const renderQuadrantBoard = (zones: Screen9PowerMapZone[], compact = false) => (
-    <div className={compact ? 'm3-power-studio-quadrant-frame is-compact' : 'm3-power-studio-quadrant-frame'}>
-      {!compact && (
-        <div className="m3-b9-axis-legend" aria-label="How to read this map">
-          <span><strong>Vertical organizing concept:</strong> formal authority</span>
-          <span><strong>Horizontal organizing concept:</strong> practical influence</span>
-        </div>
-      )}
-      <div className={compact ? 'm3-power-studio-quadrants is-compact' : 'm3-power-studio-quadrants'} aria-label="Four-zone power and influence map">
-      {zones.map((zone) => (
-        <section key={zone.zoneId} className={`m3-power-studio-quadrant m3-power-studio-quadrant--${zone.zoneId}`} data-testid="m3-s09-quadrant" aria-labelledby={`${screen.id}-${compact ? 'preview-' : ''}${zone.zoneId}`}>
-          <header className="m3-b9-zone-header">
-            <div>
-              <p className="m3-b9-zone-position">{getQuadrantDisplayLabel(zone.zoneId)}</p>
-              <h3 id={`${screen.id}-${compact ? 'preview-' : ''}${zone.zoneId}`}>{getQuadrantActionLabel(zone.zoneId)}</h3>
-            </div>
-            <span className="m3-b9-zone-count">{zone.actorIds.length} {zone.actorIds.length === 1 ? 'actor' : 'actors'}</span>
-          </header>
-          {!compact && <p className="m3-b9-zone-guidance">{powerMapZoneInterpretations[zone.zoneId]}</p>}
-          <div className="m3-power-studio-quadrant-actors">
-            {zone.actorIds.length > 0 ? zone.actorIds.map((actorId) => {
-              const rating = (submittedOutput?.actorRatings || completedRatings).find((item) => item.actorId === actorId) || actorRatings[actorId];
-              const actor = actorOptions.find((item) => item.actorId === actorId);
-              if (!rating) return null;
-              return (
-                <article key={actorId} className="m3-power-studio-map-chip" data-testid={submittedOutput ? 'm3-s09-generated-map-row' : undefined}>
-                  <span aria-hidden="true">{getActorIcon(actor?.category || rating.category)}</span>
-                  <div>
-                    <strong>{rating.actorLabel}</strong>
-                    {compact ? <small>{getScreen9RoleLabel(rating.likelyChangeRole)}</small> : (
-                      <dl className="m3-b9-actor-details">
-                        <div><dt>Role or responsibility</dt><dd>{rating.roleFromResponsibilityMap}</dd></div>
-                        <div><dt>Formal authority</dt><dd>{getScreen9InfluenceLabel(rating.formalAuthorityLevel)}</dd></div>
-                        <div><dt>Practical influence</dt><dd>{getScreen9InfluenceLabel(rating.influenceLevel)}</dd></div>
-                        <div><dt>Support or interest</dt><dd>{getScreen9SupportLabel(rating.supportInterestLevel)}</dd></div>
-                        <div><dt>Likely role in change</dt><dd>{getScreen9RoleLabel(rating.likelyChangeRole)}</dd></div>
-                        <div><dt>Engagement approach</dt><dd>{getScreen9ApproachLabel(rating.engagementApproach)}</dd></div>
-                        {rating.designImplication && <div><dt>Design implication</dt><dd>{rating.designImplication}</dd></div>}
-                        {rating.questionForScreen10 && <div><dt>Carry forward to Screen 10</dt><dd>{rating.questionForScreen10}</dd></div>}
-                      </dl>
-                    )}
-                  </div>
-                </article>
-              );
-            }) : <div className="m3-power-studio-empty-quadrant">No actors are assigned to this zone in the saved map.</div>}
-          </div>
-        </section>
-      ))}
-      </div>
-    </div>
-  );
-  const renderPowerPanel = () => (
-    <aside className="m3-power-studio-live-panel" aria-label="Generate your power map" data-testid="m3-s09-generate-panel">
-      <h2>Generate your power map</h2>
-      <p aria-live="polite"><strong>{screen9CompletedRequirementCount} of {screen9TotalRequirementCount}</strong> requirements complete</p>
-      {screen9RemainingRequirements.length > 0 ? (
-        <div className="m3-guided-remaining" aria-live="polite">
-          <strong>Still required:</strong>
-          <ul>{screen9RemainingRequirements.map((requirement) => <li key={requirement}>{requirement}</li>)}</ul>
-        </div>
-      ) : <p className="m3-guided-ready" aria-live="polite">All actor-selection and rating requirements are complete.</p>}
-      <p className="m3-power-studio-helper">{mapReadyToGenerate ? 'Ready to generate' : 'Not ready to generate'}</p>
-      <button type="button" className="m3-power-studio-primary" disabled={!mapReadyToGenerate} onClick={() => { submitMap(); setActiveStage(4); }} data-testid="m3-s09-generate-map">
-        {submittedOutput ? 'Update power and influence map' : 'Generate power and influence map'}
-      </button>
-    </aside>
-  );
+  const titleId = screen.id + '-title';
 
   return (
     <main className="m3-screen m3-power-map-screen" aria-labelledby={titleId}>
-      <article className="m3-power-map-shell m3-power-studio-shell">
-        <header className="m3-power-map-header m3-power-studio-header">
-          <p className="m3-power-map-eyebrow">{screen.eyebrow}</p>
-          <h1 id={titleId}>Power and Influence Map</h1>
-          <p className="m3-power-map-subtitle">Compare formal authority and practical influence, then choose constructive, proportionate, and risk-aware engagement.</p>
-          <ProgressChip>{module3ScreenProgressLabel(screen)}</ProgressChip>
-          <nav className="m3-power-studio-stage-nav" aria-label="Power mapping stages">
-            {stageDefinitions.map((stage) => (
-              <button
-                key={stage.id}
-                type="button"
-                className={`${activeStage === stage.id ? 'is-active' : ''}${stage.complete ? ' is-complete' : ''}${!stage.unlocked ? ' is-locked' : ''}`}
-                disabled={!stage.unlocked}
-                aria-current={activeStage === stage.id ? 'step' : undefined}
-                data-testid={stageTestIds[stage.id]}
-                onClick={() => goToStage(stage.id)}
-              >
-                <span aria-hidden="true">{stage.complete ? '✓' : stage.id}</span>
-                {stage.label}
-              </button>
-            ))}
-          </nav>
+      <article className="m3-power-map-shell">
+        <header className="m3-power-map-header">
+          <p className="m3-context-label">{screen.eyebrow}</p>
+          <h1 id={titleId}>{screen.title}</h1>
+          <p className="m3-power-map-subtitle">Identify key enablers, potential blockers, and safe influence strategies in Jiru Amba.</p>
+          <p className="m3-power-map-meta">
+            {screen.phase} · <strong>Screen {getModule3VisibleScreenNumber(screen.id) ?? screen.screenNumber} of {MODULE3_REVISED_VISIBLE_SCREEN_TOTAL}</strong>
+          </p>
         </header>
 
-        {activeStage === 1 && (
-          <section className="m3-power-studio-stage" aria-labelledby={`${screen.id}-understand`}>
-            <div className="m3-power-studio-understand-grid">
-              <article className="m3-power-studio-concept-card">
-                <span aria-hidden="true">P</span>
-                <h2 id={`${screen.id}-understand`}>Power and influence analysis helps CSOs engage safely and strategically</h2>
-                <p>After clarifying actor responsibilities, a design team needs to ask how decisions are actually shaped. Some actors have formal authority. Others influence information, access, trust, criteria, or who feels safe to speak.</p>
-                <p>In HRBA project design, power and influence analysis helps a CSO choose a constructive engagement strategy. It shows who should be engaged closely, where rights-holder voice needs support, where careful dialogue is needed, and where risks should be monitored.</p>
-                <p>This is not a tool for naming or accusing individuals. It is a safe way to understand decision patterns and design better participation, accountability, and follow-up.</p>
-                <p className="m3-power-studio-key">Formal responsibility does not always mean practical influence. Use power analysis to plan safe engagement, strengthen rights-holder voice, and avoid harm.</p>
-              </article>
-              <article className="m3-power-studio-flow-card" aria-labelledby={`${screen.id}-model`}>
-                <h2 id={`${screen.id}-model`}>From actor responsibility to engagement strategy</h2>
-                <p>Use this flow to move from actor roles to a safer design engagement plan.</p>
-                {[
-                  ['Actor or role', 'Who can shape the decision or response?'],
-                  ['Formal power', 'Who has authority, mandate, budget, or approval power?'],
-                  ['Practical influence', 'Who shapes information, access, trust, voice, or follow-up?'],
-                  ['Safety and voice', 'Where could engagement create risk or silence less powerful groups?'],
-                  ['Engagement approach', 'How should the CSO engage, support, monitor, or follow up?'],
-                ].map(([title, text], index) => (
-                  <article key={title}>
-                    <span aria-hidden="true">{index + 1}</span>
-                    <strong>{title}</strong>
-                    <p>{text}</p>
-                  </article>
-                ))}
-              </article>
-              <section className="m3-power-studio-explain-grid" aria-label="Screen purpose and output">
-                {[
-                  ['What this section is about', 'Map actors by their formal power and practical influence so the project can engage them safely and strategically.', 'amber'],
-                  ['Why this matters for CSOs', 'Power analysis helps CSOs avoid shallow participation, examine possible influence and engagement risks, and strengthen rights-holder influence without making unsupported claims.', 'green'],
-                  ['What you will do', 'Select actors from the Jiru Amba case, rate their power and influence, and choose a safe engagement approach.', 'blue'],
-                  ['What you will produce', 'A draft Power and Influence Map that can be saved to your portfolio and used in later design screens.', 'teal'],
-                ].map(([title, text, tone]) => (
-                  <article key={title} className={`m3-power-studio-explain-card is-${tone}`}>
-                    <h2>{title}</h2>
-                    <p>{text}</p>
-                  </article>
-                ))}
-              </section>
-              <section className="m3-power-studio-power-concepts" aria-label="Power concepts">
-                {[
-                  ['Visible power', 'Formal roles, official decisions, budgets, rules, approvals, or service responsibilities.'],
-                  ['Hidden power', 'Control over agendas, information, invitations, criteria, access, or who gets heard before decisions are made.'],
-                  ['Social or invisible power', 'Norms, fear, trust, confidence, recognition, status, or relationships that influence who speaks and whose views count.'],
-                ].map(([title, text]) => (
-                  <article key={title}>
-                    <h3>{title}</h3>
-                    <p>{text}</p>
-                  </article>
-                ))}
-              </section>
-              <article className="m3-power-studio-check-card">
-                <h2>Quick check</h2>
-                <p>Which statement is strongest?</p>
-                {[
-                  ['formal', 'The actor with formal responsibility always has the most influence.'],
-                  ['informal', 'Some actors may have informal influence even without formal responsibility.'],
-                  ['ignore', 'Low-influence rights-holder groups do not need engagement.'],
-                ].map(([id, label]) => (
-                  <button key={id} type="button" className={understandAnswer === id ? 'is-selected' : ''} onClick={() => setUnderstandAnswer(id)}>
-                    <span aria-hidden="true">{understandAnswer === id ? '●' : '○'}</span>
-                    {label}
-                    {understandAnswer === id && id === 'informal' && <strong>Correct</strong>}
-                  </button>
-                ))}
-                {understandComplete && <p className="m3-power-studio-ready">Good. HRBA power analysis checks formal responsibility, practical influence, support, risks, and whose voice needs to be strengthened safely.</p>}
-              </article>
-            </div>
-            {screen9SafeNote}
-            <div className="m3-power-studio-actions">
-              <button type="button" className="m3-power-studio-primary" disabled={!understandComplete} onClick={() => setActiveStage(2)}>Continue to worked example</button>
-              {!understandComplete && <p>Choose the strongest statement to continue.</p>}
-            </div>
-          </section>
-        )}
+        {/* 3 STRATEGY-CARD SECTIONS */}
 
-        {activeStage === 2 && (
-          <section className="m3-power-studio-stage" aria-labelledby={`${screen.id}-example`}>
-            <h2 id={`${screen.id}-example`}>Worked example: market committee</h2>
-            <div className="m3-power-studio-example-flow">
-              {[
-                ['Actor', 'Market committee'],
-                ['Connected barrier', 'Market priorities may be shaped before women vendors and informal workers can influence decisions.'],
-                ['Formal authority', 'Formal responsibility requires verification.'],
-                ['Practical influence', 'May have strong influence over market information and access.'],
-                ['Interest or likely engagement', 'Requires constructive verification; no positive or negative behavior is assumed.'],
-                ['Engagement approach', 'Engage constructively, clarify responsibility, use transparent consultation, and avoid relying on one actor to represent all market users.'],
-                ['Design implication', 'Use more than one participation channel and check whether lower-influence market users shaped priorities before final decisions.'],
-              ].map(([label, text]) => (
-                <article key={label}>
-                  <span>{label}</span>
-                  <p>{text}</p>
-                </article>
-              ))}
-            </div>
-            <div className="m3-power-studio-actions">
-              <button type="button" className="m3-power-studio-primary" onClick={() => { setExampleReviewed(true); setActiveStage(3); }}>Start actor selection</button>
-            </div>
-          </section>
-        )}
-
-        {activeStage === 3 && (
-          <section className="m3-power-studio-stage m3-power-studio-workspace m3-power-studio-practice" aria-labelledby={taskId}>
-            <div className="m3-power-studio-main">
-              <section className="m3-power-studio-practice-step" aria-labelledby={`${screen.id}-select-actors`}>
-                <h2 id={taskId}>Practice with Jiru Amba</h2>
-                <h3 id={`${screen.id}-select-actors`}>Step 1: Select actors</h3>
-                <p>Select 3-6 actors. Include at least one rights-holder group and at least one public, service, or committee actor.</p>
-                <div className="m3-power-studio-filter-tabs" role="tablist" aria-label="Actor categories">
-                  {actorFilterDefinitions.map((filter) => (
-                    <button key={filter.id} type="button" className={activeActorFilter === filter.id ? 'is-active' : ''} onClick={() => setActiveActorFilter(filter.id)}>
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-                {activeActorFilter === 'custom' ? (
-                  <section className="m3-power-studio-custom">
-                    <h3>Add another generalized actor role</h3>
-                    <label><span>Use a general actor role only</span><input value={customActorLabel} onChange={(event) => setCustomActorLabel(event.target.value)} placeholder="Example: local service committee" aria-invalid={hasUnsafeLabel} /></label>
-                    <label><span>Actor category</span><select value={customActorCategory} onChange={(event) => setCustomActorCategory(event.target.value as ActorCategory)}>{screen9CustomActorCategoryOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-                    {hasUnsafeLabel && <p className="m3-power-map-error">{customValidation.error}</p>}
-                    <button type="button" className="m3-power-studio-primary" onClick={addCustomActor} disabled={!customValidation.isValid}>Add generalized actor role</button>
-                  </section>
-                ) : (
-                  <div className="m3-power-studio-actor-grid" role="group" aria-label="Actor options">
-                    {filteredActorOptions.map((actor) => {
-                      const selected = selectedActorIds.includes(actor.actorId);
-                      const content = getScreen9ActorContent(actor);
-                      const disabled = !selected && selectedActorIds.length >= 6;
-                      return (
-                        <button key={actor.actorId} type="button" className={`m3-power-studio-actor-card${selected ? ' is-selected' : ''}`} aria-pressed={selected} disabled={disabled} data-testid={selected ? 'm3-s09-selected-actor' : 'm3-s09-selectable-actor'} onClick={() => toggleActor(actor)}>
-                          <span aria-hidden="true" className="m3-power-studio-card-check">{selected ? '✓' : '+'}</span>
-                          <strong>{actor.label}</strong>
-                          <p>{actor.actorId === 'women_water_context' ? 'Connected to household water responsibilities and water-service decisions.' : content.clue}</p>
-                          <small>{selected ? 'Selected' : disabled ? 'Six actors selected' : 'Select'}</small>
-                        </button>
-                      );
-                    })}
+        {/* Section 1: Enablers */}
+        <section className="m3-power-card-section">
+          <div className="m3-section-header">
+            <h2>1. Primary Enabler Actor</h2>
+            <p>Select 1 actor with formal authority or informal trust who can champion inclusive water-service improvements.</p>
+          </div>
+          <div className="m3-power-cards-grid" role="radiogroup" aria-label="Primary enabler actors">
+            {enablerOptions.map((opt, idx) => {
+              const isSelected = selectedEnabler === opt.label;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  className={'m3-power-card' + (isSelected ? ' is-selected' : '')}
+                  aria-checked={isSelected}
+                  role="radio"
+                  onClick={() => setSelectedEnabler(opt.label)}
+                >
+                  <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                  <div>
+                    <h3>{opt.label}</h3>
+                    <p>{opt.desc}</p>
                   </div>
-                )}
-              </section>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-              <section className={`m3-power-studio-practice-step ${selectedActors.length === 0 ? 'is-disabled' : ''}`} aria-labelledby={`${screen.id}-rate-actors`}>
-                <h3 id={`${screen.id}-rate-actors`}>Step 2: Rate selected actors</h3>
-                {selectedActors.length === 0 ? (
-                  <p className="m3-power-studio-empty-note">Select actors first. Rating rows will appear here.</p>
-                ) : (
-                  <div className="m3-power-studio-rating-rows" role="group" aria-label="Selected actor rating rows">
-                    {selectedActors.map((actor) => {
-                      const rating = actorRatings[actor.actorId] || createEmptyActorRating(actor);
-                      return (
-                        <article key={actor.actorId} className="m3-power-studio-rating-row" data-testid="m3-s09-rating-row">
-                          <div className="m3-power-studio-rating-actor">
-                            <span aria-hidden="true">{getActorIcon(actor.category)}</span>
-                            <div>
-                              <strong>{actor.label}</strong>
-                              <small>{actorCategoryLabels[actor.category]}</small>
-                              <p>{getScreen9ActorContent(actor).role}</p>
-                            </div>
-                          </div>
-                          <label>
-                            <span>Formal authority or decision responsibility</span>
-                            <select value={rating.formalAuthorityLevel} onChange={(event) => updateRating(actor.actorId, 'formalAuthorityLevel', event.target.value)} data-testid="m3-s09-authority-select">
-                              <option value="">Choose formal authority</option>
-                              {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label.replace('influence', 'formal authority')}</option>)}
-                            </select>
-                          </label>
-                          <label>
-                            <span>Practical influence over decisions, access, or implementation</span>
-                            <select value={rating.influenceLevel} onChange={(event) => updateRating(actor.actorId, 'influenceLevel', event.target.value)} data-testid="m3-s09-influence-select">
-                              <option value="">Choose practical influence</option>
-                              {screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                            </select>
-                          </label>
-                          <label>
-                            <span>Interest, likely engagement, or possible risk</span>
-                            <select value={rating.supportInterestLevel} onChange={(event) => updateRating(actor.actorId, 'supportInterestLevel', event.target.value)} data-testid="m3-s09-support-select">
-                              <option value="">Choose support or risk</option>
-                              {screen9SupportOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                            </select>
-                          </label>
-                          <label>
-                            <span>Engagement approach</span>
-                            <select value={rating.engagementApproach} onChange={(event) => updateRating(actor.actorId, 'engagementApproach', event.target.value)} data-testid="m3-s09-engagement-select">
-                              <option value="">Choose approach</option>
-                              {screen9EngagementApproachOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                            </select>
-                          </label>
-                          <div className="m3-power-studio-rating-signal">
-                            <span>Capacity or support gap</span>
-                            <p>{rating.likelyChangeRole ? getScreen9RoleLabel(rating.likelyChangeRole) : 'Auto-suggested after influence and support are rated.'}</p>
-                          </div>
-                          <label className="m3-power-studio-row-implication">
-                            <span>Strategy implication</span>
-                            <textarea value={rating.designImplication} onChange={(event) => updateRating(actor.actorId, 'designImplication', event.target.value)} />
-                          </label>
-                        </article>
-                      );
-                    })}
+        {/* Section 2: Blockers */}
+        <section className="m3-power-card-section">
+          <div className="m3-section-header">
+            <h2>2. Potential Blocker or Risk Actor</h2>
+            <p>Select 1 actor whose interests or influence could delay or restrict equitable service delivery.</p>
+          </div>
+          <div className="m3-power-cards-grid" role="radiogroup" aria-label="Potential blocker actors">
+            {blockerOptions.map((opt, idx) => {
+              const isSelected = selectedBlocker === opt.label;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  className={'m3-power-card' + (isSelected ? ' is-selected' : '')}
+                  aria-checked={isSelected}
+                  role="radio"
+                  onClick={() => setSelectedBlocker(opt.label)}
+                >
+                  <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                  <div>
+                    <h3>{opt.label}</h3>
+                    <p>{opt.desc}</p>
                   </div>
-                )}
-                <div className="m3-power-studio-selection-footer">
-                  {selectionChecks.map((check) => <span key={check.label} className={check.complete ? 'is-complete' : ''}><strong aria-hidden="true">{check.complete ? '✓' : '○'}</strong>{check.label}</span>)}
-                </div>
-              </section>
-              <details className="m3-power-studio-secondary-guidance">
-                <summary>Safe mapping guidance</summary>
-                {screen9SafeNote}
-              </details>
-            </div>
-            {renderPowerPanel()}
-          </section>
-        )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-        {activeStage === 4 && submittedOutput && (
-          <section className="m3-power-studio-stage m3-power-studio-review" aria-live="polite" aria-labelledby={`${screen.id}-output`}>
-            <div className="m3-power-studio-review-head">
-              <div>
-                <h2 id={`${screen.id}-output`} ref={outputRef} tabIndex={-1}>Your draft Power and Influence Map</h2>
-                <p>This map shows how selected actors may influence decisions and how the CSO can engage safely and constructively. It is a learning output, not a political assessment.</p>
-                <p className="m3-power-studio-carry-note">Use this map in the next screen to explore root causes and capacity gaps. Some design problems continue because influence, incentives, information, capacity, or accountability are not aligned.</p>
-              </div>
-              <strong>{formChanged ? 'Map needs update' : 'Map generated'}</strong>
-            </div>
-            {renderQuadrantBoard(outputZones)}
-            <section className="m3-b9-carry-list" aria-labelledby={`${screen.id}-actor-carry-forward`}>
-              <h3 id={`${screen.id}-actor-carry-forward`}>Actor responsibility and carry-forward questions</h3>
-              <div>
-                {submittedRows.map((row) => (
-                  <article key={row.actor}>
-                    <h4>{row.actor}</h4>
-                    <p><strong>Role or responsibility:</strong> {row.roleFromResponsibilityMap}</p>
-                    <p><strong>Question for Screen 10:</strong> {row.questionForScreen10}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-            <section className="m3-power-studio-summary">
-              <h3>What this power map suggests</h3>
-              <ul>
-                <li>Work closely with actors who can help move change.</li>
-                <li>Engage high-influence uncertain actors carefully.</li>
-                <li>Strengthen women’s and other rights-holder groups’ voice safely.</li>
-                <li>Clarify responsibility so Awra does not replace public or service actors.</li>
-                <li>Carry this map into root-cause analysis, participation pathway, risk check, and activity repair.</li>
-              </ul>
-              {submittedOutput.powerInfluenceMap.summaryMessages.map((message) => <p key={message}>{message}</p>)}
-            </section>
-            {submittedOutput.warnings.length > 0 && <section className={`m3-power-map-feedback m3-power-map-feedback--${submittedOutput.feedbackLevel}`}><h3>Feedback</h3><p>{getScreen9FeedbackCopy(submittedOutput.feedbackLevel)}</p><ul>{submittedOutput.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul></section>}
-            {screen9SafeNote}
-            <div className="m3-power-studio-actions">
-              <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(3)}>Edit practice choices</button>
-              <button type="button" className="m3-power-studio-secondary" onClick={copyMapSummary}>Copy map summary</button>
-              <button type="button" className="m3-power-studio-secondary" onClick={() => downloadPowerTemplate('md')}>Download template</button>
-              <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(5)}>Go to Apply/Download</button>
-              <PrimaryButton disabled={!canContinue} testId="m3-s09-final-continue" onClick={saveAndContinue}>{screen.continueLabel}</PrimaryButton>
-            </div>
-            {copyStatus && <p className="m3-context-copy-status" aria-live="polite">{copyStatus}</p>}
-            {formChanged && <p className="m3-power-studio-helper">Your choices changed. Update the power map before saving.</p>}
-          </section>
-        )}
-
-        {activeStage === 5 && (
-          <section className="m3-power-studio-stage m3-power-studio-apply" aria-labelledby={`${screen.id}-apply`}>
-            <h2 id={`${screen.id}-apply`}>Apply and download</h2>
-            <p>Use your Jiru Amba map, try a safe version with your own CSO context, or download reusable tools.</p>
-            <div className="m3-power-studio-apply-tabs" role="tablist" aria-label="Apply and download tabs">
-              <button type="button" className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
-              <button type="button" className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')}>Download tools</button>
-            </div>
-            {applyTab === 'own' && (
-              <div className="m3-power-studio-apply-grid">
-                <section className="m3-power-studio-own-tool">
-                  <h3>Try the power map with your own CSO context</h3>
-                  <p>Use your roles and generalized group labels. Keep it safe and non-identifying.</p>
-                  {screen9SafeNote}
-                  <div className="m3-power-studio-own-grid">
-                    {[
-                      ['actorOrRoleCategory', '1. Actor or group', 'Example: local service committee, women, youth group, planning actor.'],
-                      ['formalResponsibility', '2. Actor category', 'Formal public actor, service actor, rights-holder group, community influence actor, CSO/support actor.'],
-                      ['projectIssueOrBarrier', '3. Connected issue or barrier', 'What issue, barrier, or decision is this actor connected to?'],
-                    ].map(([field, label, placeholder]) => (
-                      <label key={field}><span>{label}</span><textarea value={String(ownCsoDraft[field as keyof Screen9OwnCsoDraft])} onChange={(event) => updateOwnCsoDraft(field as keyof Screen9OwnCsoDraft, event.target.value)} placeholder={placeholder} /></label>
-                    ))}
-                    <label><span>4. Influence level</span><select value={ownCsoDraft.practicalInfluence} onChange={(event) => updateOwnCsoDraft('practicalInfluence', event.target.value)}><option value="">Choose one</option>{screen9InfluenceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-                    <label><span>5. Support or interest</span><select value={ownCsoDraft.supportOrInterest} onChange={(event) => updateOwnCsoDraft('supportOrInterest', event.target.value)}><option value="">Choose one</option>{screen9SupportOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-                    <label><span>6. Likely role</span><select value={ownCsoDraft.likelyRole} onChange={(event) => updateOwnCsoDraft('likelyRole', event.target.value)}><option value="">Choose one</option>{likelyRoleOptions.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label>
-                    <label><span>7. Engagement approach</span><select value={ownCsoDraft.safeEngagementApproach} onChange={(event) => updateOwnCsoDraft('safeEngagementApproach', event.target.value)}><option value="">Choose one</option>{screen9EngagementApproachOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-                    {[
-                      ['designImplication', '8. Design implication', 'What should change in the project design because of this actor analysis?'],
-                      ['safetyNote', '9. Safety note', 'What should the team avoid recording or exposing?'],
-                      ['rootCauseQuestion', '10. Carry-forward question', 'What should be explored next to understand this power pattern?'],
-                    ].map(([field, label, placeholder]) => (
-                      <label key={field}><span>{label}</span><textarea value={String(ownCsoDraft[field as keyof Screen9OwnCsoDraft])} onChange={(event) => updateOwnCsoDraft(field as keyof Screen9OwnCsoDraft, event.target.value)} placeholder={placeholder} /></label>
-                    ))}
+        {/* Section 3: Safe Influence Strategy */}
+        <section className="m3-power-card-section">
+          <div className="m3-section-header">
+            <h2>3. Safe Influence Strategy</h2>
+            <p>Select 1 constructive engagement strategy to navigate power dynamics without exposing vulnerable groups.</p>
+          </div>
+          <div className="m3-power-cards-grid" role="radiogroup" aria-label="Safe influence strategies">
+            {safeStrategyOptions.map((opt, idx) => {
+              const isSelected = selectedSafeStrategy === opt.label;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  className={'m3-power-card' + (isSelected ? ' is-selected' : '')}
+                  aria-checked={isSelected}
+                  role="radio"
+                  onClick={() => setSelectedSafeStrategy(opt.label)}
+                >
+                  <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                  <div>
+                    <h3>{opt.label}</h3>
+                    <p>{opt.desc}</p>
                   </div>
-                  {ownCsoError && <p className="m3-power-map-error" role="alert">{ownCsoError}</p>}
-                  <button type="button" className="m3-power-studio-primary" onClick={generateOwnCsoMap}>Generate my power and influence note</button>
-                  {ownCsoOutput && (
-                    <article className="m3-power-map-own-output" aria-live="polite">
-                      <h3>My Power and Influence Note</h3>
-                      <p><strong>Actor or group:</strong> {ownCsoOutput.actorOrRoleCategory}</p>
-                      <p><strong>Influence:</strong> {getScreen9InfluenceLabel(ownCsoOutput.practicalInfluence)}</p>
-                      <p><strong>Support:</strong> {getScreen9SupportLabel(ownCsoOutput.supportOrInterest)}</p>
-                      <p><strong>Engagement:</strong> {getScreen9ApproachLabel(ownCsoOutput.safeEngagementApproach)}</p>
-                      <p><strong>Design implication:</strong> {ownCsoOutput.designImplication}</p>
-                      <p><strong>Safety note:</strong> {ownCsoOutput.safetyNote}</p>
-                    </article>
-                  )}
-                </section>
-                <aside className="m3-power-studio-download-card">
-                  <h3>Jiru Amba power map saved</h3>
-                  <p><strong>Own-CSO practice optional</strong></p>
-                  <PrimaryButton disabled={!canContinue} testId="m3-s09-final-continue" onClick={saveAndContinue}>{screen.continueLabel}</PrimaryButton>
-                  <button type="button" className="m3-power-studio-secondary" onClick={() => setActiveStage(4)}>Return to Review map</button>
-                </aside>
-              </div>
-            )}
-            {applyTab === 'downloads' && (
-              <section className="m3-power-studio-download-card">
-                <h3>Power and Influence Map Template Pack</h3>
-                <p>Use this template to identify who can enable change, who may block or delay it, and whose voice should be strengthened safely.</p>
-                <button type="button" className="m3-power-studio-secondary" onClick={() => downloadPowerTemplate('pdf')}>Download PDF template pack</button>
-                <button type="button" className="m3-power-studio-secondary" onClick={() => downloadPowerTemplate('md')}>Download markdown copy</button>
-                <button type="button" className="m3-power-studio-secondary" onClick={() => downloadPowerTemplate('blank')}>Download blank worksheet</button>
-              </section>
-            )}
-          </section>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Summary & Note Card */}
+        {canContinue && (
+          <article className="m3-power-summary-card">
+            <h3>Mapped Strategy Insight</h3>
+            <p><strong>Primary Enabler:</strong> {selectedEnabler}</p>
+            <p><strong>Potential Blocker:</strong> {selectedBlocker}</p>
+            <p><strong>Safe Influence Strategy:</strong> {selectedSafeStrategy}</p>
+          </article>
         )}
+
+        <div className="m3-optional-note-block">
+          <label htmlFor="m3-s09-custom-note">
+            <span>Optional power note or CSO context (not required to continue)</span>
+            <textarea
+              id="m3-s09-custom-note"
+              value={customNote}
+              onChange={(e) => setCustomNote(e.target.value)}
+              placeholder="Add an optional non-identifying note about actor power dynamics..."
+              maxLength={300}
+            />
+          </label>
+        </div>
+
+        {/* Actions & Continue Gate */}
+        <div className="m3-power-actions-bar">
+          {disabledGuidance && (
+            <p className="m3-power-guidance-badge" role="status">
+              {disabledGuidance}
+            </p>
+          )}
+          <button
+            type="button"
+            className="m3-primary-button"
+            disabled={!canContinue}
+            onClick={() => onComplete(buildSavePayload())}
+          >
+            {screen.continueLabel}
+          </button>
+        </div>
       </article>
     </main>
   );
@@ -15293,14 +14193,14 @@ function downloadDesignRepairTemplate(markdown: string, filename: string, format
   URL.revokeObjectURL(url);
 }
 
-type Screen14StageId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type Screen14StageId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 function uniqueNonEmpty(values: Array<string | null | undefined>, fallback: string[]) {
   const cleaned = values.map((value) => String(value || '').trim()).filter(Boolean);
   return Array.from(new Set(cleaned)).slice(0, 6).length > 0 ? Array.from(new Set(cleaned)).slice(0, 6) : fallback;
 }
 
-function buildScreen14CarryForward(state: LearningState) {
+export function buildScreen14CarryForward(state: LearningState) {
   const screen5Signals = getScreen5Signals(state).map((id) => getSignalById(id)?.label).filter(Boolean) as string[];
   const screen6 = getPracticeState(state, 'M3-R06');
   const screen7 = getScreen7SavedOutput(state);
@@ -15349,467 +14249,340 @@ function buildScreen14CarryForward(state: LearningState) {
   };
 }
 
-function ObjectiveRepairScreen({ screen, state, onComplete }: {
+function ObjectiveRepairScreen({
+  screen,
+  state,
+  onComplete,
+}: {
   screen: Module3RevisedScreen;
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
 }) {
-  const titleId = `${screen.id}-title`;
-  const carriedAnalysis = buildScreen14CarryForward(state);
+  const savedScreen14 = getPracticeState(state, screen.id);
+  const savedElement = (savedScreen14?.submitted === true && savedScreen14.repairedDesignElement)
+    ? (savedScreen14.repairedDesignElement as { repairedHrbaObjective?: string; repairedActivity?: string; implementationWatchPoint?: string })
+    : null;
+
   const strongObjective = 'Strengthen Jiru Amba service-improvement decisions so women traders, persons with disabilities, youth, and remote kebele residents can access information, influence priorities, receive responses, and benefit from safer, more accountable services.';
-  const designIssues = [
-    { id: 'objectiveBarrier', label: 'Objective does not name the barrier clearly', context: 'The objective is broad and activity-based, so the design does not show what barrier will change.' },
-    { id: 'activityBarrier', label: 'Activity does not respond to rights-holder barriers', context: 'Activities are listed, but the link to specific barriers and rights-holder benefit is weak.' },
-    { id: 'responsibilityUnclear', label: 'Responsibility is unclear', context: 'The design does not show who must respond, who supports, and what the CSO can realistically enable.' },
-    { id: 'lateParticipation', label: 'Participation is too late or weak', context: 'Rights-holders may be consulted after key decisions are already shaped.' },
-    { id: 'feedbackFollowup', label: 'Feedback and follow-up are unclear', context: 'Feedback is collected, but response roles and what changes next are not visible.' },
-    { id: 'riskExclusion', label: 'Risk or exclusion is not addressed', context: 'The design may create exclusion, unsafe feedback, role overload, or unrealistic expectations.' },
+
+  const savedAny = savedScreen14 as Record<string, any>;
+
+  const [selectedObjective, setSelectedObjective] = useState<string>(
+    savedElement?.repairedHrbaObjective || savedAny?.repairedObjective?.repairedHrbaObjective || ''
+  );
+  const [selectedActivity, setSelectedActivity] = useState<string>(
+    savedElement?.repairedActivity || savedAny?.repairedActivityPackage?.generatedSummary || ''
+  );
+  const [selectedWatchPoint, setSelectedWatchPoint] = useState<string>(
+    savedElement?.implementationWatchPoint || savedAny?.designRepairPackage?.implementationWatchPoint || ''
+  );
+  const [customNote, setCustomNote] = useState<string>('');
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(
+    savedElement ? 3 : selectedObjective && selectedActivity ? 3 : selectedObjective ? 2 : 1
+  );
+
+  const objectiveOptions = [
+    { label: strongObjective, reason: 'Strong HRBA objective. Clear rights-holder groups, participation rights, duty-bearer response roles, and service benefits are explicitly connected.' },
+    { label: 'Revise the Jiru Amba design so selected rights-holder groups influence service priorities before implementation and responsible public actors respond to feedback.', reason: 'Good HRBA objective. Focuses on early influence and responsible-actor response.' },
+    { label: 'Repair the project design so activities respond to specific barriers, clarify duty-bearer roles, and include accessible feedback and watch-points.', reason: 'Practical design objective. Directly links activities to barriers and watch-points.' },
   ];
-  const evidenceOptions = ['Root-cause and capacity-gap map', 'Gender and disability inclusion check', 'Participation and accountability pathway', 'Risk and do-no-harm check', 'Rights-holder and barrier map', 'Actor responsibility and power analysis'];
-  const weakFeatureOptions = ['Broad objective language', 'Activities not linked to barriers', 'Unclear duty-bearer or service responsibility', 'Participation after decisions are shaped', 'Feedback without response route', 'Risk or exclusion not built into design'];
-  const repairedStatementOptions = [
-    strongObjective,
-    'Repair the project design so selected rights-holder groups influence priorities before implementation and responsible actors respond to feedback and access barriers.',
-    'Revise the design so activities respond to specific barriers, clarify responsibility, and include safe feedback, accessibility, and implementation watch-points.',
+
+  const activityOptions = [
+    { label: 'Establish early pre-consultation briefings and flexible meeting schedules for women traders and rural residents', reason: 'Strong rights-responsive activity. Addresses information timing, travel, and care burdens before open meetings.' },
+    { label: 'Provide physical and information accessibility measures, transport support, and reasonable accommodation for persons with disabilities', reason: 'Essential inclusion activity. Directly removes physical and information access barriers.' },
+    { label: 'Create non-identifying feedback boxes and structured quarterly response reviews with duty-bearer focal points', reason: 'Strong accountability activity. Ensures feedback is collected safely and receives documented responses.' },
   ];
-  const designChangeOptions = ['Add early information and accessible participation before decisions', 'Link each activity to a rights-holder barrier and responsible actor', 'Add feedback-response timeline and follow-up role', 'Build accessibility and reasonable accommodation into activity planning', 'Add risk mitigation and implementation watch-point', 'Add safe, non-identifying evidence of influence and response'];
-  const actorRoleOptions = ['Woreda planning office with Awra facilitation support', 'Relevant sector office with service committee follow-up', 'Market committee with women trader participation pathway', 'Water committee or service actor with response role', 'Project accountability focal point with Awra documentation support', 'Awra as facilitator, connector, and non-sensitive documentation support'];
-  const watchPointOptions = ['Monitor whether feedback receives a response and accessibility measures are used', 'Check whether selected groups influenced at least one priority before implementation', 'Watch whether responsibility shifts too much onto the CSO', 'Check whether lower-influence groups are absent, silent, or excluded', 'Track whether risk mitigation changes activity design before rollout', 'Check whether activities drift back to generic training or meetings'];
-  const initialRepairDraft = {
-    evidenceSource: '',
-    weakFeature: '',
-    repairedStatement: '',
-    designChange: '',
-    actorRole: '',
-    watchPoint: '',
-  };
-  const savedScreen14 = getScreen14SavedOutput(state);
-  const savedPackage = savedScreen14?.designRepairPackage;
-  const savedLogic = savedScreen14?.interventionLogicIndicators;
-  const restoredIssueId = savedPackage?.selectedIssueId || (savedScreen14 ? 'lateParticipation' : '');
-  const restoredRepairDraft = savedScreen14 ? {
-    evidenceSource: savedPackage?.interventionLogicChain.find((item) => item.startsWith('Evidence or analysis used:'))?.replace('Evidence or analysis used:', '').trim() || '',
-    weakFeature: savedScreen14.repairedObjective.whatWasMissing || '',
-    repairedStatement: savedScreen14.repairedObjective.repairedHrbaObjective || '',
-    designChange: savedLogic?.repairedActivity || savedScreen14.repairedActivityPackage?.generatedSummary || '',
-    actorRole: savedPackage?.interventionLogicChain.find((item) => item.startsWith('Responsible actor or role:'))?.replace('Responsible actor or role:', '').trim() || '',
-    watchPoint: savedPackage?.implementationWatchPoint || savedLogic?.implementationWatchPoint || '',
-  } : initialRepairDraft;
-  const [stage, setStage] = useState<Screen14StageId>(savedScreen14 ? 8 : 1);
-  const [selectedIssueId, setSelectedIssueId] = useState(restoredIssueId);
-  const [repairDraft, setRepairDraft] = useState(restoredRepairDraft);
-  const [selectedActivityIds, setSelectedActivityIds] = useState<string[]>(savedScreen14?.repairedActivityPackage?.selectedActionIds.filter((id) => activityRepairActions.some((action) => action.id === id)) || []);
-  const [ownCsoDraft, setOwnCsoDraft] = useState<Screen14OwnCsoDraft>(getEmptyScreen14OwnCsoDraft());
-  const [ownCsoOutput, setOwnCsoOutput] = useState<Screen14OwnCsoOutput | null>(savedScreen14?.ownCsoPracticeOutput || null);
-  const [ownCsoError, setOwnCsoError] = useState('');
-  const [submittedOutput, setSubmittedOutput] = useState<Screen14Submission | null>(savedScreen14);
-  const [applyTab, setApplyTab] = useState<'own' | 'downloads'>('own');
-  const selectedIssue = designIssues.find((issue) => issue.id === selectedIssueId);
-  const completedRepairFields = Object.values(repairDraft).filter(Boolean).length;
-  const objectiveReady = Boolean(selectedIssue && repairDraft.evidenceSource && repairDraft.weakFeature && repairDraft.repairedStatement && repairDraft.actorRole);
-  const activityPackageReady = selectedActivityIds.length >= 3 && selectedActivityIds.length <= 5;
-  const repairComplete = Boolean(objectiveReady && activityPackageReady && repairDraft.watchPoint);
-  const stages: Array<{ id: Screen14StageId; label: string; qa: string; complete: boolean; available: boolean }> = [
-    { id: 1, label: 'Understand', qa: 'm3-s14-stage-understand', complete: stage > 1 || Boolean(submittedOutput), available: true },
-    { id: 2, label: 'Review carried findings', qa: 'm3-s14-stage-findings', complete: stage > 2 || Boolean(submittedOutput), available: true },
-    { id: 3, label: 'Repair objective', qa: 'm3-s14-stage-objective', complete: objectiveReady, available: true },
-    { id: 4, label: 'Repair activity package', qa: 'm3-s14-stage-activities', complete: activityPackageReady, available: objectiveReady },
-    { id: 5, label: 'Connect intervention logic', qa: 'm3-s14-stage-logic', complete: activityPackageReady, available: activityPackageReady },
-    { id: 6, label: 'Repair indicators and watch-points', qa: 'm3-s14-stage-indicators', complete: Boolean(submittedOutput), available: activityPackageReady },
-    { id: 7, label: 'Review package', qa: 'm3-s14-stage-review', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
-    { id: 8, label: 'Apply/Download', qa: 'm3-s14-stage-apply', complete: Boolean(submittedOutput), available: Boolean(submittedOutput) },
+
+  const watchPointOptions = [
+    { label: 'Monitor whether feedback receives a documented response and accessibility measures are used', reason: 'High-value watch-point. Checks whether public actors actually account back to community input.' },
+    { label: 'Check whether selected groups influenced at least one priority before implementation', reason: 'High-value watch-point. Verifies that participation occurred before decisions were finalized.' },
+    { label: 'Watch whether responsibility shifts too much onto the local CSO rather than duty-bearers', reason: 'Safeguarding watch-point. Prevents Awra from taking over public service responsibilities.' },
   ];
-  const goToStage = (target: Screen14StageId) => {
-    const item = stages.find((candidate) => candidate.id === target);
-    if (item?.available) setStage(target);
-  };
-  const selectIssue = (issueId: string) => {
-    setSelectedIssueId((current) => current === issueId ? '' : issueId);
-    setRepairDraft(initialRepairDraft);
-    setSubmittedOutput(null);
-  };
-  const toggleActivity = (activityId: string) => {
-    setSelectedActivityIds((current) => current.includes(activityId)
-      ? current.filter((id) => id !== activityId)
-      : current.length < 5 ? [...current, activityId] : current);
-    setSubmittedOutput(null);
-  };
-  const updateRepairDraft = (field: keyof typeof repairDraft, value: string) => {
-    setRepairDraft((current) => ({ ...current, [field]: value }));
-    setSubmittedOutput(null);
-  };
-  const getRepairSelections = (): Screen14Selections => ({
-    rightsHolders: [screen14Options.rightsHolders[0], screen14Options.rightsHolders[2], screen14Options.rightsHolders[3]],
-    barriers: [repairDraft.weakFeature || screen14Options.barriers[0], screen14Options.barriers[1]],
-    responsibilities: [repairDraft.actorRole || screen14Options.responsibilities[0], screen14Options.responsibilities[7]],
-    changes: [repairDraft.designChange || screen14Options.changes[0], screen14Options.changes[2]],
-    scope: [screen14Options.scope[0], screen14Options.scope[1]],
-  });
-  const generateRepair = () => {
-    if (!repairComplete || !selectedIssue) return;
-    const repairedActivities = activityRepairActions.filter((action) => selectedActivityIds.includes(action.id));
-    const principalActivity = repairedActivities[0];
-    const designChange = repairedActivities.map((action) => action.repairedActivity).join(' ');
-    const selections = getRepairSelections();
-    const base = buildScreen14Submission(selections, ownCsoOutput);
-    const output: Screen14Submission = {
-      ...base,
+
+  const step1Complete = Boolean(selectedObjective);
+  const step2Complete = Boolean(selectedActivity);
+  const step3Complete = Boolean(selectedWatchPoint);
+  const canContinue = step1Complete && step2Complete && step3Complete;
+
+  const disabledGuidance = !step1Complete
+    ? 'Step 1: Select 1 repaired HRBA objective to continue.'
+    : !step2Complete
+      ? 'Step 2: Select 1 rights-responsive activity to continue.'
+      : !step3Complete
+        ? 'Step 3: Select 1 implementation watch-point to continue.'
+        : '';
+
+  const buildSavePayload = () => {
+    const obj = selectedObjective || strongObjective;
+    const act = selectedActivity || activityOptions[0].label;
+    const watch = selectedWatchPoint || watchPointOptions[0].label;
+
+    const repairedActivities = [{ id: 'action-1', repairedActivity: act, title: 'Rights-responsive activity' }];
+
+    return {
+      submitted: true,
+      repairedDesignElement: {
+        repairedHrbaObjective: obj,
+        repairedActivity: act,
+        implementationWatchPoint: watch,
+        customIndicatorNote: customNote.trim(),
+      },
       repairedObjective: {
-        ...base.repairedObjective,
         originalWeakObjective: 'Improve local services through consultation, training, and infrastructure support.',
-        repairedHrbaObjective: repairDraft.repairedStatement,
-        whatWasMissing: repairDraft.weakFeature,
-        hrbaDesignLogic: `This repair uses ${repairDraft.evidenceSource} to connect the issue and its cause to responsible actors, activities, outputs, an outcome, an indicator, safe evidence, assumptions, risk, and an implementation watch-point.`,
-        carryIntoActivityRepair: 'Use this repair in the draft plan review to check whether the proposal text, budget, indicators, and responsibilities are aligned.',
+        repairedHrbaObjective: obj,
+        whatWasMissing: 'Specific rights-holder barriers and duty-bearer response roles were unclear.',
+        hrbaDesignLogic: 'Connects issue and causes to responsible actors, activities, outputs, and watch-points.',
+        carryIntoActivityRepair: 'Use this repair in draft plan review to ensure alignment.',
       },
       repairedActivityPackage: {
-        selectedActionIds: selectedActivityIds,
+        selectedActionIds: ['action-1'],
         repairedActivities,
-        generatedSummary: designChange,
-        feedbackMessages: ['The repair links earlier analysis to objective wording, activity design, responsibility, and follow-up.'],
-        repairedObjectiveUsed: repairDraft.repairedStatement,
+        generatedSummary: act,
+        feedbackMessages: ['The repair links analysis to objective wording, activity design, and follow-up.'],
+        repairedObjectiveUsed: obj,
       },
       interventionLogicIndicators: {
-        barrierRootCause: repairDraft.weakFeature,
-        repairedObjective: repairDraft.repairedStatement,
-        repairedActivity: principalActivity.repairedActivity,
-        output: 'A repaired objective, three-to-five linked activities, assigned public/service responsibilities, and accessible response arrangements are documented before implementation.',
-        outcome: 'Selected rights-holder groups influence priorities and receive accessible responses while relevant public and service actors retain responsibility.',
-        indicator: 'Number and proportion of selected design priorities raised through accessible channels that receive a documented responsible-actor response or lead to a project adjustment.',
-        safeEvidenceSource: 'Non-identifying priority summaries, design decision logs, accessible response records, and adjustment notes.',
-        assumptionRisk: 'Responsible actors have authority and resources to respond; monitor exclusion, symbolic participation, exposure, and responsibility shifting to Awra.',
-        implementationWatchPoint: repairDraft.watchPoint,
-        logicQualitySummary: 'Strong repair row. The design issue is linked to analysis, objective wording, activity change, responsibility, and a watch-point.',
-        feedbackMessages: ['The repair connects analysis to a practical design change and carry-forward check.'],
+        barrierRootCause: 'Access and participation barriers',
+        repairedObjective: obj,
+        repairedActivity: act,
+        output: 'Repaired design package and accessible response arrangements documented.',
+        outcome: 'Selected rights-holder groups influence priorities and receive accessible responses.',
+        indicator: 'Number and proportion of priorities raised that receive a documented response.',
+        safeEvidenceSource: 'Non-identifying priority summaries and response records.',
+        assumptionRisk: 'Responsible actors have authority to respond.',
+        implementationWatchPoint: watch,
+        logicQualitySummary: 'Strong repair row.',
+        feedbackMessages: ['The repair connects analysis to practical design change.'],
       },
       designRepairPackage: {
-        selectedIssueId: selectedIssue.id,
-        repairedObjective: repairDraft.repairedStatement,
-        selectedActivityPackage: repairedActivities.map((action) => action.repairedActivity),
+        selectedIssueId: 'lateParticipation',
+        repairedObjective: obj,
+        selectedActivityPackage: [act],
+        implementationWatchPoint: watch,
         interventionLogicChain: [
-          `Design issue repaired: ${selectedIssue.label}`,
-          `Evidence or analysis used: ${repairDraft.evidenceSource}`,
-          `Weak design feature: ${repairDraft.weakFeature}`,
-          `Cause: ${repairDraft.weakFeature}`,
-          `Activity: ${principalActivity.repairedActivity}`,
-          'Output: repaired design package and accessible response arrangements documented',
-          'Outcome: rights-holder influence and responsible-actor response improve',
-          'Indicator: priorities receiving a response or leading to adjustment',
-          'Evidence: non-identifying decision and response records',
-          'Assumption and risk: responsible actors can respond without shifting responsibility to Awra',
-          `Responsible actor or role: ${repairDraft.actorRole}`,
+          'Design issue repaired: Participation is too late or weak',
+          'Evidence used: Rights-holder and barrier scan',
+          `Activity: ${act}`,
+          `Responsible actor or role: Woreda planning team with Awra support`,
+          `Implementation watch-point: ${watch}`,
         ],
         indicatorSignOfChange: 'Number and proportion of selected priorities that receive a responsible-actor response or lead to a documented design adjustment.',
         safeEvidenceSource: 'Non-identifying decision logs, response records, accessibility checks, and adjustment notes.',
         riskAssumption: 'Public and service actors need adequate mandate, resources, coordination, and willingness; pause or adapt if exclusion, exposure, or missing mitigation is observed.',
-        implementationWatchPoint: repairDraft.watchPoint,
-        carryForwardNote: 'Use this package in the draft plan review to check whether the proposal text, budget, indicators, and responsibilities are aligned.',
+        implementationWatchPointValue: watch,
+        carryForwardNote: 'Use this package in the draft plan review to check whether proposal text, budget, indicators, and responsibilities are aligned.',
         generatedAt: new Date().toISOString(),
       },
       portfolioSummary: 'You completed an HRBA Project Design Repair linking earlier analysis to a concrete objective, activity/design change, responsible actor, and implementation watch-point.',
       savedAt: new Date().toISOString(),
     };
-    setSubmittedOutput(output);
-    setStage(7);
   };
-  const updateOwnCso = (field: keyof Screen14OwnCsoDraft, value: string) => {
-    setOwnCsoDraft((current) => ({ ...current, [field]: value }));
-    setOwnCsoError('');
-  };
-  const generateOwnCso = () => {
-    if (Object.values(ownCsoDraft).some((value) => !value.trim())) {
-      setOwnCsoError('A useful repaired objective needs a rights-holder focus, barrier focus, responsible actor, change focus, and realistic scope.');
-      return;
-    }
-    if (Object.values(ownCsoDraft).some((value) => hasUnsafeLearningDetail(value))) {
-      setOwnCsoError('Before saving, remove names, exact sensitive locations, complaint details, survivor stories, disability or medical details about specific people, accusations, or identifiable personal information.');
-      return;
-    }
-    setOwnCsoOutput({
-      ...ownCsoDraft,
-      generatedObjective: `Strengthen ${ownCsoDraft.rightsHolderGroups} to address ${ownCsoDraft.priorityBarriers}, while ${ownCsoDraft.responsibleActors} improve ${ownCsoDraft.capacityAccountabilityChange} within ${ownCsoDraft.realisticProjectScope}.`,
-      generatedAt: new Date().toISOString(),
-    });
-    setOwnCsoError('');
-  };
-  const finalPackage = submittedOutput?.designRepairPackage;
-  const helperText = repairComplete
-    ? submittedOutput ? 'Your repair is ready to review or update.' : 'Ready to generate your repair.'
-    : 'Complete the objective repair, select 3–5 linked activities, and choose an implementation watch-point.';
-  const repairRowFields: Array<{ field: keyof typeof repairDraft; label: string; options: string[]; testId: string }> = [
-    { field: 'evidenceSource', label: 'Evidence or analysis used', options: evidenceOptions, testId: 'm3-s14-evidence-source-select' },
-    { field: 'weakFeature', label: 'Weak design feature', options: weakFeatureOptions, testId: 'm3-s14-weak-feature-select' },
-    { field: 'repairedStatement', label: 'Repaired objective or design statement', options: repairedStatementOptions, testId: 'm3-s14-repaired-statement-select' },
-    { field: 'designChange', label: 'Activity or design change', options: designChangeOptions, testId: 'm3-s14-design-change-select' },
-    { field: 'actorRole', label: 'Responsible actor or role', options: actorRoleOptions, testId: 'm3-s14-actor-role-select' },
-    { field: 'watchPoint', label: 'Implementation watch-point', options: watchPointOptions, testId: 'm3-s14-watch-point-select' },
-  ];
-  const renderDesignRepairArtifact = () => {
-    if (!submittedOutput || !finalPackage) return null;
-    const logic = submittedOutput.interventionLogicIndicators;
-    const repairedActivities = submittedOutput.repairedActivityPackage?.repairedActivities || [];
-    const logicSteps = [
-      ['Barrier or root cause', logic?.barrierRootCause || submittedOutput.repairedObjective.whatWasMissing],
-      ['Activity', logic?.repairedActivity || 'Not yet generated'],
-      ['Output', logic?.output || 'Not yet generated'],
-      ['Outcome', logic?.outcome || 'Not yet generated'],
-    ];
 
-    return (
-      <section className="m3-c14-artifact" aria-label="HRBA project design repair package">
-        <section className="m3-c14-before-after" aria-labelledby={`${screen.id}-objective-comparison`}>
-          <h3 id={`${screen.id}-objective-comparison`}>Objective repair: before and after</h3>
-          <div>
-            <article className="is-before"><span>Before · weak objective</span><p>{submittedOutput.repairedObjective.originalWeakObjective}</p></article>
-            <article className="is-after"><span>After · repaired HRBA objective</span><p>{submittedOutput.repairedObjective.repairedHrbaObjective}</p></article>
-          </div>
-        </section>
-
-        <section className="m3-c14-activity-package" aria-labelledby={`${screen.id}-activity-repairs`}>
-          <header><p>Activity repair package</p><h3 id={`${screen.id}-activity-repairs`}>{repairedActivities.length} linked design repair{repairedActivities.length === 1 ? '' : 's'}</h3></header>
-          <div>
-            {repairedActivities.map((activity, index) => (
-              <article key={activity.id}>
-                <span className="m3-c14-card-number">Repair {index + 1}</span>
-                <h4>{activity.repairedActivity}</h4>
-                <dl>
-                  <div><dt>Original activity</dt><dd>{activity.originalActivity}</dd></div>
-                  <div><dt>Linked barrier or root cause</dt><dd>{activity.barrier}</dd></div>
-                  <div><dt>Rights-holder group</dt><dd>{activity.rightsHolderGroup}</dd></div>
-                  <div><dt>Responsible role</dt><dd>{activity.responsibleActorCsoRole}</dd></div>
-                  <div><dt>Inclusion or accountability adjustment</dt><dd>{activity.riskAccountabilityAdjustment}</dd></div>
-                  <div><dt>Evidence or verification question</dt><dd>{activity.safeEvidenceQuestion}</dd></div>
-                </dl>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="m3-c14-logic" aria-labelledby={`${screen.id}-logic-chain`}>
-          <header><p>Intervention logic chain</p><h3 id={`${screen.id}-logic-chain`}>Follow the saved pathway from analysis to outcome</h3></header>
-          <ol>{logicSteps.map(([label, value], index) => <li key={label}><span>{index + 1}</span><div><strong>{label}</strong><p>{value}</p></div></li>)}</ol>
-        </section>
-
-        <section className="m3-c14-assurance" aria-labelledby={`${screen.id}-assurance`}>
-          <header><p>Assurance</p><h3 id={`${screen.id}-assurance`}>Evidence, risk, and implementation checks</h3></header>
-          <dl>
-            <div><dt>Indicator</dt><dd>{logic?.indicator || finalPackage.indicatorSignOfChange}</dd></div>
-            <div><dt>Safe evidence</dt><dd>{logic?.safeEvidenceSource || finalPackage.safeEvidenceSource}</dd></div>
-            <div><dt>Risk or assumption</dt><dd>{logic?.assumptionRisk || finalPackage.riskAssumption}</dd></div>
-            <div><dt>Implementation watch-point</dt><dd>{logic?.implementationWatchPoint || finalPackage.implementationWatchPoint}</dd></div>
-          </dl>
-          <p className="m3-c14-carry"><strong>Carry forward to draft plan review:</strong> {finalPackage.carryForwardNote}</p>
-        </section>
-      </section>
-    );
-  };
+  const titleId = `${screen.id}-title`;
 
   return (
-    <main className="m3-screen m3-design-repair-screen m3-integrated-repair-screen" aria-labelledby={titleId} data-qa="m3-s14-design-repair">
-      <article className="m3-design-repair-shell m3-integrated-repair-shell">
-        <header className="m3-design-repair-header m3-integrated-repair-header">
-          <ProgressChip>{screen.phase}</ProgressChip>
-          <p className="m3-design-repair-eyebrow">{screen.eyebrow}</p>
-          <h1 id={titleId}>HRBA Project Design Repair</h1>
-          <p className="m3-design-repair-subtitle">Turn your HRBA analysis into a stronger objective, activity package, logic, indicators, and watch-points.</p>
+    <main className="m3-screen m3-objective-repair-screen" aria-labelledby={titleId}>
+      <article className="m3-objective-repair-shell">
+        <header className="m3-objective-repair-header">
+          <p className="m3-context-label">{screen.eyebrow}</p>
+          <h1 id={titleId}>{screen.title}</h1>
+          <p className="m3-objective-repair-subtitle">Turn your HRBA analysis into a stronger objective, activity, and watch-point sequence.</p>
+          <p className="m3-objective-repair-meta">
+            {screen.phase} · <strong>Screen {getModule3VisibleScreenNumber(screen.id) ?? screen.screenNumber} of {MODULE3_REVISED_VISIBLE_SCREEN_TOTAL}</strong>
+          </p>
         </header>
 
-        <nav className="m3-integrated-repair-stage-nav" aria-label="Project design repair stages">
-          {stages.map((item) => (
-            <button key={item.id} type="button" className={`${stage === item.id ? 'is-active' : ''} ${item.complete ? 'is-complete' : ''} ${!item.available ? 'is-locked' : ''}`} disabled={!item.available} onClick={() => goToStage(item.id)} data-qa={item.qa} aria-current={stage === item.id ? 'step' : undefined}>
-              <span aria-hidden="true">{item.complete ? '✓' : item.available ? item.id : '•'}</span>
-              {item.label}
-            </button>
-          ))}
-        </nav>
+        {/* Side-by-Side Comparison Card */}
+        <section className="m3-comparison-card">
+          <div className="m3-comparison-col is-weak">
+            <h3>Original Weak Objective</h3>
+            <p>“Improve local services through consultation, training, and infrastructure support in Jiru Amba.”</p>
+            <span className="m3-weak-tag">Vague targets · No barrier focus · Missing duty-bearer response</span>
+          </div>
+          <div className="m3-comparison-col is-repaired">
+            <h3>Repaired HRBA Objective Starter</h3>
+            <p>{selectedObjective || strongObjective}</p>
+            <span className="m3-repaired-tag">Specific rights-holders · Clear barriers · Response role</span>
+          </div>
+        </section>
 
-        {stage === 1 && (
-          <>
-            <section className="m3-integrated-section-card m3-s14-transition" aria-labelledby={`${screen.id}-transition-title`} data-qa="m3-s14-transition">
-              <h2 id={`${screen.id}-transition-title`}>From analysis to project design</h2>
-              <dl>
-                <div><dt>Martha</dt><dd>“You have completed the main analysis. You have examined context, barriers, responsibility, influence, inclusion, participation, accountability, capacity and risk.”</dd></div>
-                <div><dt>Dawit</dt><dd>“The next step is to make that analysis change the project design. A stronger analysis is not enough if the objective, activities and indicators remain the same.”</dd></div>
-                <div><dt>Martha</dt><dd>“Use your findings to repair the project objective, activity package, intervention logic and indicators.”</dd></div>
-                <div><dt>Dawit</dt><dd>“Each repair should respond to a finding from the earlier tools. Awra can support participation, evidence, dialogue and follow-up, but it should not replace public responsibility.”</dd></div>
-                <div><dt>Martha</dt><dd>“The completed package will be used to review the draft plan on the next screen.”</dd></div>
-              </dl>
-            </section>
-            <section className="m3-integrated-payoff-card">
-              <div className="m3-integrated-payoff-icon" aria-hidden="true">✓</div>
-              <div>
-                <h2>You have already done the hard analysis. <span>Now comes the payoff.</span></h2>
-                <p>You have examined context, standards, rights-holders, barriers, responsibilities, power, root causes, inclusion, participation, accountability, and risk. In this section, you will use that analysis to repair the project design.</p>
-              </div>
-              <aside>The goal is not to add HRBA words. The goal is to make the design stronger.</aside>
-            </section>
-            <section className="m3-integrated-pathway" aria-label="Project design repair pathway">
-              {['Objective', 'Activity package', 'Logic chain', 'Indicator', 'Watch-point'].map((item) => <article key={item}><span aria-hidden="true">→</span><strong>{item}</strong></article>)}
-            </section>
-            <section className="m3-integrated-explain-grid">
-              <article><h2>What this section is about</h2><p>Repair a weak project design using the analysis from Screens 10 to 13.</p></article>
-              <article><h2>Why this matters for CSOs</h2><p>A stronger project design uses analysis before activities are finalized.</p></article>
-              <article><h2>What you will do</h2><p>Select one design issue, use earlier analysis, and build one practical repair row.</p></article>
-              <article><h2>What you will produce</h2><p>A portfolio-ready HRBA Project Design Repair for the draft plan review.</p></article>
-            </section>
-            <div className="m3-integrated-actions"><button type="button" className="m3-design-repair-submit" onClick={() => setStage(2)}>Review carried findings</button></div>
-          </>
-        )}
+        {/* 3-STEP REPAIR SEQUENCE */}
 
-        {stage === 2 && (
-          <section className="m3-integrated-section-card">
-            <h2>Review the findings carried into this repair</h2>
-            <p className="m3-integrated-info">These are read-only summaries from your saved work. A clearly marked “not yet saved” state is shown when an earlier output is unavailable.</p>
-            {carriedAnalysis.missingScreens.length > 0 && <p className="m3-risk-empty-note" role="status">Not yet saved: Screen{carriedAnalysis.missingScreens.length > 1 ? 's' : ''} {carriedAnalysis.missingScreens.join(', ')}. Generalized Jiru Amba examples are shown only as orientation and are not presented as your saved findings.</p>}
-            <div className="m3-s14-example-grid" data-qa="m3-s14-analysis-carried-forward">
-              <article><h3>A. Context, standards and rights-holders</h3><p>{carriedAnalysis.chips.slice(0, 2).map((item) => `${item.label}: ${item.value}`).join(' • ')}</p></article>
-              <article><h3>B. Barriers, responsibility and influence</h3><p>{carriedAnalysis.chips.slice(2, 4).map((item) => `${item.label}: ${item.value}`).join(' • ')}</p></article>
-              <article><h3>C. Root causes and capacity gaps</h3><p>{carriedAnalysis.compact[1].value}</p></article>
-              <article><h3>D. Inclusion, participation and accountability</h3><p>{carriedAnalysis.compact[2].value}</p></article>
-              <article><h3>E. Risk and do-no-harm watch-points</h3><p>{carriedAnalysis.chips[3].value}</p></article>
+        {/* STEP 1 */}
+        {activeStep === 1 ? (
+          <section className="m3-repair-step-card">
+            <div className="m3-repair-step-header">
+              <h2>Step 1: Select repaired HRBA objective</h2>
+              <p>Choose 1 objective formulation that connects rights-holders, barriers, and duty-bearer response roles.</p>
             </div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(1)}>Back to understand</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(3)}>Repair the objective</button></div>
-          </section>
-        )}
-
-        {stage === 3 && (
-          <section className="m3-integrated-section-card" aria-labelledby={`${screen.id}-practice`}>
-            <div className="m3-s14-practice-layout">
-              <div className="m3-guided-stage-main">
-                <h2 id={`${screen.id}-practice`}>Repair the project objective</h2>
-                <p className="m3-integrated-info">Select a weak design issue and connect the repaired objective to earlier evidence, a responsible actor and a specific change. Adding “rights-based” or “inclusive” alone is not a repair.</p>
-                <section className="m3-s14-practice-step" aria-labelledby={`${screen.id}-issue-step`}>
-                  <p className="m3-risk-step-label">Step 1</p>
-                  <h3 id={`${screen.id}-issue-step`}>Select the design issue to repair</h3>
-                  <div className="m3-s14-issue-tiles">
-                    {designIssues.map((issue) => {
-                      const selected = selectedIssueId === issue.id;
-                      return (
-                        <button key={issue.id} type="button" className={`m3-s14-issue-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => selectIssue(issue.id)} data-testid="m3-s14-design-issue-tile">
-                          <span>{selected ? 'Selected' : 'Select'}</span>
-                          <strong>{issue.label}</strong>
-                          <small>{issue.context}</small>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </section>
-                <section className={`m3-s14-practice-step ${selectedIssue ? '' : 'is-disabled'}`} aria-labelledby={`${screen.id}-repair-row`}>
-                  <p className="m3-risk-step-label">Step 2</p>
-                  <h3 id={`${screen.id}-repair-row`}>Complete the repair row</h3>
-                  {selectedIssue ? (
-                    <div className="m3-s14-repair-row" data-testid="m3-s14-repair-row">
-                      <div><span>Selected design issue</span><p>{selectedIssue.label}</p></div>
-                      {repairRowFields.filter(({ field }) => ['evidenceSource', 'weakFeature', 'repairedStatement', 'actorRole'].includes(field)).map(({ field, label, options, testId }) => (
-                        <label key={field}>
-                          <span>{label}</span>
-                          <select value={repairDraft[field]} onChange={(event) => updateRepairDraft(field, event.target.value)} data-testid={testId}>
-                            <option value="">Choose one</option>
-                            {options.map((option) => <option key={option} value={option}>{option}</option>)}
-                          </select>
-                        </label>
-                      ))}
+            <div className="m3-repair-options-list" role="radiogroup" aria-label="Repaired HRBA objectives">
+              {objectiveOptions.map((opt, idx) => {
+                const isSelected = selectedObjective === opt.label;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`m3-repair-option-card${isSelected ? ' is-selected' : ''}`}
+                    aria-checked={isSelected}
+                    role="radio"
+                    onClick={() => setSelectedObjective(opt.label)}
+                  >
+                    <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                    <div>
+                      <p className="m3-option-label">{opt.label}</p>
+                      <small className="m3-option-reason">{opt.reason}</small>
                     </div>
-                  ) : (
-                    <p className="m3-risk-empty-note">Select one design issue first. The repair row will appear here.</p>
-                  )}
-                </section>
-                <div className="m3-risk-submit-row"><button type="button" className="m3-design-repair-submit" disabled={!objectiveReady} onClick={() => setStage(4)}>Continue to activity package</button></div>
-              </div>
-              <aside className="m3-guided-live-panel" aria-labelledby={`${screen.id}-repair-live`}>
-                <h2 id={`${screen.id}-repair-live`}>Repair draft so far</h2>
-                <p>{selectedIssue ? '1 selected design issue' : 'No design issue selected yet'}</p>
-                <div className="m3-guided-chip-list">
-                  <span className={selectedIssue ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Issue: {selectedIssue?.label || 'Not selected'}</span>
-                  <span className={repairDraft.evidenceSource ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Evidence: {repairDraft.evidenceSource || 'Not selected'}</span>
-                  <span className={repairDraft.weakFeature ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Weak feature: {repairDraft.weakFeature || 'Not selected'}</span>
-                  <span className={repairDraft.designChange ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Design change: {repairDraft.designChange || 'Not selected'}</span>
-                  <span className={repairDraft.actorRole ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Actor: {repairDraft.actorRole || 'Not selected'}</span>
-                  <span className={repairDraft.watchPoint ? 'm3-guided-selected-chip' : 'm3-guided-muted'}>Watch-point: {repairDraft.watchPoint || 'Not selected'}</span>
-                </div>
-                <p className="m3-guided-helper">Completed repair rows: {repairComplete ? 1 : 0}</p>
-                <p className="m3-guided-helper">Objective fields completed: {Math.min(completedRepairFields, 4)} of 4</p>
-                <p className="m3-guided-helper">{helperText}</p>
-                <button type="button" className="m3-design-repair-submit" disabled={!objectiveReady} onClick={() => setStage(4)}>Continue</button>
-              </aside>
-            </div>
-          </section>
-        )}
-
-        {stage === 4 && (
-          <section className="m3-integrated-section-card" data-qa="m3-s14-activity-package">
-            <h2>Repair the activity package</h2>
-            <p className="m3-integrated-info">Select three to five linked activities. Together they must respond to a finding, identify affected groups and responsible actors, support inclusion and accountability, include mitigation and produce safe monitoring evidence.</p>
-            <div className="m3-s14-issue-tiles">
-              {activityRepairActions.map((activity) => {
-                const selected = selectedActivityIds.includes(activity.id);
-                return <button key={activity.id} type="button" className={`m3-s14-issue-tile ${selected ? 'is-selected' : ''}`} aria-pressed={selected} onClick={() => toggleActivity(activity.id)}>
-                  <span>{selected ? 'Selected' : 'Select activity'}</span><strong>{activity.originalActivity}</strong><small>{activity.repairedActivity}</small><small><b>Responsibility:</b> {activity.responsibleActorCsoRole}</small><small><b>Mitigation / accountability:</b> {activity.riskAccountabilityAdjustment}</small>
-                </button>;
+                  </button>
+                );
               })}
             </div>
-            <p aria-live="polite">{selectedActivityIds.length} selected. Choose 3–5.</p>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Back to objective</button><button type="button" className="m3-design-repair-submit" disabled={!activityPackageReady} onClick={() => setStage(5)}>Connect intervention logic</button></div>
-          </section>
-        )}
-
-        {stage === 5 && activityPackageReady && (
-          <section className="m3-integrated-section-card" data-qa="m3-s14-intervention-logic">
-            <h2>Connect the intervention logic</h2>
-            <p className="m3-integrated-info">Check that the pathway is causal and complete. Each step should explain why the next one is plausible.</p>
-            <div className="m3-s14-review-grid">
-              {[
-                ['Issue', selectedIssue?.label || 'Design issue'], ['Cause', repairDraft.weakFeature], ['Actor', repairDraft.actorRole],
-                ['Activity', activityRepairActions.find((item) => selectedActivityIds.includes(item.id))?.repairedActivity || ''],
-                ['Output', 'Repaired design package and accessible response arrangements documented'],
-                ['Outcome', 'Rights-holder influence and responsible-actor response improve'],
-                ['Indicator', 'Selected priorities receiving a response or leading to a documented adjustment'],
-                ['Evidence', 'Non-identifying decision logs, response records and accessibility checks'],
-                ['Assumption', 'Responsible actors have mandate, resources, coordination and willingness'],
-                ['Risk', 'Exclusion, exposure, symbolic participation or responsibility shifting to Awra'],
-              ].map(([label, value]) => <article key={label}><h3>{label}</h3><p>{value}</p></article>)}
+            <div className="m3-repair-step-actions">
+              <button
+                type="button"
+                className="m3-primary-button"
+                disabled={!step1Complete}
+                onClick={() => setActiveStep(2)}
+              >
+                Continue to Step 2 (Select activity)
+              </button>
+              {!step1Complete && (
+                <p className="m3-repair-guidance-badge" role="status">
+                  Select 1 repaired HRBA objective to continue.
+                </p>
+              )}
             </div>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(4)}>Back to activities</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(6)}>Repair indicator and watch-points</button></div>
           </section>
-        )}
-
-        {stage === 6 && activityPackageReady && (
-          <section className="m3-integrated-section-card" data-qa="m3-s14-indicator-watchpoints">
-            <h2>Repair the indicator and implementation watch-points</h2>
-            <p className="m3-integrated-info">The repaired indicator measures influence and response—not attendance alone. Select the watch-point that will trigger adaptation.</p>
-            <div className="m3-s14-example-grid">
-              <article><h3>Indicator</h3><p>Number and proportion of selected design priorities raised through accessible channels that receive a documented responsible-actor response or lead to a project adjustment.</p></article>
-              <article><h3>Safe evidence</h3><p>Use non-identifying priority summaries, decision logs, response records and accessibility checks. Do not collect names or sensitive case details.</p></article>
-              <article><h3>Alternative channel</h3><p>{screen13AlternativeChannels[2]}</p></article>
-              <article><h3>Pause, stop or refer</h3><p>{screen13PauseStopReferralConditions[0]}; {screen13PauseStopReferralConditions[4]}.</p></article>
+        ) : (
+          /* Collapsed Step 1 Summary */
+          <div className="m3-collapsed-step-summary">
+            <div>
+              <span className="m3-summary-check">✓ Step 1 Complete</span>
+              <p><strong>Repaired Objective:</strong> {selectedObjective}</p>
             </div>
-            <label className="m3-s14-watchpoint-select"><span>Implementation watch-point</span><select value={repairDraft.watchPoint} onChange={(event) => updateRepairDraft('watchPoint', event.target.value)} data-testid="m3-s14-watch-point-select"><option value="">Choose one</option>{watchPointOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(5)}>Back to logic</button><button type="button" className="m3-design-repair-submit" disabled={!repairComplete} onClick={generateRepair} data-testid="m3-s14-generate-repair">{submittedOutput ? 'Regenerate package' : 'Generate repair package'}</button></div>
-          </section>
+            <button type="button" className="m3-secondary-button" onClick={() => setActiveStep(1)}>
+              Edit Step 1
+            </button>
+          </div>
         )}
 
-        {stage === 7 && finalPackage && selectedIssue && (
-          <section className="m3-integrated-section-card" data-qa="m3-s14-generated-package">
-            <h2>Your HRBA Project Design Repair</h2>
-            <p>This repair shows how the analysis changes one weak part of the design before implementation.</p>
-            {renderDesignRepairArtifact()}
-            <div className="m3-integrated-actions"><button type="button" className="m3-secondary-button" onClick={() => setStage(3)}>Edit repair</button><button type="button" className="m3-design-repair-submit" onClick={() => setStage(8)}>Go to Apply/Download</button></div>
-          </section>
-        )}
-
-        {stage === 8 && finalPackage && (
-          <section className="m3-integrated-section-card">
-            {renderDesignRepairArtifact()}
-            <article className="m3-integrated-continue-card">
-              <div><h3>Required repair ready</h3><p>The optional own-CSO practice and downloads below are not required to continue.</p></div>
-              <button type="button" className="m3-primary-button" data-testid="m3-s14-final-continue" data-qa="m3-s14-final-continue" onClick={() => submittedOutput && onComplete({ designRepairPackage: submittedOutput.designRepairPackage, repairedObjective: submittedOutput.repairedObjective, repairedActivityPackage: submittedOutput.repairedActivityPackage, interventionLogicIndicators: submittedOutput.interventionLogicIndicators, repairedDesignElement: { repairedHrbaObjective: submittedOutput.repairedObjective.repairedHrbaObjective, repairedActivity: submittedOutput.repairedActivityPackage.generatedSummary, implementationWatchPoint: submittedOutput.designRepairPackage.implementationWatchPoint }, screen14: submittedOutput })}>{screen.continueLabel}</button>
-            </article>
-            <div className="m3-guided-tabs" role="tablist" aria-label="Optional apply or download">
-              <button type="button" role="tab" aria-selected={applyTab === 'own'} className={applyTab === 'own' ? 'is-active' : ''} onClick={() => setApplyTab('own')}>Try with my CSO context</button>
-              <button type="button" role="tab" aria-selected={applyTab === 'downloads'} className={applyTab === 'downloads' ? 'is-active' : ''} onClick={() => setApplyTab('downloads')} data-qa="m3-s14-download-tools">Download tools</button>
+        {/* STEP 2 */}
+        {activeStep === 2 ? (
+          <section className="m3-repair-step-card">
+            <div className="m3-repair-step-header">
+              <h2>Step 2: Select rights-responsive activity</h2>
+              <p>Choose 1 concrete activity that removes participation or information barriers.</p>
             </div>
-            {applyTab === 'own' && <section className="m3-design-repair-own-cso"><h2>Try with my CSO context (optional)</h2><p>Open the template, adjust examples, and test how this repair package works in your own context.</p><div className="m3-design-repair-own-grid">{[['originalObjective', 'Original objective', 'Write the current objective in one sentence.'], ['rightsHolderGroups', 'Specific rights-holder groups', 'Which groups should be visible?'], ['priorityBarriers', 'Priority barriers', 'Which barriers should the package respond to?'], ['responsibleActors', 'Responsible actors', 'Who has a role?'], ['capacityAccountabilityChange', 'Capacity or accountability change', 'What should improve?'], ['realisticProjectScope', 'Realistic project scope', 'What can the project realistically influence?']].map(([field, label, placeholder]) => <label key={field}><span>{label}</span><textarea value={ownCsoDraft[field as keyof Screen14OwnCsoDraft]} onChange={(event) => updateOwnCso(field as keyof Screen14OwnCsoDraft, event.target.value)} placeholder={placeholder} /></label>)}</div>{ownCsoError && <p className="m3-design-repair-error" role="alert">{ownCsoError}</p>}<button type="button" className="m3-design-repair-submit" onClick={generateOwnCso}>Open editable template</button>{ownCsoOutput && <article className="m3-design-repair-own-output"><h3>My repaired objective starter</h3><p>{ownCsoOutput.generatedObjective}</p></article>}</section>}
-            {applyTab === 'downloads' && <section className="m3-design-repair-template"><h2>HRBA Design Repair Package Template</h2><div className="m3-design-repair-template-actions"><button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(`${objectiveRepairTemplateMarkdown}\n\n${activityRepairTemplateMarkdown}\n\n${logicMiniMatrixTemplateMarkdown}`, 'hrba-design-repair-package-template', 'docx')}>Download HRBA Design Repair Package Template</button><button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate(`${objectiveRepairTemplateMarkdown}\n\n${activityRepairTemplateMarkdown}\n\n${logicMiniMatrixTemplateMarkdown}`, 'hrba-design-repair-package-template', 'md')}>Download markdown copy</button><button type="button" className="m3-design-repair-submit" onClick={() => downloadDesignRepairTemplate('', 'hrba-design-repair-blank-worksheet', 'md')}>Download blank worksheet</button></div></section>}
+            <div className="m3-repair-options-list" role="radiogroup" aria-label="Rights-responsive activities">
+              {activityOptions.map((opt, idx) => {
+                const isSelected = selectedActivity === opt.label;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`m3-repair-option-card${isSelected ? ' is-selected' : ''}`}
+                    aria-checked={isSelected}
+                    role="radio"
+                    onClick={() => setSelectedActivity(opt.label)}
+                  >
+                    <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                    <div>
+                      <p className="m3-option-label">{opt.label}</p>
+                      <small className="m3-option-reason">{opt.reason}</small>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="m3-repair-step-actions">
+              <button
+                type="button"
+                className="m3-primary-button"
+                disabled={!step2Complete}
+                onClick={() => setActiveStep(3)}
+              >
+                Continue to Step 3 (Select watch-point)
+              </button>
+              {!step2Complete && (
+                <p className="m3-repair-guidance-badge" role="status">
+                  Select 1 rights-responsive activity to continue.
+                </p>
+              )}
+            </div>
+          </section>
+        ) : (
+          activeStep > 2 && (
+            /* Collapsed Step 2 Summary */
+            <div className="m3-collapsed-step-summary">
+              <div>
+                <span className="m3-summary-check">✓ Step 2 Complete</span>
+                <p><strong>Rights-Responsive Activity:</strong> {selectedActivity}</p>
+              </div>
+              <button type="button" className="m3-secondary-button" onClick={() => setActiveStep(2)}>
+                Edit Step 2
+              </button>
+            </div>
+          )
+        )}
+
+        {/* STEP 3 */}
+        {activeStep === 3 && (
+          <section className="m3-repair-step-card">
+            <div className="m3-repair-step-header">
+              <h2>Step 3: Select implementation watch-point & indicator note</h2>
+              <p>Choose 1 implementation watch-point to monitor during project execution.</p>
+            </div>
+            <div className="m3-repair-options-list" role="radiogroup" aria-label="Implementation watch-points">
+              {watchPointOptions.map((opt, idx) => {
+                const isSelected = selectedWatchPoint === opt.label;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`m3-repair-option-card${isSelected ? ' is-selected' : ''}`}
+                    aria-checked={isSelected}
+                    role="radio"
+                    onClick={() => setSelectedWatchPoint(opt.label)}
+                  >
+                    <span aria-hidden="true">{isSelected ? '●' : '○'}</span>
+                    <div>
+                      <p className="m3-option-label">{opt.label}</p>
+                      <small className="m3-option-reason">{opt.reason}</small>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Optional Custom Indicator Note */}
+            <div className="m3-optional-note-block">
+              <label htmlFor="m3-s14-custom-note">
+                <span>Optional indicator note or CSO adaptation (not required to continue)</span>
+                <textarea
+                  id="m3-s14-custom-note"
+                  value={customNote}
+                  onChange={(e) => setCustomNote(e.target.value)}
+                  placeholder="Add an optional non-identifying note about your project indicators or watch-points..."
+                  maxLength={300}
+                />
+              </label>
+            </div>
+
+            {/* Final Action & Continue Gate */}
+            <div className="m3-repair-step-actions">
+              {disabledGuidance && (
+                <p className="m3-repair-guidance-badge" role="status">
+                  {disabledGuidance}
+                </p>
+              )}
+              <button
+                type="button"
+                className="m3-primary-button"
+                disabled={!canContinue}
+                onClick={() => onComplete(buildSavePayload())}
+              >
+                {screen.continueLabel}
+              </button>
+            </div>
           </section>
         )}
       </article>
