@@ -159,6 +159,29 @@ test('Screen 15 seeds exactly nine fields using approved precedence without merg
   assert.equal(getModule5FinalSummaryReadiness(seeded).ready, true);
 });
 
+test('legacy summary review markers do not block current fields while recognized markers still do', () => {
+  const seeded = seedModule5FinalSummary(completedPresentationState());
+  const legacy = {
+    ...seeded,
+    summary: {
+      ...seeded.summary,
+      reviewRequiredFields: ['legacy_priority_interpretation_gap'],
+    },
+  };
+  assert.deepEqual(getModule5FinalSummaryReadiness(legacy).reviewRequiredFields, []);
+  assert.equal(getModule5FinalSummaryReadiness(legacy).ready, true);
+
+  const current = {
+    ...seeded,
+    summary: {
+      ...seeded.summary,
+      reviewRequiredFields: ['missing_perspective'],
+    },
+  };
+  assert.deepEqual(getModule5FinalSummaryReadiness(current).reviewRequiredFields, ['missing_perspective']);
+  assert.equal(getModule5FinalSummaryReadiness(current).ready, false);
+});
+
 test('only mapped fields become Needs review and unrelated learner text remains intact', () => {
   let state = seedModule5FinalSummary(completedPresentationState());
   const originalSupport = state.summary.values.support_need;

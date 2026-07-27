@@ -744,12 +744,13 @@ export function getModule5FinalSummaryReadiness(state: Module5PresentationState)
       || !selected
       || provenance.revision !== selected.revision;
   }).map((definition) => definition.id);
+  const reviewRequiredFields = state.summary.reviewRequiredFields
+    .filter((id): id is Module5FinalSummaryFieldId =>
+      (MODULE5_FINAL_SUMMARY_FIELD_IDS as readonly string[]).includes(id));
   return {
     invalidFields,
-    reviewRequiredFields: state.summary.reviewRequiredFields
-      .filter((id): id is Module5FinalSummaryFieldId =>
-        (MODULE5_FINAL_SUMMARY_FIELD_IDS as readonly string[]).includes(id)),
-    ready: invalidFields.length === 0 && state.summary.reviewRequiredFields.length === 0,
+    reviewRequiredFields,
+    ready: invalidFields.length === 0 && reviewRequiredFields.length === 0,
   };
 }
 
