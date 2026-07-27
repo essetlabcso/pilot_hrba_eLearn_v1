@@ -71,6 +71,102 @@ async function screenshot(page, name) {
   await page.screenshot({ path: join(SCREENSHOT_DIR, name), fullPage: true });
 }
 
+async function assertReadableScreen5Snapshot(page, width) {
+  await page.setViewportSize({ width, height: 900 });
+  await assertNoHorizontalOverflow(page, `Screen 5 ${width}px Review`);
+  const metrics = await page.evaluate(() => {
+    const banner = document.querySelector('.m3-context-review-banner');
+    const bannerCopy = banner?.querySelector('div');
+    const bannerStatus = banner?.querySelector(':scope > strong');
+    const bannerHeading = banner?.querySelector('h2');
+    const snapshot = document.querySelector('.m3-context-snapshot');
+    const snapshotHeader = snapshot?.querySelector('.m3-context-snapshot-header');
+    const snapshotHeaderCopy = snapshotHeader?.querySelector('div');
+    const snapshotStatus = snapshotHeader?.querySelector('.m3-context-snapshot-status');
+    const snapshotHeading = snapshotHeader?.querySelector('h3');
+    const snapshotMessage = snapshot?.querySelector('.m3-context-snapshot-status-message');
+    if (
+      !banner || !bannerCopy || !bannerStatus || !bannerHeading
+      || !snapshot || !snapshotHeader || !snapshotHeaderCopy
+      || !snapshotStatus || !snapshotHeading || !snapshotMessage
+    ) {
+      throw new Error('Screen 5 Review readability elements are missing.');
+    }
+    const rect = (element) => {
+      const box = element.getBoundingClientRect();
+      return {
+        width: box.width,
+        height: box.height,
+        top: box.top,
+        bottom: box.bottom,
+        left: box.left,
+        right: box.right,
+      };
+    };
+    return {
+      viewportWidth: document.documentElement.clientWidth,
+      banner: rect(banner),
+      bannerCopy: rect(bannerCopy),
+      bannerStatus: rect(bannerStatus),
+      bannerHeading: rect(bannerHeading),
+      snapshot: rect(snapshot),
+      snapshotHeaderCopy: rect(snapshotHeaderCopy),
+      snapshotStatus: rect(snapshotStatus),
+      snapshotHeading: rect(snapshotHeading),
+      snapshotMessage: rect(snapshotMessage),
+      snapshotClientWidth: snapshot.clientWidth,
+      snapshotScrollWidth: snapshot.scrollWidth,
+      visibleSnapshotChildren: Array.from(snapshot.children).every((element) => {
+        const box = element.getBoundingClientRect();
+        return box.width > 0 && box.height > 0 && box.left >= snapshot.getBoundingClientRect().left - 1
+          && box.right <= snapshot.getBoundingClientRect().right + 1;
+      }),
+    };
+  });
+  assert.ok(
+    metrics.snapshot.width >= metrics.viewportWidth * 0.65,
+    `${width}px snapshot width ${metrics.snapshot.width}px must use at least 65% of the viewport.`,
+  );
+  assert.ok(
+    metrics.snapshot.width >= metrics.banner.width * 0.98,
+    `${width}px snapshot width ${metrics.snapshot.width}px must use the available Review-stage width.`,
+  );
+  assert.ok(
+    metrics.bannerCopy.width >= metrics.banner.width * 0.8,
+    `${width}px Review banner copy width ${metrics.bannerCopy.width}px must not collapse.`,
+  );
+  assert.ok(
+    metrics.snapshotHeaderCopy.width >= metrics.snapshot.width * 0.8,
+    `${width}px snapshot header width ${metrics.snapshotHeaderCopy.width}px must not collapse.`,
+  );
+  assert.ok(
+    metrics.snapshotMessage.width >= metrics.snapshot.width * 0.75,
+    `${width}px snapshot content width ${metrics.snapshotMessage.width}px must remain readable.`,
+  );
+  assert.ok(
+    metrics.bannerHeading.height / metrics.bannerHeading.width < 1,
+    `${width}px Review heading must not wrap letter-by-letter.`,
+  );
+  assert.ok(
+    metrics.snapshotHeading.height / metrics.snapshotHeading.width < 1,
+    `${width}px snapshot heading must not wrap letter-by-letter.`,
+  );
+  assert.ok(
+    metrics.bannerStatus.top >= metrics.bannerCopy.bottom - 1,
+    `${width}px Review status must stack below the heading copy.`,
+  );
+  assert.ok(
+    metrics.snapshotStatus.top >= metrics.snapshotHeaderCopy.bottom - 1,
+    `${width}px snapshot status must stack below the header copy.`,
+  );
+  assert.ok(
+    metrics.snapshotScrollWidth <= metrics.snapshotClientWidth + 1,
+    `${width}px snapshot must not clip or scroll horizontally.`,
+  );
+  assert.equal(metrics.visibleSnapshotChildren, true, `${width}px snapshot children must remain fully visible.`);
+  return metrics;
+}
+
 test('Module 3 M3-A preserves workflow while fixing Screen 5 and Screen 11 responsive presentation', {
   timeout: 180_000,
 }, async (t) => {
@@ -145,14 +241,23 @@ test('Module 3 M3-A preserves workflow while fixing Screen 5 and Screen 11 respo
   await page.getByRole('heading', { name: 'Your Draft Context and Inequality Scan' }).waitFor();
   assert.equal(await page.getByRole('heading', { name: 'Context and Inequality Snapshot' }).count(), 1);
 
-  await page.setViewportSize({ width: 390, height: 900 });
-  await assertNoHorizontalOverflow(page, 'Screen 5 390px Review');
+  const screen5Metrics390 = await assertReadableScreen5Snapshot(page, 390);
   await screenshot(page, 'screen-05-review-390.png');
+  const screen5Metrics320 = await assertReadableScreen5Snapshot(page, 320);
+  await screenshot(page, 'screen-05-review-320.png');
+  assert.ok(screen5Metrics390.snapshot.width > screen5Metrics320.snapshot.width);
+  t.diagnostic(
+    `Screen 5 Review widths — 390px: snapshot ${screen5Metrics390.snapshot.width.toFixed(1)}px, `
+    + `header ${screen5Metrics390.snapshotHeaderCopy.width.toFixed(1)}px, content ${screen5Metrics390.snapshotMessage.width.toFixed(1)}px; `
+    + `320px: snapshot ${screen5Metrics320.snapshot.width.toFixed(1)}px, `
+    + `header ${screen5Metrics320.snapshotHeaderCopy.width.toFixed(1)}px, content ${screen5Metrics320.snapshotMessage.width.toFixed(1)}px.`,
+  );
   await page.getByRole('button', { name: 'Save scan and continue' }).click();
   await page.waitForURL(/\/module-3\/screen-3-6$/);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-5`);
   await page.getByRole('heading', { name: 'Your Draft Context and Inequality Scan' }).waitFor();
   assert.equal(await page.getByRole('heading', { name: 'Context and Inequality Snapshot' }).count(), 1);
+  await assertReadableScreen5Snapshot(page, 320);
 
   await seedModule3(page, 'M3-R11', 10);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-11`);
