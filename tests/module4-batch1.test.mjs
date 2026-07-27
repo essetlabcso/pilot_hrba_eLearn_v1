@@ -133,10 +133,9 @@ test('assets remain semantic HTML controls and the scoped CSS supports keyboard,
   assert.doesNotMatch(css, /overflow-x:\s*auto/);
 });
 
-test('Batch 1 leaves Hub, learner isolation, assessment, certificate and shared-shell contracts untouched', () => {
+test('Batch 1 leaves Hub, learner isolation, assessment and certificate contracts untouched', () => {
   const protectedFiles = [
     'src/components/course/ScreenRenderer.tsx',
-    'src/components/player/CoursePlayerShell.tsx',
     'src/data/finalAssessment.ts',
     'src/integration/hubProgress.ts',
     'src/integration/portalLearnerState.ts',

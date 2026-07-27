@@ -155,6 +155,7 @@ export default function CoursePlayerShell({
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const helpButtonRef = useRef<HTMLButtonElement>(null);
   const accessibilityButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileToolsToggleRef = useRef<HTMLButtonElement>(null);
   const menuDrawerRef = useRef<HTMLDivElement>(null);
   const menuDrawerTitleRef = useRef<HTMLHeadingElement>(null);
   const mainContentRef = useRef<HTMLElement>(null);
@@ -167,11 +168,30 @@ export default function CoursePlayerShell({
   }>({});
   const [stabilizedScreenKey, setStabilizedScreenKey] = useState<string | null>(null);
   const [hiddenModule3RedirectQa, setHiddenModule3RedirectQa] = useState<string | null>(null);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [accessibilityPreferences, setAccessibilityPreferences] = useState<AccessibilityPreferences>({
     highContrast: false,
     textSize: 'standard',
     reduceMotion: false,
   });
+
+  useEffect(() => {
+    if (!mobileToolsOpen) {
+      return;
+    }
+
+    const handleMobileToolsEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !window.matchMedia('(max-width: 640px)').matches) {
+        return;
+      }
+
+      setMobileToolsOpen(false);
+      window.requestAnimationFrame(() => mobileToolsToggleRef.current?.focus());
+    };
+
+    document.addEventListener('keydown', handleMobileToolsEscape);
+    return () => document.removeEventListener('keydown', handleMobileToolsEscape);
+  }, [mobileToolsOpen]);
 
   // Filter player-specific screens from the sequence data
   const allPlayerScreens = sequenceData.filter(
@@ -1052,7 +1072,20 @@ export default function CoursePlayerShell({
             </div>
           </div>
         )}
+        <button
+          ref={mobileToolsToggleRef}
+          type="button"
+          className="player-mobile-tools-toggle"
+          aria-expanded={mobileToolsOpen}
+          aria-controls="player-mobile-tools-panel"
+          onClick={() => setMobileToolsOpen((open) => !open)}
+        >
+          <span aria-hidden="true">{mobileToolsOpen ? '−' : '+'}</span>
+          {mobileToolsOpen ? 'Hide' : 'Show'} course tools and media controls
+        </button>
+
         <PlayerSidebar
+          mobileExpanded={mobileToolsOpen}
           onToggleModal={handleToggleModal}
           activeModal={state.activeModal}
           menuButtonRef={menuButtonRef}
