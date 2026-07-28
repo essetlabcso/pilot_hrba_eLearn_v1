@@ -1091,3 +1091,244 @@
     padding: 0.75rem;
   }
 }
+
+.m3-b2-carry,
+.m3-b2-safety-note {
+  margin: 0 0 1rem;
+  padding: .8rem 1rem;
+  border: 1px solid #9ab7c7;
+  border-left: .35rem solid #087f8c;
+  border-radius: .65rem;
+  background: #f3fafb;
+  color: #173249;
+}
+
+.m3-b2-safety-note {
+  border-left-color: #a35a00;
+  background: #fff8e8;
+}
+
+.m3-b2-causal-chain {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .8rem;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m3-b2-causal-chain > li {
+  position: relative;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #9db7c7;
+  border-radius: .8rem;
+  background: #fff;
+}
+
+.m3-b2-causal-chain > li:not(:last-child)::after {
+  position: absolute;
+  top: 50%;
+  right: -.65rem;
+  z-index: 1;
+  padding: .08rem .22rem;
+  background: #eef7f8;
+  color: #087f8c;
+  content: "→";
+  font-weight: 800;
+}
+
+.m3-b2-causal-chain p {
+  margin: .65rem 0 0;
+}
+
+.m3-b2-status,
+.m3-b2-domain-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: .25rem .55rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: #fff;
+  color: #174b6b;
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.m3-b2-status.is-likely,
+.m3-b2-domain-status.is-partial {
+  color: #875000;
+}
+
+.m3-b2-status.is-possible,
+.m3-b2-domain-status.is-improve {
+  color: #8a2d45;
+}
+
+.m3-b2-domain-status.is-adequate {
+  color: #146447;
+}
+
+.m3-b2-output-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+  margin: 1rem 0 0;
+}
+
+.m3-b2-output-details > div,
+.m3-b2-scorecard article,
+.m3-b2-risk-list > li {
+  min-width: 0;
+  border: 1px solid #a9c0cc;
+  border-radius: .8rem;
+  background: #fff;
+}
+
+.m3-b2-output-details > div {
+  padding: .85rem;
+}
+
+.m3-b2-output-details dt,
+.m3-b2-scorecard dt,
+.m3-b2-risk-list dt {
+  color: #174b6b;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
+.m3-b2-output-details dd,
+.m3-b2-scorecard dd,
+.m3-b2-risk-list dd {
+  min-width: 0;
+  margin: .3rem 0 0;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.m3-b2-scorecard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.m3-b2-scorecard article {
+  overflow: hidden;
+}
+
+.m3-b2-scorecard article > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: 1rem;
+  background: #e9f6f7;
+}
+
+.m3-b2-scorecard h3 {
+  margin: 0;
+}
+
+.m3-b2-scorecard dl,
+.m3-b2-risk-list dl {
+  display: grid;
+  gap: .75rem;
+  margin: 0;
+  padding: 1rem;
+}
+
+.m3-b2-scorecard dl > div,
+.m3-b2-risk-list dl > div {
+  min-width: 0;
+  padding-top: .75rem;
+  border-top: 1px solid #d5e0e6;
+}
+
+.m3-b2-scorecard dl > div:first-child,
+.m3-b2-risk-list dl > div:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.m3-b2-risk-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m3-b2-risk-list h3 {
+  margin: 0;
+  padding: 1rem;
+  background: #e9f6f7;
+}
+
+.m3-b2-risk-flow {
+  display: grid;
+  grid-template-columns: repeat(9, auto);
+  align-items: center;
+  justify-content: start;
+  gap: .35rem;
+  padding: .75rem 1rem;
+  border-block: 1px solid #d5e0e6;
+  background: #f8fbfc;
+  color: #174b6b;
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.m3-b2-risk-flow span {
+  padding: .2rem .4rem;
+  border: 1px solid #9db7c7;
+  border-radius: .4rem;
+  background: #fff;
+}
+
+@container m3-output-quality (max-width: 56rem) {
+  .m3-b2-causal-chain,
+  .m3-b2-scorecard,
+  .m3-b2-risk-list,
+  .m3-b2-output-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-b2-causal-chain > li:not(:last-child)::after {
+    top: auto;
+    right: 50%;
+    bottom: -.7rem;
+    transform: translateX(50%) rotate(90deg);
+  }
+
+  .m3-b2-scorecard article > header {
+    flex-direction: column;
+  }
+
+  .m3-b2-risk-flow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-b2-risk-flow b {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 48rem) {
+  .m3-b2-causal-chain,
+  .m3-b2-scorecard,
+  .m3-b2-risk-list,
+  .m3-b2-output-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-b2-scorecard article > header {
+    flex-direction: column;
+  }
+}

@@ -236,49 +236,12 @@ test('Module 3 M3-A preserves workflow while fixing Screen 5 and Screen 11 respo
   await seedModule3(page, 'M3-R11', 10);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-11`);
   await page.getByRole('heading', { level: 1, name: 'Gender and Disability Design Check' }).waitFor();
-  const stageIds = [
-    'm3-s11-stage-understand',
-    'm3-s11-stage-example',
-    'm3-s11-stage-practice',
-    'm3-s11-stage-review',
-    'm3-s11-stage-apply',
-  ];
-  for (const stageId of stageIds) {
-    assert.equal(await page.locator(`[data-testid="${stageId}"]`).count(), 1);
+  assert.equal(await page.locator('[data-testid="m3-r11-output-quality"]').count(), 1);
+  for (const name of ['m3-r11-participation', 'm3-r11-accessibility', 'm3-r11-influence']) {
+    await page.locator(`input[name="${name}"]`).nth(1).check();
   }
-  await page.getByRole('button', { name: 'Continue to worked example' }).click();
-  await page.getByRole('button', { name: 'Start practice' }).click();
-  assert.equal(await page.locator('[data-testid="m3-s11-generate-panel"]').count(), 1);
-  await page.locator('[data-testid="m3-s11-generate-panel"]').getByText('0 of 12 requirements complete').waitFor();
-
-  const classificationSelects = page.getByLabel(/^Classification for /);
-  assert.equal(await classificationSelects.count(), 6);
-  await classificationSelects.first().focus();
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('Enter');
-  assert.equal(await classificationSelects.first().inputValue(), 'mentioned');
-  for (let index = 1; index < 6; index += 1) {
-    await classificationSelects.nth(index).selectOption('mentioned');
-  }
-  await page.locator('[data-testid="m3-s11-design-area-tile"]').first().click();
-  for (const field of [
-    'genderConsideration',
-    'disabilityConsideration',
-    'designAdaptation',
-    'responsibleRole',
-    'watchPoint',
-  ]) {
-    await page.locator(`[data-testid="m3-s11-${field}-select"]`).selectOption({ index: 1 });
-  }
-  const screen11Panel = page.locator('[data-testid="m3-s11-generate-panel"]');
-  await screen11Panel.getByText('12 of 12 requirements complete').waitFor();
-  await screen11Panel.getByText('Ready to generate', { exact: true }).waitFor();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await assertNoHorizontalOverflow(page, 'Screen 11 desktop Practice');
-  const desktopRow = page.locator('[data-testid="m3-s11-classification-row"]').first();
-  const desktopBoxes = await desktopRow.locator('span, select').evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect()));
-  assert.ok(desktopBoxes[1].x > desktopBoxes[0].x, 'Desktop classification keeps the clear two-column row.');
   await screenshot(page, 'screen-11-practice-desktop.png');
 
   for (const [width, name] of [
@@ -288,33 +251,29 @@ test('Module 3 M3-A preserves workflow while fixing Screen 5 and Screen 11 respo
   ]) {
     await page.setViewportSize({ width, height: 900 });
     await assertNoHorizontalOverflow(page, `Screen 11 ${width}px Practice`);
-    const row = page.locator('[data-testid="m3-s11-classification-row"]').first();
-    const statement = await row.locator('span').first().boundingBox();
-    const select = await row.locator('select').boundingBox();
-    assert.ok(select.y >= statement.y + statement.height - 1, `${width}px row must stack the classification below its statement.`);
     await screenshot(page, name);
   }
 
   await page.setViewportSize({ width: 390, height: 900 });
-  const firstClassification = classificationSelects.first();
+  const firstClassification = page.locator('input[name="m3-r11-participation"]').first();
   await firstClassification.focus();
   assert.equal(await firstClassification.evaluate((element) => document.activeElement === element), true);
-  assert.notEqual(await firstClassification.evaluate((element) => getComputedStyle(element).outlineStyle), 'none');
-  await firstClassification.press('Tab');
-  assert.notEqual(await page.evaluate(() => document.activeElement?.tagName), 'BODY');
-  await firstClassification.press('Shift+Tab');
-  const generateInclusion = screen11Panel.getByRole('button', { name: 'Generate inclusion check' });
-  await generateInclusion.focus();
-  await page.keyboard.press('Enter');
-  await page.locator('[data-testid="m3-s11-stage-review"][aria-current="step"]').waitFor();
+  const focusedCard = firstClassification.locator('xpath=ancestor::label');
+  const focusPresentation = await focusedCard.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return `${style.outlineStyle}|${style.boxShadow}|${style.borderColor}`;
+  });
+  assert.match(focusPresentation, /(solid|rgb\(0, 95, 115\)|rgba?\([^)]+\))/);
+  await firstClassification.press('ArrowDown');
+  assert.equal(await page.locator('input[name="m3-r11-participation"]').nth(1).isChecked(), true);
+  const generateInclusion = page.getByRole('button', { name: 'Generate output' });
+  await generateInclusion.click();
+  await page.getByRole('heading', { name: 'Inclusion Design Scorecard' }).waitFor();
   await screenshot(page, 'screen-11-review-390.png');
-  await page.getByRole('button', { name: 'Go to Apply/Download' }).click();
-  await page.locator('[data-testid="m3-s11-stage-apply"][aria-current="step"]').waitFor();
-  await page.locator('[data-testid="m3-s11-final-continue"]').click();
+  await page.locator('.m3-oq-primary-action').click();
   await page.waitForURL(/\/module-3\/screen-3-12$/);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-11`);
-  await page.locator('[data-testid="m3-s11-stage-review"][aria-current="step"]').waitFor();
-  assert.equal(await page.locator('[data-testid="m3-s11-final-continue"]').count(), 0);
+  await page.getByRole('heading', { name: 'Inclusion Design Scorecard' }).waitFor();
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-4`);

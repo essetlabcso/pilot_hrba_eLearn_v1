@@ -22,6 +22,11 @@ import {
   RightsHolderBarrierOutputScreen,
   StandardsPracticeMapScreen,
 } from './Module3Batch1OutputQuality';
+import {
+  InclusionDesignScorecardScreen,
+  RiskDoNoHarmMatrixScreen,
+  RootCauseCapacityOutputScreen,
+} from './Module3Batch2OutputQuality';
 
 type Module3RevisedRendererProps = {
   screenId: string;
@@ -10097,7 +10102,7 @@ function GenderDisabilityDashboardVisualization({
   );
 }
 
-function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
+export function GenderDisabilityDesignCheckScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
@@ -11375,7 +11380,7 @@ function RiskDoNoHarmBoardVisualization({
   );
 }
 
-function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
+export function RiskDoNoHarmBoardScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
@@ -15099,7 +15104,7 @@ function Module3ClosureScreen({
   );
 }
 
-function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
+export function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
   screen: Module3RevisedScreen;
   state: LearningState;
   onComplete: (value?: Record<string, unknown>) => void;
@@ -15794,11 +15799,11 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R10') {
-    return <RootCauseCapacityGapScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <RootCauseCapacityOutputScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R11') {
-    return <GenderDisabilityDesignCheckScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <InclusionDesignScorecardScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R12') {
@@ -15806,7 +15811,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R13') {
-    return <RiskDoNoHarmBoardScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <RiskDoNoHarmMatrixScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R14') {

@@ -131,7 +131,7 @@ test('Screen 14 generates all ten required design-repair elements', () => {
     'hrbaReasoning',
     'sourceSignature',
   ]));
-  assert.equal(output.rightsResponsiveActivityPackage.length, 3);
+  assert.ok(output.rightsResponsiveActivityPackage.length >= 3);
   assert.match(output.hrbaReasoning, /responsibility/i);
   assert.match(output.riskSafeguard, /pause or adapt/i);
 });

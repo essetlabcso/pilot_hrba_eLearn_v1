@@ -241,38 +241,24 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
 
   await seedModule3(page, 'M3-R10', 9);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-10`);
-  await page.getByRole('button', { name: 'Continue to worked example' }).click();
-  await page.getByRole('button', { name: 'Start practice' }).click();
-  await page.getByText('Select one priority barrier first. The cause-and-capacity row will appear here.').waitFor();
-  const screen10BarrierTiles = page.getByTestId('m3-s10-barrier-tile');
-  assert.ok(await screen10BarrierTiles.count() > 0);
-  await screen10BarrierTiles.first().click();
-  await page.getByTestId('m3-s10-cause-map-row').waitFor();
-  const classificationSelects = page.locator('.m3-root-cause-map-statement-card select');
-  for (let index = 0; index < await classificationSelects.count(); index += 1) {
-    await classificationSelects.nth(index).selectOption({ index: 1 });
+  for (const name of ['m3-r10-direct', 'm3-r10-deeper', 'm3-r10-gap', 'm3-r10-response']) {
+    await page.locator(`input[name="${name}"]`).first().check();
   }
-  const causeMapSelects = page.locator('[data-testid^="m3-s10-"][data-testid$="-select"]');
-  assert.ok(await causeMapSelects.count() >= 4);
-  for (let index = 0; index < await causeMapSelects.count(); index += 1) {
-    await causeMapSelects.nth(index).selectOption({ index: 1 });
-  }
-  const screen10Generate = page.getByTestId('m3-s10-generate-canvas');
+  const screen10Generate = page.getByRole('button', { name: 'Generate output' });
   assert.equal(await screen10Generate.isEnabled(), true);
   await screen10Generate.click();
-  await page.getByRole('heading', { name: 'Your draft Root-Cause and Capacity-Gap Map' }).waitFor();
+  await page.getByRole('heading', { level: 2, name: 'Root-Cause and Capacity-Gap Map' }).waitFor();
   await page.setViewportSize({ width: 390, height: 1000 });
   await assertNoHorizontalOverflow(page, 'Screen 10 Review 390px');
   await page.setViewportSize({ width: 320, height: 1000 });
   await assertNoHorizontalOverflow(page, 'Screen 10 Review 320px');
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.getByRole('button', { name: 'Go to Apply/Download' }).click();
-  await page.getByTestId('m3-s10-final-continue').click();
+  await page.locator('.m3-oq-primary-action').click();
   await page.waitForURL(/\/module-3\/screen-3-11$/);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-10`);
-  await page.getByRole('heading', { name: 'Your draft Root-Cause and Capacity-Gap Map' }).waitFor();
+  await page.getByRole('heading', { level: 2, name: 'Root-Cause and Capacity-Gap Map' }).waitFor();
   await page.reload();
-  await page.getByRole('heading', { name: 'Your draft Root-Cause and Capacity-Gap Map' }).waitFor();
+  await page.getByRole('heading', { level: 2, name: 'Root-Cause and Capacity-Gap Map' }).waitFor();
 
   const verificationScreens = [
     { id: 'M3-R06', completedBefore: 5, route: 'screen-3-6', label: 'Screen 6' },

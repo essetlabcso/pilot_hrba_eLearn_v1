@@ -23,7 +23,7 @@ type PrototypeProps = {
   onComplete: (value?: Record<string, unknown>) => void;
 };
 
-const PORTFOLIO_MODEL_VERSION = 2;
+const PORTFOLIO_MODEL_VERSION = 3;
 
 function practiceKey(screenId: string) {
   return `module3_revised_${screenId.toLowerCase().replaceAll('-', '_')}`;
@@ -514,19 +514,30 @@ export function buildActorPowerInsight(
   blocker: string,
   strategy: string,
   screen8: Record<string, unknown>,
+  screen7: Record<string, unknown> = {},
 ): ActorPowerInsight {
   const dutyBearers = getStringArray(screen8.selectedDutyBearers);
   const supportingActor = getString(screen8.selectedSupportingActor);
   const csoRole = getString(screen8.selectedCsoRole);
+  const selectedGroups = getStringArray(screen7.selectedGroups);
+  const generatedRows = Array.isArray(screen7.generatedMapRows)
+    ? screen7.generatedMapRows as Array<Record<string, unknown>>
+    : [];
+  const priorityGroups = selectedGroups.length
+    ? selectedGroups
+    : generatedRows.map((row) => getString(row.groupLabel) || getString(row.group)).filter(Boolean);
+  const assignedBarriers = Object.values((screen7.assignedBarriers as Record<string, string>) || {}).filter(Boolean);
   const actors: ActorPosition[] = [
     {
       id: 'rights-holders',
-      name: 'Women traders and remote kebele residents',
+      name: priorityGroups.length ? priorityGroups.join(' and ') : 'Women traders and remote kebele residents',
       role: 'Priority rights-holders',
       authority: 'No formal authority',
       influence: 'Lower',
       position: 'Supportive',
-      risk: 'Their priorities may be heard late or represented by others.',
+      risk: assignedBarriers.length
+        ? `Their saved barriers (${assignedBarriers.join(', ')}) may reduce timely, direct influence.`
+        : 'Their priorities may be heard late or represented by others.',
       engagement: 'Use accessible early information and more than one safe participation route.',
       x: 22,
       y: 24,
@@ -600,7 +611,7 @@ export function buildActorPowerInsight(
     safeInfluenceStrategy: strategy,
     actors,
     recommendation: `Use ${strategy.toLowerCase()} to strengthen rights-holder influence, secure a clear response from the responsible office and engage ${blocker} without transferring public responsibility to Awra.`,
-    sourceSignature: signature([enabler, blocker, strategy, dutyBearers, supportingActor, csoRole]),
+    sourceSignature: signature([enabler, blocker, strategy, dutyBearers, supportingActor, csoRole, priorityGroups, assignedBarriers]),
     generatedAt: new Date().toISOString(),
   };
 }
@@ -608,6 +619,7 @@ export function buildActorPowerInsight(
 export function PowerInfluencePrototype({ screen, state, onChangeState, onComplete }: PrototypeProps) {
   const saved = readScreenState(state, screen.id);
   const screen8 = readScreenState(state, 'M3-R08');
+  const screen7 = readScreenState(state, 'M3-R07');
   const savedInsight = saved.actorPowerInsight as Partial<ActorPowerInsight> | undefined;
   const [enabler, setEnabler] = useState(getString(saved.prototypeEnabler) || getString(savedInsight?.selectedEnabler));
   const [blocker, setBlocker] = useState(getString(saved.prototypeBlocker) || getString(savedInsight?.selectedBlocker));
@@ -620,8 +632,10 @@ export function PowerInfluencePrototype({ screen, state, onChangeState, onComple
       getStringArray(screen8.selectedDutyBearers),
       getString(screen8.selectedSupportingActor),
       getString(screen8.selectedCsoRole),
+      getStringArray(screen7.selectedGroups),
+      Object.values((screen7.assignedBarriers as Record<string, string>) || {}),
     ]),
-    [blocker, enabler, screen8, strategy],
+    [blocker, enabler, screen7, screen8, strategy],
   );
   const restored = savedInsight?.sourceSignature === expected ? savedInsight as ActorPowerInsight : null;
   const [generated, setGenerated] = useState<ActorPowerInsight | null>(restored);
@@ -656,7 +670,7 @@ export function PowerInfluencePrototype({ screen, state, onChangeState, onComple
 
   const generate = () => {
     if (!ready) return;
-    const next = buildActorPowerInsight(enabler, blocker, strategy, screen8);
+    const next = buildActorPowerInsight(enabler, blocker, strategy, screen8, screen7);
     setGenerated(next);
     persistDraft(onChangeState, screen.id, {
       prototypeEnabler: enabler,
@@ -840,6 +854,8 @@ export function buildParticipationPathway(
     barriers: string[];
     dutyBearers: string[];
     inclusion: string[];
+    powerRisk?: string;
+    capacityGap?: string;
   },
 ): ParticipationPathway {
   const groups = dependencies.groups.length ? dependencies.groups : ['Women traders', 'remote kebele residents', 'persons with disabilities'];
@@ -860,6 +876,9 @@ export function buildParticipationPathway(
         steps: [
           information,
           `Check formats, timing, transport and accommodation with ${groups.join(', ')}.`,
+          dependencies.capacityGap
+            ? `Address the saved capacity or response gap: ${dependencies.capacityGap}.`
+            : 'Confirm roles, accessible formats, timing, and preparation support before engagement.',
         ],
         responsibleActors: ['Awra facilitates access', ...dutyBearers],
       },
@@ -869,6 +888,9 @@ export function buildParticipationPathway(
         steps: [
           participation,
           'Record which priorities influenced the decision before activities are finalized.',
+          dependencies.powerRisk
+            ? `Use the saved safe engagement strategy where this power risk applies: ${dependencies.powerRisk}.`
+            : 'Use a safe engagement route where stronger actors may limit direct influence.',
         ],
         responsibleActors: ['Rights-holders participate directly', ...dutyBearers],
       },
@@ -891,7 +913,7 @@ export function buildParticipationPathway(
         responsibleActors: ['Responsible public actors', 'Awra follow-up', 'rights-holder review'],
       },
     ],
-    sourceSignature: signature([information, participation, response, groups, barriers, dutyBearers, inclusion]),
+    sourceSignature: signature([information, participation, response, groups, barriers, dutyBearers, inclusion, dependencies.powerRisk, dependencies.capacityGap]),
     generatedAt: new Date().toISOString(),
   };
 }
@@ -900,6 +922,8 @@ export function ParticipationPathwayPrototype({ screen, state, onChangeState, on
   const saved = readScreenState(state, screen.id);
   const screen7 = readScreenState(state, 'M3-R07');
   const screen8 = readScreenState(state, 'M3-R08');
+  const screen9 = readScreenState(state, 'M3-R09');
+  const screen10 = readScreenState(state, 'M3-R10');
   const screen11 = readScreenState(state, 'M3-R11');
   const savedPathway = (saved.participationAccountabilityPathway || saved.canonicalPathwaySummary) as Partial<ParticipationPathway> | undefined;
   const [information, setInformation] = useState(getString(saved.prototypeInformationMethod) || getString(savedPathway?.informationMethod));
@@ -913,11 +937,16 @@ export function ParticipationPathwayPrototype({ screen, state, onChangeState, on
       ? getStringArray(screen7.barriersToTest)
       : Object.values((screen7.assignedBarriers as Record<string, string>) || {}),
     dutyBearers: getStringArray(screen8.selectedDutyBearers),
-    inclusion: getStringArray(screen11.selectedRepairs).length
-      ? getStringArray(screen11.selectedRepairs)
-      : ['Accessible information', 'reasonable accommodation', 'safe alternative channels'],
-  }), [screen11, screen7, screen8]);
-  const expected = signature([information, participation, response, dependencies.groups, dependencies.barriers, dependencies.dutyBearers, dependencies.inclusion]);
+    inclusion: Array.isArray((screen11.inclusionDesignScorecard as Record<string, unknown> | undefined)?.domains)
+      ? ((screen11.inclusionDesignScorecard as Record<string, unknown>).domains as Array<Record<string, unknown>>)
+        .map((domain) => getString(domain.recommendedAdaptation)).filter(Boolean)
+      : getStringArray(screen11.selectedRepairs).length
+        ? getStringArray(screen11.selectedRepairs)
+        : ['Accessible information', 'reasonable accommodation', 'safe alternative channels'],
+    powerRisk: getString((screen9.actorPowerInsight as Record<string, unknown> | undefined)?.recommendation),
+    capacityGap: getString((screen10.canonicalCausalCapacityPathway as Record<string, unknown> | undefined)?.capacityResponseGap),
+  }), [screen10, screen11, screen7, screen8, screen9]);
+  const expected = signature([information, participation, response, dependencies.groups, dependencies.barriers, dependencies.dutyBearers, dependencies.inclusion, dependencies.powerRisk, dependencies.capacityGap]);
   const restored = savedPathway?.sourceSignature === expected ? savedPathway as ParticipationPathway : null;
   const [generated, setGenerated] = useState<ParticipationPathway | null>(restored);
 
@@ -1106,6 +1135,8 @@ export function buildRepairedDesignElement(
   dependencies: {
     context: Record<string, unknown>;
     power: Record<string, unknown>;
+    causal?: Record<string, unknown>;
+    inclusion?: Record<string, unknown>;
     participation: Record<string, unknown>;
     risk: Record<string, unknown>;
   },
@@ -1119,8 +1150,22 @@ export function buildRepairedDesignElement(
     || 'early accessible participation before decisions';
   const responseMethod = getString(dependencies.participation.responseMethod)
     || 'a documented feedback and response route';
+  const causalGap = getString(dependencies.causal?.capacityResponseGap)
+    || 'unclear coordination, accessibility, or feedback-response capacity';
+  const inclusionDomains = Array.isArray(dependencies.inclusion?.domains)
+    ? dependencies.inclusion?.domains as Array<Record<string, unknown>>
+    : [];
+  const inclusionAdaptations = inclusionDomains
+    .map((domain) => getString(domain.recommendedAdaptation))
+    .filter(Boolean);
+  const riskRows = Array.isArray(dependencies.risk.rows)
+    ? dependencies.risk.rows as Array<Record<string, unknown>>
+    : [];
   const riskSignal = getString(dependencies.risk.monitoringSignal)
+    || getString(riskRows[0]?.monitoringSignal)
     || 'exclusion, missing accommodation or unresolved feedback';
+  const riskSafeguard = getString(riskRows[0]?.safeFollowUpAction)
+    || 'Use non-identifying evidence and pause or adapt an unsafe process.';
   return {
     originalDesignWeakness: 'The original draft lists consultation, training and infrastructure activities but does not show which barriers will change, how affected groups influence decisions, who must respond or what will be monitored.',
     repairedHrbaObjective: objective,
@@ -1128,16 +1173,18 @@ export function buildRepairedDesignElement(
       activity,
       `Use ${participationMethod.toLowerCase()} for ${group.toLowerCase()}.`,
       `Agree roles and follow-up with ${enabler}; engage ${blocker} through the saved safe influence strategy.`,
+      `Address the saved capacity or response gap: ${causalGap}.`,
     ],
     participationMechanism: participationMethod,
     accountabilityFeedbackMechanism: responseMethod,
-    inclusionAccessibilityFeature: `Check accessible formats, timing, transport and reasonable accommodation with ${group.toLowerCase()} rather than assuming one method works for everyone.`,
-    riskSafeguard: `Use non-identifying evidence and pause or adapt the method if monitoring identifies ${riskSignal}.`,
+    inclusionAccessibilityFeature: inclusionAdaptations[0]
+      || `Check accessible formats, timing, transport and reasonable accommodation with ${group.toLowerCase()} rather than assuming one method works for everyone.`,
+    riskSafeguard: `${riskSafeguard} Monitor for ${riskSignal.toLowerCase()}.`,
     indicatorWatchPoint: watchPoint,
     implementationImplication: 'Assign resources, responsibility and a review date before implementation; record responses and adaptations without collecting unnecessary personal information.',
     hrbaReasoning: 'The repaired element links differentiated barriers and rights-holder influence to public responsibility, accessible participation, accountable response, risk monitoring and evidence of practical change.',
     optionalLearnerEdit: edit.trim(),
-    sourceSignature: signature([objective, activity, watchPoint, dependencies.context, dependencies.power, dependencies.participation, dependencies.risk]),
+    sourceSignature: signature([objective, activity, watchPoint, dependencies.context, dependencies.power, dependencies.causal, dependencies.inclusion, dependencies.participation, dependencies.risk]),
     generatedAt: new Date().toISOString(),
   };
 }
@@ -1146,10 +1193,14 @@ export function RepairedDesignPrototype({ screen, state, onChangeState, onComple
   const saved = readScreenState(state, screen.id);
   const context = (readScreenState(state, 'M3-R05').contextInsight || {}) as Record<string, unknown>;
   const power = (readScreenState(state, 'M3-R09').actorPowerInsight || {}) as Record<string, unknown>;
+  const causal = (readScreenState(state, 'M3-R10').canonicalCausalCapacityPathway || {}) as Record<string, unknown>;
+  const inclusion = (readScreenState(state, 'M3-R11').inclusionDesignScorecard || {}) as Record<string, unknown>;
   const participation = (readScreenState(state, 'M3-R12').canonicalPathwaySummary
     || readScreenState(state, 'M3-R12').participationAccountabilityPathway
     || {}) as Record<string, unknown>;
-  const risk = (readScreenState(state, 'M3-R13').riskDoNoHarmBoard || {}) as Record<string, unknown>;
+  const risk = (readScreenState(state, 'M3-R13').canonicalRiskDoNoHarmMatrix
+    || readScreenState(state, 'M3-R13').riskDoNoHarmBoard
+    || {}) as Record<string, unknown>;
   const savedElement = saved.repairedDesignElement as Partial<RepairedDesignElement> | undefined;
   const legacyObjective = saved.repairedObjective as Record<string, unknown> | undefined;
   const legacyActivities = saved.repairedActivityPackage as Record<string, unknown> | undefined;
@@ -1170,7 +1221,7 @@ export function RepairedDesignPrototype({ screen, state, onChangeState, onComple
     || getString(legacyPackage?.implementationWatchPoint),
   );
   const [edit, setEdit] = useState(getString(saved.prototypeOptionalEdit) || getString(savedElement?.optionalLearnerEdit));
-  const expected = signature([objective, activity, watchPoint, context, power, participation, risk]);
+  const expected = signature([objective, activity, watchPoint, context, power, causal, inclusion, participation, risk]);
   const restored = savedElement?.sourceSignature === expected ? savedElement as RepairedDesignElement : null;
   const [generated, setGenerated] = useState<RepairedDesignElement | null>(restored);
 
@@ -1210,7 +1261,7 @@ export function RepairedDesignPrototype({ screen, state, onChangeState, onComple
       activity,
       watchPoint,
       edit,
-      { context, power, participation, risk },
+      { context, power, causal, inclusion, participation, risk },
     );
     setGenerated(next);
     persistDraft(onChangeState, screen.id, {
