@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 interface HelpOverlayProps {
   onClose: () => void;
@@ -9,11 +9,11 @@ export default function HelpOverlay({ onClose }: HelpOverlayProps) {
   const promptRef = useRef<HTMLDivElement>(null);
   const dismissButtonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    window.setTimeout(() => {
-      dismissButtonRef.current?.focus();
-    }, 0);
+  useLayoutEffect(() => {
+    dismissButtonRef.current?.focus();
+  }, []);
 
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();

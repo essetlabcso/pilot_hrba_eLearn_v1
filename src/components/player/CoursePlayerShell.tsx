@@ -556,23 +556,24 @@ export default function CoursePlayerShell({
     };
   }, [handleToggleModal, state.activeModal]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (state.activeModal !== 'help') {
       return;
     }
 
+    const helpLauncherElement = helpButtonRef.current;
+    const mainContentElement = mainContentRef.current;
+
     return () => {
-      window.setTimeout(() => {
-        if (focusHTMLElement(helpButtonRef.current)) {
-          return;
-        }
+      if (focusHTMLElement(helpLauncherElement)) {
+        return;
+      }
 
-        if (focusHTMLElement(document.querySelector('.player-sidebar-button'))) {
-          return;
-        }
+      if (focusHTMLElement(document.querySelector('.player-sidebar-button'))) {
+        return;
+      }
 
-        focusHTMLElement(mainContentRef.current);
-      }, 0);
+      focusHTMLElement(mainContentElement);
     };
   }, [state.activeModal]);
 
