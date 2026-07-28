@@ -247,6 +247,112 @@ test('four Module 3 output-quality prototypes are light, substantive, responsive
     await capture(page, 14, 'resumed-desktop');
   });
 
+  await t.test('Screen 14 stacks its generated design repair when the output container is constrained', async () => {
+    await page.setViewportSize({ width: 768, height: 432 });
+    await seed(page, 14, carriedState);
+    await selectFirstInEachFieldset(page, 3);
+    await page.getByTestId('m3-oq-generate').click();
+    await page.locator('.m3-oq-output').waitFor();
+
+    const constrained = await page.evaluate(() => {
+      const output = document.querySelector('.m3-oq-output');
+      const comparison = document.querySelector('.m3-oq-before-after');
+      const sections = Array.from(comparison?.querySelectorAll(':scope > section') || []);
+      const rows = Array.from(document.querySelectorAll('.m3-oq-repair-details > div'));
+      const values = Array.from(document.querySelectorAll('.m3-oq-repair-details dd'));
+      const prose = Array.from(document.querySelectorAll(
+        '.m3-oq-before-after p, .m3-oq-before-after li, .m3-oq-before-after dd, .m3-oq-before-after dt',
+      ));
+      const outputRect = output?.getBoundingClientRect();
+      const sectionRects = sections.map((section) => section.getBoundingClientRect());
+      const rowColumns = rows.map((row) => getComputedStyle(row).gridTemplateColumns);
+      const overlap = sectionRects.some((rect, index) => (
+        sectionRects.slice(index + 1).some((other) => (
+          rect.left < other.right - 1
+          && rect.right > other.left + 1
+          && rect.top < other.bottom - 1
+          && rect.bottom > other.top + 1
+        ))
+      ));
+
+      return {
+        viewportWidth: window.innerWidth,
+        outputWidth: outputRect?.width ?? 0,
+        comparisonColumns: getComputedStyle(comparison).gridTemplateColumns,
+        sectionOrder: sections.map((section) => section.getAttribute('aria-label')),
+        sectionsStacked: sectionRects.every((rect, index) => (
+          index === 0 || rect.top >= sectionRects[index - 1].bottom - 1
+        )),
+        definitionRowsStacked: rowColumns.every((columns) => columns.trim().split(/\s+/).length === 1),
+        minimumValueWidth: Math.min(...values.map((value) => value.getBoundingClientRect().width)),
+        naturalWrapping: prose.every((element) => {
+          const style = getComputedStyle(element);
+          return style.overflowWrap !== 'anywhere' && style.wordBreak === 'normal';
+        }),
+        outputOverflow: output ? output.scrollWidth - output.clientWidth : 0,
+        documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        overlap,
+      };
+    });
+
+    assert.ok(constrained.outputWidth < 736, 'The test should exercise the constrained output container');
+    assert.equal(constrained.comparisonColumns.trim().split(/\s+/).length, 1);
+    assert.deepEqual(constrained.sectionOrder, [
+      'Before — original weakness',
+      'Repaired design',
+      'Why this is stronger',
+    ]);
+    assert.equal(constrained.sectionsStacked, true);
+    assert.equal(constrained.definitionRowsStacked, true);
+    assert.ok(constrained.minimumValueWidth >= 260, `Definition value width was ${constrained.minimumValueWidth}px`);
+    assert.equal(constrained.naturalWrapping, true);
+    assert.ok(constrained.outputOverflow <= 1);
+    assert.ok(constrained.documentOverflow <= 1);
+    assert.equal(constrained.overlap, false);
+
+    await page.reload();
+    await page.getByRole('heading', { name: 'Repaired Project-Design Element' }).waitFor();
+    assert.equal(
+      (await page.locator('.m3-oq-before-after').evaluate(
+        (element) => getComputedStyle(element).gridTemplateColumns,
+      )).trim().split(/\s+/).length,
+      1,
+      'The resumed generated output should retain constrained stacked reflow',
+    );
+  });
+
+  await t.test('R05, R09 and R12 retain their existing constrained output layouts', async () => {
+    await page.setViewportSize({ width: 768, height: 432 });
+    const layouts = {};
+
+    for (const screenNumber of [5, 9, 12]) {
+      await seed(page, screenNumber, screenNumber === 5 ? {} : carriedState);
+      await selectFirstInEachFieldset(page, screenNumber === 5 ? 2 : 3);
+      if (screenNumber === 5) {
+        await page.locator('.m3-oq-choice-group').first().locator('label').nth(1).click();
+      }
+      await page.getByTestId('m3-oq-generate').click();
+      await page.locator('.m3-oq-output').waitFor();
+      layouts[screenNumber] = await page.evaluate((currentScreen) => {
+        const target = currentScreen === 5
+          ? document.querySelector('.m3-oq-chain')
+          : currentScreen === 9
+            ? document.querySelector('.m3-oq-power-map')
+            : document.querySelector('.m3-oq-pathway');
+        return {
+          display: getComputedStyle(target).display,
+          columns: getComputedStyle(target).gridTemplateColumns,
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      }, screenNumber);
+    }
+
+    assert.equal(layouts[5].columns.trim().split(/\s+/).length, 1);
+    assert.equal(layouts[9].display, 'block');
+    assert.equal(layouts[12].columns.trim().split(/\s+/).length, 2);
+    assert.ok(Object.values(layouts).every((layout) => layout.overflow <= 1));
+  });
+
   for (const width of [1536, 1440, 1366, 390, 320]) {
     await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
     for (const screenNumber of [5, 9, 12, 14]) {

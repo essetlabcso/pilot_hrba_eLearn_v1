@@ -177,6 +177,11 @@
   gap: 1rem;
 }
 
+.m3-oq-output {
+  container-name: m3-output-quality;
+  container-type: inline-size;
+}
+
 .m3-oq-before-after > section {
   min-width: 0;
   padding: 1rem;
@@ -199,6 +204,27 @@
   grid-column: 1 / -1;
   border-top: 5px solid #2c6f9c !important;
   background: #f1f7fb !important;
+}
+
+.main-screen-canvas__content .m3-oq-screen .m3-oq-output .m3-oq-before-after :is(p, li, dd, dt, span, strong) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
+@container m3-output-quality (max-width: 46rem) {
+  .m3-oq-before-after {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-oq-before-after__reasoning {
+    grid-column: auto;
+  }
+
+  .m3-oq-before-after .m3-oq-repair-details > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+  }
 }
 
 @media (max-width: 980px) {

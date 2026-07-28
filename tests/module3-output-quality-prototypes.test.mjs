@@ -136,6 +136,27 @@ test('Screen 14 generates all ten required design-repair elements', () => {
   assert.match(output.riskSafeguard, /pause or adapt/i);
 });
 
+test('Screen 14 uses container-aware reflow and natural generated-text wrapping', async () => {
+  const css = await import('node:fs/promises').then(({ readFile }) => (
+    readFile(new URL('../src/components/course/module3-output-quality.css', import.meta.url), 'utf8')
+  ));
+
+  assert.match(css, /\.m3-oq-output\s*\{[^}]*container-name:\s*m3-output-quality;/s);
+  assert.match(css, /@container m3-output-quality \(max-width: 46rem\)/);
+  assert.match(
+    css,
+    /@container m3-output-quality[\s\S]*?\.m3-oq-before-after\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+  );
+  assert.match(
+    css,
+    /@container m3-output-quality[\s\S]*?\.m3-oq-before-after \.m3-oq-repair-details > div\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+  );
+  assert.match(
+    css,
+    /\.m3-oq-output \.m3-oq-before-after :is\([^)]*\)\s*\{[^}]*overflow-wrap:\s*break-word;[^}]*word-break:\s*normal;/s,
+  );
+});
+
 test('prototype rubric targets meet the approved acceptance floor', () => {
   for (const [name, scores] of Object.entries(module3PrototypeRubricTargets)) {
     assert.equal(scores.length, 12, `${name} must cover all twelve rubric dimensions`);
