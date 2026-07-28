@@ -204,20 +204,24 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   await page.getByRole('heading', { level: 1, name: 'Power and Influence Map' }).waitFor();
 
   // Select enabler, blocker and safe strategy
-  const enablerCards = page.locator('.m3-power-card-section').nth(0).locator('.m3-power-card');
+  const choiceGroups = page.locator('.m3-oq-choice-group');
+  const enablerCards = choiceGroups.nth(0).locator('.m3-oq-choice');
   assert.ok(await enablerCards.count() >= 3);
   await enablerCards.first().click();
 
-  const blockerCards = page.locator('.m3-power-card-section').nth(1).locator('.m3-power-card');
+  const blockerCards = choiceGroups.nth(1).locator('.m3-oq-choice');
   assert.ok(await blockerCards.count() >= 3);
   await blockerCards.first().click();
 
-  const strategyCards = page.locator('.m3-power-card-section').nth(2).locator('.m3-power-card');
+  const strategyCards = choiceGroups.nth(2).locator('.m3-oq-choice');
   assert.ok(await strategyCards.count() >= 3);
   await strategyCards.first().click();
 
-  // Verify summary card appears
-  await page.getByRole('heading', { name: 'Mapped Strategy Insight' }).waitFor();
+  // Verify the substantive actor map and equivalent list appear after Generate
+  await page.getByTestId('m3-oq-generate').click();
+  await page.getByRole('heading', { name: 'Actor and Power Insight' }).waitFor();
+  assert.ok(await page.locator('.m3-oq-actor-node').count() >= 6);
+  assert.ok(await page.locator('.m3-oq-actor-list article').count() >= 6);
   await screenshot(page, 'screen-09-practice-desktop.png');
 
   // Screen 9 responsive check
@@ -228,7 +232,7 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   await page.setViewportSize({ width: 1440, height: 1000 });
 
   // Save and navigate to Screen 10
-  const screen9Continue = page.locator('button.m3-primary-button');
+  const screen9Continue = page.getByTestId('m3-oq-continue');
   assert.equal(await screen9Continue.getAttribute('disabled'), null);
   await screen9Continue.click();
   await page.waitForURL(/\/module-3\/screen-3-10$/);
@@ -294,7 +298,7 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   }
   await seedModule3(page, 'M3-R07', 6);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-7`);
-  const screen7Contrast = await getTextContrastRatio(page, '.m3-rights-header');
+  const screen7Contrast = await getTextContrastRatio(page, '.m3-rights-map-header');
   assert.ok(screen7Contrast >= 4.5, `Screen 7 header contrast was ${screen7Contrast.toFixed(2)}:1.`);
   t.diagnostic(`Screen 7 header text contrast: ${screen7Contrast.toFixed(2)}:1.`);
 

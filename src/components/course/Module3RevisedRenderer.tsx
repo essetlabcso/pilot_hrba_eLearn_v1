@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- legacy payload builders and renderers are intentionally colocated pending the approved batch refactor */
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 import type { LearningState } from '../../state/learningState';
@@ -9,6 +10,13 @@ import {
   type Module3RevisedScreen,
 } from '../../data/module3/module3RevisedScreens';
 import './module3-revised.css';
+import {
+  CompatibilityIntegratedScreen,
+  ContextInsightPrototype,
+  ParticipationPathwayPrototype,
+  PowerInfluencePrototype,
+  RepairedDesignPrototype,
+} from './Module3OutputQualityPrototypes';
 
 type Module3RevisedRendererProps = {
   screenId: string;
@@ -8133,7 +8141,7 @@ export function IntroVideoScaffold({
   onComplete: () => void;
 }) {
   const savedScreen1 = getPracticeState(state, screen.id);
-  const [_videoWatched, setVideoWatched] = useState(Boolean(savedScreen1.videoWatched || savedScreen1.skipped));
+  const [, setVideoWatched] = useState(Boolean(savedScreen1.videoWatched || savedScreen1.skipped));
   const [transcriptOpen, setTranscriptOpen] = useState(false);
   const titleId = screen.id + '-title';
 
@@ -8236,11 +8244,9 @@ export function IntroVideoScaffold({
   );
 }
 
-/* The JSX detail branch passes React state (not a ref) through card navigation callbacks. */
-/* eslint-disable react-hooks/refs */
 export function LearningRoadmapScreen({
   screen,
-  state: _state,
+  state,
   onChangeState,
   onComplete,
 }: {
@@ -8249,6 +8255,7 @@ export function LearningRoadmapScreen({
   onChangeState: (updater: (prev: LearningState) => LearningState) => void;
   onComplete: () => void;
 }) {
+  void state;
   const titleId = screen.id + '-title';
 
   const handleStart = () => {
@@ -8309,8 +8316,6 @@ export function LearningRoadmapScreen({
     </main>
   );
 }
-/* eslint-enable react-hooks/refs */
-
 function TextScaffold({
   screen,
   onComplete,
@@ -11896,7 +11901,11 @@ function ObjectiveRepairScreen({
 
   const strongObjective = 'Strengthen Jiru Amba service-improvement decisions so women traders, persons with disabilities, youth, and remote kebele residents can access information, influence priorities, receive responses, and benefit from safer, more accountable services.';
 
-  const savedAny = savedScreen14 as Record<string, any>;
+  const savedAny = savedScreen14 as {
+    repairedObjective?: { repairedHrbaObjective?: string };
+    repairedActivityPackage?: { generatedSummary?: string };
+    designRepairPackage?: { implementationWatchPoint?: string };
+  };
 
   const [selectedObjective, setSelectedObjective] = useState<string>(
     savedElement?.repairedHrbaObjective || savedAny?.repairedObjective?.repairedHrbaObjective || ''
@@ -15678,6 +15687,17 @@ function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
 }
 
 export default function Module3RevisedRenderer({ screenId, state, onChangeState }: Module3RevisedRendererProps) {
+  // Retain the former implementations as readable legacy-state references without routing
+  // learners into their obsolete workflows.
+  void ContextInequalityScanScreen;
+  void PowerInfluenceMapScreen;
+  void ParticipationAccountabilityPathwayScreen;
+  void ObjectiveRepairScreen;
+  void ActivityRepairScreen;
+  void InterventionLogicIndicatorsScreen;
+  void ProposalGapMapScreen;
+  void ProposalSectionRepairScreen;
+
   const screen = getModule3RevisedScreen(screenId);
 
   if (!screen) {
@@ -15694,16 +15714,12 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   const completed = (state.screenProgress[MODULE_ID] || []).includes(screen.id);
   const onComplete = (value?: Record<string, unknown>) => completeScreen(screen, onChangeState, value);
 
+  if (screen.hiddenFromLearnerSequence && ['M3-R15', 'M3-R16', 'M3-R18', 'M3-R19'].includes(screen.id)) {
+    return <CompatibilityIntegratedScreen screen={screen} />;
+  }
+
   if (screen.id === 'M3-R01' || screen.interactionType === 'video') {
     return <IntroVideoScaffold screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
-  }
-
-  if (screen.id === 'M3-R15') {
-    return <ActivityRepairScreen screen={screen} state={state} onComplete={onComplete} />;
-  }
-
-  if (screen.id === 'M3-R16') {
-    return <InterventionLogicIndicatorsScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.interactionType === 'text') {
@@ -15727,7 +15743,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R05') {
-    return <ContextInequalityScanScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <ContextInsightPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R06') {
@@ -15743,7 +15759,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R09') {
-    return <PowerInfluenceMapScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <PowerInfluencePrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R10') {
@@ -15755,7 +15771,7 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R12') {
-    return <ParticipationAccountabilityPathwayScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <ParticipationPathwayPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R13') {
@@ -15763,19 +15779,11 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R14') {
-    return <ObjectiveRepairScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <RepairedDesignPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R17') {
     return <IntegratedDraftPlanReviewScreen screen={screen} state={state} onComplete={onComplete} />;
-  }
-
-  if (screen.id === 'M3-R18') {
-    return <ProposalGapMapScreen screen={screen} state={state} onComplete={onComplete} />;
-  }
-
-  if (screen.id === 'M3-R19') {
-    return <ProposalSectionRepairScreen screen={screen} state={state} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R20') {

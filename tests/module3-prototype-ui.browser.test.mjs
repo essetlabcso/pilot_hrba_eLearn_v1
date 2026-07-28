@@ -91,8 +91,9 @@ test('Module 3 Prototype UI browser-level verification across viewports', async 
       const legacyTabs = await page.locator('.m3-context-stage-tab').count();
       assert.equal(legacyTabs, 0, `Screen 5 must not render legacy 6-stage tabs at ${viewport.width}x${viewport.height}`);
 
-      // Stage 1 context choice cards must render
-      const choiceCards = page.locator('.m3-context-choice-card');
+      // Accessible context choice cards must render
+      const factorGroup = page.locator('.m3-oq-choice-group').first();
+      const choiceCards = factorGroup.locator('.m3-oq-choice');
       const count = await choiceCards.count();
       assert.ok(count >= 4, 'Screen 5 context factor cards must render');
 
@@ -100,25 +101,14 @@ test('Module 3 Prototype UI browser-level verification across viewports', async 
       await choiceCards.nth(0).click();
       await choiceCards.nth(1).click();
 
-      // Click Continue to Stage 2
-      const continueBtn1 = page.locator('button', { hasText: 'Continue to Stage 2' });
-      await continueBtn1.click();
+      // Select affected group without an extra stage gate
+      const groupCards = page.locator('.m3-oq-choice-group').nth(1).locator('.m3-oq-choice');
+      await groupCards.first().click();
 
-      // Verify collapsed Stage 1 summary card and Edit Stage 1 button
-      const collapsedSummary = page.locator('.m3-collapsed-stage-summary');
-      await collapsedSummary.waitFor({ timeout: 3000 });
-      const summaryText = await collapsedSummary.textContent();
-      assert.ok(summaryText.includes('Stage 1 Complete'), 'Collapsed Stage 1 summary must render');
-
-      // Select Stage 2 affected group
-      const groupCards = page.locator('.m3-context-choice-card');
-      await groupCards.nth(0).click();
-
-      // Verify generated inequality insight
-      const insightCard = page.locator('.m3-generated-insight-card');
+      await page.getByTestId('m3-oq-generate').click();
+      const insightCard = page.locator('.m3-oq-context-output');
       await insightCard.waitFor({ timeout: 3000 });
-      const insightText = await insightCard.textContent();
-      assert.ok(insightText.includes('In Jiru Amba'), 'Dynamic inequality gap insight must render');
+      assert.equal(await insightCard.locator('.m3-oq-chain__item').count(), 5);
     }
 
     // 2. Verify Screen 9 UI (Power & Influence Map)
@@ -131,32 +121,26 @@ test('Module 3 Prototype UI browser-level verification across viewports', async 
     const s9HeadingText = await s9Heading.textContent().catch(() => '');
 
     if (s9HeadingText.includes('Power')) {
-      // Legacy 3x3 matrix grid must NOT render
-      const matrixCount = await page.locator('.m3-power-studio-quadrant-frame').count();
-      assert.equal(matrixCount, 0, `Screen 9 3x3 matrix grid must not render at ${viewport.width}x${viewport.height}`);
-
-      // 3 strategy-card sections must render
-      const strategySections = page.locator('.m3-power-card-section');
+      // Three concise strategy groups must render
+      const strategySections = page.locator('.m3-oq-choice-group');
       const sectionCount = await strategySections.count();
       assert.equal(sectionCount, 3, 'Screen 9 must render exactly 3 strategy card sections');
 
       // Select enabler card
-      const enablerCards = strategySections.nth(0).locator('.m3-power-card');
+      const enablerCards = strategySections.nth(0).locator('.m3-oq-choice');
       await enablerCards.nth(0).click();
 
       // Select blocker card
-      const blockerCards = strategySections.nth(1).locator('.m3-power-card');
+      const blockerCards = strategySections.nth(1).locator('.m3-oq-choice');
       await blockerCards.nth(0).click();
 
       // Select safe influence strategy card
-      const safeCards = strategySections.nth(2).locator('.m3-power-card');
+      const safeCards = strategySections.nth(2).locator('.m3-oq-choice');
       await safeCards.nth(0).click();
 
-      // Verify mapped influence insight summary card
-      const summaryCard = page.locator('.m3-power-summary-card');
-      await summaryCard.waitFor({ timeout: 3000 });
-      const summaryText = await summaryCard.textContent();
-      assert.ok(summaryText.includes('Mapped Strategy Insight'), 'Screen 9 strategy insight summary must render');
+      await page.getByTestId('m3-oq-generate').click();
+      assert.ok(await page.locator('.m3-oq-actor-node').count() >= 6);
+      assert.ok(await page.locator('.m3-oq-actor-list article').count() >= 6);
     }
 
     // 3. Verify Screen 14 UI (Objective Repair)
@@ -173,35 +157,15 @@ test('Module 3 Prototype UI browser-level verification across viewports', async 
       const studioStages = await page.locator('.m3-design-repair-stage-button').count();
       assert.equal(studioStages, 0, `Screen 14 8-stage studio must not render at ${viewport.width}x${viewport.height}`);
 
-      // Side-by-side comparison card must render
-      const comparisonCard = page.locator('.m3-comparison-card');
-      const compCount = await comparisonCard.count();
-      assert.equal(compCount, 1, 'Screen 14 side-by-side comparison card must render');
-
-      // Select Step 1 objective
-      const step1Options = page.locator('.m3-repair-option-card');
-      await step1Options.nth(0).click();
-
-      // Continue to Step 2
-      const step1Btn = page.locator('button', { hasText: 'Continue to Step 2' });
-      await step1Btn.click();
-
-      // Select Step 2 activity
-      const step2Options = page.locator('.m3-repair-option-card');
-      await step2Options.nth(0).click();
-
-      // Continue to Step 3
-      const step2Btn = page.locator('button', { hasText: 'Continue to Step 3' });
-      await step2Btn.click();
-
-      // Select Step 3 watch-point
-      const step3Options = page.locator('.m3-repair-option-card');
-      await step3Options.nth(0).click();
-
-      // Verify Continue button is enabled
-      const finalContinue = page.locator('button.m3-primary-button');
-      const isDisabled = await finalContinue.getAttribute('disabled');
-      assert.equal(isDisabled, null, 'Screen 14 Continue button must be enabled when all 3 steps are complete');
+      const repairGroups = page.locator('.m3-oq-choice-group');
+      assert.equal(await repairGroups.count(), 3);
+      for (let index = 0; index < 3; index += 1) {
+        await repairGroups.nth(index).locator('.m3-oq-choice').first().click();
+      }
+      assert.equal(await page.getByTestId('m3-oq-continue').isDisabled(), true);
+      await page.getByTestId('m3-oq-generate').click();
+      assert.equal(await page.locator('.m3-oq-before-after > section').count(), 3);
+      assert.equal(await page.getByTestId('m3-oq-continue').isEnabled(), true);
     }
 
     await context.close();

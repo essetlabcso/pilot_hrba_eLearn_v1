@@ -205,36 +205,32 @@ test('Module 3 M3-A preserves workflow while fixing Screen 5 and Screen 11 respo
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-5`);
   await page.getByRole('heading', { level: 1, name: 'Context and Inequality Scan' }).waitFor();
 
-  // Stage 1: Select 2 context factors
-  await page.getByRole('heading', { name: 'Stage 1: Select priority context factors' }).waitFor();
-  const contextCards = page.locator('.m3-context-choice-card');
+  // Select two context factors and one affected group without an extra stage gate
+  const contextCards = page.locator('.m3-oq-choice-group').first().locator('.m3-oq-choice');
   assert.ok(await contextCards.count() >= 4);
   await contextCards.nth(0).click();
   await contextCards.nth(1).click();
 
-  // Advance to Stage 2
-  await page.getByRole('button', { name: 'Continue to Stage 2' }).click();
-
-  // Stage 2: Select affected group
-  await page.getByRole('heading', { name: /Stage 2.*Select primary affected group/ }).waitFor();
-  const groupCards = page.locator('.m3-context-choice-card');
+  const groupCards = page.locator('.m3-oq-choice-group').nth(1).locator('.m3-oq-choice');
   await groupCards.first().click();
 
-  // Verify generated insight appears
-  await page.getByRole('heading', { name: 'Generated Context & Inequality Insight' }).waitFor();
-  const insightText = await page.locator('.m3-insight-statement').textContent();
-  assert.ok(insightText.includes('Jiru Amba'));
+  // Verify the generated structured insight appears only after Generate
+  assert.equal(await page.locator('.m3-oq-output').count(), 0);
+  await page.getByTestId('m3-oq-generate').click();
+  await page.getByRole('heading', { name: 'Context and Inequality Insight' }).waitFor();
+  assert.equal(await page.locator('.m3-oq-chain__item').count(), 5);
 
   await screenshot(page, 'screen-05-practice-desktop.png');
   await assertNoHorizontalOverflow(page, 'Screen 5 desktop Practice');
 
   // Save and continue to Screen 6
-  await page.getByRole('button', { name: /Save scan and continue/ }).click();
+  await page.getByTestId('m3-oq-continue').click();
   await page.waitForURL(/\/module-3\/screen-3-6$/);
 
-  // Verify persistence: return to Screen 5 and check collapsed Stage 1 summary
+  // Verify persistence: return to Screen 5 and restore the generated output
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-5`);
   await page.getByRole('heading', { level: 1, name: 'Context and Inequality Scan' }).waitFor();
+  await page.getByRole('heading', { name: 'Context and Inequality Insight' }).waitFor();
 
 
   await seedModule3(page, 'M3-R11', 10);
