@@ -165,22 +165,15 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   await seedModule3(page, 'M3-R08', 7);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-8`);
   await page.getByRole('heading', { level: 1, name: 'Duty-Bearers, Supporting Actors, and CSO Roles' }).waitFor();
-  // Screen 8: Select duty-bearers, supporting actor and CSO role
-  const dutyBearerTiles = page.locator('.m3-actor-section-card').first().locator('.m3-actor-tile');
-  assert.ok(await dutyBearerTiles.count() >= 2);
-  await dutyBearerTiles.first().click();
-
-  const supportTiles = page.locator('.m3-actor-section-card').nth(1).locator('.m3-actor-tile');
-  assert.ok(await supportTiles.count() >= 2);
-  await supportTiles.first().click();
-
-  const csoTiles = page.locator('.m3-actor-section-card').nth(2).locator('.m3-actor-tile');
-  assert.ok(await csoTiles.count() >= 2);
-  await csoTiles.first().click();
-
-  // Continue should be enabled with all selections made
-  const screen8Continue = page.locator('button.m3-primary-button');
-  assert.equal(await screen8Continue.getAttribute('disabled'), null);
+  // Screen 8: revised Batch 1 starts empty and requires three distinct actor decisions.
+  const screen8Continue = page.getByTestId('m3-b1-continue');
+  assert.equal(await screen8Continue.isDisabled(), true);
+  await page.locator('input[name="m3-r08-primary"]').first().check();
+  await page.locator('input[name="m3-r08-supporting"]').first().check();
+  await page.locator('input[name="m3-r08-cso"]').first().check();
+  await page.getByTestId('m3-b1-generate').click();
+  await page.getByRole('heading', { name: 'Actor Responsibility and Relationship Map' }).waitFor();
+  assert.equal(await screen8Continue.isEnabled(), true);
   await screenshot(page, 'screen-08-practice-desktop.png');
 
   // Screen 8 responsive check
@@ -197,6 +190,7 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   // Verify persistence: return to Screen 8
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-8`);
   await page.getByRole('heading', { level: 1, name: 'Duty-Bearers, Supporting Actors, and CSO Roles' }).waitFor();
+  await page.getByRole('heading', { name: 'Actor Responsibility and Relationship Map' }).waitFor();
 
   // Navigate to Screen 9
   await seedModule3(page, 'M3-R09', 8);
@@ -298,7 +292,7 @@ test('Module 3 M3-B keeps Screens 8 and 9 complete, responsive and persistent', 
   }
   await seedModule3(page, 'M3-R07', 6);
   await page.goto(`${APP_ORIGIN}/module-3/screen-3-7`);
-  const screen7Contrast = await getTextContrastRatio(page, '.m3-rights-map-header');
+  const screen7Contrast = await getTextContrastRatio(page, '.m3-oq-heading');
   assert.ok(screen7Contrast >= 4.5, `Screen 7 header contrast was ${screen7Contrast.toFixed(2)}:1.`);
   t.diagnostic(`Screen 7 header text contrast: ${screen7Contrast.toFixed(2)}:1.`);
 

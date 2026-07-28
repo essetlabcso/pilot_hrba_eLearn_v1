@@ -318,6 +318,282 @@
   box-sizing: border-box;
 }
 
+.m3-b1-roadmap-destinations,
+.m3-b1-plan-areas {
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  border: 1px solid #b8cbd3;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.m3-b1-roadmap-destinations h2,
+.m3-b1-plan-areas h2 {
+  margin: 0 0 0.8rem;
+  color: #15384e;
+}
+
+.m3-b1-roadmap-destinations ol,
+.m3-b1-plan-areas ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.m3-b1-roadmap-destinations li,
+.m3-b1-plan-areas li {
+  min-width: 0;
+  padding: 0.45rem 0.6rem;
+  color: #294a5c;
+  line-height: 1.5;
+}
+
+.m3-b1-portfolio-preview {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m3-b1-portfolio-preview .m3-snapshot-card {
+  position: relative;
+  min-width: 0;
+  padding-top: 3.8rem;
+  background: #fff;
+}
+
+.m3-b1-portfolio-icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #173a52;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.m3-b1-portfolio-number {
+  margin: 0 0 0.35rem !important;
+  color: #156d67 !important;
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.m3-b1-match + .m3-b1-match {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #d4e0e5;
+}
+
+.m3-b1-match .m3-oq-choice-group {
+  margin-bottom: 0.65rem;
+}
+
+.m3-b1-inline-feedback {
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border-left: 4px solid #b25c39;
+  border-radius: 0.45rem;
+  background: #fff3ed;
+  color: #693119;
+  font-weight: 700;
+}
+
+.m3-b1-inline-feedback.is-correct {
+  border-left-color: #16715c;
+  background: #e8f6f0;
+  color: #164f42;
+}
+
+.m3-b1-field-hint {
+  margin: -0.25rem 0 0.75rem;
+  color: #4d6878;
+}
+
+.m3-b1-output-rows,
+.m3-b1-relationship-list,
+.m3-b1-actor-constellation {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m3-b1-output-rows > li,
+.m3-b1-relationship-list > li,
+.m3-b1-actor-constellation > li {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #b8cbd3;
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.m3-b1-output-rows h3,
+.m3-b1-relationship-list h3 {
+  margin: 0 0 0.75rem;
+  color: #173a52;
+}
+
+.m3-b1-output-rows dl,
+.m3-b1-relationship-list dl,
+.m3-b1-actor-implications {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.m3-b1-output-rows dl {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.m3-b1-output-rows dl > div,
+.m3-b1-relationship-list dl > div,
+.m3-b1-actor-implications > div {
+  min-width: 0;
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  background: #f4f8f9;
+}
+
+.m3-b1-output-rows dt,
+.m3-b1-relationship-list dt,
+.m3-b1-actor-implications dt {
+  color: #166d66;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.m3-b1-output-rows dd,
+.m3-b1-relationship-list dd,
+.m3-b1-actor-implications dd {
+  margin: 0.35rem 0 0;
+  color: #294a5c;
+  line-height: 1.5;
+}
+
+.m3-b1-relationship-flow {
+  display: grid;
+  grid-template-columns: repeat(7, auto);
+  gap: 0.45rem;
+  align-items: center;
+  justify-content: start;
+  margin: 0 0 0.8rem;
+  color: #36586a;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.m3-b1-relationship-flow span {
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: #e7f2f4;
+}
+
+.m3-b1-actor-constellation {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.m3-b1-actor-constellation > li {
+  display: grid;
+  gap: 0.45rem;
+  border-top-width: 5px;
+}
+
+.m3-b1-actor-constellation > li strong {
+  color: #173a52;
+}
+
+.m3-b1-actor-constellation > li span {
+  color: #3a5969;
+  line-height: 1.5;
+}
+
+.m3-b1-actor-constellation .is-rights-holder {
+  border-top-color: #7a5aa4;
+}
+
+.m3-b1-actor-constellation .is-duty-bearer {
+  border-top-color: #1e6f98;
+}
+
+.m3-b1-actor-constellation .is-supporting {
+  border-top-color: #ad7418;
+}
+
+.m3-b1-actor-constellation .is-cso {
+  border-top-color: #16715c;
+}
+
+.m3-b1-actor-implications {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0.9rem;
+}
+
+.m3-b1-output-rows :is(p, li, dd, dt, span, strong),
+.m3-b1-relationship-list :is(p, li, dd, dt, span, strong),
+.m3-b1-actor-output :is(p, li, dd, dt, span, strong) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.main-screen-canvas__content:has(.m3-oq-screen) .m3-oq-screen :is(p, li, dd, dt, span, strong, small, em, legend, label) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.main-screen-canvas__content:has(.m3-screen) .m3-screen:is(.m3-orientation-screen, .m3-roadmap-screen, .m3-case-screen, .m3-snapshot-screen) :is(p, li, dd, dt, span, strong, small, em, legend, label) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
+
+@container m3-output-quality (max-width: 52rem) {
+  .m3-oq-chain {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-oq-chain__arrow {
+    top: auto;
+    right: auto;
+    bottom: -0.7rem;
+    left: 50%;
+    transform: translateX(-50%) rotate(90deg);
+  }
+
+  .m3-b1-output-rows dl,
+  .m3-b1-actor-constellation,
+  .m3-b1-actor-implications {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-b1-relationship-flow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m3-b1-relationship-flow b {
+    transform: rotate(90deg);
+    transform-origin: center;
+  }
+}
+
+@media (max-width: 700px) {
+  .m3-b1-roadmap-destinations ol,
+  .m3-b1-plan-areas ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .m3-oq-heading {
   position: relative;
   z-index: 1;

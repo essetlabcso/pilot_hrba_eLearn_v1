@@ -17,6 +17,11 @@ import {
   PowerInfluencePrototype,
   RepairedDesignPrototype,
 } from './Module3OutputQualityPrototypes';
+import {
+  ActorResponsibilityOutputScreen,
+  RightsHolderBarrierOutputScreen,
+  StandardsPracticeMapScreen,
+} from './Module3Batch1OutputQuality';
 
 type Module3RevisedRendererProps = {
   screenId: string;
@@ -8141,24 +8146,25 @@ export function IntroVideoScaffold({
   onComplete: () => void;
 }) {
   const savedScreen1 = getPracticeState(state, screen.id);
-  const [, setVideoWatched] = useState(Boolean(savedScreen1.videoWatched || savedScreen1.skipped));
+  const [videoSkipped, setVideoSkipped] = useState(Boolean(savedScreen1.skipped));
   const [transcriptOpen, setTranscriptOpen] = useState(false);
   const titleId = screen.id + '-title';
 
-  const markComplete = (skipped = false) => {
-    setVideoWatched(true);
+  const skipVideo = () => {
+    setVideoSkipped(true);
     onChangeState((prev) => ({
       ...prev,
       practiceCheckState: {
         ...prev.practiceCheckState,
         [practiceKey(screen.id)]: {
           ...getPracticeState(prev, screen.id),
-          submitted: true,
-          videoWatched: true,
-          skipped,
+          skipped: true,
         },
       },
     }));
+  };
+
+  const markComplete = () => {
     onComplete();
   };
 
@@ -8214,9 +8220,10 @@ export function IntroVideoScaffold({
             <button
               type="button"
               className="m3-secondary-button"
-              onClick={() => markComplete(true)}
+              onClick={skipVideo}
+              disabled={videoSkipped}
             >
-              Skip to Roadmap
+              {videoSkipped ? 'Video skipped — continue below' : 'Skip video'}
             </button>
           </div>
 
@@ -8234,7 +8241,7 @@ export function IntroVideoScaffold({
           <button
             type="button"
             className="m3-primary-button"
-            onClick={() => markComplete(false)}
+            onClick={markComplete}
           >
             {screen.continueLabel}
           </button>
@@ -8288,13 +8295,13 @@ export function LearningRoadmapScreen({
         <div className="m3-roadmap-pathway-grid">
           <article className="m3-roadmap-card">
             <span className="m3-step-number" aria-hidden="true">1</span>
-            <h3>Analyze context, rights and responsibilities</h3>
-            <p>Examine local barriers, public institution roles, and power relations in Jiru Amba.</p>
+            <h3>Analyze the context, rights, actors, and power</h3>
+            <p>Examine local barriers, applicable standards, public responsibilities, supporting influence, and power relations in Jiru Amba.</p>
           </article>
           <article className="m3-roadmap-card">
             <span className="m3-step-number" aria-hidden="true">2</span>
-            <h3>Improve project design choices</h3>
-            <p>Connect identified barriers to concrete inclusion, participation, and risk mitigation actions.</p>
+            <h3>Improve participation, safety, and project design</h3>
+            <p>Connect identified barriers to concrete inclusion, participation, accountability, accessibility, and risk safeguards.</p>
           </article>
           <article className="m3-roadmap-card">
             <span className="m3-step-number" aria-hidden="true">3</span>
@@ -8302,6 +8309,16 @@ export function LearningRoadmapScreen({
             <p>Turn weak objectives and activities into a portfolio-ready HRBA project design snapshot.</p>
           </article>
         </div>
+
+        <section className="m3-b1-roadmap-destinations" aria-labelledby={`${screen.id}-destinations`}>
+          <h2 id={`${screen.id}-destinations`}>Four cumulative portfolio products</h2>
+          <ol>
+            <li>Context and Inequality Insight</li>
+            <li>Actor and Power Insight</li>
+            <li>Repaired Project-Design Element</li>
+            <li>Proposal-Review Insight</li>
+          </ol>
+        </section>
 
         <div className="m3-roadmap-actions">
           <button
@@ -8420,6 +8437,17 @@ export function CaseIntroductionScreen({
           </article>
         </div>
 
+        <section className="m3-b1-plan-areas" aria-labelledby={`${screen.id}-plan-areas`}>
+          <h2 id={`${screen.id}-plan-areas`}>Five connected plan areas</h2>
+          <ul>
+            <li><strong>Market infrastructure:</strong> safer, less crowded trading space and sanitation.</li>
+            <li><strong>Public water services:</strong> more reliable access and fair priority-setting.</li>
+            <li><strong>Youth livelihoods:</strong> transparent and inclusive training access.</li>
+            <li><strong>Health-post renovation:</strong> accessible facilities, information, and accommodation.</li>
+            <li><strong>Participation and feedback:</strong> early influence, response, and follow-up across the plan.</li>
+          </ul>
+        </section>
+
         <div className="m3-case-facts-disclosure">
           <button
             type="button"
@@ -8466,10 +8494,10 @@ export function SnapshotPreviewScreen({
   const titleId = screen.id + '-title';
 
   const outputs = [
-    { title: '1. Context and Inequality Insight', desc: 'Identifies priority context factors and affected groups.' },
-    { title: '2. Actor and Power Insight', desc: 'Maps change enablers, blockers, and safe influence strategies.' },
-    { title: '3. Repaired Project-Design Element', desc: 'Links revised objectives to activities and watch-points.' },
-    { title: '4. Proposal-Review Insight', desc: 'Summarizes key design fixes for proposal implementation.' },
+    { icon: '◎', title: 'Context and Inequality Insight', structure: 'Evidence → pattern → effect → issue to verify → design implication', use: 'Sets the priority context and inequality problem for later decisions.' },
+    { icon: '↔', title: 'Actor and Power Insight', structure: 'Rights-holders → responsibility → influence → safe engagement strategy', use: 'Clarifies who should act and how decision influence can change.' },
+    { icon: '✓', title: 'Repaired Project-Design Element', structure: 'Original weakness → repaired design → HRBA reasoning', use: 'Turns the analysis into a practical objective, activity, and watch-point.' },
+    { icon: '▣', title: 'Proposal-Review Insight', structure: 'Priority gap → repair → implementation follow-up', use: 'Supports proposal review and preparation for implementation.' },
   ];
 
   return (
@@ -8483,14 +8511,17 @@ export function SnapshotPreviewScreen({
           </p>
         </header>
 
-        <div className="m3-snapshot-preview-grid">
+        <ol className="m3-snapshot-preview-grid m3-b1-portfolio-preview">
           {outputs.map((item, idx) => (
-            <article key={idx} className="m3-snapshot-card">
+            <li key={item.title} className="m3-snapshot-card">
+              <span className="m3-b1-portfolio-icon" aria-hidden="true">{item.icon}</span>
+              <p className="m3-b1-portfolio-number">PORTFOLIO PRODUCT {idx + 1}</p>
               <h2>{item.title}</h2>
-              <p>{item.desc}</p>
-            </article>
+              <p><strong>Structure:</strong> {item.structure}</p>
+              <p><strong>Later use:</strong> {item.use}</p>
+            </li>
           ))}
-        </div>
+        </ol>
 
         <div className="m3-snapshot-actions">
           <button
@@ -15747,15 +15778,15 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R06') {
-    return <PolicyStandardsMapScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <StandardsPracticeMapScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R07') {
-    return <RightsHolderBarrierMapScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <RightsHolderBarrierOutputScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R08') {
-    return <ResponsibilityMapScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <ActorResponsibilityOutputScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R09') {

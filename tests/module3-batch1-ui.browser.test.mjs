@@ -82,7 +82,7 @@ test('Module 3 Batch 1 (Screens 1-8) browser UI verification across viewports', 
     // 1. Verify Screen 1 (Orientation Video & Takeaways)
     await seedModule3(page, 'M3-R01', 0);
     await page.goto(`${APP_ORIGIN}/module-3/screen-3-1`);
-    const skipBtn = page.locator('button', { hasText: 'Skip to Roadmap' });
+    const skipBtn = page.locator('button', { hasText: 'Skip video' });
     await skipBtn.waitFor({ timeout: 5000 });
     assert.ok(await skipBtn.isVisible(), `Screen 1 Skip button must be visible at ${viewport.width}x${viewport.height}`);
 
@@ -110,37 +110,35 @@ test('Module 3 Batch 1 (Screens 1-8) browser UI verification across viewports', 
     // 5. Verify Screen 6 (Policy and Standards Map — 3-match activity)
     await seedModule3(page, 'M3-R06', 5);
     await page.goto(`${APP_ORIGIN}/module-3/screen-3-6`);
-    const s6Selects = page.locator('.m3-matching-card select');
-    await s6Selects.nth(0).waitFor({ timeout: 5000 });
-    await s6Selects.nth(0).selectOption('access-barriers');
-    await s6Selects.nth(1).selectOption('influence-not-headcount');
-    await s6Selects.nth(2).selectOption('feedback-response');
-
-    const s6Continue = page.locator('button.m3-primary-button');
-    await s6Continue.waitFor({ timeout: 3000 });
-    assert.equal(await s6Continue.getAttribute('disabled'), null, 'Screen 6 Continue button must be enabled when 3 matches are complete');
+    await page.locator('input[name="m3-r06-non-discrimination"][value="unequal-access"]').check();
+    await page.locator('input[name="m3-r06-participation"][value="influence-before-decision"]').check();
+    await page.locator('input[name="m3-r06-accountability"][value="response-explanation"]').check();
+    await page.getByTestId('m3-b1-generate').click();
+    const s6Continue = page.getByTestId('m3-b1-continue');
+    assert.equal(await s6Continue.isEnabled(), true, 'Screen 6 Continue button must be enabled after generating all 3 matches');
 
     // 6. Verify Screen 7 (Rights-Holders and Barriers — 2-part mini practice)
     await seedModule3(page, 'M3-R07', 6);
     await page.goto(`${APP_ORIGIN}/module-3/screen-3-7`);
-    const groupBtns = page.locator('.m3-rights-choice-btn');
-    await groupBtns.nth(0).waitFor({ timeout: 5000 });
-    await groupBtns.nth(0).click();
-    await groupBtns.nth(1).click();
-
-    const barrierSelects = page.locator('.m3-assignment-row select');
-    await barrierSelects.nth(0).waitFor({ timeout: 3000 });
-    await barrierSelects.nth(0).selectOption('access');
-    await barrierSelects.nth(1).selectOption('power');
-
-    const s7Continue = page.locator('button.m3-primary-button');
-    assert.equal(await s7Continue.getAttribute('disabled'), null, 'Screen 7 Continue button must be enabled when 2 groups and 2 barriers are assigned');
+    const groupChecks = page.locator('.m3-oq-choice-group').first().locator('input[type="checkbox"]');
+    await groupChecks.nth(0).check();
+    await groupChecks.nth(1).check();
+    await page.locator('input[name="m3-r07-women-vendors"]').first().check();
+    await page.locator('input[name="m3-r07-remote-residents"]').first().check();
+    await page.getByTestId('m3-b1-generate').click();
+    const s7Continue = page.getByTestId('m3-b1-continue');
+    assert.equal(await s7Continue.isEnabled(), true, 'Screen 7 Continue button must be enabled after generating 2 group-and-barrier relationships');
 
     // 7. Verify Screen 8 (Duty-Bearers, Supporting Actors and CSO Roles)
     await seedModule3(page, 'M3-R08', 7);
-    const s8Continue = page.locator('button.m3-primary-button');
+    const s8Continue = page.getByTestId('m3-b1-continue');
     await s8Continue.waitFor({ timeout: 5000 });
-    assert.equal(await s8Continue.getAttribute('disabled'), null, 'Screen 8 Continue button must be enabled with default valid selections');
+    assert.equal(await s8Continue.isDisabled(), true, 'Screen 8 must not preselect valid answers for a fresh learner');
+    await page.locator('input[name="m3-r08-primary"]').first().check();
+    await page.locator('input[name="m3-r08-supporting"]').first().check();
+    await page.locator('input[name="m3-r08-cso"]').first().check();
+    await page.getByTestId('m3-b1-generate').click();
+    assert.equal(await s8Continue.isEnabled(), true, 'Screen 8 Continue button must be enabled after the required actor decisions are generated');
 
     await context.close();
   }
