@@ -15,21 +15,31 @@ const batch2Renderer = readFileSync(
   'utf8',
 );
 
-test('Screen 5 uses one responsive Generate panel and keeps the snapshot in Review only', () => {
-  const practiceStart = renderer.indexOf('{activeStage === 4 && (', renderer.indexOf('function ContextInequalityScanScreen'));
-  const reviewStart = renderer.indexOf('{activeStage === 5 && (', practiceStart);
-  const applyStart = renderer.indexOf('{activeStage === 6 && (', reviewStart);
-  const practice = renderer.slice(practiceStart, reviewStart);
-  const review = renderer.slice(reviewStart, applyStart);
+test('Screen 5 uses a simplified two-stage flow with context factors and affected group selection', () => {
+  const screenStart = renderer.indexOf('function ContextInequalityScanScreen');
+  const screenEnd = renderer.indexOf('\nexport function PolicyStandardsMapScreen', screenStart);
+  const screen5 = renderer.slice(screenStart, screenEnd > screenStart ? screenEnd : screenStart + 8000);
 
-  assert.equal(practice.includes('<ContextInequalitySnapshot'), false);
-  assert.equal(review.includes('<ContextInequalitySnapshot'), true);
-  assert.equal((renderer.match(/testId="m3-s05-generate-panel"/g) || []).length, 1);
-  assert.equal((practice.match(/renderScanPanel\(\)/g) || []).length, 1);
-  assert.match(renderer, /Include at least one affected-group signal\./);
-  assert.match(renderer, /Include at least one possible-barrier signal\./);
-  assert.match(renderer, /Include at least one safe-evidence signal\./);
-  assert.match(renderer, /Include at least one signal that goes beyond surface activity evidence\./);
+  // Stage 1: context factors with toggle selection
+  assert.ok(screen5.includes('Stage 1: Select priority context factors'));
+  assert.ok(screen5.includes('contextFactorOptions'));
+  assert.ok(screen5.includes('toggleFactor'));
+
+  // Stage 2: affected group with radio-style selection
+  assert.ok(screen5.includes('Stage 2: Select primary affected group'));
+  assert.ok(screen5.includes('affectedGroupOptions'));
+  assert.ok(screen5.includes('selectedAffectedGroup'));
+
+  // Generated insight carries forward
+  assert.ok(screen5.includes('Generated Context & Inequality Insight'));
+  assert.ok(screen5.includes('keyInequalityGap'));
+  assert.ok(screen5.includes('contextInsight'));
+
+  // Save payload preserves backward-compatible structure
+  assert.match(renderer, /contextInequalityScan:/);
+  assert.match(renderer, /contextScanSummary:/);
+  assert.match(renderer, /affectedGroupsToExamine:/);
+  assert.match(renderer, /barriersToTest:/);
 });
 
 test('shared Generate panel exposes only progress, exact remaining work, readiness and one action', () => {
