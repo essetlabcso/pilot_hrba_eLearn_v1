@@ -27,6 +27,12 @@ import {
   RiskDoNoHarmMatrixScreen,
   RootCauseCapacityOutputScreen,
 } from './Module3Batch2OutputQuality';
+import {
+  AppliedKnowledgeCheckOutputScreen,
+  FourProductPortfolioScreen,
+  Module3CompletionScreen,
+  ProposalReviewOutputScreen,
+} from './Module3Batch3OutputQuality';
 
 type Module3RevisedRendererProps = {
   screenId: string;
@@ -15733,6 +15739,10 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   void InterventionLogicIndicatorsScreen;
   void ProposalGapMapScreen;
   void ProposalSectionRepairScreen;
+  void IntegratedDraftPlanReviewScreen;
+  void AppliedKnowledgeCheckScreen;
+  void PortfolioSnapshotScreen;
+  void Module3ClosureScreen;
 
   const screen = getModule3RevisedScreen(screenId);
 
@@ -15819,50 +15829,67 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R17') {
-    return <IntegratedDraftPlanReviewScreen screen={screen} state={state} onComplete={onComplete} />;
+    return <ProposalReviewOutputScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R20') {
-    return <AppliedKnowledgeCheckScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return <AppliedKnowledgeCheckOutputScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
   }
 
   if (screen.id === 'M3-R21') {
     return (
-      <PortfolioSnapshotScreen
+      <FourProductPortfolioScreen
         screen={screen}
         state={state}
         onChangeState={onChangeState}
-        onSaveSnapshot={(snapshot) => {
+        onComplete={onComplete}
+        onEditSource={(sourceScreenId) => {
           onChangeState((prev) => ({
             ...prev,
-            practiceCheckState: {
-              ...prev.practiceCheckState,
-              [practiceKey(screen.id)]: {
-                ...(prev.practiceCheckState[practiceKey(screen.id)] || {}),
-                status: 'saved',
-                savedAt: snapshot.savedAt,
-                snapshotStatus: snapshot.snapshotStatus,
-                sourceSignature: snapshot.sourceSignature,
-                ownCsoNote: snapshot.ownCsoNote,
-                finalSnapshot: snapshot,
-                module3PortfolioSnapshot: snapshot,
-                m3ProjectDesignImprovementSnapshot: snapshot,
-              },
-            },
+            currentModuleId: MODULE_ID,
+            currentScreenId: sourceScreenId,
           }));
+          setRoute(module3RevisedScreenRoutes[sourceScreenId]);
         }}
-        onComplete={onComplete}
       />
     );
   }
 
   if (screen.id === 'M3-R22') {
     return (
-      <Module3ClosureScreen
+      <Module3CompletionScreen
         screen={screen}
         state={state}
         onChangeState={onChangeState}
-        onStartModule4={() => completeScreen(screen, onChangeState, { completed: true, acknowledged: true, module3PortfolioSnapshot: getScreen21SavedSnapshot(state) })}
+        onCompleteModule={() => {
+          onChangeState((prev) => {
+            const progress = new Set(prev.screenProgress[MODULE_ID] || []);
+            progress.add(screen.id);
+            const previous = getPracticeState(prev, screen.id);
+            return {
+              ...prev,
+              currentModuleId: 'module_04_implementation',
+              currentScreenId: 'M4-PLAYER-00',
+              completedModules: prev.completedModules.includes(MODULE_ID) ? prev.completedModules : [...prev.completedModules, MODULE_ID],
+              screenProgress: {
+                ...prev.screenProgress,
+                [MODULE_ID]: Array.from(progress),
+              },
+              practiceCheckState: {
+                ...prev.practiceCheckState,
+                [practiceKey(screen.id)]: {
+                  ...previous,
+                  status: 'completed',
+                  completed: true,
+                  acknowledged: true,
+                  completedAt: typeof previous.completedAt === 'string' ? previous.completedAt : new Date().toISOString(),
+                  module3PortfolioSnapshot: getScreen21SavedSnapshot(prev),
+                },
+              },
+            };
+          });
+          setRoute('/module-4/cover');
+        }}
         onReturnSnapshot={() => {
           onChangeState((prev) => ({
             ...prev,

@@ -1403,10 +1403,14 @@ export function RepairedDesignPrototype({ screen, state, onChangeState, onComple
 export function CompatibilityIntegratedScreen({ screen }: { screen: Module3RevisedScreen }) {
   const target = screen.id === 'M3-R15' || screen.id === 'M3-R16'
     ? '/module-3/screen-3-14'
-    : '/module-3/screen-3-17';
+    : screen.id === 'M3-R19'
+      ? '/module-3/screen-3-20'
+      : '/module-3/screen-3-17';
   const targetTitle = screen.id === 'M3-R15' || screen.id === 'M3-R16'
     ? 'HRBA Project Design Repair'
-    : 'Draft Plan Review and Repair';
+    : screen.id === 'M3-R19'
+      ? 'Applied Knowledge Check'
+      : 'Draft Plan Review and Repair';
   return (
     <main className="m3-screen m3-oq-screen" aria-labelledby={`${screen.id}-title`} data-testid="m3-hidden-compatibility">
       <OutputQualityCanvas labelledBy={`${screen.id}-title`}>
