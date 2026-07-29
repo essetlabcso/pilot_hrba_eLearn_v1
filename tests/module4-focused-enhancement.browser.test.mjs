@@ -90,6 +90,55 @@ async function noHorizontalOverflow(page, label) {
   return widths;
 }
 
+async function assertGeneratedSummaryReflow(page, headingName) {
+  const heading = page.getByRole('heading', { name: headingName });
+  const summary = heading.locator('xpath=ancestor::section[contains(@class, "m4-b2-summary")]');
+  const screen = page.locator('.m4-enhanced-screen');
+
+  const desktop = await summary.evaluate((element) => ({
+    columns: getComputedStyle(element).gridTemplateColumns,
+    firstContentTag: element.children[1]?.firstElementChild?.tagName,
+  }));
+  assert.equal(desktop.columns.split(' ').length, 2, 'summary should retain two readable desktop columns');
+  assert.equal(desktop.firstContentTag, 'H2', 'generated heading must precede generated content');
+
+  await screen.evaluate((element) => {
+    element.style.width = '36rem';
+    element.style.maxWidth = '36rem';
+  });
+
+  const constrained = await summary.evaluate((element) => {
+    const headingElement = element.querySelector('h2');
+    const headingStyle = getComputedStyle(headingElement);
+    return {
+      columns: getComputedStyle(element).gridTemplateColumns,
+      summaryClient: element.clientWidth,
+      summaryScroll: element.scrollWidth,
+      headingWidth: headingElement.getBoundingClientRect().width,
+      headingClient: headingElement.clientWidth,
+      headingScroll: headingElement.scrollWidth,
+      wordBreak: headingStyle.wordBreak,
+      overflowWrap: headingStyle.overflowWrap,
+    };
+  });
+  assert.equal(constrained.columns.split(' ').length, 1, 'constrained generated summary must stack');
+  assert.ok(constrained.headingWidth >= 400, `generated heading width ${constrained.headingWidth}px is too narrow`);
+  assert.ok(constrained.summaryScroll <= constrained.summaryClient + 1, 'generated summary must not scroll horizontally');
+  assert.ok(constrained.headingScroll <= constrained.headingClient + 1, 'generated heading must not overflow');
+  assert.equal(constrained.wordBreak, 'normal');
+  assert.notEqual(constrained.overflowWrap, 'anywhere');
+
+  await screen.evaluate((element) => {
+    element.style.removeProperty('width');
+    element.style.removeProperty('max-width');
+  });
+  assert.equal(
+    (await summary.evaluate((element) => getComputedStyle(element).gridTemplateColumns)).split(' ').length,
+    2,
+    'summary must return to its desktop layout when sufficient width is restored',
+  );
+}
+
 test('focused Module 4 screens reflow and simplified decisions persist', {
   timeout: 180_000,
 }, async (t) => {
@@ -334,6 +383,7 @@ test('focused Module 4 screens reflow and simplified decisions persist', {
   }
   await page.getByRole('button', { name: 'Generate response pathway' }).click();
   await page.getByRole('heading', { name: 'Generated concern-response pathway' }).waitFor();
+  await assertGeneratedSummaryReflow(page, 'Generated concern-response pathway');
   await page.reload();
   await page.getByRole('heading', { name: 'Generated concern-response pathway' }).waitFor();
   const screen8State = await page.evaluate((storageKey) => JSON.parse(localStorage.getItem(storageKey)), STORAGE_KEY);
@@ -371,6 +421,7 @@ test('focused Module 4 screens reflow and simplified decisions persist', {
   }
   await page.getByRole('button', { name: 'Generate responsibility plan' }).click();
   await page.getByRole('heading', { name: 'Generated responsibility and engagement plan' }).waitFor();
+  await assertGeneratedSummaryReflow(page, 'Generated responsibility and engagement plan');
   await page.reload();
   await page.getByRole('heading', { name: 'Generated responsibility and engagement plan' }).waitFor();
   const screen9State = await page.evaluate((storageKey) => JSON.parse(localStorage.getItem(storageKey)), STORAGE_KEY);

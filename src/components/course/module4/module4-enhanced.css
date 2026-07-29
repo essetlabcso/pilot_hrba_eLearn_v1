@@ -2311,3 +2311,15 @@
     word-break: normal;
   }
 }
+
+/*
+ * Generated summaries retain an icon/content grid after the outer workspace
+ * has stacked. Collapse that final grid only when the real Module 4 container
+ * can no longer support readable summary columns at high browser zoom.
+ */
+@container m4-enhanced-screen (max-width: 38rem) {
+  .m4-b2-summary {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
