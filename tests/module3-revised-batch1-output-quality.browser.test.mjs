@@ -172,7 +172,11 @@ test('revised Module 3 Batch 1 is concise, substantive, compatible and responsiv
     await skip.click();
     assert.equal(page.url().endsWith('/module-3/screen-3-1'), true, 'Skip records the choice without competing route completion');
     assert.equal(await page.getByRole('button', { name: 'Video skipped — continue below' }).isDisabled(), true);
-    assert.equal(await page.locator('.m3-video-container-169 iframe').getAttribute('title'), 'Module 3 Orientation Video');
+    assert.equal(await page.locator('.m3-video-container-169 iframe').count(), 0);
+    assert.match(
+      await page.locator('.m3-orientation-media-fallback').innerText(),
+      /Continue with the accessible transcript/,
+    );
 
     await seed(page, 2);
     await capture(page, 'm3-r02-roadmap-desktop');
@@ -189,7 +193,7 @@ test('revised Module 3 Batch 1 is concise, substantive, compatible and responsiv
     await capture(page, 'm3-r03-case-briefing-desktop');
     assert.equal(await page.locator('[role="tab"]').count(), 0);
     assert.equal(await page.locator('.m3-b1-plan-areas li').count(), 5);
-    assert.match(await page.locator('.m3-case-summary-card').first().innerText(), /invited and counted, but not heard/i);
+    assert.match(await page.locator('.m3-case-summary-card').first().innerText(), /invited,\s*counted,\s*but not heard/i);
 
     await seed(page, 4);
     await capture(page, 'm3-r04-portfolio-preview-desktop');

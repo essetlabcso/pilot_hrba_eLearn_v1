@@ -69,6 +69,8 @@ const knowledgeCheckPrompts = [
 export const module3OrientationAssets = {
   videoWatch: 'https://youtu.be/dpZv6wTuSQU',
   videoEmbed: 'https://www.youtube.com/embed/dpZv6wTuSQU',
+  availability: 'unavailable' as 'available' | 'unavailable',
+  unavailableReason: 'The approved orientation video has been removed by its host.',
   guide: '/assets/resources/module-3/module-3-orientation-guide.pdf',
   objectiveBase: '/assets/hrba/modules/module-3/objectives',
 };
@@ -8209,15 +8211,36 @@ export function IntroVideoScaffold({
           </article>
         </div>
 
-        {/* Stable 16:9 Video Wrapper */}
-        <section className="m3-video-section" aria-label="Orientation video">
+        <section className="m3-video-section" aria-labelledby={`${screen.id}-video-title`}>
+          <div className="m3-orientation-media-heading">
+            <div>
+              <p className="m3-card-kicker">Optional orientation</p>
+              <h2 id={`${screen.id}-video-title`}>Watch the introduction or use the transcript</h2>
+            </div>
+            <span>Video optional</span>
+          </div>
           <div className="m3-video-container-169">
-            <iframe
-              src={module3OrientationAssets.videoEmbed}
-              title="Module 3 Orientation Video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+            {module3OrientationAssets.availability === 'available' ? (
+              <iframe
+                src={module3OrientationAssets.videoEmbed}
+                title="Module 3 orientation: applying HRBA in project design"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            ) : (
+              <div className="m3-orientation-media-fallback" role="status" aria-live="polite">
+                <span className="m3-orientation-media-fallback__icon" aria-hidden="true">▶</span>
+                <div>
+                  <p className="m3-card-kicker">Video temporarily unavailable</p>
+                  <h3>Continue with the accessible transcript</h3>
+                  <p>
+                    The optional video cannot be played right now. Read the transcript below or
+                    continue directly to the module roadmap.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           <div className="m3-video-controls-row">
             <button
@@ -8225,6 +8248,7 @@ export function IntroVideoScaffold({
               className="m3-secondary-button"
               onClick={() => setTranscriptOpen((prev) => !prev)}
               aria-expanded={transcriptOpen}
+              aria-controls={`${screen.id}-transcript`}
             >
               {transcriptOpen ? 'Hide transcript' : 'View transcript'}
             </button>
@@ -8239,7 +8263,12 @@ export function IntroVideoScaffold({
           </div>
 
           {transcriptOpen && (
-            <div className="m3-video-transcript-box" role="region" aria-label="Video transcript">
+            <div
+              id={`${screen.id}-transcript`}
+              className="m3-video-transcript-box"
+              role="region"
+              aria-label="Module 3 orientation video transcript"
+            >
               <h3>Intro Video Transcript</h3>
               {module3IntroTranscript.slice(0, 6).map(([speaker, text], idx) => (
                 <p key={idx}><strong>{speaker}:</strong> {text}</p>
@@ -8298,28 +8327,27 @@ export function LearningRoadmapScreen({
           <p className="m3-context-label">{screen.eyebrow}</p>
           <h1 id={titleId}>{screen.title}</h1>
           <p className="m3-roadmap-subtitle">
-            Estimated time: ~15–20 minutes. Practice tools focus on key decision points in project design.
+            Estimated time for this module: approximately 90–105 minutes. Practice tools focus on key decision points in project design.
           </p>
         </header>
 
-        {/* 3 Core Pathway Cards */}
-        <div className="m3-roadmap-pathway-grid">
-          <article className="m3-roadmap-card">
+        <ol className="m3-roadmap-pathway-grid" aria-label="Module 3 learning journey">
+          <li className="m3-roadmap-card">
             <span className="m3-step-number" aria-hidden="true">1</span>
             <h3>Analyze the context, rights, actors, and power</h3>
             <p>Examine local barriers, applicable standards, public responsibilities, supporting influence, and power relations in Jiru Amba.</p>
-          </article>
-          <article className="m3-roadmap-card">
+          </li>
+          <li className="m3-roadmap-card">
             <span className="m3-step-number" aria-hidden="true">2</span>
             <h3>Improve participation, safety, and project design</h3>
             <p>Connect identified barriers to concrete inclusion, participation, accountability, accessibility, and risk safeguards.</p>
-          </article>
-          <article className="m3-roadmap-card">
+          </li>
+          <li className="m3-roadmap-card">
             <span className="m3-step-number" aria-hidden="true">3</span>
             <h3>Review and repair a proposal</h3>
             <p>Turn weak objectives and activities into a portfolio-ready HRBA project design snapshot.</p>
-          </article>
-        </div>
+          </li>
+        </ol>
 
         <section className="m3-b1-roadmap-destinations" aria-labelledby={`${screen.id}-destinations`}>
           <h2 id={`${screen.id}-destinations`}>Four cumulative portfolio products</h2>
@@ -8435,7 +8463,9 @@ export function CaseIntroductionScreen({
             <h2>Case Context: Jiru Amba</h2>
             <p>
               In Jiru Amba, community consultations were held for local market and water infrastructure.
-              However, women vendors and remote rural kebele residents were <em>invited and counted, but not heard</em> in priority decisions.
+              However, women vendors and remote rural kebele residents were{' '}
+              <strong className="m3-case-contradiction">“Invited, Counted, but Not Heard”</strong>{' '}
+              in priority decisions.
             </p>
           </article>
 
@@ -8524,7 +8554,7 @@ export function SnapshotPreviewScreen({
 
         <ol className="m3-snapshot-preview-grid m3-b1-portfolio-preview">
           {outputs.map((item, idx) => (
-            <li key={item.title} className="m3-snapshot-card">
+            <li key={item.title} className={`m3-snapshot-card m3-snapshot-card--${idx + 1}`}>
               <span className="m3-b1-portfolio-icon" aria-hidden="true">{item.icon}</span>
               <p className="m3-b1-portfolio-number">PORTFOLIO PRODUCT {idx + 1}</p>
               <h2>{item.title}</h2>
