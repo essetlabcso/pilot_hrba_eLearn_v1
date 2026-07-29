@@ -140,9 +140,8 @@ test('Batch 2 uses approved assets plus semantic controls and responsive reflow'
   assert.doesNotMatch(css, /overflow-x:\s*auto/);
 });
 
-test('Batch 2 leaves approved Module 4 Screens 2-5 and platform data contracts byte-identical', () => {
+test('Module 4 revisions leave renderer and platform data contracts byte-identical', () => {
   const protectedFiles = [
-    'src/components/course/module4/Module4EnhancedBatch1.tsx',
     'src/components/course/ScreenRenderer.tsx',
     'src/data/finalAssessment.ts',
     'src/integration/hubProgress.ts',

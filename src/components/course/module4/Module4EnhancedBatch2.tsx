@@ -287,11 +287,21 @@ function WorkstreamContext({
   );
 }
 
-function ReviewBanner({ visible }: { visible: boolean }) {
+function ReviewBanner({
+  visible,
+  hasSavedOutput,
+}: {
+  visible: boolean;
+  hasSavedOutput: boolean;
+}) {
   return visible ? (
-    <div className="m4-b2-review" role="alert">
-      <strong>Review required.</strong>
-      <span>Your selected workstream or an upstream decision changed. Reconfirm this workflow before continuing.</span>
+    <div className="m4-b2-review" role={hasSavedOutput ? 'alert' : 'status'} aria-live="polite">
+      <strong>{hasSavedOutput ? 'Review required.' : 'Create your implementation output.'}</strong>
+      <span>
+        {hasSavedOutput
+          ? 'Your earlier output needs review because related information has changed.'
+          : 'Complete this activity to create your implementation output.'}
+      </span>
     </div>
   ) : null;
 }
@@ -447,7 +457,7 @@ function FairAccessScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.decisionSaved} />
           <StagePath
             labels={['Check evidence', 'Choose action', 'Agree follow-up']}
             activeStage={Math.min(stage, 3)}
@@ -664,7 +674,7 @@ function ParticipationScreen({ state, onChangeState }: Props) {
 
   return (
     <Module4EnhancedScreenFrame
-      className="m4-enhanced-screen--batch2"
+      className="m4-enhanced-screen--batch2 m4-enhanced-screen--participation"
       titleId="m4-b2-participation-title"
       eyebrow="Module 4 · Screen 7"
       title="Participation with Real Influence"
@@ -689,7 +699,7 @@ function ParticipationScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.pathwaySaved} />
           <StagePath
             labels={['Open the decision', 'Include relevant voices', 'Make participation workable', 'Explain the outcome']}
             activeStage={Math.min(stage, 4)}
@@ -966,7 +976,7 @@ function FeedbackLoopScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.pathwaySaved} />
           <StagePath
             labels={['Hear the concern', 'Complete the record', 'Assign and respond', 'Explain back', 'Follow up']}
             activeStage={Math.min(stage, 5)}
@@ -1225,8 +1235,228 @@ function FeedbackLoopScreen({ state, onChangeState }: Props) {
   );
 }
 
+function FocusedFeedbackLoopScreen({ state, onChangeState }: Props) {
+  const enhanced = currentEnhancedState(state);
+  const saved = enhanced.batch2.feedbackLoop;
+  const profile = selectedProfile(enhanced);
+  const reviewRequired = enhanced.fields.feedbackAccountBackActions.reviewRequired
+    || enhanced.fields.actorResponsibilities.reviewRequired;
+  const readyToContinue = saved.pathwaySaved && !reviewRequired;
+  const save = (
+    next: Module4Batch2State['feedbackLoop'],
+    fieldUpdater?: (value: Module4EnhancedState) => Module4EnhancedState,
+  ) => saveBatch2Slice(onChangeState, 'feedbackLoop', next, fieldUpdater);
+
+  const accountBackPackage = sameSet(saved.accountBackItems, ['heard', 'change', 'responsible', 'limits', 'update'])
+    ? 'B'
+    : sameSet(saved.accountBackItems, ['heard', 'change'])
+      ? 'A'
+      : sameSet(saved.accountBackItems, ['success'])
+        ? 'C'
+        : '';
+  const followUpPackage = sameSet(saved.followUpPriorities, ['participation', 'deadline'])
+      && saved.followUpTiming === 'next_review'
+    ? 'A'
+    : saved.followUpTiming === 'project_end'
+      ? 'B'
+      : saved.followUpTiming === 'another_concern'
+        ? 'C'
+        : '';
+  const completeChoices = Boolean(
+    saved.responseOwner
+    && saved.responseAction
+    && accountBackPackage
+    && followUpPackage,
+  );
+  const choicesCorrect = saved.responseOwner === 'responsible_supported'
+    && saved.responseAction === 'B'
+    && accountBackPackage === 'B'
+    && followUpPackage === 'A';
+
+  const updateChoices = (patch: Partial<Module4Batch2State['feedbackLoop']>) => save({
+    ...saved,
+    ...patch,
+    followUpFeedback: 'idle',
+    pathwaySaved: false,
+  });
+
+  const generatePathway = () => {
+    if (!completeChoices) return;
+    if (!choicesCorrect) {
+      save({ ...saved, followUpFeedback: 'corrective', pathwaySaved: false });
+      return;
+    }
+    const next: Module4Batch2State['feedbackLoop'] = {
+      ...saved,
+      activeStage: 6,
+      exploredHotspots: concernHotspots.map((hotspot) => hotspot.id),
+      concernParts: ['space', 'information', 'voice'],
+      concernFeedback: 'correct',
+      recordNeeds: ['owner', 'action', 'date', 'account_back'],
+      recordFeedback: 'correct',
+      responseFeedback: 'correct',
+      accountBackFeedback: 'correct',
+      followUpFeedback: 'correct',
+      pathwaySaved: true,
+    };
+    const feedbackActions = {
+      workstream: profile.id,
+      concern: profile.concern,
+      responseOwner: 'Responsible committee or service actor, supported by Awra',
+      response: 'Immediate accessible adjustment and review',
+      accountBack: next.accountBackItems.join('|'),
+      followUp: next.followUpPriorities.join('|'),
+      timing: next.followUpTiming,
+      responsibilityBoundary: 'The responsible actor retains the decision; Awra facilitates accessible review, communication and follow-up.',
+    };
+    const responsibilities = {
+      responsibleActor: 'Responsible committee or service actor',
+      awraRole: 'Facilitate accessible review, communication and follow-up',
+    };
+    save(
+      next,
+      (current) => updateModule4Field(
+        updateModule4Field(current, 'feedbackAccountBackActions', feedbackActions, {
+          learnerEdited: true,
+          sourceScreenId: 'M4-S1-07',
+        }),
+        'actorResponsibilities',
+        responsibilities,
+        { learnerEdited: true, sourceScreenId: 'M4-S1-07' },
+      ),
+    );
+  };
+
+  return (
+    <Module4EnhancedScreenFrame
+      className="m4-enhanced-screen--batch2 m4-focused-practice"
+      titleId="m4-b2-feedback-title"
+      eyebrow="Module 4 · Screen 8"
+      title="Accountable Concern, Response and Follow-Up"
+      introduction={<p>Use the prepared concern record to choose ownership, response, account-back and follow-up decisions.</p>}
+      context={(
+        <WorkstreamContext
+          label={profile.label}
+          assetId={saved.pathwaySaved ? 'm4-s08-account-back-loop' : 'm4-s08-response'}
+          heading="Prepared concern record"
+        >
+          <dl>
+            <div><dt>Concern</dt><dd>{profile.concern}</dd></div>
+            <div><dt>What the scenario confirms</dt><dd>Access, understandable information and opportunities to contribute require a response.</dd></div>
+            <div><dt>What the response record needs</dt><dd>An owner, action, update date and accessible account-back.</dd></div>
+          </dl>
+          <p className="m4-enhanced-inline-note">The scenario supplies the record. Your task is to make four accountable implementation decisions.</p>
+        </WorkstreamContext>
+      )}
+      activity={(
+        <>
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.pathwaySaved} />
+          {saved.pathwaySaved ? (
+            <section
+              className="m4-b2-summary"
+              aria-labelledby="m4-focused-feedback-summary"
+              role="status"
+              aria-live="polite"
+            >
+              <span className="m4-b2-summary__icon" aria-hidden="true">✓</span>
+              <div>
+                <h2 id="m4-focused-feedback-summary">Generated concern-response pathway</h2>
+                <dl className="m4-b2-pathway-summary">
+                  <div><dt>Concern</dt><dd>{profile.concern}</dd></div>
+                  <div><dt>Owner</dt><dd>The responsible actor, supported by Awra.</dd></div>
+                  <div><dt>Response</dt><dd>Make an immediate accessible adjustment and review the decision.</dd></div>
+                  <div><dt>Account-back</dt><dd>Explain what was heard, what will change, responsibility, limits and the next update.</dd></div>
+                  <div><dt>Follow-up</dt><dd>Review participation and the responsible actor’s response after the next workstream meeting.</dd></div>
+                </dl>
+              </div>
+              <Module4EnhancedActionBar
+                secondary={<button type="button" className="m4-enhanced-button is-secondary" onClick={() => save({ ...saved, activeStage: 1, pathwaySaved: false, followUpFeedback: 'idle' })}>Revise decisions</button>}
+                primary={readyToContinue
+                  ? <button type="button" className="m4-enhanced-button is-primary" onClick={() => completeScreen('M4-S1-07', onChangeState)}>Continue →</button>
+                  : <button type="button" className="m4-enhanced-button is-primary" onClick={() => save({ ...saved, activeStage: 1, pathwaySaved: false, followUpFeedback: 'idle' })}>Review and reconfirm</button>}
+              />
+            </section>
+          ) : (
+            <section className="m4-focused-decisions" aria-labelledby="m4-focused-feedback-decisions">
+              <p className="m4-enhanced-kicker">Four decisions</p>
+              <h2 id="m4-focused-feedback-decisions">Complete the response pathway</h2>
+              <ChoiceCards
+                legend="1. Who should own the response?"
+                value={saved.responseOwner}
+                disabled={false}
+                options={[
+                  ['awra', 'Awra alone', 'Awra takes over the final operational decision.'],
+                  ['responsible_supported', 'The responsible actor, supported by Awra', 'The actor retains responsibility while Awra supports review and follow-up.'],
+                  ['donor', 'The donor', 'The donor manages the local implementation response.'],
+                ]}
+                onChange={(responseOwner) => updateChoices({ responseOwner })}
+              />
+              <ChoiceCards
+                legend="2. What is the most proportionate response?"
+                value={saved.responseAction}
+                disabled={false}
+                options={[
+                  ['A', 'Record and wait', 'Leave the concern until a later reporting meeting.'],
+                  ['B', 'Adjust now and review', 'Address immediate barriers and reopen comments before confirmation.'],
+                  ['C', 'Repeat the same meeting', 'Invite more people without changing the barriers.'],
+                ]}
+                onChange={(responseAction) => updateChoices({ responseAction: responseAction as '' | 'A' | 'B' | 'C' })}
+              />
+              <ChoiceCards
+                legend="3. What should the account-back commitment include?"
+                value={accountBackPackage}
+                disabled={false}
+                options={[
+                  ['A', 'Only what was heard and what will change', 'Leave responsibility, limits and timing unstated.'],
+                  ['B', 'Concern, change, responsibility, limits and update', 'Give a complete and accountable explanation back.'],
+                  ['C', 'A general success statement', 'Avoid discussing the concern or response.'],
+                ]}
+                onChange={(choice) => updateChoices({
+                  accountBackItems: choice === 'B'
+                    ? ['heard', 'change', 'responsible', 'limits', 'update']
+                    : choice === 'A'
+                      ? ['heard', 'change']
+                      : ['success'],
+                })}
+              />
+              <ChoiceCards
+                legend="4. What is the strongest follow-up commitment?"
+                value={followUpPackage}
+                disabled={false}
+                options={[
+                  ['A', 'Review participation and response at the next meeting', 'Check both access and accountable action at the agreed near-term point.'],
+                  ['B', 'Review only at project end', 'Delay learning and correction.'],
+                  ['C', 'Review only if another concern arrives', 'Wait for the problem to repeat.'],
+                ]}
+                onChange={(choice) => updateChoices({
+                  followUpPriorities: choice === 'A' ? ['participation', 'deadline'] : choice === 'B' ? ['attendance'] : ['language'],
+                  followUpTiming: choice === 'A' ? 'next_review' : choice === 'B' ? 'project_end' : 'another_concern',
+                })}
+              />
+              <Feedback
+                state={saved.followUpFeedback}
+                success="The response keeps responsibility with the appropriate actor and creates a complete account-back and follow-up pathway."
+                corrective="Keep the response with the responsible actor, adjust barriers now, explain the full decision back and review it at the next workstream meeting."
+              />
+              <Module4EnhancedActionBar
+                primary={<button type="button" className="m4-enhanced-button is-primary" disabled={!completeChoices} onClick={generatePathway}>Generate response pathway</button>}
+              />
+            </section>
+          )}
+        </>
+      )}
+      status={saved.pathwaySaved
+        ? 'Generated concern-response pathway saved.'
+        : `${[saved.responseOwner, saved.responseAction, accountBackPackage, followUpPackage].filter(Boolean).length} of 4 decisions complete.`}
+    />
+  );
+}
+
 export default function Module4EnhancedBatch2(props: Props) {
   if (props.screenId === 'M4-S1-05') return <FairAccessScreen {...props} />;
   if (props.screenId === 'M4-S1-06') return <ParticipationScreen {...props} />;
-  return <FeedbackLoopScreen {...props} />;
+  const useFocusedFeedbackLoop = true;
+  return useFocusedFeedbackLoop
+    ? <FocusedFeedbackLoopScreen {...props} />
+    : <FeedbackLoopScreen {...props} />;
 }

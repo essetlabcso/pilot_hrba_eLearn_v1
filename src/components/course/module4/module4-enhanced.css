@@ -464,11 +464,11 @@
 }
 
 .m4-enhanced-screen--lens .m4-enhanced-screen__workspace {
-  grid-template-columns: minmax(19rem, 1.05fr) minmax(0, 1.35fr);
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.5fr);
 }
 
 .m4-enhanced-screen--lens .m4-enhanced-screen__context {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   justify-content: center;
   padding: 1rem;
@@ -782,7 +782,7 @@
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   margin: auto;
-  max-width: 20rem;
+  max-width: 18rem;
   position: relative;
   width: 100%;
 }
@@ -944,8 +944,11 @@
 }
 
 .m4-enhanced-step-detail {
-  border-block: 1px solid var(--m4-enhanced-border);
-  padding: 1rem 0;
+  background: linear-gradient(110deg, #f0faf7, #fff);
+  border: 1px solid var(--m4-enhanced-border);
+  border-left: 0.3rem solid var(--m4-enhanced-teal);
+  border-radius: 0.65rem;
+  padding: 1rem;
 }
 
 .m4-enhanced-step-detail dl,
@@ -2160,5 +2163,127 @@
   .m4-enhanced-final__note-status,
   .m4-enhanced-final__bridge {
     border-color: CanvasText;
+  }
+}
+
+/* Focused Module 4 revision: simplified evidence and decision practices. */
+.m4-enhanced-evidence-review {
+  background: #f7fbfa;
+  border: 1px solid var(--m4-enhanced-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.m4-enhanced-evidence-review > p {
+  color: var(--m4-enhanced-muted);
+  margin-bottom: 0.85rem;
+}
+
+.m4-enhanced-evidence-review__columns {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.m4-enhanced-evidence-review__columns > div {
+  background: #fff;
+  border-left: 0.25rem solid var(--m4-enhanced-teal);
+  border-radius: 0.5rem;
+  min-width: 0;
+  padding: 0.85rem;
+}
+
+.m4-enhanced-evidence-review__columns > div:last-child {
+  border-left-color: #b36b16;
+}
+
+.m4-enhanced-evidence-review__columns ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.m4-focused-practice .m4-enhanced-screen__workspace {
+  grid-template-columns: minmax(17rem, 0.82fr) minmax(0, 1.58fr);
+}
+
+.m4-focused-decisions {
+  display: grid;
+  gap: 1rem;
+}
+
+.m4-focused-decisions > .m4-b2-choice-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.m4-focused-role-map {
+  border: 0;
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.m4-focused-role-map legend {
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.m4-focused-role-map label {
+  align-items: center;
+  background: #f7fbfa;
+  border: 1px solid var(--m4-enhanced-border);
+  border-radius: 0.65rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.48fr);
+  padding: 0.85rem;
+}
+
+.m4-focused-role-map select {
+  max-width: 100%;
+  width: 100%;
+}
+
+.m4-enhanced-screen--participation .m4-enhanced-screen__activity {
+  container-type: inline-size;
+}
+
+.m4-enhanced-screen--participation .m4-b2-stage-path {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@container (min-width: 48rem) {
+  .m4-enhanced-screen--participation .m4-b2-stage-path {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 56.25rem) {
+  .m4-focused-practice .m4-enhanced-screen__workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 38rem) {
+  .m4-enhanced-screen {
+    padding: 0.5rem;
+  }
+
+  .m4-enhanced-screen__header,
+  .m4-enhanced-screen__context,
+  .m4-enhanced-screen__activity {
+    padding: 0.85rem;
+  }
+
+  .m4-enhanced-evidence-review__columns,
+  .m4-focused-decisions > .m4-b2-choice-cards,
+  .m4-focused-role-map label,
+  .m4-enhanced-screen--participation .m4-b2-stage-path {
+    grid-template-columns: 1fr;
+  }
+
+  .m4-focused-role-map label {
+    align-items: stretch;
   }
 }

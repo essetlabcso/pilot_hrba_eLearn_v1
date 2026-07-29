@@ -87,11 +87,15 @@ test('Screens 2-5 include the approved content, interactions, validation, feedba
   assert.match(batch1, /Current step/);
   assert.match(batch1, /Available next/);
   assert.match(batch1, /m4-enhanced-lens__number/);
-  assert.match(batch1, /Classify each statement accurately before moving on/);
+  assert.match(batch1, /Review and confirm the prepared evidence distinction/);
+  assert.match(batch1, /Use distinction and review next area/);
+  assert.match(batch1, /Confirmed evidence/);
+  assert.match(batch1, /Still needs checking/);
+  assert.match(batch1, /preparedClassifications/);
   assert.match(batch1, /All five areas are explored/);
   assert.match(batch1, /recordModule4EnhancedScreenCompletion/);
   assert.match(batch1, /disabled=\{!ready\}/);
-  assert.match(batch1, /disabled=\{!allCorrect\}/);
+  assert.match(batch1, /onClick=\{finishArea\}/);
   assert.match(batch1, /disabled=\{!selectedWorkstream\}/);
 });
 

@@ -204,11 +204,21 @@ function WorkstreamContext({
   );
 }
 
-function ReviewBanner({ visible }: { visible: boolean }) {
+function ReviewBanner({
+  visible,
+  hasSavedOutput,
+}: {
+  visible: boolean;
+  hasSavedOutput: boolean;
+}) {
   return visible ? (
-    <div className="m4-b2-review" role="alert">
-      <strong>Review required.</strong>
-      <span>Your selected workstream or an upstream decision changed. Reconfirm this workflow before continuing.</span>
+    <div className="m4-b2-review" role={hasSavedOutput ? 'alert' : 'status'} aria-live="polite">
+      <strong>{hasSavedOutput ? 'Review required.' : 'Create your implementation output.'}</strong>
+      <span>
+        {hasSavedOutput
+          ? 'Your earlier output needs review because related information has changed.'
+          : 'Complete this activity to create your implementation output.'}
+      </span>
     </div>
   ) : null;
 }
@@ -410,7 +420,7 @@ function RolesScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.planSaved} />
           <StagePath
             labels={['Map responsibility', 'Choose a response', 'Frame the engagement', 'Commit to follow-up', 'Confirm & explain']}
             activeStage={Math.min(stage, 5)}
@@ -944,7 +954,7 @@ function SupportScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.planSaved} />
           <StagePath
             labels={['Diagnose the gap', 'Select first support', 'Adjust if needed', 'Commit to review']}
             activeStage={Math.min(stage, 4)}
@@ -1315,7 +1325,7 @@ function PathwaysScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.planSaved} />
           <StagePath
             labels={['Match situations', 'Apply the pathways']}
             activeStage={Math.min(stage, 2)}
@@ -1526,7 +1536,7 @@ function InformationScreen({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          <ReviewBanner visible={reviewRequired} />
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.noteSaved} />
           <StagePath
             labels={['Choose the evidence line', 'Check the minimum needed', 'Decide the response', 'Prepare the note']}
             activeStage={Math.min(stage, 4)}
@@ -1782,8 +1792,223 @@ function InformationScreen({ state, onChangeState }: Props) {
   );
 }
 
+function FocusedRolesScreen({ state, onChangeState }: Props) {
+  const enhanced = currentEnhancedState(state);
+  const saved = enhanced.batch3.roles;
+  const reviewRequired = enhanced.fields.actorResponsibilities.reviewRequired
+    || enhanced.fields.engagementDecisions.reviewRequired;
+  const readyToContinue = saved.planSaved && !reviewRequired;
+  const save = (
+    next: Module4Batch3State['roles'],
+    fieldUpdater?: (value: Module4EnhancedState) => Module4EnhancedState,
+  ) => saveBatch3Slice(onChangeState, 'roles', next, fieldUpdater);
+  const followUpChoice = saved.reviewTiming === 'after_update'
+    ? 'A'
+    : saved.reviewTiming === 'end_project'
+      ? 'B'
+      : saved.reviewTiming === 'another_concern'
+        ? 'C'
+        : '';
+  const decisionsComplete = roleActions.every((action) => saved.assignments[action.id])
+    && Boolean(saved.selectedResponse)
+    && Boolean(saved.selectedPosition)
+    && Boolean(followUpChoice);
+  const decisionsCorrect = isScreen9RoleMappingCorrect(saved.assignments)
+    && saved.selectedResponse === 'C'
+    && saved.selectedPosition === 'B'
+    && followUpChoice === 'A';
+
+  const updatePlan = (patch: Partial<Module4Batch3State['roles']>) => save({
+    ...saved,
+    ...patch,
+    confirmFeedback: 'idle',
+    planSaved: false,
+  });
+
+  const generatePlan = () => {
+    if (!decisionsComplete) return;
+    if (!decisionsCorrect) {
+      save({ ...saved, confirmFeedback: 'corrective', planSaved: false });
+      return;
+    }
+    const next: Module4Batch3State['roles'] = {
+      ...saved,
+      activeStage: 6,
+      assignmentsFeedback: 'correct',
+      responseFeedback: 'correct',
+      positionFeedback: 'correct',
+      formalTriggers: ['repeated_fail', 'impacts_continue', 'remedy_required'],
+      formalFeedback: 'correct',
+      followUpWho: 'water_desk',
+      followUpWhen: '14_days',
+      followUpPurpose: 'confirm_time',
+      followUpDocumented: 'follow_up_note',
+      followUpInformed: 'meeting_update',
+      followUpFeedback: 'correct',
+      confirmItems: ['inspection', 'role', 'measure', 'date'],
+      explainItems: ['confirmed', 'doing', 'responsible', 'update_date'],
+      reviewTiming: 'after_update',
+      confirmFeedback: 'correct',
+      planSaved: true,
+    };
+    const responsibilities = {
+      responsibleActor: 'Woreda Water Desk',
+      awraRole: 'Coordinate communication, document issues and support interim community access',
+      supportingBoundary: 'Awra supports action and follow-up without taking over technical repair or public maintenance duties.',
+    };
+    const decisions = {
+      position: 'Constructive rights-based engagement',
+      response: 'Document the problem, support an interim arrangement and seek a responsible action and date.',
+      formalTriggers: next.formalTriggers.join('|'),
+      followUpWho: next.followUpWho,
+      followUpWhen: next.followUpWhen,
+      followUpPurpose: next.followUpPurpose,
+      followUpDocumented: next.followUpDocumented,
+      followUpInformed: next.followUpInformed,
+      confirmItems: next.confirmItems.join('|'),
+      explainItems: next.explainItems.join('|'),
+      reviewTiming: next.reviewTiming,
+    };
+    save(
+      next,
+      (current) => updateModule4Field(
+        updateModule4Field(current, 'actorResponsibilities', responsibilities, {
+          learnerEdited: true,
+          sourceScreenId: 'M4-S1-08',
+        }),
+        'engagementDecisions',
+        decisions,
+        { learnerEdited: true, sourceScreenId: 'M4-S1-08' },
+      ),
+    );
+  };
+
+  return (
+    <Module4EnhancedScreenFrame
+      className="m4-enhanced-screen--batch3 m4-focused-practice"
+      titleId="m4-b3-roles-title"
+      eyebrow="Module 4 · Screen 9"
+      title="Roles, Boundaries and Responsible Action"
+      introduction={<p>Map the responsibility boundaries, then make one response, engagement and follow-up decision.</p>}
+      context={(
+        <WorkstreamContext label="Water Service" assetId={saved.planSaved ? 'm4-s09-water-point-gap' : 'm4-s09-water-service-actors'} heading="The broken water pump">
+          <p><strong>Scenario:</strong> A community water point has been broken for two weeks. Community representatives ask Awra to finance and manage the full repair because the Woreda Water Desk has not responded.</p>
+          <dl>
+            <div><dt>Public responsibility</dt><dd>The Water Desk must inspect, authorise and manage the technical repair.</dd></div>
+            <div><dt>Awra’s role</dt><dd>Document the issue, support interim access, coordinate communication and follow up.</dd></div>
+          </dl>
+        </WorkstreamContext>
+      )}
+      activity={(
+        <>
+          <ReviewBanner visible={reviewRequired} hasSavedOutput={saved.planSaved} />
+          {saved.planSaved ? (
+            <section
+              className="m4-b2-summary"
+              aria-labelledby="m4-focused-role-summary"
+              role="status"
+              aria-live="polite"
+            >
+              <span className="m4-b2-summary__icon" aria-hidden="true">✓</span>
+              <div>
+                <h2 id="m4-focused-role-summary">Generated responsibility and engagement plan</h2>
+                <dl className="m4-b2-pathway-summary">
+                  <div><dt>Awra</dt><dd>Documents the issue, coordinates updates and supports interim community access.</dd></div>
+                  <div><dt>Water Desk</dt><dd>Owns technical inspection, repair authorisation and the repair timeline.</dd></div>
+                  <div><dt>Engagement</dt><dd>Seek an agreed action, responsible role and realistic update date without replacing the duty-bearer.</dd></div>
+                  <div><dt>Escalation</dt><dd>Consider a formal step if repeated failure, continuing essential-service impacts or a remedy requirement persists.</dd></div>
+                  <div><dt>Account-back and review</dt><dd>Record the follow-up, update the community and review after the agreed update date.</dd></div>
+                </dl>
+              </div>
+              <Module4EnhancedActionBar
+                secondary={<button type="button" className="m4-enhanced-button is-secondary" onClick={() => save({ ...saved, activeStage: 1, planSaved: false, confirmFeedback: 'idle' })}>Revise decisions</button>}
+                primary={readyToContinue
+                  ? <button type="button" className="m4-enhanced-button is-primary" onClick={() => completeScreen('M4-S1-08', onChangeState, readyToContinue)}>Continue →</button>
+                  : <button type="button" className="m4-enhanced-button is-primary" onClick={() => save({ ...saved, activeStage: 1, planSaved: false, confirmFeedback: 'idle' })}>Review and reconfirm</button>}
+              />
+            </section>
+          ) : (
+            <section className="m4-focused-decisions" aria-labelledby="m4-focused-role-decisions">
+              <p className="m4-enhanced-kicker">Eight decisions</p>
+              <h2 id="m4-focused-role-decisions">Set the responsibility boundaries</h2>
+              <fieldset className="m4-focused-role-map">
+                <legend>Assign each action to the appropriate role or boundary.</legend>
+                {roleActions.map((action) => (
+                  <label key={action.id}>
+                    <span>{action.label}</span>
+                    <select
+                      value={saved.assignments[action.id] || ''}
+                      onChange={(event) => updatePlan({
+                        assignments: { ...saved.assignments, [action.id]: event.target.value },
+                      })}
+                    >
+                      <option value="">Choose a role</option>
+                      {roleOptions.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </fieldset>
+              <ChoiceCards
+                legend="Choose the proportionate response."
+                value={saved.selectedResponse}
+                disabled={false}
+                options={[
+                  ['A', 'Take over the repair', 'Awra hires and manages the technical repair itself.'],
+                  ['B', 'Record and wait', 'Awra waits for the end-of-project report.'],
+                  ['C', 'Support access and seek accountable action', 'Awra documents the problem, supports an interim arrangement and requests a responsible action and date.'],
+                ]}
+                onChange={(selectedResponse) => updatePlan({ selectedResponse: selectedResponse as '' | 'A' | 'B' | 'C' })}
+              />
+              <ChoiceCards
+                legend="Choose the engagement or escalation judgment."
+                value={saved.selectedPosition}
+                disabled={false}
+                options={[
+                  ['A', 'Escalate immediately in public', 'Skip constructive engagement and expose unverified claims.'],
+                  ['B', 'Engage constructively, with escalation conditions', 'Seek action first and use a formal step if serious impacts or repeated failure persist.'],
+                  ['C', 'Avoid engagement', 'Leave the responsibility and community update unresolved.'],
+                ]}
+                onChange={(selectedPosition) => updatePlan({ selectedPosition: selectedPosition as '' | 'A' | 'B' | 'C' })}
+              />
+              <ChoiceCards
+                legend="Choose the follow-up and review commitment."
+                value={followUpChoice}
+                disabled={false}
+                options={[
+                  ['A', 'Document, update and review after the agreed date', 'Follow up with the Water Desk, inform the community and review promptly.'],
+                  ['B', 'Review only at project end', 'Delay accountability and learning.'],
+                  ['C', 'Review only if another concern is raised', 'Wait for the problem to repeat.'],
+                ]}
+                onChange={(choice) => updatePlan({
+                  reviewTiming: choice === 'A' ? 'after_update' : choice === 'B' ? 'end_project' : 'another_concern',
+                })}
+              />
+              <Feedback
+                state={saved.confirmFeedback}
+                success="The plan protects the duty-bearer boundary while keeping Awra’s coordination, account-back and escalation roles clear."
+                corrective="Map all five actions carefully, keep technical repair with the Water Desk, use constructive engagement and review after the agreed update date."
+              />
+              <Module4EnhancedActionBar
+                primary={<button type="button" className="m4-enhanced-button is-primary" disabled={!decisionsComplete} onClick={generatePlan}>Generate responsibility plan</button>}
+              />
+            </section>
+          )}
+        </>
+      )}
+      status={saved.planSaved
+        ? 'Generated responsibility and engagement plan saved.'
+        : `${Object.keys(saved.assignments).filter((key) => saved.assignments[key]).length + [saved.selectedResponse, saved.selectedPosition, followUpChoice].filter(Boolean).length} of 8 decisions complete.`}
+    />
+  );
+}
+
 export default function Module4EnhancedBatch3(props: Props) {
-  if (props.screenId === 'M4-S1-08') return <RolesScreen {...props} />;
+  if (props.screenId === 'M4-S1-08') {
+    const useFocusedRolesPractice = true;
+    return useFocusedRolesPractice
+      ? <FocusedRolesScreen {...props} />
+      : <RolesScreen {...props} />;
+  }
   if (props.screenId === 'M4-S1-09') return <SupportScreen {...props} />;
   if (props.screenId === 'M4-S1-10') return <PathwaysScreen {...props} />;
   if (props.screenId === 'M4-S1-11') return <InformationScreen {...props} />;

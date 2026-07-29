@@ -277,7 +277,9 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
   };
 
   const status = needsReview
-    ? 'The saved note needs review. Continue remains blocked until you reconfirm and save it.'
+    ? savedExists
+      ? 'Your earlier output needs review because related information has changed.'
+      : 'Complete this activity to create your implementation output.'
     : savedCurrent
       ? 'Implementation Decision and Follow-Up Note saved. Continue is ready.'
       : stage === 3
@@ -315,12 +317,10 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
       )}
       activity={(
         <>
-          {needsReview && (
-            <div className="m4-b4-review-alert" role="alert">
+          {needsReview && savedExists && (
+            <div className="m4-b4-review-alert" role="alert" aria-live="polite">
               <strong>Needs review</strong>
-              <p>
-                An upstream decision changed. Your saved wording is preserved. Refresh every marked carried-forward section before reconfirming.
-              </p>
+              <p>Your earlier output needs review because related information has changed. Your saved wording is preserved.</p>
               {affected.length > 0 && (
                 <p>
                   {unresolvedAffected.length > 0
@@ -328,6 +328,12 @@ export default function Module4EnhancedBatch4({ state, onChangeState }: Props) {
                     : 'All affected sections have been refreshed and are ready for reconfirmation.'}
                 </p>
               )}
+            </div>
+          )}
+          {needsReview && !savedExists && (
+            <div className="m4-b4-review-alert" role="status" aria-live="polite">
+              <strong>Create your implementation output</strong>
+              <p>Complete this activity to create your implementation output.</p>
             </div>
           )}
 

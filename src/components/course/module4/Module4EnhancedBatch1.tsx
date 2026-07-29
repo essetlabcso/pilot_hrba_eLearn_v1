@@ -634,8 +634,6 @@ function WorkstreamScreen({ state, onChangeState }: Props) {
   const saved = enhanced.batch1.workstreamExploration;
   const active = saved.activeWorkstream;
   const activeData = workstreamData[active];
-  const answers = saved.classifications[active] || {};
-  const allCorrect = activeData.claims.every((claim) => answers[claim.id] === claim.answer);
   const allExplored = MODULE4_WORKSTREAMS.every((workstream) =>
     saved.exploredWorkstreams.includes(workstream));
   const selectedWorkstream = enhanced.fields.selectedWorkstream.value;
@@ -656,29 +654,20 @@ function WorkstreamScreen({ state, onChangeState }: Props) {
     return fieldUpdater ? fieldUpdater(withBatch1) : withBatch1;
   });
 
-  const setClassification = (claimId: string, value: Module4EvidenceClassification) => {
-    const explored = saved.exploredWorkstreams.filter((workstream) => workstream !== active);
-    saveExploration({
-      ...saved,
-      exploredWorkstreams: explored,
-      classifications: {
-        ...saved.classifications,
-        [active]: {
-          ...answers,
-          [claimId]: value,
-        },
-      },
-    });
-  };
-
   const finishArea = () => {
-    if (!allCorrect) return;
+    const preparedClassifications = Object.fromEntries(
+      activeData.claims.map((claim) => [claim.id, claim.answer]),
+    );
     const explored = Array.from(new Set([...saved.exploredWorkstreams, active]));
     const nextUnexplored = MODULE4_WORKSTREAMS.find((workstream) => !explored.includes(workstream));
     const next = {
       ...saved,
       exploredWorkstreams: explored,
       activeWorkstream: nextUnexplored || active,
+      classifications: {
+        ...saved.classifications,
+        [active]: preparedClassifications,
+      },
     };
     saveExploration(next, (current) => {
       const flattened = Object.fromEntries(
@@ -785,34 +774,31 @@ function WorkstreamScreen({ state, onChangeState }: Props) {
             <div><dt>What still needs checking</dt><dd>{activeData.checking}</dd></div>
             <div><dt>Why this matters</dt><dd>{activeData.matters}</dd></div>
           </dl>
-          <fieldset className="m4-enhanced-classification">
-            <legend>What is confirmed?</legend>
-            {activeData.claims.map((claim) => {
-              const answer = answers[claim.id] || '';
-              const correct = answer === claim.answer;
-              return (
-                <label key={claim.id} className={answer ? (correct ? 'is-correct' : 'is-error') : ''}>
-                  <span>{claim.text}</span>
-                  <select
-                    value={answer}
-                    aria-describedby={`${active}-${claim.id}-status`}
-                    onChange={(event) => setClassification(
-                      claim.id,
-                      event.target.value as Module4EvidenceClassification,
-                    )}
-                  >
-                    <option value="">Choose</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="needs_checking">Needs checking</option>
-                  </select>
-                  <small id={`${active}-${claim.id}-status`}>
-                    {answer ? (correct ? 'Useful classification.' : 'Review what is observed and what is assumed.') : ''}
-                  </small>
-                </label>
-              );
-            })}
-          </fieldset>
-          <p className="m4-enhanced-inline-note">Classify each statement accurately before moving on.</p>
+          <section className="m4-enhanced-evidence-review" aria-labelledby={`${active}-evidence-review-title`}>
+            <h3 id={`${active}-evidence-review-title`}>Review the evidence distinction</h3>
+            <p>Use confirmed information now and keep open questions visible for follow-up.</p>
+            <div className="m4-enhanced-evidence-review__columns">
+              <div>
+                <strong>Confirmed evidence</strong>
+                <ul>
+                  {activeData.claims
+                    .filter((claim) => claim.answer === 'confirmed')
+                    .map((claim) => <li key={claim.id}>{claim.text}</li>)}
+                </ul>
+              </div>
+              <div>
+                <strong>Still needs checking</strong>
+                <ul>
+                  {activeData.claims
+                    .filter((claim) => claim.answer === 'needs_checking')
+                    .map((claim) => <li key={claim.id}>{claim.text}</li>)}
+                </ul>
+              </div>
+            </div>
+          </section>
+          <p className="m4-enhanced-inline-note">
+            Confirm this distinction to retain the full governed evidence summary for later activities.
+          </p>
           <Module4EnhancedActionBar
             secondary={(
               <button
@@ -832,10 +818,11 @@ function WorkstreamScreen({ state, onChangeState }: Props) {
               <button
                 type="button"
                 className="m4-enhanced-button is-primary"
-                disabled={!allCorrect}
                 onClick={finishArea}
               >
-                {saved.exploredWorkstreams.length === 4 ? 'Choose a work area' : 'Next area'} →
+                {saved.exploredWorkstreams.length === 4
+                  ? 'Use distinction and choose a work area'
+                  : 'Use distinction and review next area'} →
               </button>
             )}
           />
@@ -843,7 +830,7 @@ function WorkstreamScreen({ state, onChangeState }: Props) {
       )}
       status={selectionMode
         ? 'All five areas are explored. Choose one workstream to carry forward.'
-        : `${saved.exploredWorkstreams.length} of 5 areas explored. Complete all three classifications for ${activeData.label}.`}
+        : `${saved.exploredWorkstreams.length} of 5 areas explored. Review and confirm the prepared evidence distinction for ${activeData.label}.`}
     />
   );
 }
