@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { LearningState } from '../../state/learningState';
+import { externalCourseResources } from '../../config/externalCourseResources';
 import {
   FINAL_ASSESSMENT_MODULE_ID,
   FINAL_ASSESSMENT_PASS_THRESHOLD,
@@ -203,6 +204,30 @@ export default function FinalAssessmentRenderer({
                     ))}
                   </ul>
                 </div>
+              )}
+
+              {result.passed && (
+                <aside className="final-assessment-feedback" aria-labelledby="pilot-feedback-title">
+                  <p className="final-assessment-eyebrow">Optional pilot feedback</p>
+                  <h2 id="pilot-feedback-title">Help improve the HRBA pilot course</h2>
+                  <p>
+                    Your assessment and certificate eligibility are already complete. If you wish, share feedback
+                    about your learning experience in a separate form.
+                  </p>
+                  <p>
+                    The form opens in a new tab, this course stays open, and the course does not track whether you
+                    submit a response.
+                  </p>
+                  <a
+                    className="final-assessment-feedback__link"
+                    href={externalCourseResources.pilotFeedback.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Complete Pilot Feedback
+                    <span className="final-assessment-feedback__link-note"> (opens in a new tab)</span>
+                  </a>
+                </aside>
               )}
 
               <div className="final-assessment-actions">

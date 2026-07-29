@@ -2481,6 +2481,57 @@
   }
 }
 
+.m1-welcome-video,
+.m1-welcome-video__frame {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.m1-welcome-video__frame {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  background: #071c33;
+}
+
+.m1-welcome-video__frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.m1-welcome-video__frame iframe:focus,
+.m1-welcome-video__frame iframe:focus-visible,
+.m1-welcome-video__caption a:focus,
+.m1-welcome-video__caption a:focus-visible {
+  outline: 3px solid var(--focus-ring, #f5a623);
+  outline-offset: 3px;
+}
+
+.m1-welcome-video__caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+  justify-content: space-between;
+  margin-top: 0.65rem;
+  color: #42566d;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.m1-welcome-video__caption a {
+  color: #0f5f8c;
+  font-weight: 750;
+}
+
+@media (max-width: 520px) {
+  .m1-welcome-video__caption {
+    display: grid;
+  }
+}
+
 @media (max-width: 360px) {
   .m1-closure-header {
     align-items: flex-start;

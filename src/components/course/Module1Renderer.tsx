@@ -15,6 +15,7 @@ import reportingToAccountabilityIcon from '../../assets/hrba/module-1/screen-14/
 import waterStoryVisual from '../../assets/hrba/module-1/visuals/m1-s1-04-water-story-placeholder.png';
 import accountabilityActorMap from '../../assets/hrba/module-1/visuals/m1-s2-01-accountability-actor-map.svg';
 import servicesToRightsPathway from '../../assets/hrba/module-1/visuals/m1-s2-03-services-to-rights-pathway.svg';
+import { externalCourseResources } from '../../config/externalCourseResources';
 import { module1RefinementAssets } from '../../data/module1/module_1_refinement_assets';
 import { evaluateModule1SelfAssessment, module1AssessmentQuestions } from '../../data/module1/module_1_self_assessment';
 import '../../styles/module1-visual-supports.css';
@@ -366,53 +367,26 @@ function Module1WelcomeCourseScreen({
             A short welcome to the HRBA learning journey
           </p>
 
-          <figure style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
-            <div style={{ position: 'relative' }}>
-              <img
-                src="/assets/hrba/modules/module-1/m1-s01-why-this-course-video-poster.png"
-                alt="A diverse local CSO learning group reviews a course journey board showing participation, planning, accountability, and community connection."
-                loading="eager"
-                style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '6px' }}
+          <figure className="m1-welcome-video" style={{ ...panelStyle, margin: 0, padding: '0.65rem' }}>
+            <div className="m1-welcome-video__frame">
+              <iframe
+                src={externalCourseResources.module1IntroductionVideo.embedUrl}
+                title="Why This Course, Why Now? — HRBA course introduction video"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
               />
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'grid',
-                  placeItems: 'center',
-                  borderRadius: '6px',
-                  background: 'linear-gradient(180deg, rgba(7, 28, 51, 0.08), rgba(7, 28, 51, 0.34))'
-                }}
-              >
-                <span
-                  style={{
-                    display: 'block',
-                    width: '5.25rem',
-                    height: '5.25rem',
-                    borderRadius: '999px',
-                    background: 'rgba(255, 255, 255, 0.94)',
-                    boxShadow: '0 18px 38px rgba(7, 28, 51, 0.24)',
-                    position: 'relative'
-                  }}
-                >
-                  <span
-                    style={{
-                      position: 'absolute',
-                      left: '2.12rem',
-                      top: '1.58rem',
-                      width: 0,
-                      height: 0,
-                      borderTop: '1rem solid transparent',
-                      borderBottom: '1rem solid transparent',
-                      borderLeft: '1.45rem solid #0b2a55'
-                    }}
-                  />
-                </span>
-              </div>
             </div>
-            <figcaption style={{ color: '#42566d', fontSize: '0.9rem', marginTop: '0.55rem' }}>
-              Intro video poster. Transcript is available below.
+            <figcaption className="m1-welcome-video__caption">
+              <span>The full transcript remains available below.</span>
+              <a
+                href={externalCourseResources.module1IntroductionVideo.watchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open the introduction video in a new tab
+              </a>
             </figcaption>
           </figure>
 

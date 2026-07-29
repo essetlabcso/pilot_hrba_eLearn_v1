@@ -24,7 +24,8 @@
 .final-assessment-card,
 .final-assessment-question,
 .final-assessment-score-card,
-.final-assessment-review {
+.final-assessment-review,
+.final-assessment-feedback {
   border: 1px solid rgba(15, 23, 42, 0.14);
   border-radius: 8px;
   background: #ffffff;
@@ -36,7 +37,8 @@
 .final-assessment-card,
 .final-assessment-question,
 .final-assessment-score-card,
-.final-assessment-review {
+.final-assessment-review,
+.final-assessment-feedback {
   padding: clamp(1rem, 2vw, 1.35rem);
 }
 
@@ -298,6 +300,43 @@
   padding-left: 1.2rem;
 }
 
+.final-assessment-feedback {
+  display: grid;
+  gap: 0.75rem;
+  border-left: 5px solid #0f766e;
+}
+
+.final-assessment-feedback h2 {
+  margin: 0;
+  color: #0b2a55;
+  font-family: var(--font-family-headings);
+}
+
+.final-assessment-feedback__link {
+  justify-self: start;
+  min-height: 44px;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  background: #0f5f8c;
+  color: #ffffff;
+  font-weight: 800;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.final-assessment-feedback__link:hover {
+  background: #0b496d;
+}
+
+.final-assessment-feedback__link:focus-visible {
+  outline: 3px solid var(--focus-ring, #f5a623);
+  outline-offset: 3px;
+}
+
+.final-assessment-feedback__link-note {
+  font-weight: 600;
+}
+
 @media (max-width: 760px) {
   .final-assessment-cover,
   .final-assessment-meta,
@@ -312,7 +351,8 @@
 
   .final-assessment-actions,
   .final-assessment-primary,
-  .final-assessment-secondary {
+  .final-assessment-secondary,
+  .final-assessment-feedback__link {
     width: 100%;
   }
 
