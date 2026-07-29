@@ -115,6 +115,7 @@ test('focused Module 4 screens reflow and simplified decisions persist', {
     { width: 1536, height: 864 },
     { width: 1440, height: 900 },
     { width: 1366, height: 768 },
+    { width: 1024, height: 768 },
     { width: 390, height: 844 },
     { width: 360, height: 800 },
     { width: 320, height: 800 },
@@ -141,6 +142,31 @@ test('focused Module 4 screens reflow and simplified decisions persist', {
       `Expected Screen 4 at ${page.url()}; received ${(await page.locator('body').innerText()).slice(0, 260)}`,
     );
     await noHorizontalOverflow(page, `Screen 4 at ${viewport.width}`);
+    const lensWorkspace = page.locator('.m4-enhanced-screen__workspace');
+    if (viewport.width === 1024) {
+      const lensLayout = await lensWorkspace.evaluate((element) => {
+        const [context, activity] = element.children;
+        const workspaceStyle = getComputedStyle(element);
+        const contextRect = context.getBoundingClientRect();
+        const activityRect = activity.getBoundingClientRect();
+        return {
+          columns: workspaceStyle.gridTemplateColumns,
+          contextRect: contextRect.toJSON(),
+          activityRect: activityRect.toJSON(),
+          activityClient: activity.clientWidth,
+          activityScroll: activity.scrollWidth,
+        };
+      });
+      assert.equal(lensLayout.columns.split(' ').length, 1, 'Screen 4 must stack at the constrained canvas');
+      assert.ok(
+        lensLayout.activityRect.top >= lensLayout.contextRect.bottom - 1,
+        'Screen 4 explanation must follow the diagram without overlap',
+      );
+      assert.ok(
+        lensLayout.activityScroll <= lensLayout.activityClient + 1,
+        'Screen 4 activity must not scroll horizontally',
+      );
+    }
     const lensButtons = page.locator('.m4-enhanced-lens__step');
     assert.equal(await lensButtons.count(), 6);
     assert.equal(await lensButtons.nth(0).getAttribute('aria-current'), 'step');
@@ -159,6 +185,30 @@ test('focused Module 4 screens reflow and simplified decisions persist', {
       evidenceWidth >= Math.min(240, viewport.width * 0.6),
       `Screen 5 evidence width ${evidenceWidth}px is too narrow at ${viewport.width}px`,
     );
+    if (viewport.width === 1024) {
+      const screen5Layout = await page.locator('.m4-enhanced-screen__workspace').evaluate((element) => {
+        const activity = element.querySelector('.m4-enhanced-screen__activity');
+        const evidence = element.querySelector('.m4-enhanced-evidence-review');
+        const text = evidence.querySelector('p, li');
+        return {
+          columns: getComputedStyle(element).gridTemplateColumns,
+          activityWidth: activity.getBoundingClientRect().width,
+          evidenceWidth: evidence.getBoundingClientRect().width,
+          textWidth: text.getBoundingClientRect().width,
+          wordBreak: getComputedStyle(text).wordBreak,
+          overflowWrap: getComputedStyle(text).overflowWrap,
+          activityClient: activity.clientWidth,
+          activityScroll: activity.scrollWidth,
+        };
+      });
+      assert.equal(screen5Layout.columns.split(' ').length, 1);
+      assert.ok(screen5Layout.activityWidth >= 480, `Screen 5 activity width ${screen5Layout.activityWidth}px`);
+      assert.ok(screen5Layout.evidenceWidth >= 440, `Screen 5 evidence width ${screen5Layout.evidenceWidth}px`);
+      assert.ok(screen5Layout.textWidth >= 180, `Screen 5 text width ${screen5Layout.textWidth}px`);
+      assert.equal(screen5Layout.wordBreak, 'normal');
+      assert.notEqual(screen5Layout.overflowWrap, 'anywhere');
+      assert.ok(screen5Layout.activityScroll <= screen5Layout.activityClient + 1);
+    }
 
     await seedScreen(page, 'M4-S1-06', enhancedWithWorkstream());
     await page.goto(`${APP_ORIGIN}/module-4/screen-4-6`);
@@ -171,18 +221,60 @@ test('focused Module 4 screens reflow and simplified decisions persist', {
     ));
     if (viewport.width <= 390) assert.equal(stageTops.length, 4, 'mobile stage cards must form one column');
     else assert.ok(stageTops.length <= 2, 'desktop and tablet stage cards must use a 4-column or 2×2 rail');
+    if (viewport.width === 1024) {
+      const screen7Layout = await page.locator('.m4-enhanced-screen__workspace').evaluate((element) => {
+        const activity = element.querySelector('.m4-enhanced-screen__activity');
+        const stage = element.querySelector('.m4-b2-stage-path');
+        return {
+          columns: getComputedStyle(element).gridTemplateColumns,
+          activityWidth: activity.getBoundingClientRect().width,
+          stageWidth: stage.getBoundingClientRect().width,
+        };
+      });
+      assert.equal(screen7Layout.columns.split(' ').length, 1);
+      assert.ok(screen7Layout.activityWidth >= 480);
+      assert.ok(screen7Layout.stageWidth >= 440);
+    }
 
     await seedScreen(page, 'M4-S1-07', enhancedWithWorkstream());
     await page.goto(`${APP_ORIGIN}/module-4/screen-4-7`);
     await page.getByRole('heading', { level: 1, name: 'Accountable Concern, Response and Follow-Up' }).waitFor();
     await noHorizontalOverflow(page, `Screen 8 at ${viewport.width}`);
     assert.equal(await page.locator('.m4-focused-decisions > fieldset').count(), 4);
+    if (viewport.width === 1024) {
+      const screen8Layout = await page.locator('.m4-enhanced-screen__workspace').evaluate((element) => {
+        const activity = element.querySelector('.m4-enhanced-screen__activity');
+        return {
+          columns: getComputedStyle(element).gridTemplateColumns,
+          activityWidth: activity.getBoundingClientRect().width,
+          activityClient: activity.clientWidth,
+          activityScroll: activity.scrollWidth,
+        };
+      });
+      assert.equal(screen8Layout.columns.split(' ').length, 1);
+      assert.ok(screen8Layout.activityWidth >= 480);
+      assert.ok(screen8Layout.activityScroll <= screen8Layout.activityClient + 1);
+    }
 
     await seedScreen(page, 'M4-S1-08', enhancedWithWorkstream());
     await page.goto(`${APP_ORIGIN}/module-4/screen-4-8`);
     await page.getByRole('heading', { level: 1, name: 'Roles, Boundaries and Responsible Action' }).waitFor();
     await noHorizontalOverflow(page, `Screen 9 at ${viewport.width}`);
     assert.equal(await page.locator('.m4-focused-role-map select').count(), 5);
+    if (viewport.width === 1024) {
+      const screen9Layout = await page.locator('.m4-enhanced-screen__workspace').evaluate((element) => {
+        const activity = element.querySelector('.m4-enhanced-screen__activity');
+        return {
+          columns: getComputedStyle(element).gridTemplateColumns,
+          activityWidth: activity.getBoundingClientRect().width,
+          activityClient: activity.clientWidth,
+          activityScroll: activity.scrollWidth,
+        };
+      });
+      assert.equal(screen9Layout.columns.split(' ').length, 1);
+      assert.ok(screen9Layout.activityWidth >= 480);
+      assert.ok(screen9Layout.activityScroll <= screen9Layout.activityClient + 1);
+    }
 
     assert.deepEqual(errors, [], `no browser errors expected at ${viewport.width}px`);
     await context.close();

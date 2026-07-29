@@ -8,11 +8,14 @@
   --m4-enhanced-warning: #8a5a00;
   --m4-enhanced-focus: #f3b61f;
   color: var(--m4-enhanced-ink);
+  container-name: m4-enhanced-screen;
+  container-type: inline-size;
   display: grid;
   gap: 1rem;
   margin-inline: auto;
   max-width: 92rem;
   padding: clamp(1rem, 2.4vw, 2rem);
+  width: 100%;
 }
 
 .m4-enhanced-screen *,
@@ -2285,5 +2288,26 @@
 
   .m4-focused-role-map label {
     align-items: stretch;
+  }
+}
+
+/*
+ * The player rail can leave Module 4 with a constrained content canvas while
+ * the browser viewport is still wider than the viewport-only 56.25rem rule.
+ * Reflow against the real screen container so native browser zoom cannot
+ * strand the activity in an unreadable secondary column.
+ */
+@container m4-enhanced-screen (max-width: 50rem) {
+  .m4-enhanced-screen__workspace,
+  .m4-enhanced-screen--lens .m4-enhanced-screen__workspace,
+  .m4-enhanced-screen--batch2 .m4-enhanced-screen__workspace,
+  .m4-focused-practice .m4-enhanced-screen__workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .m4-enhanced-screen__context,
+  .m4-enhanced-screen__activity {
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 }
