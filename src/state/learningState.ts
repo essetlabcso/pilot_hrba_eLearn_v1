@@ -4,7 +4,8 @@ import {
   migrateModule5PresentationScreenProgress,
 } from '../data/module5/module5EnhancedModel';
 import { migrateModule4EnhancedState } from '../data/module4/module4EnhancedModel';
-import { isValidAssessmentEvidenceId } from '../integration/portalLearnerState';
+import { FINAL_ASSESSMENT_PASS_THRESHOLD } from '../data/finalAssessment';
+import { isValidAssessmentResultContract } from '../integration/portalLearnerState';
 import { enforceFinalAssessmentPrerequisites } from './coursePrerequisites';
 export interface LearningState {
   storageVersion: 'hrba-course-progress-v1';
@@ -324,10 +325,13 @@ function hasCompletionDependencyIssue(completedModules: string[]) {
   });
 }
 
-function clearInvalidAssessmentEvidence(state: LearningState) {
+function clearInvalidAssessmentResult(state: LearningState) {
   if (
     !state.finalAssessmentResult
-    || isValidAssessmentEvidenceId(state.finalAssessmentResult.evidenceId)
+    || isValidAssessmentResultContract(
+      state.finalAssessmentResult,
+      FINAL_ASSESSMENT_PASS_THRESHOLD,
+    )
   ) {
     return state;
   }
@@ -387,7 +391,7 @@ function validateLearningState(
   } as LearningState);
 
   return requireValidAssessmentEvidence
-    ? clearInvalidAssessmentEvidence(validated)
+    ? clearInvalidAssessmentResult(validated)
     : validated;
 }
 

@@ -2,8 +2,13 @@ import type { PortalLaunchContext } from './portalContext';
 import {
   EXTERNAL_COURSE_EVENT_MESSAGE,
   isCanonicalOpaque32ByteBase64Url,
-  isValidAssessmentEvidenceId,
+  isValidAssessmentResultContract,
 } from './portalLearnerState';
+import { FINAL_ASSESSMENT_PASS_THRESHOLD } from '../data/finalAssessment';
+import {
+  FINAL_ASSESSMENT_MODULE_ID,
+  REQUIRED_HRBA_MODULE_IDS,
+} from '../state/coursePrerequisites';
 
 export type HubAssessmentPayload = {
   score: number;
@@ -53,21 +58,78 @@ function isValidIsoTimestamp(value: string) {
 }
 
 function isValidAssessmentPayload(assessment: HubAssessmentPayload) {
-  return (
-    Number.isInteger(assessment.attemptNumber)
-    && assessment.attemptNumber > 0
-    && isValidAssessmentEvidenceId(assessment.evidenceId)
-    && Number.isFinite(assessment.score)
-    && Number.isFinite(assessment.maxScore)
-    && assessment.maxScore > 0
-    && assessment.score >= 0
-    && assessment.score <= assessment.maxScore
-    && Number.isFinite(assessment.percentage)
-    && assessment.percentage >= 0
-    && assessment.percentage <= 100
-    && typeof assessment.passed === 'boolean'
-    && isValidIsoTimestamp(assessment.submittedAt)
-  );
+  return isValidAssessmentResultContract(
+    assessment,
+    FINAL_ASSESSMENT_PASS_THRESHOLD,
+  ) && isValidIsoTimestamp(assessment.submittedAt);
+}
+
+const allowedModuleIds = new Set([
+  ...REQUIRED_HRBA_MODULE_IDS,
+  FINAL_ASSESSMENT_MODULE_ID,
+]);
+
+function hasValidCompletedModuleIds(completedModuleIds: string[]) {
+  const completed = new Set(completedModuleIds);
+
+  return completed.size === completedModuleIds.length
+    && completedModuleIds.every((moduleId) => allowedModuleIds.has(moduleId))
+    && REQUIRED_HRBA_MODULE_IDS.every((moduleId, index) => (
+      !completed.has(moduleId)
+      || REQUIRED_HRBA_MODULE_IDS.slice(0, index).every((previousId) => completed.has(previousId))
+    ))
+    && (
+      !completed.has(FINAL_ASSESSMENT_MODULE_ID)
+      || REQUIRED_HRBA_MODULE_IDS.every((moduleId) => completed.has(moduleId))
+    );
+}
+
+function isValidProgressPayload(event: HubProgressEvent, payload: HubProgressPayload) {
+  const assessmentRequired = event === 'assessment_completed' || event === 'course_completed';
+  const assessment = payload.assessment;
+
+  if (
+    !Number.isFinite(payload.progressPercent)
+    || payload.progressPercent < 0
+    || payload.progressPercent > 100
+    || !hasValidCompletedModuleIds(payload.completedModuleIds)
+    || (
+      payload.currentModuleId !== null
+      && !allowedModuleIds.has(payload.currentModuleId)
+    )
+    || (
+      payload.currentScreenId !== null
+      && (
+        typeof payload.currentScreenId !== 'string'
+        || payload.currentScreenId.length === 0
+        || payload.currentScreenId.length > 256
+      )
+    )
+    || assessmentRequired !== Boolean(assessment)
+    || (assessment && !isValidAssessmentPayload(assessment))
+  ) {
+    return false;
+  }
+
+  if (event === 'course_completed') {
+    return Boolean(
+      assessment?.passed
+      && payload.progressPercent === 100
+      && payload.completedModuleIds.includes(FINAL_ASSESSMENT_MODULE_ID)
+      && REQUIRED_HRBA_MODULE_IDS.every((moduleId) => payload.completedModuleIds.includes(moduleId)),
+    );
+  }
+
+  if (event === 'assessment_completed') {
+    return assessment?.passed
+      ? payload.progressPercent === 100
+        && payload.completedModuleIds.includes(FINAL_ASSESSMENT_MODULE_ID)
+      : payload.progressPercent < 100
+        && !payload.completedModuleIds.includes(FINAL_ASSESSMENT_MODULE_ID);
+  }
+
+  return payload.progressPercent < 100
+    && !payload.completedModuleIds.includes(FINAL_ASSESSMENT_MODULE_ID);
 }
 
 export function sendCourseReadyMessage(portalContext: PortalLaunchContext) {
@@ -87,7 +149,7 @@ export function sendCourseReadyMessage(portalContext: PortalLaunchContext) {
 
 export function sendPortalIntegrationError(
   portalContext: PortalLaunchContext,
-  code: string,
+  code: 'launch_context_unavailable' | 'launch_context_invalid',
 ) {
   if (!canSendToHub(portalContext)) {
     return false;
@@ -115,11 +177,7 @@ export function sendHubProgressEvent(
     || !learnerStateKey
     || !isCanonicalOpaque32ByteBase64Url(learnerStateKey)
     || !canSendToHub(portalContext)
-    || (payload.assessment && !isValidAssessmentPayload(payload.assessment))
-    || (
-      (event === 'assessment_completed' || event === 'course_completed')
-      && !payload.assessment
-    )
+    || !isValidProgressPayload(event, payload)
   ) {
     return false;
   }
@@ -130,9 +188,7 @@ export function sendHubProgressEvent(
     courseSlug: portalContext.courseSlug,
     learnerStateKey,
     event,
-    progressPercent: event === 'course_completed'
-      ? 100
-      : Math.max(0, Math.min(100, Math.round(payload.progressPercent))),
+    progressPercent: Math.round(payload.progressPercent),
     completedModuleIds: [...payload.completedModuleIds].sort(),
     currentModuleId: payload.currentModuleId,
     currentScreenId: payload.currentScreenId,

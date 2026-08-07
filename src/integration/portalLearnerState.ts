@@ -22,6 +22,16 @@ export type ExternalCourseLaunchContextMessage = {
   learnerStateKey: string;
 };
 
+export type AssessmentResultContract = {
+  score: number;
+  maxScore: number;
+  percentage: number;
+  passed: boolean;
+  attemptNumber: number;
+  evidenceId: string;
+  submittedAt: string;
+};
+
 export function isCanonicalOpaque32ByteBase64Url(value: unknown): value is string {
   return typeof value === 'string' && canonicalOpaque32BytePattern.test(value);
 }
@@ -31,6 +41,47 @@ export function isValidAssessmentEvidenceId(value: unknown): value is string {
     evidenceUuidV4Pattern.test(value)
     || canonicalOpaque32BytePattern.test(value)
   );
+}
+
+export function isValidAssessmentResultContract(
+  value: unknown,
+  passThreshold: number,
+): value is AssessmentResultContract {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const assessment = value as Record<string, unknown>;
+  const submittedAt = assessment.submittedAt;
+  const submittedTimestamp = typeof submittedAt === 'string'
+    ? Date.parse(submittedAt)
+    : Number.NaN;
+
+  if (
+    !Number.isInteger(assessment.attemptNumber)
+    || (assessment.attemptNumber as number) <= 0
+    || !isValidAssessmentEvidenceId(assessment.evidenceId)
+    || !Number.isInteger(assessment.score)
+    || !Number.isInteger(assessment.maxScore)
+    || (assessment.maxScore as number) <= 0
+    || (assessment.score as number) < 0
+    || (assessment.score as number) > (assessment.maxScore as number)
+    || !Number.isInteger(assessment.percentage)
+    || (assessment.percentage as number) < 0
+    || (assessment.percentage as number) > 100
+    || typeof assessment.passed !== 'boolean'
+    || !Number.isFinite(submittedTimestamp)
+    || new Date(submittedTimestamp).toISOString() !== submittedAt
+  ) {
+    return false;
+  }
+
+  const expectedPercentage = Math.round(
+    ((assessment.score as number) / (assessment.maxScore as number)) * 100,
+  );
+
+  return assessment.percentage === expectedPercentage
+    && assessment.passed === (expectedPercentage >= passThreshold);
 }
 
 export function createAssessmentEvidenceId() {

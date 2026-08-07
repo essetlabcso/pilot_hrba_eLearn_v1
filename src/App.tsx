@@ -28,7 +28,9 @@ import {
 } from './integration/portalLearnerState';
 import {
   canAccessCourseModule,
+  FINAL_ASSESSMENT_MODULE_ID,
   hasFinalAssessmentPrerequisites,
+  REQUIRED_HRBA_MODULE_IDS,
 } from './state/coursePrerequisites';
 
 import m1Sequence from './data/module1/module_1_screen_sequence.json';
@@ -52,14 +54,11 @@ import {
   getAllowedModule5ScreenId,
 } from './data/module5/module5EnhancedModel';
 
-const TRACKABLE_PORTAL_MODULE_IDS = [
-  'module_01_hrba_foundations',
-  'module_02_everyday_cso_work',
-  'module_03_project_design',
-  'module_04_implementation',
-  'module_05_hrba_meal',
+const TRACKABLE_PORTAL_MODULE_IDS: string[] = [...REQUIRED_HRBA_MODULE_IDS];
+const FINAL_PORTAL_MODULE_IDS: string[] = [
+  ...TRACKABLE_PORTAL_MODULE_IDS,
+  FINAL_ASSESSMENT_MODULE_ID,
 ];
-const FINAL_PORTAL_MODULE_IDS = [...TRACKABLE_PORTAL_MODULE_IDS, 'final_assessment'];
 
 function getPortalCompletedModuleIds(completedModules: string[]) {
   return TRACKABLE_PORTAL_MODULE_IDS.filter((moduleId) => completedModules.includes(moduleId));

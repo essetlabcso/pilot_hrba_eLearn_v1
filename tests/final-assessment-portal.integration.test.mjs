@@ -32,11 +32,25 @@ const CORRECT_RADIO_IDS = [
   'q9_adaptation-c',
   'q10_meal_reporting-b',
 ];
+const INCORRECT_RADIO_IDS = [
+  'q1_hrba_shift-b',
+  'q2_actor_roles-b',
+  'q3_participation-a',
+  'q4_inclusion-a',
+  'q5_accountability-a',
+  'q6_power_barriers-a',
+  'q7_safe_evidence-a',
+  'q8_design_repair-a',
+  'q9_adaptation-a',
+  'q10_meal_reporting-a',
+];
 const STATE_KEYS = {
   a: Buffer.alloc(32, 0x11).toString('base64url'),
   b: Buffer.alloc(32, 0x22).toString('base64url'),
   c: Buffer.alloc(32, 0x33).toString('base64url'),
   d: Buffer.alloc(32, 0x44).toString('base64url'),
+  e: Buffer.alloc(32, 0x55).toString('base64url'),
+  f: Buffer.alloc(32, 0x66).toString('base64url'),
 };
 const APPROVED_ROUTE_KEYS = ['courseSlug', 'embed', 'launchToken', 'portalOrigin'];
 const PROHIBITED_KEYS = [
@@ -150,13 +164,6 @@ function buildCourseUrl(parentOrigin, mode) {
   return url.toString();
 }
 
-function keyForMode(mode) {
-  if (mode === 'learner-b') return STATE_KEYS.b;
-  if (mode === 'replacement') return STATE_KEYS.c;
-  if (mode === 'malformed-evidence') return STATE_KEYS.d;
-  return STATE_KEYS.a;
-}
-
 function createParentServer(getOrigin) {
   return createServer((request, response) => {
     const mode = new URL(request.url || '/', 'http://parent.invalid').pathname.slice(1) || 'learner-a';
@@ -210,6 +217,10 @@ function createParentServer(getOrigin) {
                   ? stateKeys.c
                   : mode === 'malformed-evidence'
                     ? stateKeys.d
+                    : mode === 'assessment-fail'
+                      ? stateKeys.e
+                      : mode === 'tampered-assessment'
+                        ? stateKeys.f
                     : mode === 'malformed-context'
                       ? stateKeys.a + '='
                       : stateKeys.a;
@@ -501,6 +512,14 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     });
     let messages = await getParentMessages(page);
     assert.equal(messages.some(({ data }) => data?.event === 'progress_updated'), false);
+    const integrationErrors = messages.filter(({ data }) => data?.event === 'integration_error');
+    assert.equal(integrationErrors.length, 1);
+    assert.equal(integrationErrors[0].origin, APP_ORIGIN);
+    assert.equal(integrationErrors[0].data.courseSlug, COURSE_SLUG);
+    assert.deepEqual(integrationErrors[0].data.error, { code: 'launch_context_unavailable' });
+    assert.equal('learnerStateKey' in integrationErrors[0].data, false);
+    assert.equal('launchToken' in integrationErrors[0].data, false);
+    assertNoProhibitedIdentifiers(integrationErrors[0]);
 
     await page.goto(`${parentOrigin}/malformed-context`);
     const malformedFrame = await getCourseFrame(page);
@@ -528,9 +547,78 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     messages = await getParentMessages(page);
     assert.deepEqual(messages, []);
     assert.equal(new URL(wrongOriginFrame.url()).search, '?embed=portal');
+
+    const directPage = await context.newPage();
+    await directPage.goto(buildCourseUrl(parentOrigin, 'direct'));
+    await directPage.getByRole('heading', { name: 'Return to the Learning Hub' }).waitFor();
+    assert.equal(await directPage.evaluate(() => window.parent === window), true);
+    assert.equal(new URL(directPage.url()).search, '?embed=portal');
+    await directPage.close();
   });
 
-  await t.test('malformed evidence is cleared and never emitted', async () => {
+  await t.test('failed assessment is reported without completion and a passing retake completes once', async () => {
+    await page.goto(`${parentOrigin}/assessment-fail`);
+    const frame = await getCourseFrame(page);
+    const storageKey = portalStorageKey(STATE_KEYS.e);
+    await frame.evaluate(({ storageKey: key, state }) => {
+      localStorage.setItem(key, JSON.stringify(state));
+    }, {
+      storageKey,
+      state: minimalState({ completedModules: REQUIRED_MODULES }),
+    });
+    await reloadFrame(frame);
+
+    await frame.getByRole('button', {
+      name: 'Start Final Assessment: Final Assessment',
+      exact: true,
+    }).click();
+    await frame.getByRole('button', { name: 'Start assessment', exact: true }).click();
+    for (const radioId of INCORRECT_RADIO_IDS) {
+      await frame.locator(`#${radioId}`).check();
+    }
+
+    await clearParentMessages(page);
+    await frame.getByRole('button', { name: 'Submit final assessment', exact: true }).click();
+    await waitForEvent(page, 'assessment_completed', STATE_KEYS.e);
+    let messages = await getParentMessages(page);
+    const failed = messages.find(({ data }) => data?.event === 'assessment_completed');
+    assert.ok(failed);
+    assert.equal(failed.data.assessment.attemptNumber, 1);
+    assert.equal(failed.data.assessment.passed, false);
+    assert.equal(failed.data.assessment.percentage, 0);
+    assert.equal(failed.data.progressPercent, 90);
+    assert.equal(failed.data.completedModuleIds.includes('final_assessment'), false);
+    assert.equal(messages.some(({ data }) => data?.event === 'course_completed'), false);
+    assert.equal('launchToken' in failed.data, false);
+    assertNoProhibitedIdentifiers(failed);
+
+    const failedEvidenceId = failed.data.assessment.evidenceId;
+    await frame.getByRole('button', { name: 'Retake assessment', exact: true }).click();
+    for (const radioId of CORRECT_RADIO_IDS) {
+      await frame.locator(`#${radioId}`).check();
+    }
+
+    await clearParentMessages(page);
+    await frame.getByRole('button', { name: 'Submit final assessment', exact: true }).click();
+    await waitForEvent(page, 'course_completed', STATE_KEYS.e);
+    messages = await getParentMessages(page);
+    const passed = messages.find(({ data }) => data?.event === 'assessment_completed');
+    const completion = messages.find(({ data }) => data?.event === 'course_completed');
+    assert.ok(passed);
+    assert.ok(completion);
+    assert.equal(passed.data.assessment.attemptNumber, 2);
+    assert.equal(passed.data.assessment.passed, true);
+    assert.equal(passed.data.assessment.percentage, 100);
+    assert.notEqual(passed.data.assessment.evidenceId, failedEvidenceId);
+    assert.equal(completion.data.assessment.evidenceId, passed.data.assessment.evidenceId);
+    assert.equal(completion.data.progressPercent, 100);
+    assert.equal(completion.data.completedModuleIds.includes('final_assessment'), true);
+    assert.equal(messages.filter(({ data }) => data?.event === 'course_completed').length, 1);
+    assertNoProhibitedIdentifiers(passed);
+    assertNoProhibitedIdentifiers(completion);
+  });
+
+  await t.test('invalid persisted assessments are cleared and never emitted', async () => {
     await page.goto(`${parentOrigin}/malformed-evidence`);
     const frame = await getCourseFrame(page);
     const storageKey = portalStorageKey(STATE_KEYS.d);
@@ -562,6 +650,40 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     assert.equal(messages.some(({ data }) => data?.event === 'course_completed'), false);
     assert.equal(JSON.stringify(messages).includes(`${STATE_KEYS.d}=`), false);
     assert.equal(await frame.locator('.final-assessment-score').count(), 0);
+
+    await page.goto(`${parentOrigin}/tampered-assessment`);
+    const tamperedFrame = await getCourseFrame(page);
+    const tamperedStorageKey = portalStorageKey(STATE_KEYS.f);
+    await tamperedFrame.evaluate(({ storageKey: key, state }) => {
+      localStorage.setItem(key, JSON.stringify(state));
+    }, {
+      storageKey: tamperedStorageKey,
+      state: minimalState({
+        completedModules: [...REQUIRED_MODULES, 'final_assessment'],
+        currentLayer: 'player',
+        currentModuleId: 'final_assessment',
+        currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+        finalAssessmentResult: {
+          attemptNumber: 1,
+          evidenceId: '123e4567-e89b-42d3-a456-426614174000',
+          maxScore: 10,
+          passed: true,
+          percentage: 0,
+          score: 0,
+          submittedAt: '2026-07-23T12:00:00.000Z',
+        },
+      }),
+    });
+    await clearParentMessages(page);
+    await reloadFrame(tamperedFrame);
+    await waitForEvent(page, 'progress_updated', STATE_KEYS.f);
+    const tamperedMessages = await getParentMessages(page);
+    assert.equal(tamperedMessages.some(({ data }) => data?.assessment), false);
+    assert.equal(tamperedMessages.some(({ data }) => data?.event === 'course_completed'), false);
+    assert.equal(await tamperedFrame.locator('.final-assessment-score').count(), 0);
+    const tamperedProgress = tamperedMessages.find(({ data }) => data?.event === 'progress_updated');
+    assert.equal(tamperedProgress.data.progressPercent, 90);
+    assert.equal(tamperedProgress.data.completedModuleIds.includes('final_assessment'), false);
   });
 
   await t.test('standalone mode remains separate and mobile-safe', async () => {
