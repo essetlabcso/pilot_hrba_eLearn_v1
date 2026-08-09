@@ -185,12 +185,18 @@ test('launch context and assessment evidence conform to the approved Hub contrac
     version: 1,
     courseSlug: HRBA_COURSE_SLUG,
     learnerStateKey,
+    resumeRevision: '2026-08-09T00:00:00.000Z',
+    resumeState: null,
+    trustedAssessmentState: null,
   }, portalContext), true);
   assert.equal(isExternalCourseLaunchContextMessage({
     type: 'cso-learning-hub:external-course-launch-context',
     version: 1,
     courseSlug: HRBA_COURSE_SLUG,
     learnerStateKey: `${learnerStateKey}=`,
+    resumeRevision: '2026-08-09T00:00:00.000Z',
+    resumeState: null,
+    trustedAssessmentState: null,
   }, portalContext), false);
 
   const evidenceId = createAssessmentEvidenceId();

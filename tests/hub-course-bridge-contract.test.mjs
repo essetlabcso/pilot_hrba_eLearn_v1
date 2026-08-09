@@ -14,6 +14,11 @@ import {
 const COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
 const PORTAL_ORIGIN = 'https://pilot-dec-fj4c3eet9-esset-lab.vercel.app';
 const LEARNER_STATE_KEY = Buffer.alloc(32, 0x5a).toString('base64url');
+const RESUME_CONTEXT = {
+  resumeRevision: '2026-08-09T00:00:00.000Z',
+  resumeState: null,
+  trustedAssessmentState: null,
+};
 const REQUIRED_MODULES = [
   'module_01_hrba_foundations',
   'module_02_everyday_cso_work',
@@ -102,18 +107,21 @@ test('launch context accepts only the expected course and canonical learner-stat
   assert.equal(isExternalCourseLaunchContextMessage({
     courseSlug: COURSE_SLUG,
     learnerStateKey: LEARNER_STATE_KEY,
+    ...RESUME_CONTEXT,
     type: 'cso-learning-hub:external-course-launch-context',
     version: 1,
   }, context), true);
   assert.equal(isExternalCourseLaunchContextMessage({
     courseSlug: COURSE_SLUG,
     learnerStateKey: `${LEARNER_STATE_KEY}=`,
+    ...RESUME_CONTEXT,
     type: 'cso-learning-hub:external-course-launch-context',
     version: 1,
   }, context), false);
   assert.equal(isExternalCourseLaunchContextMessage({
     courseSlug: 'another-course',
     learnerStateKey: LEARNER_STATE_KEY,
+    ...RESUME_CONTEXT,
     type: 'cso-learning-hub:external-course-launch-context',
     version: 1,
   }, context), false);

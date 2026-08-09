@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   STANDALONE_STORAGE_KEY,
+  initialLearningState,
   loadLearningState,
   resetLearningState,
   saveLearningState,
@@ -24,8 +25,18 @@ import {
 import {
   derivePortalStorageKey,
   isExternalCourseLaunchContextMessage,
+  isExternalCourseResumeResultMessage,
   type PortalLearnerStateContext,
 } from './integration/portalLearnerState';
+import {
+  getResumeContentSignature,
+  hydrateLearningStateFromResume,
+  isMeaningfulLearningState,
+  serializeLearningStateForResume,
+  validateHrbaResumeState,
+  validateTrustedAssessmentState,
+  type TrustedAssessmentState,
+} from './integration/resumeState';
 import {
   canAccessCourseModule,
   FINAL_ASSESSMENT_MODULE_ID,
@@ -59,6 +70,12 @@ const FINAL_PORTAL_MODULE_IDS: string[] = [
   ...TRACKABLE_PORTAL_MODULE_IDS,
   FINAL_ASSESSMENT_MODULE_ID,
 ];
+
+type PortalResumeSession = {
+  initialMode: 'server' | 'legacy' | 'empty';
+  revision: string;
+  trustedAssessmentState: TrustedAssessmentState;
+};
 
 function getPortalCompletedModuleIds(completedModules: string[]) {
   return TRACKABLE_PORTAL_MODULE_IDS.filter((moduleId) => completedModules.includes(moduleId));
@@ -126,17 +143,23 @@ function getAllowedModule4ScreenId(requestedScreenId: string, screenIds: string[
 }
 
 function CourseApplication({
+  initialState,
   learnerStateKey,
   portalContext,
+  resumeSession,
   storageKey,
 }: {
+  initialState?: LearningState;
   learnerStateKey: string | null;
   portalContext: PortalLaunchContext | null;
+  resumeSession?: PortalResumeSession;
   storageKey: string;
 }) {
   const reportedFinalAssessmentAttemptsRef = useRef<Set<string>>(new Set());
   const [state, setState] = useState<LearningState>(() => {
-    const defaultState = loadLearningState(storageKey, Boolean(portalContext));
+    const defaultState = initialState
+      ? structuredClone(initialState)
+      : loadLearningState(storageKey, Boolean(portalContext));
     const routePortalContext = portalContext;
     const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
@@ -442,6 +465,15 @@ function CourseApplication({
     
     return defaultState;
   });
+  const [resumeSaveEpoch, setResumeSaveEpoch] = useState(0);
+  const resumeRevisionRef = useRef(resumeSession?.revision ?? null);
+  const resumePendingSignatureRef = useRef<string | null>(null);
+  const resumeAcknowledgedSignatureRef = useRef(
+    portalContext && resumeSession?.initialMode === 'server'
+      ? getResumeContentSignature(serializeLearningStateForResume(state, null))
+      : null,
+  );
+  const legacyBootstrapRef = useRef(resumeSession?.initialMode === 'legacy');
 
   useEffect(() => {
     const restoreRouteFromHistory = () => window.location.reload();
@@ -466,20 +498,75 @@ function CourseApplication({
   );
 
   useEffect(() => {
+    if (!portalContext || !resumeSession) return;
+
+    const handleResumeResult = (event: MessageEvent) => {
+      if (
+        event.source !== window.parent
+        || event.origin !== portalContext.portalOrigin
+        || !isExternalCourseResumeResultMessage(event.data, portalContext)
+      ) return;
+
+      const authoritativeResume = event.data.resumeState === null
+        ? null
+        : validateHrbaResumeState(event.data.resumeState);
+      if (event.data.resumeState !== null && !authoritativeResume) return;
+
+      resumeRevisionRef.current = event.data.resumeRevision;
+      legacyBootstrapRef.current = false;
+      if (event.data.status === 'accepted') {
+        if (resumePendingSignatureRef.current) {
+          resumeAcknowledgedSignatureRef.current = resumePendingSignatureRef.current;
+        }
+      } else {
+        const authoritativeState = authoritativeResume
+          ? hydrateLearningStateFromResume(authoritativeResume, resumeSession.trustedAssessmentState)
+          : structuredClone(initialLearningState);
+        resumeAcknowledgedSignatureRef.current = getResumeContentSignature(
+          serializeLearningStateForResume(authoritativeState, null),
+        );
+        setState(authoritativeState);
+      }
+      resumePendingSignatureRef.current = null;
+      setResumeSaveEpoch((value) => value + 1);
+    };
+
+    window.addEventListener('message', handleResumeResult);
+    return () => window.removeEventListener('message', handleResumeResult);
+  }, [portalContext, resumeSession]);
+
+  useEffect(() => {
+    if (portalContext && resumeSession?.initialMode === 'empty' && !isMeaningfulLearningState(state)) {
+      return;
+    }
     saveLearningState(state, storageKey, Boolean(portalContext));
-  }, [portalContext, state, storageKey]);
+  }, [portalContext, resumeSession, state, storageKey]);
 
   useEffect(() => {
     if (state.finalAssessmentResult) {
       return;
     }
 
-    sendHubProgressEvent(portalContext, learnerStateKey, 'progress_updated', {
+    if (!portalContext || !resumeSession) return;
+    const resumeState = serializeLearningStateForResume(state, resumeRevisionRef.current);
+    const contentSignature = getResumeContentSignature(resumeState);
+    if (
+      contentSignature === resumeAcknowledgedSignatureRef.current
+      || contentSignature === resumePendingSignatureRef.current
+      || (resumeSession.initialMode === 'empty' && !isMeaningfulLearningState(state))
+    ) return;
+    if (resumePendingSignatureRef.current) return;
+
+    const sent = sendHubProgressEvent(portalContext, learnerStateKey, 'progress_updated', {
+      baseRevision: resumeRevisionRef.current,
       completedModuleIds: portalCompletedModuleIds,
       currentModuleId: state.currentModuleId,
       currentScreenId: state.currentScreenId,
+      legacyBootstrap: legacyBootstrapRef.current,
       progressPercent: portalProgressPercent,
+      resumeState,
     });
+    if (sent) resumePendingSignatureRef.current = contentSignature;
   }, [
     portalContext,
     learnerStateKey,
@@ -489,6 +576,9 @@ function CourseApplication({
     state.currentScreenId,
     screenProgressSignature,
     state.finalAssessmentResult,
+    state,
+    resumeSaveEpoch,
+    resumeSession,
   ]);
 
   useEffect(() => {
@@ -968,7 +1058,12 @@ function PortalUnavailableState({ sanitizeInvalidRoute = false }: { sanitizeInva
 }
 
 function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContext }) {
-  const [learnerContext, setLearnerContext] = useState<PortalLearnerStateContext | null>(null);
+  const [learnerContext, setLearnerContext] = useState<(
+    PortalLearnerStateContext & {
+      initialState: LearningState;
+      resumeSession: PortalResumeSession;
+    }
+  ) | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -1009,10 +1104,41 @@ function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContex
       accepted = true;
       stopWaiting();
       const learnerStateKey = event.data.learnerStateKey;
+      const serverResumeState = event.data.resumeState === null
+        ? null
+        : validateHrbaResumeState(event.data.resumeState);
+      const trustedAssessmentState = validateTrustedAssessmentState(event.data.trustedAssessmentState);
+      if ((event.data.resumeState !== null && !serverResumeState) || trustedAssessmentState === undefined) {
+        setFailed(true);
+        sendPortalIntegrationError(portalContext, 'launch_context_invalid');
+        return;
+      }
       void derivePortalStorageKey(learnerStateKey)
         .then((storageKey) => {
           if (active) {
-            setLearnerContext({ learnerStateKey, storageKey });
+            const localState = loadLearningState(storageKey, true);
+            const hasLegacyState = !serverResumeState && isMeaningfulLearningState(localState);
+            const sanitizedLegacyResume = hasLegacyState
+              ? serializeLearningStateForResume(localState, event.data.resumeRevision)
+              : null;
+            const initialState = serverResumeState
+              ? hydrateLearningStateFromResume(serverResumeState, trustedAssessmentState)
+              : sanitizedLegacyResume
+                ? hydrateLearningStateFromResume(sanitizedLegacyResume, trustedAssessmentState)
+                : structuredClone(initialLearningState);
+            if (serverResumeState) {
+              saveLearningState(initialState, storageKey, true);
+            }
+            setLearnerContext({
+              initialState,
+              learnerStateKey,
+              resumeSession: {
+                initialMode: serverResumeState ? 'server' : hasLegacyState ? 'legacy' : 'empty',
+                revision: event.data.resumeRevision,
+                trustedAssessmentState,
+              },
+              storageKey,
+            });
           }
         })
         .catch(() => {
@@ -1063,8 +1189,10 @@ function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContex
 
   return (
     <CourseApplication
+      initialState={learnerContext.initialState}
       learnerStateKey={learnerContext.learnerStateKey}
       portalContext={portalContext}
+      resumeSession={learnerContext.resumeSession}
       storageKey={learnerContext.storageKey}
     />
   );

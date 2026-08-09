@@ -11,6 +11,7 @@ const APP_ORIGIN = `http://127.0.0.1:${APP_PORT}`;
 const COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
 const EVENT_TYPE = 'cso-learning-hub:external-course-event';
 const CONTEXT_TYPE = 'cso-learning-hub:external-course-launch-context';
+const RESUME_RESULT_TYPE = 'cso-learning-hub:external-course-resume-result';
 const STANDALONE_STORAGE_KEY = 'hrba-course-progress-v1';
 const PORTAL_STORAGE_PREFIX = 'hrba-course-progress-v1:portal:sha256:';
 const REQUIRED_MODULES = [
@@ -199,8 +200,40 @@ function createParentServer(getOrigin) {
             const courseSlug = ${JSON.stringify(COURSE_SLUG)};
             const stateKeys = ${JSON.stringify(STATE_KEYS)};
             window.receivedMessages = [];
+            let resumeRevisionCounter = 0;
             window.addEventListener('message', (event) => {
               window.receivedMessages.push({ origin: event.origin, data: event.data });
+              const frame = document.getElementById('course-frame');
+              if (
+                event.origin === appOrigin
+                && event.data?.type === ${JSON.stringify(EVENT_TYPE)}
+                && event.data?.event === 'assessment_completed'
+                && event.data?.learnerStateKey
+                && event.data?.assessment
+              ) {
+                sessionStorage.setItem(
+                  'trusted-assessment:' + event.data.learnerStateKey,
+                  JSON.stringify(event.data.assessment),
+                );
+              }
+              if (
+                event.origin === appOrigin
+                && event.data?.type === ${JSON.stringify(EVENT_TYPE)}
+                && event.data?.event === 'progress_updated'
+                && event.data?.resumeState
+              ) {
+                resumeRevisionCounter += 1;
+                const resumeRevision = new Date(Date.UTC(2026, 6, 25, 12, 0, resumeRevisionCounter)).toISOString();
+                frame.contentWindow.postMessage({
+                  type: ${JSON.stringify(RESUME_RESULT_TYPE)},
+                  version: 1,
+                  courseSlug,
+                  status: 'accepted',
+                  resumeRevision,
+                  resumeState: { ...event.data.resumeState, baseRevision: resumeRevision },
+                }, appOrigin);
+                return;
+              }
               if (
                 event.origin !== appOrigin ||
                 event.data?.type !== ${JSON.stringify(EVENT_TYPE)} ||
@@ -224,12 +257,16 @@ function createParentServer(getOrigin) {
                     : mode === 'malformed-context'
                       ? stateKeys.a + '='
                       : stateKeys.a;
-              const frame = document.getElementById('course-frame');
               frame.contentWindow.postMessage({
                 type: ${JSON.stringify(CONTEXT_TYPE)},
                 version: 1,
                 courseSlug,
                 learnerStateKey,
+                resumeRevision: '2026-07-25T12:00:00.000Z',
+                resumeState: null,
+                trustedAssessmentState: JSON.parse(
+                  sessionStorage.getItem('trusted-assessment:' + learnerStateKey) || 'null',
+                ),
               }, appOrigin);
 
               if (mode === 'mismatch') {
@@ -352,11 +389,10 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
   await t.test('Learner A completes and retains one immutable assessment evidence record', async () => {
     await page.goto(`${parentOrigin}/learner-a`);
     let frame = await getCourseFrame(page);
-    await waitForEvent(page, 'progress_updated', STATE_KEYS.a);
+    await page.waitForTimeout(250);
     let messages = await getParentMessages(page);
     const firstProgress = messages.find(({ data }) => data?.event === 'progress_updated');
-    assert.equal(firstProgress.data.progressPercent, 0);
-    assert.deepEqual(firstProgress.data.completedModuleIds, []);
+    assert.equal(firstProgress, undefined);
     assert.equal(new URL(frame.url()).searchParams.has('learnerId'), false);
 
     await frame.getByRole('heading', {
@@ -527,13 +563,12 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
 
     await page.goto(`${parentOrigin}/learner-b`);
     const frameB = await getCourseFrame(page);
-    await waitForEvent(page, 'progress_updated', STATE_KEYS.b);
+    await page.waitForTimeout(250);
     const learnerBMessages = await getParentMessages(page);
     const learnerBProgress = learnerBMessages.find(
       ({ data }) => data?.event === 'progress_updated' && data.learnerStateKey === STATE_KEYS.b,
     );
-    assert.equal(learnerBProgress.data.progressPercent, 0);
-    assert.deepEqual(learnerBProgress.data.completedModuleIds, []);
+    assert.equal(learnerBProgress, undefined);
     assert.equal(
       await frameB.getByRole('button', {
         name: 'Complete Module 5 to unlock: Final Assessment',
@@ -556,10 +591,10 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
 
     const storageKeysB = await frameB.evaluate(() => Object.keys(localStorage).sort());
     assert.equal(storageKeysB.includes(storageKeyA), true);
-    assert.equal(storageKeysB.includes(portalStorageKey(STATE_KEYS.b)), true);
+    assert.equal(storageKeysB.includes(portalStorageKey(STATE_KEYS.b)), false);
     assert.equal(
       storageKeysB.filter((key) => key.startsWith(PORTAL_STORAGE_PREFIX)).length,
-      2,
+      1,
     );
 
     await page.goto(`${parentOrigin}/learner-a`);
@@ -574,12 +609,11 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
 
     await page.goto(`${parentOrigin}/replacement`);
     const replacementFrame = await getCourseFrame(page);
-    await waitForEvent(page, 'progress_updated', STATE_KEYS.c);
+    await page.waitForTimeout(250);
     const replacementProgress = (await getParentMessages(page)).find(
       ({ data }) => data?.event === 'progress_updated' && data.learnerStateKey === STATE_KEYS.c,
     );
-    assert.equal(replacementProgress.data.progressPercent, 0);
-    assert.deepEqual(replacementProgress.data.completedModuleIds, []);
+    assert.equal(replacementProgress, undefined);
     assert.equal(await replacementFrame.locator('.final-assessment-score').count(), 0);
     assert.equal(
       JSON.stringify(await getParentMessages(page)).includes(immutableEvidence.evidenceId),

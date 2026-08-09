@@ -352,7 +352,7 @@ function clearInvalidAssessmentResult(state: LearningState) {
   };
 }
 
-function validateLearningState(
+export function validateLearningState(
   candidate: unknown,
   requireValidAssessmentEvidence = false,
 ): LearningState | null {

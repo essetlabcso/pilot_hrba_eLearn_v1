@@ -1,9 +1,12 @@
 import type { PortalLaunchContext } from './portalContext';
+import type { HrbaResumeState, TrustedAssessmentState } from './resumeState';
 
 export const HRBA_COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
 export const EXTERNAL_COURSE_EVENT_MESSAGE = 'cso-learning-hub:external-course-event';
 export const EXTERNAL_COURSE_LAUNCH_CONTEXT_MESSAGE =
   'cso-learning-hub:external-course-launch-context';
+export const EXTERNAL_COURSE_RESUME_RESULT_MESSAGE =
+  'cso-learning-hub:external-course-resume-result';
 export const PORTAL_STORAGE_PREFIX = 'hrba-course-progress-v1:portal:sha256:';
 
 const canonicalOpaque32BytePattern = /^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/;
@@ -20,6 +23,19 @@ export type ExternalCourseLaunchContextMessage = {
   version: 1;
   courseSlug: typeof HRBA_COURSE_SLUG;
   learnerStateKey: string;
+  resumeRevision: string;
+  resumeState: HrbaResumeState | null;
+  trustedAssessmentState: TrustedAssessmentState;
+};
+
+export type ExternalCourseResumeResultMessage = {
+  type: typeof EXTERNAL_COURSE_RESUME_RESULT_MESSAGE;
+  version: 1;
+  courseSlug: typeof HRBA_COURSE_SLUG;
+  status: 'accepted' | 'conflict' | 'rejected';
+  resumeRevision: string;
+  resumeState: HrbaResumeState | null;
+  error?: string;
 };
 
 export type AssessmentResultContract = {
@@ -115,7 +131,32 @@ export function isExternalCourseLaunchContextMessage(
     && candidate.courseSlug === HRBA_COURSE_SLUG
     && candidate.courseSlug === portalContext.courseSlug
     && isCanonicalOpaque32ByteBase64Url(candidate.learnerStateKey)
+    && isIsoRevision(candidate.resumeRevision)
+    && (candidate.resumeState === null || typeof candidate.resumeState === 'object')
+    && (candidate.trustedAssessmentState === null || typeof candidate.trustedAssessmentState === 'object')
   );
+}
+
+function isIsoRevision(value: unknown) {
+  if (typeof value !== 'string' || value.length > 64) return false;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) && new Date(timestamp).toISOString() === value;
+}
+
+export function isExternalCourseResumeResultMessage(
+  value: unknown,
+  portalContext: PortalLaunchContext,
+): value is ExternalCourseResumeResultMessage {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Record<string, unknown>;
+  return candidate.type === EXTERNAL_COURSE_RESUME_RESULT_MESSAGE
+    && candidate.version === 1
+    && candidate.courseSlug === HRBA_COURSE_SLUG
+    && candidate.courseSlug === portalContext.courseSlug
+    && ['accepted', 'conflict', 'rejected'].includes(String(candidate.status))
+    && isIsoRevision(candidate.resumeRevision)
+    && (candidate.resumeState === null || typeof candidate.resumeState === 'object')
+    && (candidate.error === undefined || typeof candidate.error === 'string');
 }
 
 export async function derivePortalStorageKey(learnerStateKey: string) {

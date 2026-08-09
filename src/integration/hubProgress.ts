@@ -9,6 +9,10 @@ import {
   FINAL_ASSESSMENT_MODULE_ID,
   REQUIRED_HRBA_MODULE_IDS,
 } from '../state/coursePrerequisites';
+import {
+  validateHrbaResumeState,
+  type HrbaResumeState,
+} from './resumeState';
 
 export type HubAssessmentPayload = {
   score: number;
@@ -26,6 +30,9 @@ export type HubProgressPayload = {
   currentModuleId: string | null;
   currentScreenId: string | null;
   assessment?: HubAssessmentPayload;
+  baseRevision?: string | null;
+  legacyBootstrap?: boolean;
+  resumeState?: HrbaResumeState;
 };
 
 export type HubProgressEvent =
@@ -107,6 +114,9 @@ function isValidProgressPayload(event: HubProgressEvent, payload: HubProgressPay
     )
     || assessmentRequired !== Boolean(assessment)
     || (assessment && !isValidAssessmentPayload(assessment))
+    || (payload.resumeState !== undefined && !validateHrbaResumeState(payload.resumeState))
+    || (payload.resumeState !== undefined && payload.resumeState.baseRevision !== payload.baseRevision)
+    || (payload.legacyBootstrap !== undefined && typeof payload.legacyBootstrap !== 'boolean')
   ) {
     return false;
   }
@@ -193,6 +203,11 @@ export function sendHubProgressEvent(
     currentModuleId: payload.currentModuleId,
     currentScreenId: payload.currentScreenId,
     ...(payload.assessment ? { assessment: payload.assessment } : {}),
+    ...(payload.resumeState ? {
+      baseRevision: payload.baseRevision ?? null,
+      legacyBootstrap: payload.legacyBootstrap === true,
+      resumeState: payload.resumeState,
+    } : {}),
     sentAt: new Date().toISOString(),
   };
 
