@@ -2297,7 +2297,7 @@
  * Reflow against the real screen container so native browser zoom cannot
  * strand the activity in an unreadable secondary column.
  */
-@container m4-enhanced-screen (max-width: 50rem) {
+@container m4-enhanced-screen (max-width: 58rem) {
   .m4-enhanced-screen__workspace,
   .m4-enhanced-screen--lens .m4-enhanced-screen__workspace,
   .m4-enhanced-screen--batch2 .m4-enhanced-screen__workspace,
