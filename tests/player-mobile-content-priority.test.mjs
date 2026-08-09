@@ -23,29 +23,31 @@ const module2Renderer = readFileSync(
   'utf8',
 );
 
-test('the shared player exposes one accessible mobile tools disclosure before main content', () => {
+test('the shared player exposes one accessible Learning Tools disclosure before main content', () => {
   assert.equal((shell.match(/<PlayerSidebar/g) || []).length, 1);
-  assert.match(shell, /className="player-mobile-tools-toggle"/);
-  assert.match(shell, /aria-expanded=\{mobileToolsOpen\}/);
-  assert.match(shell, /aria-controls="player-mobile-tools-panel"/);
-  assert.ok(shell.indexOf('player-mobile-tools-toggle') < shell.indexOf('<PlayerSidebar'));
+  assert.match(shell, /className="player-tools-toggle"/);
+  assert.match(shell, /aria-expanded=\{toolsOpen\}/);
+  assert.match(shell, /aria-controls="player-tools-panel"/);
+  assert.match(shell, /aria-label=\{toolsOpen \? 'Collapse Learning Tools' : 'Expand Learning Tools'\}/);
+  assert.ok(shell.indexOf('player-tools-toggle') < shell.indexOf('<PlayerSidebar'));
   assert.ok(shell.indexOf('<PlayerSidebar') < shell.indexOf('<MainScreenCanvas'));
-  assert.match(sidebar, /id="player-mobile-tools-panel"/);
-  assert.match(sidebar, /mobileExpanded \? 'is-mobile-open' : ''/);
+  assert.match(sidebar, /id="player-tools-panel"/);
+  assert.match(sidebar, /expanded \? 'is-open' : ''/);
 });
 
-test('mobile CSS collapses the shared sidebar while desktop presentation remains unchanged', () => {
-  assert.match(styles, /\.player-mobile-tools-toggle \{\s*display: none;/);
-  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.player-mobile-tools-toggle \{[\s\S]*?display: flex/);
-  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.player-sidebar-aside \{[\s\S]*?display: none/);
-  assert.match(styles, /\.player-sidebar-aside\.is-mobile-open \{\s*display: grid;/);
-  assert.match(styles, /\.player-mobile-tools-toggle:focus-visible/);
+test('desktop CSS releases content width and mobile CSS presents the tools as a drawer', () => {
+  assert.match(styles, /\.player-split-canvas \{[\s\S]*?grid-template-columns: 68px minmax\(0, 1fr\)/);
+  assert.match(styles, /\.player-split-canvas--tools-open \{\s*grid-template-columns: minmax\(164px, 14\.5%\) minmax\(0, 1fr\)/);
+  assert.match(styles, /\.player-tools-rail:not\(\.is-open\) \.player-sidebar-aside \{\s*display: none;/);
+  assert.match(styles, /\.player-tools-toggle:focus-visible/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.player-tools-rail\.is-open \{[\s\S]*?position: absolute;[\s\S]*?width: min\(90%, 360px\)/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.player-sidebar-aside\.is-open \{\s*display: grid;/);
 });
 
-test('Escape closes mobile tools and returns focus to the disclosure control', () => {
+test('Escape closes Learning Tools and returns focus to the disclosure control', () => {
   assert.match(shell, /event\.key !== 'Escape'/);
-  assert.match(shell, /setMobileToolsOpen\(false\)/);
-  assert.match(shell, /mobileToolsToggleRef\.current\?\.focus\(\)/);
+  assert.match(shell, /setToolsOpen\(false\)/);
+  assert.match(shell, /toolsToggleRef\.current\?\.focus\(\)/);
 });
 
 test('the accepted Module 2 video and Screen 6 content remain unchanged', () => {

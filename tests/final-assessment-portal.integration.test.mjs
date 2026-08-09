@@ -287,7 +287,7 @@ async function waitForEvent(page, eventName, learnerStateKey) {
 }
 
 test('HRBA isolates portal state and evidence across learners in one browser profile', {
-  timeout: 120_000,
+  timeout: 180_000,
 }, async (t) => {
   const vite = spawn(
     process.execPath,
@@ -388,6 +388,49 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     assert.ok(portalHeroBox);
     assert.ok(portalHeroBox.y <= 40, `Portal course hero starts too low: ${portalHeroBox.y}px`);
 
+    await page.setViewportSize({ width: 390, height: 844 });
+    await frame.getByRole('button', {
+      name: 'Start Module 1: Starting the HRBA Learning Journey',
+      exact: true,
+    }).click();
+    await frame.getByRole('heading', {
+      name: 'Module 1: Starting the HRBA Learning Journey',
+      exact: true,
+    }).waitFor({ state: 'visible' });
+    const portalMobileToggle = frame.getByRole('button', { name: 'Expand Learning Tools', exact: true });
+    const portalMobileSidebar = frame.getByRole('complementary', { name: 'Course tools and media controls' });
+    const portalMobileMain = frame.getByRole('main', { name: 'Course screen content' });
+    assert.equal(await portalMobileToggle.getAttribute('aria-expanded'), 'false');
+    assert.equal(await portalMobileSidebar.isVisible(), false);
+    const portalMobileMainWidth = (await portalMobileMain.boundingBox())?.width;
+    await portalMobileToggle.click();
+    assert.equal(await portalMobileSidebar.isVisible(), true);
+    const portalDrawerGeometry = await frame.evaluate(() => {
+      const rail = document.querySelector('.player-tools-rail');
+      const box = rail?.getBoundingClientRect();
+      return {
+        position: rail ? getComputedStyle(rail).position : null,
+        left: box?.left,
+        right: box?.right,
+        viewportWidth: document.documentElement.clientWidth,
+      };
+    });
+    assert.equal(portalDrawerGeometry.position, 'absolute');
+    assert.ok(portalDrawerGeometry.left >= -1);
+    assert.ok(portalDrawerGeometry.right <= portalDrawerGeometry.viewportWidth + 1);
+    assert.equal(Math.round((await portalMobileMain.boundingBox())?.width), Math.round(portalMobileMainWidth));
+    await portalMobileSidebar.getByRole('button', { name: 'Open module menu', exact: true }).focus();
+    await frame.locator('body').press('Escape');
+    assert.equal(await portalMobileSidebar.isVisible(), false);
+    assert.equal(await portalMobileToggle.evaluate((element) => element === document.activeElement), true);
+    await portalMobileToggle.click();
+    await portalMobileSidebar.getByRole('button', { name: 'Return to LMS', exact: true }).click();
+    await frame.getByRole('heading', {
+      name: 'Applying the Human Rights-Based Approach in CSO Practice',
+      exact: true,
+    }).waitFor({ state: 'visible' });
+    await page.setViewportSize({ width: 1440, height: 900 });
+
     const storageKeyA = portalStorageKey(STATE_KEYS.a);
     await frame.evaluate(({ storageKey, state }) => {
       localStorage.setItem(storageKey, JSON.stringify(state));
@@ -405,6 +448,18 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     await launchAssessment.click();
     await frame.waitForURL(`${APP_ORIGIN}/final-assessment/cover?**`);
     assert.equal(await frame.locator('.course-screen-loading').count(), 0);
+
+    const portalDesktopToggle = frame.getByRole('button', { name: 'Expand Learning Tools', exact: true });
+    const portalDesktopSidebar = frame.getByRole('complementary', { name: 'Course tools and media controls' });
+    const portalDesktopMain = frame.getByRole('main', { name: 'Course screen content' });
+    const collapsedPortalWidth = (await portalDesktopMain.boundingBox())?.width;
+    assert.equal(await portalDesktopSidebar.isVisible(), false);
+    await portalDesktopToggle.click();
+    assert.equal(await portalDesktopSidebar.isVisible(), true);
+    const expandedPortalWidth = (await portalDesktopMain.boundingBox())?.width;
+    assert.ok(collapsedPortalWidth >= expandedPortalWidth + 90);
+    await frame.getByRole('button', { name: 'Collapse Learning Tools', exact: true }).click();
+    assert.equal(await portalDesktopSidebar.isVisible(), false);
 
     await frame.getByRole('button', { name: 'Start assessment', exact: true }).click();
     await frame.waitForURL(`${APP_ORIGIN}/final-assessment/questions?**`);

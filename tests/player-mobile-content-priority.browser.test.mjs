@@ -106,7 +106,7 @@ async function assertNoHorizontalOverflow(page, label) {
   assert.ok(overflow.body <= 1, `${label}: body overflow was ${overflow.body}px`);
 }
 
-test('mobile learners reach course content before the shared tools while every module remains functional', {
+test('Learning Tools collapse on desktop and use an accessible mobile drawer while every module remains functional', {
   timeout: 180_000,
 }, async (t) => {
   const vite = spawn(
@@ -153,16 +153,16 @@ test('mobile learners reach course content before the shared tools while every m
       await playerTitle.waitFor();
       assert.match(await playerTitle.innerText(), new RegExp(moduleCase.label));
 
-      const toggle = page.getByRole('button', { name: 'Show course tools and media controls' });
+      const toggle = page.getByRole('button', { name: 'Expand Learning Tools' });
       const sidebar = page.locator('.player-sidebar-aside');
       const main = page.getByRole('main', { name: 'Course screen content' });
-      assert.equal(await toggle.count(), 1, `${moduleCase.label} must expose one mobile tools toggle.`);
+      assert.equal(await toggle.count(), 1, `${moduleCase.label} must expose one Learning Tools toggle.`);
       assert.equal(await sidebar.count(), 1, `${moduleCase.label} must retain one shared tools panel.`);
       assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
       assert.equal(await sidebar.isVisible(), false, `${moduleCase.label} tools must start collapsed at ${width}px.`);
 
       const positions = await page.evaluate(() => {
-        const toggleElement = document.querySelector('.player-mobile-tools-toggle');
+        const toggleElement = document.querySelector('.player-tools-toggle');
         const mainElement = document.querySelector('.player-main-content');
         const footerElement = document.querySelector('.partner-logo-strip');
         if (!toggleElement || !mainElement || !footerElement) throw new Error('Shared player shell elements are missing.');
@@ -192,7 +192,7 @@ test('mobile learners reach course content before the shared tools while every m
   await page.goto(`${APP_ORIGIN}${module2.route}`);
   await page.getByRole('heading', { level: 1, name: module2.heading }).waitFor();
 
-  const mobileToggle = page.locator('.player-mobile-tools-toggle');
+  const mobileToggle = page.locator('.player-tools-toggle');
   const mobileSidebar = page.locator('.player-sidebar-aside');
   await page.evaluate(() => {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -204,27 +204,62 @@ test('mobile learners reach course content before the shared tools while every m
     await page.keyboard.press('Tab');
     const focused = await page.evaluate(() => ({
       label: document.activeElement?.getAttribute('aria-label') || document.activeElement?.textContent?.trim(),
-      isToggle: document.activeElement?.classList.contains('player-mobile-tools-toggle') || false,
+      isToggle: document.activeElement?.classList.contains('player-tools-toggle') || false,
       inSidebar: document.activeElement?.closest('.player-sidebar-aside') !== null,
     }));
     focusSequence.push(focused);
     if (focused.isToggle) break;
   }
-  assert.equal(focusSequence.at(-1)?.isToggle, true, `Focus sequence did not reach the mobile tools toggle: ${JSON.stringify(focusSequence)}`);
+  assert.equal(focusSequence.at(-1)?.isToggle, true, `Focus sequence did not reach the Learning Tools toggle: ${JSON.stringify(focusSequence)}`);
   assert.equal(focusSequence.some((item) => item.inSidebar), false);
-  assert.ok(focusSequence.length <= 4, 'The mobile tools toggle must follow only the three header navigation actions.');
+  assert.ok(focusSequence.length <= 4, 'Learning Tools must follow only the three header navigation actions.');
   await page.keyboard.press('Tab');
   assert.equal(await page.evaluate(() => document.activeElement?.closest('.player-main-content') !== null), true);
 
   await mobileToggle.click();
   assert.equal(await mobileToggle.getAttribute('aria-expanded'), 'true');
   assert.equal(await mobileSidebar.isVisible(), true);
+  const mobileDrawer = await page.evaluate(() => {
+    const rail = document.querySelector('.player-tools-rail');
+    const main = document.querySelector('.player-main-content');
+    const railBox = rail?.getBoundingClientRect();
+    const mainBox = main?.getBoundingClientRect();
+    return {
+      position: rail ? getComputedStyle(rail).position : null,
+      railLeft: railBox?.left,
+      railRight: railBox?.right,
+      mainWidth: mainBox?.width,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  });
+  assert.equal(mobileDrawer.position, 'absolute');
+  assert.ok(mobileDrawer.railLeft >= -1);
+  assert.ok(mobileDrawer.railRight <= mobileDrawer.viewportWidth + 1);
+
+  for (const [toolName, accessibleName] of [
+    ['Menu', 'Open module menu'],
+    ['Glossary', 'Open course glossary'],
+    ['Resources', 'Open resources list'],
+    ['Help Guide', 'Open player help guide'],
+    ['Accessibility', 'Open accessibility options'],
+    ['captions/transcript', /^(?:Show|Hide) transcript panel$/],
+    ['play/pause', /^(?:Play|Pause) screen$/],
+    ['audio', /^(?:Mute|Unmute) audio$/],
+    ['reload', 'Reload current screen'],
+    ['Return to LMS', 'Return to LMS'],
+  ]) {
+    assert.equal(
+      await mobileSidebar.getByRole('button', { name: accessibleName, exact: true }).count(),
+      1,
+      `The mobile drawer must preserve ${toolName}.`,
+    );
+  }
   const firstTool = mobileSidebar.getByRole('button', { name: 'Open module menu' });
   await firstTool.focus();
   await firstTool.press('Escape');
   assert.equal(await mobileSidebar.isVisible(), false);
   await page.waitForTimeout(50);
-  assert.equal(await page.evaluate(() => document.activeElement?.classList.contains('player-mobile-tools-toggle')), true);
+  assert.equal(await page.evaluate(() => document.activeElement?.classList.contains('player-tools-toggle')), true);
 
   const video = page.getByTitle('Jiru Amba case introduction video');
   assert.equal(await video.getAttribute('src'), 'https://www.youtube-nocookie.com/embed/A-60i7LvlBM');
@@ -233,14 +268,33 @@ test('mobile learners reach course content before the shared tools while every m
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.reload();
   await page.getByRole('heading', { level: 1, name: module2.heading }).waitFor();
-  assert.equal(await page.locator('.player-mobile-tools-toggle').isVisible(), false);
-  assert.equal(await page.getByRole('complementary', { name: 'Course tools and media controls' }).isVisible(), true);
-  const desktopPositions = await page.evaluate(() => {
-    const sidebar = document.querySelector('.player-sidebar-aside')?.getBoundingClientRect();
+  const desktopToggle = page.locator('.player-tools-toggle');
+  const desktopSidebar = page.getByRole('complementary', { name: 'Course tools and media controls' });
+  assert.equal(await desktopToggle.isVisible(), true);
+  assert.equal(await desktopToggle.getAttribute('aria-label'), 'Expand Learning Tools');
+  assert.equal(await desktopToggle.getAttribute('aria-expanded'), 'false');
+  assert.equal(await desktopSidebar.isVisible(), false);
+  const collapsedDesktop = await page.evaluate(() => {
+    const rail = document.querySelector('.player-tools-rail')?.getBoundingClientRect();
     const main = document.querySelector('.player-main-content')?.getBoundingClientRect();
-    return { sidebarLeft: sidebar?.left, sidebarRight: sidebar?.right, mainLeft: main?.left };
+    return { railRight: rail?.right, railWidth: rail?.width, mainLeft: main?.left, mainWidth: main?.width };
   });
-  assert.ok(desktopPositions.mainLeft >= desktopPositions.sidebarRight - 1);
+  assert.ok(collapsedDesktop.mainLeft >= collapsedDesktop.railRight - 1);
+  assert.ok(collapsedDesktop.railWidth <= 70);
+
+  await desktopToggle.click();
+  assert.equal(await desktopToggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(await desktopSidebar.isVisible(), true);
+  const expandedDesktop = await page.evaluate(() => {
+    const rail = document.querySelector('.player-tools-rail')?.getBoundingClientRect();
+    const main = document.querySelector('.player-main-content')?.getBoundingClientRect();
+    return { railRight: rail?.right, mainLeft: main?.left, mainWidth: main?.width };
+  });
+  assert.ok(expandedDesktop.mainLeft >= expandedDesktop.railRight - 1);
+  assert.ok(collapsedDesktop.mainWidth >= expandedDesktop.mainWidth + 90);
+
+  await page.getByRole('button', { name: 'Collapse Learning Tools' }).click();
+  assert.equal(await desktopSidebar.isVisible(), false);
   await assertNoHorizontalOverflow(page, 'Module 2 desktop');
 
   assert.deepEqual(browserErrors, [], `Browser console errors: ${browserErrors.join(' | ')}`);

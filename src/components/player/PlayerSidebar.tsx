@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 
 interface PlayerSidebarProps {
-  mobileExpanded: boolean;
+  expanded: boolean;
   onToggleModal: (modal: 'help' | 'accessibility' | 'glossary' | 'resources' | 'menu' | null) => void;
   activeModal: string | null;
   transcriptVisible: boolean;
@@ -65,7 +65,7 @@ const learningTools: SidebarTool[] = [
 ];
 
 export default function PlayerSidebar({
-  mobileExpanded,
+  expanded,
   onToggleModal,
   activeModal,
   transcriptVisible,
@@ -82,8 +82,8 @@ export default function PlayerSidebar({
 }: PlayerSidebarProps) {
   return (
     <aside
-      id="player-mobile-tools-panel"
-      className={`player-sidebar-aside ${mobileExpanded ? 'is-mobile-open' : ''}`}
+      id="player-tools-panel"
+      className={`player-sidebar-aside ${expanded ? 'is-open' : ''}`}
       aria-label="Course tools and media controls"
     >
       <div className="player-sidebar-section">

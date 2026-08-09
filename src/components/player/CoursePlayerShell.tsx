@@ -155,7 +155,7 @@ export default function CoursePlayerShell({
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const helpButtonRef = useRef<HTMLButtonElement>(null);
   const accessibilityButtonRef = useRef<HTMLButtonElement>(null);
-  const mobileToolsToggleRef = useRef<HTMLButtonElement>(null);
+  const toolsToggleRef = useRef<HTMLButtonElement>(null);
   const menuDrawerRef = useRef<HTMLDivElement>(null);
   const menuDrawerTitleRef = useRef<HTMLHeadingElement>(null);
   const mainContentRef = useRef<HTMLElement>(null);
@@ -168,7 +168,7 @@ export default function CoursePlayerShell({
   }>({});
   const [stabilizedScreenKey, setStabilizedScreenKey] = useState<string | null>(null);
   const [hiddenModule3RedirectQa, setHiddenModule3RedirectQa] = useState<string | null>(null);
-  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [accessibilityPreferences, setAccessibilityPreferences] = useState<AccessibilityPreferences>({
     highContrast: false,
     textSize: 'standard',
@@ -176,26 +176,25 @@ export default function CoursePlayerShell({
   });
 
   useEffect(() => {
-    if (!mobileToolsOpen) {
+    if (!toolsOpen) {
       return;
     }
 
-    const handleMobileToolsEscape = (event: KeyboardEvent) => {
+    const handleToolsEscape = (event: KeyboardEvent) => {
       if (
         event.key !== 'Escape' ||
-        state.activeModal !== null ||
-        !window.matchMedia('(max-width: 640px)').matches
+        state.activeModal !== null
       ) {
         return;
       }
 
-      setMobileToolsOpen(false);
-      window.requestAnimationFrame(() => mobileToolsToggleRef.current?.focus());
+      setToolsOpen(false);
+      window.requestAnimationFrame(() => toolsToggleRef.current?.focus());
     };
 
-    document.addEventListener('keydown', handleMobileToolsEscape);
-    return () => document.removeEventListener('keydown', handleMobileToolsEscape);
-  }, [mobileToolsOpen, state.activeModal]);
+    document.addEventListener('keydown', handleToolsEscape);
+    return () => document.removeEventListener('keydown', handleToolsEscape);
+  }, [toolsOpen, state.activeModal]);
 
   // Filter player-specific screens from the sequence data
   const allPlayerScreens = sequenceData.filter(
@@ -1068,7 +1067,7 @@ export default function CoursePlayerShell({
         nextDisabled={playerIndex >= totalScreens - 1 || isNextDisabled()}
       />
 
-      <div className="player-split-canvas">
+      <div className={`player-split-canvas ${toolsOpen ? 'player-split-canvas--tools-open' : ''}`}>
         {!screenStabilized && (
           <div className="course-screen-loading" role="status" aria-live="polite">
             <div>
@@ -1077,34 +1076,37 @@ export default function CoursePlayerShell({
             </div>
           </div>
         )}
-        <button
-          ref={mobileToolsToggleRef}
-          type="button"
-          className="player-mobile-tools-toggle"
-          aria-expanded={mobileToolsOpen}
-          aria-controls="player-mobile-tools-panel"
-          onClick={() => setMobileToolsOpen((open) => !open)}
-        >
-          <span aria-hidden="true">{mobileToolsOpen ? '−' : '+'}</span>
-          {mobileToolsOpen ? 'Hide' : 'Show'} course tools and media controls
-        </button>
+        <div className={`player-tools-rail ${toolsOpen ? 'is-open' : ''}`}>
+          <button
+            ref={toolsToggleRef}
+            type="button"
+            className="player-tools-toggle"
+            aria-label={toolsOpen ? 'Collapse Learning Tools' : 'Expand Learning Tools'}
+            aria-expanded={toolsOpen}
+            aria-controls="player-tools-panel"
+            onClick={() => setToolsOpen((open) => !open)}
+          >
+            <span className="player-tools-toggle__icon" aria-hidden="true">{toolsOpen ? '−' : '+'}</span>
+            <span>{toolsOpen ? 'Hide Learning Tools' : 'Learning Tools'}</span>
+          </button>
 
-        <PlayerSidebar
-          mobileExpanded={mobileToolsOpen}
-          onToggleModal={handleToggleModal}
-          activeModal={state.activeModal}
-          menuButtonRef={menuButtonRef}
-          helpButtonRef={helpButtonRef}
-          accessibilityButtonRef={accessibilityButtonRef}
-          transcriptVisible={state.transcriptVisible}
-          onToggleTranscript={() => onChangeState(p => ({ ...p, transcriptVisible: !p.transcriptVisible }))}
-          soundEnabled={state.soundState}
-          onToggleSound={() => onChangeState(p => ({ ...p, soundState: !p.soundState }))}
-          playEnabled={state.captionState}
-          onTogglePlay={() => onChangeState(p => ({ ...p, captionState: !p.captionState }))}
-          onReplay={handleReplay}
-          onExit={onExit}
-        />
+          <PlayerSidebar
+            expanded={toolsOpen}
+            onToggleModal={handleToggleModal}
+            activeModal={state.activeModal}
+            menuButtonRef={menuButtonRef}
+            helpButtonRef={helpButtonRef}
+            accessibilityButtonRef={accessibilityButtonRef}
+            transcriptVisible={state.transcriptVisible}
+            onToggleTranscript={() => onChangeState(p => ({ ...p, transcriptVisible: !p.transcriptVisible }))}
+            soundEnabled={state.soundState}
+            onToggleSound={() => onChangeState(p => ({ ...p, soundState: !p.soundState }))}
+            playEnabled={state.captionState}
+            onTogglePlay={() => onChangeState(p => ({ ...p, captionState: !p.captionState }))}
+            onReplay={handleReplay}
+            onExit={onExit}
+          />
+        </div>
 
         <MainScreenCanvas
           ref={mainContentRef}

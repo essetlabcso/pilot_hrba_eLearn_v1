@@ -59,10 +59,8 @@ async function seedModule1(page) {
   }, { storageKey: STORAGE_KEY, moduleId: MODULE_ID, screenId: SCREEN_ID });
 }
 
-async function openToolsIfNeeded(page, width) {
-  if (width > 640) return;
-
-  const toggle = page.locator('.player-mobile-tools-toggle');
+async function openToolsIfNeeded(page) {
+  const toggle = page.locator('.player-tools-toggle');
   if (await toggle.getAttribute('aria-expanded') !== 'true') {
     await toggle.click();
   }
@@ -150,7 +148,7 @@ test('Help Guide restores focus to its exact launcher across layouts and close p
     await page.setViewportSize(viewport);
     await page.goto(`${APP_ORIGIN}/?moduleId=${MODULE_ID}&screenId=${SCREEN_ID}`);
     await page.getByRole('main', { name: 'Course screen content' }).waitFor();
-    await openToolsIfNeeded(page, viewport.width);
+    await openToolsIfNeeded(page);
 
     const launcher = page.getByRole('button', { name: 'Open player help guide' });
     assert.equal(await launcher.count(), 1, `${viewport.width}px should expose one Help Guide launcher`);

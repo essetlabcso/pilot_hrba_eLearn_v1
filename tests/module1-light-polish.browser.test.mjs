@@ -194,7 +194,7 @@ test('Module 1 remains responsive and its mobile help dialog is readable and foc
   await assertNoHorizontalOverflow(page, 'Module 1 cover at 320px');
 
   await page.goto(`${APP_ORIGIN}/?moduleId=${MODULE_ID}&screenId=M1-S1-06A`);
-  const mobileToolsToggle = page.locator('.player-mobile-tools-toggle');
+  const mobileToolsToggle = page.locator('.player-tools-toggle');
   await mobileToolsToggle.click();
   const helpButton = page.getByRole('button', { name: 'Open player help guide' });
   await helpButton.click();
@@ -248,7 +248,7 @@ test('Module 1 remains responsive and its mobile help dialog is readable and foc
   await page.keyboard.press('Escape');
   assert.equal(await mobileToolsToggle.getAttribute('aria-expanded'), 'false', 'A second Escape should collapse mobile tools');
   assert.equal(
-    await page.evaluate(() => document.activeElement?.classList.contains('player-mobile-tools-toggle')),
+    await page.evaluate(() => document.activeElement?.classList.contains('player-tools-toggle')),
     true,
     'Focus should return to the mobile tools disclosure after it collapses',
   );
@@ -358,6 +358,7 @@ test('Module 1 remains responsive and its mobile help dialog is readable and foc
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto(`${APP_ORIGIN}/?moduleId=${MODULE_ID}&screenId=M1-S1-03`);
+  await page.getByRole('button', { name: 'Expand Learning Tools' }).click();
   await page.getByRole('button', { name: 'Open player help guide' }).click();
   const tabletDialog = page.getByRole('dialog', { name: 'Focused Course Player Guide' });
   await tabletDialog.waitFor();
