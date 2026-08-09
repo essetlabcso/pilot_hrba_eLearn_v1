@@ -359,6 +359,35 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     assert.deepEqual(firstProgress.data.completedModuleIds, []);
     assert.equal(new URL(frame.url()).searchParams.has('learnerId'), false);
 
+    await frame.getByRole('heading', {
+      name: 'Applying the Human Rights-Based Approach in CSO Practice',
+      exact: true,
+    }).waitFor({ state: 'visible' });
+    assert.equal(await frame.getByRole('heading', { name: 'CSO Learning Hub', exact: true }).count(), 0);
+    assert.equal(await frame.getByText('Ethical & Rights-Based Capacity Platform', { exact: true }).count(), 0);
+    assert.equal(await frame.getByText('Catalogue', { exact: true }).count(), 0);
+    assert.equal(await frame.getByText('My Portfolio', { exact: true }).count(), 0);
+    assert.equal(await frame.getByText('Focal Support', { exact: true }).count(), 0);
+    assert.equal(await frame.getByRole('button', { name: 'Reset Course Progress', exact: true }).count(), 0);
+    assert.equal(await frame.getByText('Flagship Course Enrolled', { exact: true }).count(), 0);
+    assert.equal(await frame.getByText('Five-module learning pathway', { exact: true }).count(), 0);
+    assert.equal(await frame.getByText(
+      'This training program guides local civil society organization team members through five practical modules on safe HRBA learning, foundations, project design, implementation, and MEAL.',
+      { exact: true },
+    ).count(), 1);
+    assert.equal(await frame.getByText(
+      'Your progress saves automatically. Pass the final assessment with a score of 80% or higher to earn your certificate.',
+      { exact: true },
+    ).count(), 1);
+    assert.equal(await frame.locator('.module-launch-card').count(), 6);
+    assert.equal(await frame.getByText(
+      'Learn how to see community work through rights-holders, duty-bearers, participation, power, accountability, and safe standards.',
+      { exact: true },
+    ).count(), 1);
+    const portalHeroBox = await frame.locator('.platform-course-hero').boundingBox();
+    assert.ok(portalHeroBox);
+    assert.ok(portalHeroBox.y <= 40, `Portal course hero starts too low: ${portalHeroBox.y}px`);
+
     const storageKeyA = portalStorageKey(STATE_KEYS.a);
     await frame.evaluate(({ storageKey, state }) => {
       localStorage.setItem(storageKey, JSON.stringify(state));
@@ -700,12 +729,24 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
       }
     });
     standalonePage.on('pageerror', (error) => standaloneErrors.push(`pageerror: ${error.message}`));
+    await standalonePage.goto(APP_ORIGIN);
+    await standalonePage.getByRole('button', {
+      name: 'Start Module 1: Starting the HRBA Learning Journey',
+      exact: true,
+    }).waitFor({ state: 'visible' });
+    assert.equal(await standalonePage.getByRole('heading', { name: 'CSO Learning Hub', exact: true }).count(), 1);
+    assert.equal(await standalonePage.getByText('Ethical & Rights-Based Capacity Platform', { exact: true }).count(), 1);
+    assert.equal(await standalonePage.getByText('Catalogue', { exact: true }).count(), 1);
+    assert.equal(await standalonePage.getByText('My Portfolio', { exact: true }).count(), 1);
+    assert.equal(await standalonePage.getByText('Focal Support', { exact: true }).count(), 1);
+    assert.equal(await standalonePage.getByRole('button', { name: 'Reset Course Progress', exact: true }).count(), 1);
+    assert.equal(await standalonePage.getByText('Your progress saves automatically as you move through the course.', { exact: false }).count(), 1);
     const completedQuery = encodeURIComponent(REQUIRED_MODULES.join(','));
     await standalonePage.goto(`${APP_ORIGIN}/final-assessment?completed=${completedQuery}`);
     const start = standalonePage.getByRole('button', { name: 'Start assessment', exact: true });
     await start.waitFor({ state: 'visible' });
     assert.equal(await standalonePage.getByText(
-      'Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.',
+      'Your progress saves automatically. Pass the final assessment with a score of 80% or higher to earn your certificate.',
       { exact: true },
     ).count(), 0);
     await start.click();

@@ -1052,7 +1052,7 @@ export default function CoursePlayerShell({
             textAlign: 'center',
           }}
         >
-          Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.
+          Your progress saves automatically. Pass the final assessment with a score of 80% or higher to earn your certificate.
         </p>
       )}
 

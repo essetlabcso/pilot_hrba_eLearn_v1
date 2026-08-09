@@ -169,7 +169,7 @@ export default function AccessibilityModal({
           <section style={{ borderTop: '1px solid var(--color-border-dark)', paddingTop: '1rem', marginTop: '0.5rem' }}>
             <h4 style={{ color: 'var(--color-accent-green)', fontWeight: 600, marginBottom: '0.5rem' }}>🔒 Safe & Private Learning Rules</h4>
             <p>
-              Your learning portfolio is stored entirely locally on your device. Do not enter any real community names, staff details, complaints, safeguarding data, or politically sensitive matters in text areas. Keep your notes general and fictional.
+              Your learning portfolio is for private learning. Do not enter any real community names, staff details, complaints, safeguarding data, or politically sensitive matters in text areas. Keep your notes general and fictional.
             </p>
           </section>
         </div>

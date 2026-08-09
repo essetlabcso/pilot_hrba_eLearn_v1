@@ -6265,7 +6265,7 @@ function renderBlockContent(
           {saved && (
             <div className="m1-portfolio-save-confirmation" aria-live="polite">
               <strong>✓ Saved to portfolio</strong>
-              <span>Your private HRBA starting point is saved in this browser.</span>
+              <span>Your private HRBA starting point saves automatically.</span>
             </div>
           )}
 
@@ -6413,7 +6413,7 @@ function renderBlockContent(
           {saved && (
             <div className="m1-portfolio-save-confirmation" aria-live="polite">
               <strong>✓ Saved to portfolio</strong>
-              <span>Your selected shift and work areas are saved in this browser.</span>
+              <span>Your selected shift and work areas save automatically.</span>
             </div>
           )}
 

@@ -792,7 +792,7 @@ function renderBlock(
             Module 2 Completed: Foundations of HRBA
           </h3>
           <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '520px', lineHeight: '1.6' }}>
-            Excellent work. You have successfully completed the core elements of Module 2. Your private learning reflections are saved securely in your browser's portfolio.
+            Excellent work. You have successfully completed the core elements of Module 2. Your private learning reflections save automatically in your learning portfolio.
           </p>
           <button 
             onClick={() => {
@@ -2135,7 +2135,7 @@ function PortfolioCheckpointBlock({
         Add to My Portfolio: My Everyday Rights Lens
       </h3>
       <p style={{ fontSize: '0.85rem' }}>
-        Complete the structured fields to save your final Module 2 checkpoint. Your answers are saved locally in your browser's private portfolio.
+        Complete the structured fields to save your final Module 2 checkpoint. Your answers save automatically in your private learning portfolio.
       </p>
 
       <div style={{ backgroundColor: primaryBg, border: `1px solid ${borderCol}`, padding: '1.25rem', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>

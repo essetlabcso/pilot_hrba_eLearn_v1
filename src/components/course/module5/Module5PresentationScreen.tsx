@@ -206,7 +206,7 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
 
   const changeReflection = (prompt: Module5ReflectionPrompt, value: Module5PresentationReflectionValue) => {
     const currentDetail = stored.reflectionDetails[prompt.id] || '';
-    setMessage('Reflection saved locally.');
+    setMessage('Reflection saved.');
     updateScreen((current) => ({
       ...current,
       reflectionValues: { ...current.reflectionValues, [prompt.id]: value },
@@ -224,7 +224,7 @@ export default function Module5PresentationScreen({ screenId, state, onChangeSta
 
   const changeReflectionDetail = (prompt: Module5ReflectionPrompt, detail: string) => {
     const currentValue = stored.reflectionValues[prompt.id] || '';
-    setMessage('Reflection detail saved locally.');
+    setMessage('Reflection detail saved.');
     updateScreen((current) => ({
       ...current,
       reflectionDetails: { ...current.reflectionDetails, [prompt.id]: detail },

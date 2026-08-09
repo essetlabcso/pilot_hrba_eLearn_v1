@@ -26,19 +26,19 @@ export default function PlatformShell({
     HRBA_COURSE_MODULES[0];
   const nextModuleProgress = (screenProgress[nextModule.moduleId] || []).length;
   const progressTitle = finalAssessmentCompleted
-    ? 'Course completed locally.'
+    ? 'Course completed.'
     : completedModules.length === 0 && nextModuleProgress === 0
     ? 'Start your HRBA learning pathway.'
     : nextModule.moduleId === 'final_assessment'
       ? 'Module 5 is complete. Final Assessment is ready.'
       : `Continue with ${nextModule.itemLabel}.`;
   const progressDescription = finalAssessmentCompleted
-    ? 'Your final assessment pass is saved in this browser. In Hub portal mode, the result is shared with the CSO Learning Hub for certificate issuance and verification.'
+    ? 'Your progress saves automatically. You can review your final assessment at any time.'
     : completedModules.length === 0 && nextModuleProgress === 0
-    ? 'Begin with Module 1. Your progress will be saved only in this browser as you move through the course.'
+    ? 'Begin with Module 1. Your progress saves automatically as you move through the course.'
     : nextModule.moduleId === 'final_assessment'
-      ? 'You can now open the final course assessment. Certificate access is handled by the CSO Learning Hub.'
-      : `Your browser progress is saved locally. Continue ${nextModule.title} when you are ready.`;
+      ? 'You can now open the final course assessment. Pass with a score of 80% or higher to earn your certificate.'
+      : `Your progress saves automatically. Continue ${nextModule.title} when you are ready.`;
   const progressCta = finalAssessmentCompleted
     ? 'Review Final Assessment'
     : completedModules.length === 0 && nextModuleProgress === 0
@@ -50,19 +50,23 @@ export default function PlatformShell({
         : `Start ${nextModule.itemLabel}`;
 
   return (
-    <div className="platform-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div
+      className={`platform-container ${portalModeActive ? 'platform-container--portal' : ''}`}
+      style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+    >
       {/* Layer 1 Platform Header */}
-      <header
-        className="platform-header"
-        style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          paddingBottom: '1.5rem', 
-          borderBottom: '1px solid var(--color-border)',
-          marginBottom: '2rem'
-        }}
-      >
+      {!portalModeActive && (
+        <header
+          className="platform-header"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingBottom: '1.5rem',
+            borderBottom: '1px solid var(--color-border)',
+            marginBottom: '2rem',
+          }}
+        >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div 
             style={{ 
@@ -95,7 +99,8 @@ export default function PlatformShell({
           <span style={{ cursor: 'pointer', color: 'var(--color-secondary-text)' }}>My Portfolio</span>
           <span style={{ cursor: 'pointer', color: 'var(--color-secondary-text)' }}>Focal Support</span>
         </nav>
-      </header>
+        </header>
+      )}
 
       {/* Main LMS overview banner */}
       <main style={{ flexGrow: 1 }}>
@@ -113,25 +118,11 @@ export default function PlatformShell({
           }}
         >
           <div style={{ position: 'relative', zIndex: 2 }}>
-            <span
-              style={{ 
-                textTransform: 'uppercase', 
-                fontSize: '0.7rem', 
-                fontWeight: 800, 
-                letterSpacing: '0.1em', 
-                backgroundColor: 'rgba(255,255,255,0.15)', 
-                color: 'var(--color-accent-green)',
-                padding: '0.3rem 0.8rem', 
-                borderRadius: '9999px' 
-              }}
-            >
-              Flagship Course Enrolled
-            </span>
-            <h2 style={{ fontSize: '2.25rem', marginTop: '1rem', marginBottom: '0.75rem', fontFamily: 'var(--font-family-headings)', fontWeight: 800 }}>
+            <h2 style={{ fontSize: '2.25rem', marginBottom: '0.75rem', fontFamily: 'var(--font-family-headings)', fontWeight: 800 }}>
               Applying the Human Rights-Based Approach in CSO Practice
             </h2>
             <p style={{ fontSize: '1rem', maxWidth: '760px', opacity: 0.9, lineHeight: '1.6' }}>
-              This specialized training program guides local civil society organization team members through five practical modules on safe HRBA learning, foundations, project design, implementation, and MEAL.
+              This training program guides local civil society organization team members through five practical modules on safe HRBA learning, foundations, project design, implementation, and MEAL.
             </p>
           </div>
           
@@ -166,7 +157,7 @@ export default function PlatformShell({
               lineHeight: 1.5,
             }}
           >
-            Your course progress is being shared with the CSO Learning Hub. Certificates are issued and verified from the Hub after a passing final assessment result is received.
+            Your progress saves automatically. Pass the final assessment with a score of 80% or higher to earn your certificate.
           </p>
         )}
 
@@ -191,24 +182,25 @@ export default function PlatformShell({
           fontSize: '0.8rem' 
         }}
       >
-        <p>&copy; {new Date().getFullYear()} CSO Learning Hub. Developed in strict compliance with DEC HRBA specifications.</p>
-        <p style={{ marginTop: '0.25rem', color: '#9ca3af', fontSize: '0.75rem' }}>Private local-only storage active. No external databases queried.</p>
-        <button
-          type="button"
-          onClick={onResetProgress}
-          style={{
-            marginTop: '0.85rem',
-            border: '1px solid var(--color-border)',
-            borderRadius: '999px',
-            padding: '0.55rem 0.85rem',
-            background: '#ffffff',
-            color: 'var(--color-deep-navy)',
-            fontWeight: 800,
-            cursor: 'pointer',
-          }}
-        >
-          Reset Course Progress
-        </button>
+        <p>&copy; 2026 CSO Learning Hub &middot; Human Rights-Based Approach (HRBA) eLearning Course</p>
+        {!portalModeActive && (
+          <button
+            type="button"
+            onClick={onResetProgress}
+            style={{
+              marginTop: '0.85rem',
+              border: '1px solid var(--color-border)',
+              borderRadius: '999px',
+              padding: '0.55rem 0.85rem',
+              background: '#ffffff',
+              color: 'var(--color-deep-navy)',
+              fontWeight: 800,
+              cursor: 'pointer',
+            }}
+          >
+            Reset Course Progress
+          </button>
+        )}
       </footer>
     </div>
   );

@@ -137,8 +137,7 @@ export default function FinalAssessmentRenderer({
             </div>
           </div>
           <p>
-            Your certificate is issued by the CSO Learning Hub. In Hub portal mode, your submitted final
-            assessment result is shared with the Hub for certificate eligibility.
+            Pass the final assessment with a score of {FINAL_ASSESSMENT_PASS_THRESHOLD}% or higher to earn your certificate.
           </p>
           <button type="button" className="final-assessment-primary" onClick={onNext}>
             Start assessment
@@ -181,8 +180,7 @@ export default function FinalAssessmentRenderer({
                   <h2>{result.passed ? 'Passed' : 'Not passed yet'}</h2>
                   {result.passed ? (
                     <p>
-                      You passed the final assessment. Your result is being shared with the CSO Learning Hub so your
-                      certificate can be issued and verified from the Hub.
+                      You passed the final assessment. Your certificate can now be issued from the CSO Learning Hub.
                     </p>
                   ) : (
                     <p>
@@ -250,7 +248,7 @@ export default function FinalAssessmentRenderer({
           <h1 id="final-assessment-questions-title">Final Assessment</h1>
           <p>
             Answer every question, then submit for scoring. You need {FINAL_ASSESSMENT_PASS_THRESHOLD}% or higher
-            to mark the final assessment complete locally.
+            to pass the final assessment.
           </p>
           <p className="final-assessment-status" aria-live="polite">
             {answeredCount} of {finalAssessmentQuestions.length} questions answered.

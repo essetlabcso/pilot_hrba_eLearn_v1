@@ -330,7 +330,7 @@ function SummaryScreen({ state, onChangeState }: Omit<Props, 'screenId'>) {
 
   const editField = (fieldId: Module5FinalSummaryFieldId, value: string) => {
     setExplicitConfirmation(false);
-    setMessage('Limited edit saved locally. Review the summary before confirming.');
+    setMessage('Limited edit saved. Review the summary before confirming.');
     updatePresentation(onChangeState, (current) =>
       editModule5FinalSummaryField(current, fieldId, value));
   };

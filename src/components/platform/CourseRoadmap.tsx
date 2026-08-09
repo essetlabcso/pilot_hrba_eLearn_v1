@@ -37,7 +37,7 @@ export default function CourseRoadmap({
       <div className="course-roadmap__header">
         <div>
           <p className="course-roadmap__eyebrow">Course structure</p>
-          <h3 id="course-roadmap-title">Five-module learning pathway</h3>
+          <h3 id="course-roadmap-title" className="sr-only">Course modules and final assessment</h3>
         </div>
         <span className="course-roadmap__count" aria-label="Five course modules plus final assessment">
           5 modules + final assessment
