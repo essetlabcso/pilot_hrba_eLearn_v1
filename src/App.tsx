@@ -3,6 +3,7 @@ import {
   STANDALONE_STORAGE_KEY,
   initialLearningState,
   loadLearningState,
+  readLearningStateSnapshot,
   resetLearningState,
   saveLearningState,
 } from './state/learningState';
@@ -32,6 +33,7 @@ import {
   getResumeContentSignature,
   hydrateLearningStateFromResume,
   isMeaningfulLearningState,
+  migrateLegacyLearningState,
   serializeLearningStateForResume,
   validateHrbaResumeState,
   validateTrustedAssessmentState,
@@ -474,6 +476,13 @@ function CourseApplication({
       : null,
   );
   const legacyBootstrapRef = useRef(resumeSession?.initialMode === 'legacy');
+  const legacyCacheLockedRef = useRef(resumeSession?.initialMode === 'legacy');
+  const resumeBlockedRef = useRef(false);
+  const latestStateRef = useRef(state);
+
+  useEffect(() => {
+    latestStateRef.current = state;
+  }, [state]);
 
   useEffect(() => {
     const restoreRouteFromHistory = () => window.location.reload();
@@ -513,15 +522,47 @@ function CourseApplication({
       if (event.data.resumeState !== null && !authoritativeResume) return;
 
       resumeRevisionRef.current = event.data.resumeRevision;
-      legacyBootstrapRef.current = false;
+      const wasLegacyBootstrap = legacyBootstrapRef.current;
+      if (event.data.status === 'accepted' && wasLegacyBootstrap) {
+        const acknowledgedSignature = authoritativeResume
+          ? getResumeContentSignature(authoritativeResume)
+          : null;
+        if (!resumePendingSignatureRef.current
+          || acknowledgedSignature !== resumePendingSignatureRef.current) {
+          resumeBlockedRef.current = true;
+          resumePendingSignatureRef.current = null;
+          sendPortalIntegrationError(portalContext, 'legacy_bootstrap_rejected');
+          setResumeSaveEpoch((value) => value + 1);
+          return;
+        }
+      }
       if (event.data.status === 'accepted') {
         if (resumePendingSignatureRef.current) {
           resumeAcknowledgedSignatureRef.current = resumePendingSignatureRef.current;
         }
+        legacyBootstrapRef.current = false;
+        resumeBlockedRef.current = false;
+        if (wasLegacyBootstrap) {
+          legacyCacheLockedRef.current = false;
+          saveLearningState(latestStateRef.current, storageKey, true);
+        }
+      } else if (authoritativeResume) {
+        const authoritativeState = hydrateLearningStateFromResume(
+          authoritativeResume,
+          resumeSession.trustedAssessmentState,
+        );
+        legacyBootstrapRef.current = false;
+        legacyCacheLockedRef.current = false;
+        resumeBlockedRef.current = false;
+        resumeAcknowledgedSignatureRef.current = getResumeContentSignature(
+          serializeLearningStateForResume(authoritativeState, null),
+        );
+        setState(authoritativeState);
+      } else if (wasLegacyBootstrap) {
+        resumeBlockedRef.current = true;
+        sendPortalIntegrationError(portalContext, 'legacy_bootstrap_rejected');
       } else {
-        const authoritativeState = authoritativeResume
-          ? hydrateLearningStateFromResume(authoritativeResume, resumeSession.trustedAssessmentState)
-          : structuredClone(initialLearningState);
+        const authoritativeState = structuredClone(initialLearningState);
         resumeAcknowledgedSignatureRef.current = getResumeContentSignature(
           serializeLearningStateForResume(authoritativeState, null),
         );
@@ -533,9 +574,10 @@ function CourseApplication({
 
     window.addEventListener('message', handleResumeResult);
     return () => window.removeEventListener('message', handleResumeResult);
-  }, [portalContext, resumeSession]);
+  }, [portalContext, resumeSession, storageKey]);
 
   useEffect(() => {
+    if (legacyCacheLockedRef.current) return;
     if (portalContext && resumeSession?.initialMode === 'empty' && !isMeaningfulLearningState(state)) {
       return;
     }
@@ -548,6 +590,7 @@ function CourseApplication({
     }
 
     if (!portalContext || !resumeSession) return;
+    if (resumeBlockedRef.current) return;
     const resumeState = serializeLearningStateForResume(state, resumeRevisionRef.current);
     const contentSignature = getResumeContentSignature(resumeState);
     if (
@@ -1115,31 +1158,66 @@ function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContex
       }
       void derivePortalStorageKey(learnerStateKey)
         .then((storageKey) => {
-          if (active) {
-            const localState = loadLearningState(storageKey, true);
-            const hasLegacyState = !serverResumeState && isMeaningfulLearningState(localState);
-            const sanitizedLegacyResume = hasLegacyState
-              ? serializeLearningStateForResume(localState, event.data.resumeRevision)
-              : null;
-            const initialState = serverResumeState
-              ? hydrateLearningStateFromResume(serverResumeState, trustedAssessmentState)
-              : sanitizedLegacyResume
-                ? hydrateLearningStateFromResume(sanitizedLegacyResume, trustedAssessmentState)
-                : structuredClone(initialLearningState);
-            if (serverResumeState) {
-              saveLearningState(initialState, storageKey, true);
-            }
+          if (!active) return;
+          if (serverResumeState) {
+            const initialState = hydrateLearningStateFromResume(serverResumeState, trustedAssessmentState);
+            saveLearningState(initialState, storageKey, true);
             setLearnerContext({
               initialState,
               learnerStateKey,
               resumeSession: {
-                initialMode: serverResumeState ? 'server' : hasLegacyState ? 'legacy' : 'empty',
+                initialMode: 'server',
                 revision: event.data.resumeRevision,
                 trustedAssessmentState,
               },
               storageKey,
             });
+            return;
           }
+
+          const localSnapshot = readLearningStateSnapshot(storageKey);
+          if (localSnapshot.status === 'malformed' || localSnapshot.status === 'unavailable') {
+            console.warn('HRBA legacy resume read failed.', { issue: localSnapshot.issue });
+            setFailed(true);
+            sendPortalIntegrationError(portalContext, 'legacy_resume_invalid');
+            return;
+          }
+          if (localSnapshot.status === 'empty') {
+            setLearnerContext({
+              initialState: structuredClone(initialLearningState),
+              learnerStateKey,
+              resumeSession: {
+                initialMode: 'empty',
+                revision: event.data.resumeRevision,
+                trustedAssessmentState,
+              },
+              storageKey,
+            });
+            return;
+          }
+
+          const migration = migrateLegacyLearningState(localSnapshot.value, event.data.resumeRevision);
+          if (!migration.ok) {
+            console.warn('HRBA legacy resume migration failed.', { issues: migration.issues });
+            setFailed(true);
+            sendPortalIntegrationError(portalContext, 'legacy_resume_migration_failed');
+            return;
+          }
+          if (migration.warnings.length > 0) {
+            console.warn('HRBA legacy resume migration applied safe fallbacks.', { warnings: migration.warnings });
+          }
+          setLearnerContext({
+            initialState: migration.meaningful
+              ? migration.learningState
+              : structuredClone(initialLearningState),
+            learnerStateKey,
+            resumeSession: {
+              initialMode: migration.meaningful ? 'legacy' : 'empty',
+              revision: event.data.resumeRevision,
+              trustedAssessmentState,
+            },
+            storageKey,
+          });
         })
         .catch(() => {
           if (active) {

@@ -159,7 +159,12 @@ export function sendCourseReadyMessage(portalContext: PortalLaunchContext) {
 
 export function sendPortalIntegrationError(
   portalContext: PortalLaunchContext,
-  code: 'launch_context_unavailable' | 'launch_context_invalid',
+  code:
+    | 'launch_context_unavailable'
+    | 'launch_context_invalid'
+    | 'legacy_resume_invalid'
+    | 'legacy_resume_migration_failed'
+    | 'legacy_bootstrap_rejected',
 ) {
   if (!canSendToHub(portalContext)) {
     return false;

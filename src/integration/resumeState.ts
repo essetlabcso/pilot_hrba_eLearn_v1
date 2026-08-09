@@ -60,6 +60,31 @@ export type TrustedAssessmentState = {
   submittedAt: string;
 } | null;
 
+export type LegacyResumeMigrationIssue = {
+  category:
+    | 'invalid_payload'
+    | 'unsupported_storage_version'
+    | 'invalid_completed_modules'
+    | 'prerequisite_jump'
+    | 'invalid_navigation'
+    | 'invalid_module_state'
+    | 'serialization_failed';
+  path: string;
+};
+
+export type LegacyResumeMigrationResult =
+  | {
+    ok: true;
+    learningState: LearningState;
+    resumeState: HrbaResumeState;
+    meaningful: boolean;
+    warnings: LegacyResumeMigrationIssue[];
+  }
+  | {
+    ok: false;
+    issues: LegacyResumeMigrationIssue[];
+  };
+
 const assessmentEvidencePattern = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048])$/iu;
 
 export function validateTrustedAssessmentState(value: unknown): TrustedAssessmentState | undefined {
@@ -178,6 +203,11 @@ function isValidPracticeKey(moduleKey: HrbaResumeModuleKey, key: string) {
   }
   if (moduleKey === 'module4') return /^(?:m4|module4)/iu.test(key);
   return /^(?:m5|module5)/iu.test(key);
+}
+
+function getPracticeModuleKey(key: string): HrbaResumeModuleKey | null {
+  return (['module1', 'module2', 'module3', 'module4', 'module5'] as const)
+    .find((moduleKey) => isValidPracticeKey(moduleKey, key)) || null;
 }
 
 function validateModuleState(moduleKey: HrbaResumeModuleKey, value: unknown) {
@@ -327,6 +357,213 @@ export function serializeLearningStateForResume(state: LearningState, baseRevisi
   return validated;
 }
 
+function firstIncompleteScreen(moduleId: string, completedScreenIds: readonly string[]) {
+  const allowed = screenIdsByModule[moduleId];
+  if (!allowed) return null;
+  return [...allowed].find((screenId) => !completedScreenIds.includes(screenId)) || [...allowed][0] || null;
+}
+
+function isCompatibleLegacyField(value: unknown, initialValue: unknown) {
+  if (!isBoundedJson(value)) return false;
+  if (Array.isArray(initialValue)) return Array.isArray(value);
+  if (isRecord(initialValue)) return isRecord(value);
+  return typeof value === typeof initialValue;
+}
+
+/**
+ * Converts known historical browser state into the strict RESUME-2 contract.
+ * It never mutates storage, never trusts client assessment/completion authority,
+ * and reports only safe category/path diagnostics.
+ */
+export function migrateLegacyLearningState(
+  value: unknown,
+  baseRevision: string | null,
+): LegacyResumeMigrationResult {
+  const fail = (
+    category: LegacyResumeMigrationIssue['category'],
+    path: string,
+  ): LegacyResumeMigrationResult => ({ ok: false, issues: [{ category, path }] });
+
+  try {
+    let serialized: string;
+    try {
+      serialized = JSON.stringify(value);
+    } catch {
+      return fail('invalid_payload', '$');
+    }
+    if (new TextEncoder().encode(serialized).byteLength > HRBA_RESUME_MAX_BYTES || !isRecord(value)) {
+      return fail('invalid_payload', '$');
+    }
+    if (value.storageVersion !== undefined && value.storageVersion !== HRBA_COURSE_STATE_VERSION) {
+      return fail('unsupported_storage_version', 'storageVersion');
+    }
+
+    const rawCompleted = value.completedModules;
+    if (!Array.isArray(rawCompleted) || !rawCompleted.every((moduleId) => typeof moduleId === 'string')) {
+      return fail('invalid_completed_modules', 'completedModules');
+    }
+    if (rawCompleted.some((moduleId) => moduleId === 'final_assessment'
+      || !REQUIRED_HRBA_MODULE_IDS.includes(moduleId as typeof REQUIRED_HRBA_MODULE_IDS[number]))) {
+      return fail('invalid_completed_modules', 'completedModules');
+    }
+    const completedModuleIds = [...new Set(rawCompleted)];
+    if (completedModuleIds.some((moduleId, index) => moduleId !== REQUIRED_HRBA_MODULE_IDS[index])) {
+      return fail('prerequisite_jump', 'completedModules');
+    }
+
+    if (value.screenProgress !== undefined && !isRecord(value.screenProgress)) {
+      return fail('invalid_module_state', 'screenProgress');
+    }
+    const warnings: LegacyResumeMigrationIssue[] = [];
+    const screenProgress: Record<string, string[]> = {};
+    for (const [moduleId, rawScreenIds] of Object.entries(isRecord(value.screenProgress) ? value.screenProgress : {})) {
+      const moduleIndex = REQUIRED_HRBA_MODULE_IDS.indexOf(moduleId as typeof REQUIRED_HRBA_MODULE_IDS[number]);
+      if (moduleId === 'final_assessment') {
+        warnings.push({ category: 'invalid_module_state', path: 'screenProgress.final_assessment' });
+        continue;
+      }
+      if (moduleIndex < 0) {
+        warnings.push({ category: 'invalid_module_state', path: 'screenProgress.unknown' });
+        continue;
+      }
+      if (moduleIndex > completedModuleIds.length) {
+        return fail('prerequisite_jump', 'screenProgress');
+      }
+      if (!Array.isArray(rawScreenIds) || !rawScreenIds.every((screenId) => typeof screenId === 'string')) {
+        return fail('invalid_module_state', 'screenProgress');
+      }
+      const allowed = screenIdsByModule[moduleId];
+      const canonical = [...new Set(rawScreenIds)].filter((screenId) => allowed.has(screenId));
+      if (canonical.length !== new Set(rawScreenIds).size) {
+        warnings.push({ category: 'invalid_module_state', path: 'screenProgress.screenId' });
+      }
+      if (canonical.length > 0) screenProgress[moduleId] = canonical;
+    }
+
+    if (value.practiceCheckState !== undefined && !isRecord(value.practiceCheckState)) {
+      return fail('invalid_module_state', 'practiceCheckState');
+    }
+    const practiceCheckState: Record<string, unknown> = {};
+    for (const [key, practiceValue] of Object.entries(
+      isRecord(value.practiceCheckState) ? value.practiceCheckState : {},
+    )) {
+      const moduleKey = getPracticeModuleKey(key);
+      if (!moduleKey) {
+        warnings.push({ category: 'invalid_module_state', path: 'practiceCheckState.unknown' });
+        continue;
+      }
+      const moduleIndex = (['module1', 'module2', 'module3', 'module4', 'module5'] as const).indexOf(moduleKey);
+      if (moduleIndex > completedModuleIds.length) {
+        warnings.push({ category: 'invalid_module_state', path: `practiceCheckState.${moduleKey}` });
+        continue;
+      }
+      if (!isBoundedJson(practiceValue)) {
+        return fail('invalid_module_state', `practiceCheckState.${moduleKey}`);
+      }
+      practiceCheckState[key] = structuredClone(practiceValue);
+    }
+
+    const candidate = structuredClone(initialLearningState);
+    const source = value as Record<string, unknown>;
+    let hasFieldEvidence = false;
+    for (const field of [...module1Fields, ...module2Fields]) {
+      if (!Object.hasOwn(source, field)) continue;
+      const initialValue = (initialLearningState as unknown as Record<string, unknown>)[field];
+      if (!isCompatibleLegacyField(source[field], initialValue)) {
+        return fail('invalid_module_state', `moduleState.${field}`);
+      }
+      (candidate as unknown as Record<string, unknown>)[field] = structuredClone(source[field]);
+      if (JSON.stringify(source[field]) !== JSON.stringify(initialValue)) hasFieldEvidence = true;
+    }
+    candidate.completedModules = completedModuleIds;
+    candidate.screenProgress = screenProgress;
+    candidate.practiceCheckState = practiceCheckState;
+    candidate.finalAssessmentAnswers = {};
+    candidate.finalAssessmentResult = null;
+    candidate.finalAssessmentAttemptNumber = 0;
+
+    const rawCurrentModuleId = value.currentModuleId;
+    const rawCurrentScreenId = value.currentScreenId;
+    const currentModuleIndex = typeof rawCurrentModuleId === 'string'
+      ? REQUIRED_HRBA_MODULE_IDS.indexOf(rawCurrentModuleId as typeof REQUIRED_HRBA_MODULE_IDS[number])
+      : -1;
+    const currentIsEligibleAssessment = rawCurrentModuleId === 'final_assessment'
+      && completedModuleIds.length === REQUIRED_HRBA_MODULE_IDS.length;
+    if ((rawCurrentModuleId === 'final_assessment' && !currentIsEligibleAssessment)
+      || (currentModuleIndex >= 0 && currentModuleIndex > completedModuleIds.length)) {
+      return fail('prerequisite_jump', 'navigation.currentModuleId');
+    }
+
+    const hasLegacyEvidence = currentModuleIndex >= 0
+      || currentIsEligibleAssessment
+      || completedModuleIds.length > 0
+      || Object.keys(screenProgress).length > 0
+      || Object.keys(practiceCheckState).length > 0
+      || hasFieldEvidence;
+    if (!hasLegacyEvidence) {
+      const learningState = structuredClone(initialLearningState);
+      return {
+        ok: true,
+        learningState,
+        resumeState: serializeLearningStateForResume(learningState, baseRevision),
+        meaningful: false,
+        warnings,
+      };
+    }
+
+    const hasProgressEvidence = completedModuleIds.length > 0
+      || Object.keys(screenProgress).length > 0
+      || Object.keys(practiceCheckState).length > 0;
+    const fallbackModuleId = (typeof rawCurrentModuleId === 'string' || hasProgressEvidence)
+      ? REQUIRED_HRBA_MODULE_IDS[completedModuleIds.length] || null
+      : null;
+    const currentModuleId = currentIsEligibleAssessment
+      ? 'final_assessment'
+      : currentModuleIndex >= 0 ? rawCurrentModuleId as string : fallbackModuleId;
+    const completedScreens = currentModuleId ? screenProgress[currentModuleId] || [] : [];
+    const currentScreenValid = typeof rawCurrentScreenId === 'string'
+      && Boolean(currentModuleId && screenIdsByModule[currentModuleId]?.has(rawCurrentScreenId));
+    candidate.currentModuleId = currentModuleId;
+    candidate.currentScreenId = currentScreenValid
+      ? rawCurrentScreenId as string
+      : currentModuleId ? firstIncompleteScreen(currentModuleId, completedScreens) : null;
+    candidate.currentLayer = value.currentLayer === 'platform' || value.currentLayer === 'player'
+      ? value.currentLayer
+      : currentModuleId ? 'player' : 'platform';
+    if (rawCurrentModuleId !== currentModuleId || rawCurrentScreenId !== candidate.currentScreenId) {
+      warnings.push({ category: 'invalid_navigation', path: 'navigation' });
+    }
+    if (value.currentLayer !== undefined
+      && value.currentLayer !== 'platform'
+      && value.currentLayer !== 'player') {
+      warnings.push({ category: 'invalid_navigation', path: 'navigation.currentLayer' });
+    }
+
+    const migrated = validateLearningState(candidate, true);
+    if (!migrated) return fail('invalid_module_state', '$');
+    migrated.finalAssessmentAnswers = {};
+    migrated.finalAssessmentResult = null;
+    migrated.finalAssessmentAttemptNumber = 0;
+
+    let resumeState: HrbaResumeState;
+    try {
+      resumeState = serializeLearningStateForResume(migrated, baseRevision);
+    } catch {
+      return fail('serialization_failed', '$');
+    }
+    const initialSignature = getResumeContentSignature(serializeLearningStateForResume(initialLearningState, null));
+    return {
+      ok: true,
+      learningState: migrated,
+      resumeState,
+      meaningful: getResumeContentSignature(resumeState) !== initialSignature,
+      warnings,
+    };
+  } catch {
+    return fail('serialization_failed', '$');
+  }
+}
+
 export function hydrateLearningStateFromResume(
   resumeState: HrbaResumeState,
   trustedAssessmentState: TrustedAssessmentState,
@@ -351,6 +588,11 @@ export function hydrateLearningStateFromResume(
   candidate.finalAssessmentAnswers = structuredClone(resumeState.assessmentDraft?.answers || {});
   candidate.finalAssessmentAttemptNumber = trustedAssessmentState?.attemptNumber || 0;
   candidate.finalAssessmentResult = trustedAssessmentState;
+  if (trustedAssessmentState) {
+    candidate.currentLayer = 'player';
+    candidate.currentModuleId = 'final_assessment';
+    candidate.currentScreenId = 'FINAL-ASSESSMENT-COMPLETE';
+  }
   if (trustedAssessmentState?.passed) {
     candidate.completedModules.push('final_assessment');
     candidate.screenProgress.final_assessment = ['FINAL-ASSESSMENT-COMPLETE'];

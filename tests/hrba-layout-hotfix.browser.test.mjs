@@ -47,7 +47,7 @@ test('HRBA Layout Hotfix - Module 4 & Module 5 Responsive Canvas Verification', 
       { id: 'M4-S1-04', route: '/module-4/screen-4-4', moduleId: 'module_04_implementation' },
       { id: 'M4-S1-06', route: '/module-4/screen-4-6', moduleId: 'module_04_implementation' },
       { id: 'M4-S1-07', route: '/module-4/screen-4-7', moduleId: 'module_04_implementation' },
-      { id: 'M5-R13', route: '/module-5/screen-5-15', moduleId: 'module_05_meal_accountability' },
+      { id: 'M5-R13', route: '/module-5/screen-5-15', moduleId: 'module_05_hrba_meal' },
     ];
 
     const m4State = createInitialModule4EnhancedState('2026-07-26T10:00:00.000Z');
@@ -92,6 +92,10 @@ test('HRBA Layout Hotfix - Module 4 & Module 5 Responsive Canvas Verification', 
         const page = await context.newPage();
 
         await page.goto(ORIGIN, { timeout: 60000, waitUntil: 'domcontentloaded' });
+        await page.getByRole('button', {
+          name: 'Start Module 1: Starting the HRBA Learning Journey',
+          exact: true,
+        }).waitFor({ state: 'visible' });
         await page.evaluate(({ key, seed }) => {
           localStorage.setItem(key, JSON.stringify(seed));
         }, { key: STORAGE_KEY, seed: seedObj });

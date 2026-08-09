@@ -224,13 +224,18 @@ function createParentServer(getOrigin) {
               ) {
                 resumeRevisionCounter += 1;
                 const resumeRevision = new Date(Date.UTC(2026, 6, 25, 12, 0, resumeRevisionCounter)).toISOString();
+                const persistedResume = { ...event.data.resumeState, baseRevision: resumeRevision };
+                sessionStorage.setItem(
+                  'trusted-resume:' + event.data.learnerStateKey,
+                  JSON.stringify(persistedResume),
+                );
                 frame.contentWindow.postMessage({
                   type: ${JSON.stringify(RESUME_RESULT_TYPE)},
                   version: 1,
                   courseSlug,
                   status: 'accepted',
                   resumeRevision,
-                  resumeState: { ...event.data.resumeState, baseRevision: resumeRevision },
+                  resumeState: persistedResume,
                 }, appOrigin);
                 return;
               }
@@ -257,13 +262,16 @@ function createParentServer(getOrigin) {
                     : mode === 'malformed-context'
                       ? stateKeys.a + '='
                       : stateKeys.a;
+              const trustedResumeState = JSON.parse(
+                sessionStorage.getItem('trusted-resume:' + learnerStateKey) || 'null',
+              );
               frame.contentWindow.postMessage({
                 type: ${JSON.stringify(CONTEXT_TYPE)},
                 version: 1,
                 courseSlug,
                 learnerStateKey,
-                resumeRevision: '2026-07-25T12:00:00.000Z',
-                resumeState: null,
+                resumeRevision: trustedResumeState?.baseRevision || '2026-07-25T12:00:00.000Z',
+                resumeState: trustedResumeState,
                 trustedAssessmentState: JSON.parse(
                   sessionStorage.getItem('trusted-assessment:' + learnerStateKey) || 'null',
                 ),
@@ -468,6 +476,9 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     await page.setViewportSize({ width: 1440, height: 900 });
 
     const storageKeyA = portalStorageKey(STATE_KEYS.a);
+    await page.evaluate((learnerStateKey) => {
+      sessionStorage.removeItem('trusted-resume:' + learnerStateKey);
+    }, STATE_KEYS.a);
     await frame.evaluate(({ storageKey, state }) => {
       localStorage.setItem(storageKey, JSON.stringify(state));
     }, {
@@ -599,7 +610,20 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
 
     await page.goto(`${parentOrigin}/learner-a`);
     const restoredA = await getCourseFrame(page);
-    await restoredA.locator('.final-assessment-score').waitFor({ state: 'visible' });
+    try {
+      await restoredA.locator('.final-assessment-score').waitFor({ state: 'visible', timeout: 10_000 });
+    } catch (error) {
+      const diagnostic = {
+        url: restoredA.url(),
+        heading: await restoredA.locator('h1').first().textContent().catch(() => null),
+        events: (await getParentMessages(page)).map(({ data }) => ({
+          event: data?.event,
+          error: data?.error?.code,
+          type: data?.type,
+        })),
+      };
+      throw new Error(`Restored assessment unavailable: ${JSON.stringify(diagnostic)}`, { cause: error });
+    }
     assert.equal(await restoredA.locator('.final-assessment-score').innerText(), '100%\n10 of 10');
     await waitForEvent(page, 'assessment_completed', STATE_KEYS.a);
     const laterLaunchEvidence = (await getParentMessages(page))
@@ -736,7 +760,7 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     assertNoProhibitedIdentifiers(completion);
   });
 
-  await t.test('invalid persisted assessments are cleared and never emitted', async () => {
+  await t.test('untrusted persisted assessment authority fails closed and remains untouched', async () => {
     await page.goto(`${parentOrigin}/malformed-evidence`);
     const frame = await getCourseFrame(page);
     const storageKey = portalStorageKey(STATE_KEYS.d);
@@ -762,12 +786,31 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     });
     await clearParentMessages(page);
     await reloadFrame(frame);
-    await waitForEvent(page, 'progress_updated', STATE_KEYS.d);
+    await page.waitForFunction(() => window.receivedMessages.some(({ data }) => (
+      data?.event === 'integration_error'
+      && data?.error?.code === 'legacy_resume_migration_failed'
+    )));
     const messages = await getParentMessages(page);
+    assert.equal(messages.some(({ data }) => data?.event === 'progress_updated'), false);
     assert.equal(messages.some(({ data }) => data?.assessment), false);
     assert.equal(messages.some(({ data }) => data?.event === 'course_completed'), false);
     assert.equal(JSON.stringify(messages).includes(`${STATE_KEYS.d}=`), false);
     assert.equal(await frame.locator('.final-assessment-score').count(), 0);
+    assert.equal(await frame.evaluate((key) => localStorage.getItem(key), storageKey), JSON.stringify(minimalState({
+      completedModules: [...REQUIRED_MODULES, 'final_assessment'],
+      currentLayer: 'player',
+      currentModuleId: 'final_assessment',
+      currentScreenId: 'FINAL-ASSESSMENT-COMPLETE',
+      finalAssessmentResult: {
+        attemptNumber: 1,
+        evidenceId: `${STATE_KEYS.d}=`,
+        maxScore: 10,
+        passed: true,
+        percentage: 100,
+        score: 10,
+        submittedAt: '2026-07-23T12:00:00.000Z',
+      },
+    })));
 
     await page.goto(`${parentOrigin}/tampered-assessment`);
     const tamperedFrame = await getCourseFrame(page);
@@ -794,14 +837,15 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     });
     await clearParentMessages(page);
     await reloadFrame(tamperedFrame);
-    await waitForEvent(page, 'progress_updated', STATE_KEYS.f);
+    await page.waitForFunction(() => window.receivedMessages.some(({ data }) => (
+      data?.event === 'integration_error'
+      && data?.error?.code === 'legacy_resume_migration_failed'
+    )));
     const tamperedMessages = await getParentMessages(page);
+    assert.equal(tamperedMessages.some(({ data }) => data?.event === 'progress_updated'), false);
     assert.equal(tamperedMessages.some(({ data }) => data?.assessment), false);
     assert.equal(tamperedMessages.some(({ data }) => data?.event === 'course_completed'), false);
     assert.equal(await tamperedFrame.locator('.final-assessment-score').count(), 0);
-    const tamperedProgress = tamperedMessages.find(({ data }) => data?.event === 'progress_updated');
-    assert.equal(tamperedProgress.data.progressPercent, 90);
-    assert.equal(tamperedProgress.data.completedModuleIds.includes('final_assessment'), false);
   });
 
   await t.test('standalone mode remains separate and mobile-safe', async () => {
@@ -852,5 +896,7 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     await mobile.close();
   });
 
-  assert.deepEqual(browserErrors, []);
+  assert.deepEqual(browserErrors.filter((message) => (
+    !message.includes('HRBA legacy resume migration failed.')
+  )), []);
 });

@@ -78,6 +78,7 @@ async function seedModule(page, moduleCase) {
     const current = JSON.parse(localStorage.getItem(storageKey)) || {};
     localStorage.setItem(storageKey, JSON.stringify({
       ...current,
+      storageVersion: 'hrba-course-progress-v1',
       currentLayer: 'player',
       currentCourseId: 'hrba_course',
       currentModuleId,

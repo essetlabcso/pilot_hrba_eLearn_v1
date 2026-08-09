@@ -416,6 +416,32 @@ export function loadLearningState(
   return cloneInitialLearningState();
 }
 
+export type StoredLearningStateSnapshot =
+  | { status: 'empty' }
+  | { status: 'loaded'; value: unknown }
+  | { status: 'malformed'; issue: 'invalid_json' }
+  | { status: 'unavailable'; issue: 'storage_unavailable' };
+
+/**
+ * Reads a learner-scoped cache without validating, migrating, removing, or
+ * rewriting it. Portal legacy recovery uses this so the exact historical bytes
+ * remain available until the Hub acknowledges a durable server snapshot.
+ */
+export function readLearningStateSnapshot(storageKey: string): StoredLearningStateSnapshot {
+  let saved: string | null;
+  try {
+    saved = localStorage.getItem(storageKey);
+  } catch {
+    return { status: 'unavailable', issue: 'storage_unavailable' };
+  }
+  if (saved === null) return { status: 'empty' };
+  try {
+    return { status: 'loaded', value: JSON.parse(saved) };
+  } catch {
+    return { status: 'malformed', issue: 'invalid_json' };
+  }
+}
+
 export function saveLearningState(
   state: LearningState,
   storageKey = STANDALONE_STORAGE_KEY,
