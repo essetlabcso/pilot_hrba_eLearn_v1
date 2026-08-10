@@ -27458,6 +27458,12 @@ body:has(.course-shell) {
   border-bottom: 1px solid var(--player-sidebar-border);
   background: var(--player-header-bg);
   color: var(--cso-color-text-inverse);
+  pointer-events: none;
+}
+
+/* Keep the shell surface transparent to content hit-testing while preserving its real controls. */
+.player-header :is(button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])) {
+  pointer-events: auto;
 }
 
 .player-header-info {
@@ -28033,6 +28039,12 @@ body:has(.course-shell) {
   min-height: 0;
   border-top: 1px solid rgba(215, 227, 238, 0.85);
   background: rgba(255, 255, 255, 0.96);
+  pointer-events: none;
+}
+
+/* Partner marks are decorative today; any future semantic controls remain operable. */
+.partner-logo-strip :is(button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])) {
+  pointer-events: auto;
 }
 
 .partner-logo-strip__inner {

@@ -71,6 +71,7 @@ function createParentServer(getOrigin, initialResumeState) {
       <iframe
         id="course"
         title="Embedded HRBA course"
+        style="display:block;width:1180px;height:720px;border:0"
         sandbox="allow-downloads allow-forms allow-popups allow-same-origin allow-scripts"
         src="${iframeUrl.toString().replaceAll('&', '&amp;')}"
       ></iframe>
@@ -80,6 +81,7 @@ function createParentServer(getOrigin, initialResumeState) {
         window.progressMessages = [];
         window.ackCount = 0;
         window.serverRevision = ${JSON.stringify(INITIAL_REVISION)};
+        window.initialResumeState = ${JSON.stringify(initialResumeState)};
         window.serverResumeState = ${JSON.stringify(initialResumeState)};
         window.addEventListener('message', (event) => {
           const frame = document.getElementById('course');
@@ -115,6 +117,83 @@ function createParentServer(getOrigin, initialResumeState) {
         });
       </script>`);
   });
+}
+
+async function assertRealPointerTarget(locator) {
+  await locator.scrollIntoViewIfNeeded();
+  const result = await locator.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const hit = document.elementFromPoint(x, y);
+    return {
+      hit: hit === element || element.contains(hit),
+      hitTag: hit?.tagName ?? null,
+      hitClass: typeof hit?.className === 'string' ? hit.className : null,
+    };
+  });
+  assert.equal(
+    result.hit,
+    true,
+    `Expected the CTA to win pointer hit-testing, got ${result.hitTag}.${result.hitClass}`,
+  );
+  await locator.click();
+}
+
+async function assertShellBounds(frame, viewportLabel) {
+  const bounds = await frame.locator('.course-shell').evaluate((shell) => {
+    const header = shell.querySelector('.player-header');
+    const content = shell.querySelector('.player-split-canvas');
+    const footer = shell.querySelector('.partner-logo-strip');
+    if (!header || !content || !footer) throw new Error('Shared player shell elements are missing.');
+    const headerRect = header.getBoundingClientRect();
+    const contentRect = content.getBoundingClientRect();
+    const footerRect = footer.getBoundingClientRect();
+    const headerControl = header.querySelector('button');
+    return {
+      headerBottom: headerRect.bottom,
+      contentTop: contentRect.top,
+      contentBottom: contentRect.bottom,
+      footerTop: footerRect.top,
+      footerInteractiveCount: footer.querySelectorAll(
+        'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ).length,
+      headerPointerEvents: getComputedStyle(header).pointerEvents,
+      headerControlPointerEvents: headerControl ? getComputedStyle(headerControl).pointerEvents : null,
+      footerPointerEvents: getComputedStyle(footer).pointerEvents,
+      logosVisible: [...footer.querySelectorAll('img')].every((logo) => {
+        const rect = logo.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      }),
+    };
+  });
+  assert.ok(bounds.headerBottom <= bounds.contentTop + 1, `${viewportLabel} header must not obscure content.`);
+  assert.ok(bounds.contentBottom <= bounds.footerTop + 1, `${viewportLabel} footer must not obscure content.`);
+  assert.equal(bounds.footerInteractiveCount, 0, 'The partner-logo footer is intentionally non-interactive.');
+  assert.equal(bounds.headerPointerEvents, 'none', `${viewportLabel} header surface must not intercept content.`);
+  assert.equal(bounds.headerControlPointerEvents, 'auto', `${viewportLabel} header controls must remain clickable.`);
+  assert.equal(bounds.footerPointerEvents, 'none', `${viewportLabel} partner-logo surface must not intercept content.`);
+  assert.equal(bounds.logosVisible, true, `${viewportLabel} partner logos must remain visible.`);
+}
+
+async function resetCompletedFrame(page, width, height) {
+  await page.evaluate(({ revision, width, height }) => {
+    const frame = document.getElementById('course');
+    window.progressMessages = [];
+    window.ackCount = 0;
+    window.serverRevision = revision;
+    window.serverResumeState = structuredClone(window.initialResumeState);
+    frame.style.width = `${width}px`;
+    frame.style.height = `${height}px`;
+    frame.src = frame.src;
+  }, { revision: INITIAL_REVISION, width, height });
+  const frameLocator = page.frameLocator('#course');
+  const proceed = frameLocator.getByRole('button', { name: 'Proceed to Module 2', exact: true });
+  await proceed.waitFor();
+  await frameLocator.locator('.course-screen-loading').waitFor({ state: 'detached' });
+  const frame = page.frames().find((candidate) => candidate.url().startsWith(APP_ORIGIN));
+  assert.ok(frame);
+  return { frame, proceed };
 }
 
 test('completed Module 1 review is non-mutating and Proceed opens canonical Module 2 start', {
@@ -162,12 +241,21 @@ test('completed Module 1 review is non-mutating and Proceed opens canonical Modu
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto(parentOrigin);
-  const frame = page.frames().find((candidate) => candidate.url().startsWith(APP_ORIGIN));
+  let frame = page.frames().find((candidate) => candidate.url().startsWith(APP_ORIGIN));
   assert.ok(frame);
 
-  const proceed = frame.getByRole('button', { name: 'Proceed to Module 2', exact: true });
+  let proceed = frame.getByRole('button', { name: 'Proceed to Module 2', exact: true });
   await proceed.waitFor();
-  await proceed.evaluate((button) => button.click());
+  await assertShellBounds(frame, 'Desktop');
+
+  const previousScreen = frame.getByRole('button', { name: 'Previous screen', exact: true });
+  await previousScreen.click();
+  await proceed.waitFor({ state: 'detached' });
+  const desktopReset = await resetCompletedFrame(page, 1180, 720);
+  frame = desktopReset.frame;
+  proceed = desktopReset.proceed;
+
+  await assertRealPointerTarget(proceed);
   await page.waitForFunction(
     ({ moduleId }) => window.progressMessages.some(
       (message) => message.currentModuleId === moduleId && message.currentScreenId === 'M2-00',
@@ -189,14 +277,13 @@ test('completed Module 1 review is non-mutating and Proceed opens canonical Modu
   assert.deepEqual(module2Message.completedModuleIds, [MODULE_1_ID]);
   assert.equal(module2Message.progressPercent, 18);
 
-  await frame.getByRole('button', { name: 'Back to course page', exact: true })
-    .evaluate((button) => button.click());
+  await frame.getByRole('button', { name: 'Back to course page', exact: true }).click();
   const reviewModule1 = frame.getByRole('button', { name: /Review Module 1:/ });
   await reviewModule1.waitFor();
   await page.waitForFunction(() => window.ackCount === window.progressMessages.length);
   const messagesBeforeReview = await page.evaluate(() => window.progressMessages.length);
 
-  await reviewModule1.evaluate((button) => button.click());
+  await reviewModule1.click();
   await page.waitForFunction(
     ({ before, moduleId }) => window.progressMessages.length === before + 1
       && window.progressMessages.at(-1).currentModuleId === moduleId
@@ -220,5 +307,15 @@ test('completed Module 1 review is non-mutating and Proceed opens canonical Modu
   assert.deepEqual(
     reviewResult.latest.resumeState.moduleState.module1.data,
     initialResumeState.moduleState.module1.data,
+  );
+
+  const mobile = await resetCompletedFrame(page, 390, 720);
+  await assertShellBounds(mobile.frame, 'Mobile');
+  await assertRealPointerTarget(mobile.proceed);
+  await page.waitForFunction(
+    ({ moduleId }) => window.progressMessages.some(
+      (message) => message.currentModuleId === moduleId && message.currentScreenId === 'M2-00',
+    ),
+    { moduleId: MODULE_2_ID },
   );
 });
