@@ -167,7 +167,10 @@ test('fresh learner first meaningful Module 1 state creates one durable save and
   assert.notEqual(second.currentScreenId, first.currentScreenId);
   assert.equal(second.resumeState.completedScreenIdsByModule.module_01_hrba_foundations.length, 1);
 
-  await frame.goto(frame.url());
+  await page.evaluate(() => {
+    const courseFrame = document.getElementById('course');
+    courseFrame.src = courseFrame.src;
+  });
   await frame.getByRole('button', { name: /Next/i }).waitFor();
   await page.waitForTimeout(1_000);
   assert.equal(await page.evaluate(() => window.progressMessages.length), 2);

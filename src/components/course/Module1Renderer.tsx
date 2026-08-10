@@ -18,6 +18,7 @@ import servicesToRightsPathway from '../../assets/hrba/module-1/visuals/m1-s2-03
 import { externalCourseResources } from '../../config/externalCourseResources';
 import { module1RefinementAssets } from '../../data/module1/module_1_refinement_assets';
 import { evaluateModule1SelfAssessment, module1AssessmentQuestions } from '../../data/module1/module_1_self_assessment';
+import { getHRBAModuleById } from '../../data/hrbaCourseModules';
 import '../../styles/module1-visual-supports.css';
 import '../../styles/module1-ux-polish.css';
 
@@ -5256,17 +5257,20 @@ function Module1FinishedScreen({
   };
 
   const continueToModule2 = () => {
+    const module2 = getHRBAModuleById('module_02_everyday_cso_work');
+    if (!module2) return;
+
     onChangeState((prev) => ({
       ...prev,
       currentLayer: 'player',
       currentCourseId: 'hrba_course',
-      currentModuleId: 'module_02_everyday_cso_work',
-      currentScreenId: 'M2-PLAYER-00',
+      currentModuleId: module2.moduleId,
+      currentScreenId: module2.startScreenId,
       currentSubState: null,
       activeModal: null
     }));
     if (typeof window !== 'undefined') {
-      window.history.pushState(null, '', '/?moduleId=module_02_everyday_cso_work&screenId=M2-PLAYER-00');
+      window.history.pushState(null, '', `/?moduleId=${module2.moduleId}&screenId=${module2.startScreenId}`);
     }
   };
 

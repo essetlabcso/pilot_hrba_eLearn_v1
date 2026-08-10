@@ -466,6 +466,7 @@ test('HRBA isolates portal state and evidence across learners in one browser pro
     await portalMobileSidebar.getByRole('button', { name: 'Open module menu', exact: true }).focus();
     await frame.locator('body').press('Escape');
     assert.equal(await portalMobileSidebar.isVisible(), false);
+    await frame.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Expand Learning Tools');
     assert.equal(await portalMobileToggle.evaluate((element) => element === document.activeElement), true);
     await portalMobileToggle.click();
     await portalMobileSidebar.getByRole('button', { name: 'Return to LMS', exact: true }).click();

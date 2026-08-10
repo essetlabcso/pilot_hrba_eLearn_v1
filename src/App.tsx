@@ -734,7 +734,7 @@ function CourseApplication({
     state.finalAssessmentResult,
   ]);
 
-  const launchModule = (moduleId: string, reviewMode: boolean) => {
+  const launchModule = (moduleId: string) => {
     setState((prev) => {
       const moduleDefinition = getHRBAModuleById(moduleId) || HRBA_COURSE_MODULES[0];
       const isUnlocked = canAccessCourseModule(moduleId, prev.completedModules);
@@ -752,139 +752,6 @@ function CourseApplication({
         currentScreenId: targetScreenId,
       };
 
-      if (reviewMode) {
-        if (moduleId === 'module_02_everyday_cso_work') {
-          updatedState.m2PlainLanguageRightsExplanation = '';
-          updatedState.m2EverydayRightsIssue = '';
-          updatedState.m2EverydayRightsDimension = '';
-          updatedState.m2EverydayRightsMap = {};
-          updatedState.m2RightsType = '';
-          updatedState.m2RightsTypeNote = '';
-          updatedState.m2SafeLearningReminderAccepted = false;
-          updatedState.m2StandardsChecklistReviewed = false;
-          updatedState.m2RightsRelevanceWorksheet = {};
-          updatedState.m2DecisionChangeType = '';
-          updatedState.m2DecisionChangeNote = '';
-          updatedState.m2EverydayRightsLens = {};
-          updatedState.m2QuizAnswers = {};
-          updatedState.m2QuizCompleted = false;
-          updatedState.m2FinalPortfolio = {
-            reframedLanguageNote: '',
-            actorRightsHolder: '',
-            actorDutyBearer: '',
-            inclusionAudit: '',
-            inclusionGroupOftenMissing: '',
-            inclusionPracticalStep: '',
-            powerInsight: '',
-            safeFeedbackMethod: '',
-            updatedAt: '',
-          };
-          updatedState.m2FinalKnowledgeCheckAnswers = {};
-          updatedState.m2FinalKnowledgeCheckCompleted = false;
-          updatedState.m2SortingState = {};
-          updatedState.m2SortingCompleted = false;
-          updatedState.m2MatchingState = {};
-          updatedState.m2MatchingCompleted = false;
-          updatedState.m2ObjectiveCardsViewed = [];
-          updatedState.m2HotspotViewed = [];
-          updatedState.m2FlashcardsViewed = [];
-          updatedState.m2TabsViewed = [];
-          updatedState.m2ProcessViewed = [];
-          
-          updatedState.screenProgress = {
-            ...prev.screenProgress,
-            'module_02_everyday_cso_work': []
-          };
-        } else if (moduleId === 'module_01_hrba_foundations') {
-          updatedState.practiceCheckState = {};
-          updatedState.agreementAccepted = false;
-          updatedState.orientationAnswers = {};
-          updatedState.orientationCompleted = false;
-          updatedState.surveyAnswers = {};
-          updatedState.surveyPriorities = [];
-          updatedState.surveyNote = '';
-          updatedState.surveyCompleted = false;
-          updatedState.sortingState = {};
-          updatedState.sortingCompleted = false;
-          updatedState.matchingState = {};
-          updatedState.matchingCompleted = false;
-          updatedState.scenarioAnswers = {};
-          updatedState.scenarioCompleted = {};
-          updatedState.m1JourneyActiveStep = 1;
-          updatedState.m1JourneyVisitedSteps = [1];
-          updatedState.m1WaterPointVisitedClues = [];
-          updatedState.m1WaterPointSelectedOption = '';
-          updatedState.m1WaterPointSummaryViewed = false;
-          updatedState.m1EverydayWorkExplored = [];
-          updatedState.m1InclusionPerspectivesExplored = [];
-          updatedState.m1ConnectedRightsExplored = [];
-          updatedState.m1RightsHolderLensViewed = [];
-          updatedState.m1RightsHolderCheckAnswer = '';
-          updatedState.m1ActorCategoriesExplored = [];
-          updatedState.m1ActorMatchingAnswers = {};
-          updatedState.m1ActorMatchingCompleted = false;
-          updatedState.m1ParticipationLevelsViewed = [];
-          updatedState.m1ParticipationScenarioAnswer = '';
-          updatedState.m1ParticipationScenarioCompleted = false;
-          updatedState.m1HrbaShiftStepsExplored = [];
-          updatedState.m1HrbaShiftAnswer = '';
-          updatedState.m1KnowledgeCheckStarted = false;
-          updatedState.m1KnowledgeCheckCurrentIndex = 0;
-          updatedState.m1KnowledgeCheckSelectedAnswers = {};
-          updatedState.m1KnowledgeCheckCheckedQuestions = {};
-          updatedState.m1KnowledgeCheckCorrectness = {};
-          updatedState.m1KnowledgeCheckScore = 0;
-          updatedState.m1KnowledgeCheckCompleted = false;
-          updatedState.m1KnowledgeCheckRetryCount = 0;
-          updatedState.assessmentFocus = '';
-          updatedState.selfAssessmentScores = {};
-          updatedState.selfAssessmentTotal = 0;
-          updatedState.selfAssessmentCategory = '';
-          updatedState.suggestedPriorityOne = '';
-          updatedState.suggestedPriorityTwo = '';
-          updatedState.screen16Completed = false;
-          updatedState.screen17ActionCommitment = {
-            selectedPriorityAreas: [],
-            selectedAction: null,
-            commitmentSentence: null,
-            optionalNote: null,
-            completed: false,
-          };
-          updatedState.screen18Completion = {
-            reviewedTakeaways: [],
-            completed: false,
-          };
-          updatedState.module1Completion = {
-            completed: false,
-            completedAt: '',
-          };
-          updatedState.portfolioShiftSelected = '';
-          updatedState.portfolioShiftAreas = [];
-          updatedState.portfolioShiftNote = '';
-          updatedState.quizAnswers = {};
-          updatedState.quizCompleted = false;
-          updatedState.quizScore = 0;
-          
-          updatedState.screenProgress = {
-            ...prev.screenProgress,
-            'module_01_hrba_foundations': []
-          };
-        } else if (moduleId === 'final_assessment') {
-          updatedState.finalAssessmentAnswers = {};
-          updatedState.finalAssessmentResult = null;
-          updatedState.completedModules = prev.completedModules.filter((id) => id !== 'final_assessment');
-          updatedState.screenProgress = {
-            ...prev.screenProgress,
-            final_assessment: [],
-          };
-        } else {
-          updatedState.screenProgress = {
-            ...prev.screenProgress,
-            [moduleId]: []
-          };
-        }
-      }
-      
       return updatedState;
     });
   };
