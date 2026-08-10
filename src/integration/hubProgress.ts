@@ -13,6 +13,11 @@ import {
   validateHrbaResumeState,
   type HrbaResumeState,
 } from './resumeState';
+import {
+  describeBaseRevision,
+  isResumeDiagnosticCorrelationId,
+  sendResumeDiagnosticCheckpoint,
+} from './resumeDiagnostics.ts';
 
 export type HubAssessmentPayload = {
   score: number;
@@ -33,6 +38,7 @@ export type HubProgressPayload = {
   baseRevision?: string | null;
   legacyBootstrap?: boolean;
   resumeState?: HrbaResumeState;
+  diagnosticCorrelationId?: string;
 };
 
 export type HubProgressEvent =
@@ -48,6 +54,7 @@ export type HubEventMessage = HubProgressPayload & {
   learnerStateKey: string;
   event: HubProgressEvent;
   sentAt: string;
+  diagnosticCorrelationId?: string;
 };
 
 function canSendToHub(portalContext: PortalLaunchContext | null) {
@@ -117,6 +124,8 @@ function isValidProgressPayload(event: HubProgressEvent, payload: HubProgressPay
     || (payload.resumeState !== undefined && !validateHrbaResumeState(payload.resumeState))
     || (payload.resumeState !== undefined && payload.resumeState.baseRevision !== payload.baseRevision)
     || (payload.legacyBootstrap !== undefined && typeof payload.legacyBootstrap !== 'boolean')
+    || (payload.diagnosticCorrelationId !== undefined
+      && !isResumeDiagnosticCorrelationId(payload.diagnosticCorrelationId))
   ) {
     return false;
   }
@@ -212,9 +221,37 @@ export function sendHubProgressEvent(
       baseRevision: payload.baseRevision ?? null,
       legacyBootstrap: payload.legacyBootstrap === true,
       resumeState: payload.resumeState,
+      ...(payload.diagnosticCorrelationId
+        ? { diagnosticCorrelationId: payload.diagnosticCorrelationId }
+        : {}),
     } : {}),
     sentAt: new Date().toISOString(),
   };
+
+  if (event === 'progress_updated' && payload.diagnosticCorrelationId) {
+    const sharedDiagnostic = {
+      courseSlug: portalContext.courseSlug,
+      currentModuleId: payload.currentModuleId,
+      currentScreenId: payload.currentScreenId,
+      baseRevision: describeBaseRevision(payload.baseRevision),
+      result: 'PASS' as const,
+      correlationId: payload.diagnosticCorrelationId,
+    };
+    sendResumeDiagnosticCheckpoint(portalContext, {
+      ...sharedDiagnostic,
+      stageCode: 'HRBA-2',
+      timestamp: new Date().toISOString(),
+    });
+
+    window.parent.postMessage(message, portalContext.portalOrigin);
+
+    sendResumeDiagnosticCheckpoint(portalContext, {
+      ...sharedDiagnostic,
+      stageCode: 'HRBA-3',
+      timestamp: new Date().toISOString(),
+    });
+    return true;
+  }
 
   window.parent.postMessage(message, portalContext.portalOrigin);
   return true;

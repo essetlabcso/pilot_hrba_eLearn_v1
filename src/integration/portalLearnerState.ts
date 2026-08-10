@@ -1,5 +1,6 @@
 import type { PortalLaunchContext } from './portalContext';
 import type { HrbaResumeState, TrustedAssessmentState } from './resumeState';
+import { isResumeDiagnosticCorrelationId } from './resumeDiagnostics.ts';
 
 export const HRBA_COURSE_SLUG = 'applying-human-rights-based-approach-in-cso-practice';
 export const EXTERNAL_COURSE_EVENT_MESSAGE = 'cso-learning-hub:external-course-event';
@@ -26,6 +27,7 @@ export type ExternalCourseLaunchContextMessage = {
   resumeRevision: string;
   resumeState: HrbaResumeState | null;
   trustedAssessmentState: TrustedAssessmentState;
+  diagnosticCorrelationId?: string;
 };
 
 export type ExternalCourseResumeResultMessage = {
@@ -36,6 +38,8 @@ export type ExternalCourseResumeResultMessage = {
   resumeRevision: string;
   resumeState: HrbaResumeState | null;
   error?: string;
+  diagnosticCorrelationId?: string;
+  httpStatus?: number;
 };
 
 export type AssessmentResultContract = {
@@ -134,6 +138,8 @@ export function isExternalCourseLaunchContextMessage(
     && isIsoRevision(candidate.resumeRevision)
     && (candidate.resumeState === null || typeof candidate.resumeState === 'object')
     && (candidate.trustedAssessmentState === null || typeof candidate.trustedAssessmentState === 'object')
+    && (candidate.diagnosticCorrelationId === undefined
+      || isResumeDiagnosticCorrelationId(candidate.diagnosticCorrelationId))
   );
 }
 
@@ -156,7 +162,14 @@ export function isExternalCourseResumeResultMessage(
     && ['accepted', 'conflict', 'rejected'].includes(String(candidate.status))
     && isIsoRevision(candidate.resumeRevision)
     && (candidate.resumeState === null || typeof candidate.resumeState === 'object')
-    && (candidate.error === undefined || typeof candidate.error === 'string');
+    && (candidate.error === undefined || typeof candidate.error === 'string')
+    && (candidate.diagnosticCorrelationId === undefined
+      || isResumeDiagnosticCorrelationId(candidate.diagnosticCorrelationId))
+    && (candidate.httpStatus === undefined || (
+      Number.isInteger(candidate.httpStatus)
+      && (candidate.httpStatus as number) >= 100
+      && (candidate.httpStatus as number) <= 599
+    ));
 }
 
 export async function derivePortalStorageKey(learnerStateKey: string) {

@@ -40,6 +40,11 @@ import {
   type TrustedAssessmentState,
 } from './integration/resumeState';
 import {
+  createResumeDiagnosticCorrelationId,
+  describeBaseRevision,
+  sendResumeDiagnosticCheckpoint,
+} from './integration/resumeDiagnostics.ts';
+import {
   canAccessCourseModule,
   FINAL_ASSESSMENT_MODULE_ID,
   hasFinalAssessmentPrerequisites,
@@ -77,6 +82,7 @@ type PortalResumeSession = {
   initialMode: 'server' | 'legacy' | 'empty';
   revision: string;
   trustedAssessmentState: TrustedAssessmentState;
+  diagnosticCorrelationId: string;
 };
 
 function getPortalCompletedModuleIds(completedModules: string[]) {
@@ -510,11 +516,38 @@ function CourseApplication({
     if (!portalContext || !resumeSession) return;
 
     const handleResumeResult = (event: MessageEvent) => {
+      if (event.source !== window.parent || event.origin !== portalContext.portalOrigin) return;
       if (
-        event.source !== window.parent
-        || event.origin !== portalContext.portalOrigin
-        || !isExternalCourseResumeResultMessage(event.data, portalContext)
+        !event.data
+        || typeof event.data !== 'object'
+        || event.data.type !== 'cso-learning-hub:external-course-resume-result'
       ) return;
+      if (!isExternalCourseResumeResultMessage(event.data, portalContext)) {
+        sendResumeDiagnosticCheckpoint(portalContext, {
+          stageCode: 'HRBA-4',
+          timestamp: new Date().toISOString(),
+          courseSlug: portalContext.courseSlug,
+          currentModuleId: latestStateRef.current.currentModuleId,
+          currentScreenId: latestStateRef.current.currentScreenId,
+          baseRevision: describeBaseRevision(resumeRevisionRef.current),
+          result: 'FAIL',
+          errorCategory: 'ack_invalid',
+          correlationId: resumeSession.diagnosticCorrelationId,
+        });
+        return;
+      }
+
+      sendResumeDiagnosticCheckpoint(portalContext, {
+        stageCode: 'HRBA-4',
+        timestamp: new Date().toISOString(),
+        courseSlug: portalContext.courseSlug,
+        currentModuleId: latestStateRef.current.currentModuleId,
+        currentScreenId: latestStateRef.current.currentScreenId,
+        baseRevision: describeBaseRevision(resumeRevisionRef.current),
+        result: 'PASS',
+        ...(event.data.httpStatus === undefined ? {} : { httpStatus: event.data.httpStatus }),
+        correlationId: resumeSession.diagnosticCorrelationId,
+      });
 
       const authoritativeResume = event.data.resumeState === null
         ? null
@@ -600,6 +633,17 @@ function CourseApplication({
     ) return;
     if (resumePendingSignatureRef.current) return;
 
+    sendResumeDiagnosticCheckpoint(portalContext, {
+      stageCode: 'HRBA-1',
+      timestamp: new Date().toISOString(),
+      courseSlug: portalContext.courseSlug,
+      currentModuleId: state.currentModuleId,
+      currentScreenId: state.currentScreenId,
+      baseRevision: describeBaseRevision(resumeRevisionRef.current),
+      result: 'PASS',
+      correlationId: resumeSession.diagnosticCorrelationId,
+    });
+
     const sent = sendHubProgressEvent(portalContext, learnerStateKey, 'progress_updated', {
       baseRevision: resumeRevisionRef.current,
       completedModuleIds: portalCompletedModuleIds,
@@ -608,6 +652,7 @@ function CourseApplication({
       legacyBootstrap: legacyBootstrapRef.current,
       progressPercent: portalProgressPercent,
       resumeState,
+      diagnosticCorrelationId: resumeSession.diagnosticCorrelationId,
     });
     if (sent) resumePendingSignatureRef.current = contentSignature;
   }, [
@@ -1169,6 +1214,8 @@ function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContex
                 initialMode: 'server',
                 revision: event.data.resumeRevision,
                 trustedAssessmentState,
+                diagnosticCorrelationId:
+                  event.data.diagnosticCorrelationId ?? createResumeDiagnosticCorrelationId(),
               },
               storageKey,
             });
@@ -1190,6 +1237,8 @@ function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContex
                 initialMode: 'empty',
                 revision: event.data.resumeRevision,
                 trustedAssessmentState,
+                diagnosticCorrelationId:
+                  event.data.diagnosticCorrelationId ?? createResumeDiagnosticCorrelationId(),
               },
               storageKey,
             });
@@ -1215,6 +1264,8 @@ function PortalLaunchGate({ portalContext }: { portalContext: PortalLaunchContex
               initialMode: migration.meaningful ? 'legacy' : 'empty',
               revision: event.data.resumeRevision,
               trustedAssessmentState,
+              diagnosticCorrelationId:
+                event.data.diagnosticCorrelationId ?? createResumeDiagnosticCorrelationId(),
             },
             storageKey,
           });
