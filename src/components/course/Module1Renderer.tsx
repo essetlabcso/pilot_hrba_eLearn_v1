@@ -284,7 +284,7 @@ function Module1OpeningScreen({ onNext }: { onNext: () => void }) {
 
       <figure className="m1-b2-opening__visual">
         <img
-          src="/assets/hrba/modules/module-1.webp"
+          src="/assets/hrba/modules/module-1-cover.webp"
           alt="Learners walking along a glowing pathway through a fictional Ethiopian highland landscape at sunrise."
           loading="eager"
         />

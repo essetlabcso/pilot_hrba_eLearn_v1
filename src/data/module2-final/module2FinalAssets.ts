@@ -35,7 +35,7 @@ export const module2FinalIntroVideo = {
 
 export const module2FinalAssets = {
   cover: {
-    src: `${MODULE2_FINAL_ASSET_BASE}/module-2-final-cover.webp`,
+    src: '/assets/hrba/modules/module-2-cover.webp',
     alt: 'Module 2 cover image for the Everyday Rights Lens.',
   },
   openingStoryStrip: {

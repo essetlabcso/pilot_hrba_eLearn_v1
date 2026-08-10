@@ -52,10 +52,6 @@ export default function ModuleLaunchCard({
         <span>{module.moduleSeq}</span>
       </div>
 
-      <div className="module-launch-card__media">
-        <img src={module.thumbnailSrc} alt={module.thumbnailAlt} loading="lazy" />
-      </div>
-
       <div className="module-launch-card__body">
         <div>
           <span className="module-launch-card__badge">{module.itemLabel}</span>

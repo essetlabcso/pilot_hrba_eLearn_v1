@@ -15758,6 +15758,51 @@ export function RootCauseCapacityGapScreen({ screen, state, onComplete }: {
   );
 }
 
+const module3SupportVideos: Partial<Record<Module3RevisedScreen['id'], string>> = {
+  'M3-R05': '1lm4e7v1aLE',
+  'M3-R09': 'L_C-p01fyT0',
+  'M3-R11': 'p13LHt0n_Ck',
+  'M3-R14': 'pi-aD_N2CUA',
+};
+
+function Module3SupportVideo({
+  screen,
+  children,
+}: {
+  screen: Module3RevisedScreen;
+  children: ReactNode;
+}) {
+  const videoId = module3SupportVideos[screen.id];
+
+  if (!videoId) {
+    return children;
+  }
+
+  const headingId = `${screen.id}-support-video-title`;
+
+  return (
+    <div className="m3-screen-with-support-video">
+      <section className="m3-support-video" aria-labelledby={headingId}>
+        <div className="m3-support-video__heading">
+          <p>Optional support video</p>
+          <h2 id={headingId}>{screen.title}</h2>
+        </div>
+        <div className="m3-support-video__frame">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+            title={`Support video: ${screen.title}`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
+      </section>
+      {children}
+    </div>
+  );
+}
+
 export default function Module3RevisedRenderer({ screenId, state, onChangeState }: Module3RevisedRendererProps) {
   // Retain the former implementations as readable legacy-state references without routing
   // learners into their obsolete workflows.
@@ -15819,7 +15864,11 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R05') {
-    return <ContextInsightPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return (
+      <Module3SupportVideo screen={screen}>
+        <ContextInsightPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />
+      </Module3SupportVideo>
+    );
   }
 
   if (screen.id === 'M3-R06') {
@@ -15835,7 +15884,11 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R09') {
-    return <PowerInfluencePrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return (
+      <Module3SupportVideo screen={screen}>
+        <PowerInfluencePrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />
+      </Module3SupportVideo>
+    );
   }
 
   if (screen.id === 'M3-R10') {
@@ -15843,7 +15896,11 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R11') {
-    return <InclusionDesignScorecardScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return (
+      <Module3SupportVideo screen={screen}>
+        <InclusionDesignScorecardScreen screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />
+      </Module3SupportVideo>
+    );
   }
 
   if (screen.id === 'M3-R12') {
@@ -15855,7 +15912,11 @@ export default function Module3RevisedRenderer({ screenId, state, onChangeState 
   }
 
   if (screen.id === 'M3-R14') {
-    return <RepairedDesignPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />;
+    return (
+      <Module3SupportVideo screen={screen}>
+        <RepairedDesignPrototype screen={screen} state={state} onChangeState={onChangeState} onComplete={onComplete} />
+      </Module3SupportVideo>
+    );
   }
 
   if (screen.id === 'M3-R17') {

@@ -353,7 +353,7 @@ function renderBlock(
           </div>
           <figure className="m2-cover-screen__image-wrap">
             <img
-              src="/assets/hrba/modules/module-2.png"
+              src="/assets/hrba/modules/module-2-cover.webp"
               alt="Cover image for Module 2 - Foundations of HRBA: Rights, Actors, Principles, and Power."
               className="m2-cover-screen__image"
             />
